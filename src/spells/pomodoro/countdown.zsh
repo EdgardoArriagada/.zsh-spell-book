@@ -19,19 +19,19 @@ countdown() (
   setTotalSeconds() {
     if isShortTimeFormat; then setTotalSecondsFromShortTimeFormat;
 
-    elif isInteger "$time"; then totalSeconds="$time";
+    elif ${zsb}_isInteger "$time"; then totalSeconds="$time";
 
     elif isTimeFormat; then setTotalSecondsFromTimeFormat; fi
   }
 
   isShortTimeFormat() {
     local SHORT_TIME_REGEX="^[0-9]+[hHmMsS]$"
-    return $(doesMatch "$time" "$SHORT_TIME_REGEX")
+    return $(${zsb}_doesMatch "$time" "$SHORT_TIME_REGEX")
   }
 
   isTimeFormat() {
     local TIME_REGEX="^[0-5]?[0-9]:[0-5]?[0-9](:[0-5]?[0-9])?$"
-    return $(doesMatch "$time" "$TIME_REGEX")
+    return $(${zsb}_doesMatch "$time" "$TIME_REGEX")
   }
 
   setTotalSecondsFromShortTimeFormat() {

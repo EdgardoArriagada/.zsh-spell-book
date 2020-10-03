@@ -1,4 +1,4 @@
-gitStatus() {
+${zsb}_gitStatus() {
   echo " "
 
   local gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)

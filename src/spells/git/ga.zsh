@@ -4,15 +4,15 @@
 ga() {
   if [ "$1" = "new" ] || [ "$1" = "." ]; then
     if [ -z $2 ]; then
-      git add . && gitStatus
+      git add . && ${zsb}_gitStatus
       return 0
     fi
     shift 1
-    git add "$@" && gitStatus
+    git add "$@" && ${zsb}_gitStatus
     return 0
   fi
 
-  git add -p "$@" && gitStatus
+  git add -p "$@" && ${zsb}_gitStatus
   return 0
 }
 

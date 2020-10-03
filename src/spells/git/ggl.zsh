@@ -7,4 +7,4 @@ ggl() {
   git pull origin "$1" && copythis " " -c
 }
 
-complete -C "isGitRepo && git branch | sed 's/^\*//'" ggl
+complete -C "${zsb}_isGitRepo && git branch | sed 's/^\*//'" ggl

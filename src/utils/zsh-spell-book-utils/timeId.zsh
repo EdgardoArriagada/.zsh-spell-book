@@ -1,2 +1,2 @@
-timeId() echo $(date +%s%N)
+${zsb}_timeId() echo $(date +%s%N)
 

@@ -5,7 +5,7 @@ sendmeto() (
   local GROUP_FLAGS='cs'
 
   main() {
-    ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+    ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
     if ! isInputUrlValid; then
       echo "${ZSB_ERROR} You must specify a valid url"
@@ -28,7 +28,7 @@ sendmeto() (
   isInputUrlValid() {
     [ -z "$inputUrl" ] && return 1
     local URL_REGEX="^http[s]?:\/{2}"
-    return $(doesMatch "$inputUrl" "$URL_REGEX")
+    return $(${zsb}_doesMatch "$inputUrl" "$URL_REGEX")
   }
 
   inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])

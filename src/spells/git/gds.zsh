@@ -1,10 +1,10 @@
 gds() {
   if [ -z "$1" ]; then
-    git diff --staged && gitStatus
+    git diff --staged && ${zsb}_gitStatus
     return 0
   fi
 
-  git diff --staged "$@" && gitStatus
+  git diff --staged "$@" && ${zsb}_gitStatus
   return 0
 }
 

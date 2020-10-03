@@ -7,7 +7,7 @@
 # 5.- if $1 is not a valid file or directory, it should create a new file out of it, calling git status after closing it
 
 vimd() {
-  local o=$(timeId)
+  local o=$(${zsb}_timeId)
   {
     ${o}_main() {
       local USER_INPUT=$1

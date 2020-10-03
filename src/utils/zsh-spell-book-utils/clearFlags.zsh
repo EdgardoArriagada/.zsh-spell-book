@@ -1,15 +1,15 @@
-# use this function after switchTrueMatching
+# use this function after ${zsb}_switchTrueMatching
 # to clear flags from arguments like:
 # {
 # 	declare -A args
 # 	args[--aware]=false
-# 	switchTrueMatching "${args[@]}" "$@"
-# 	set -- $(clearFlags "${args[@]}" "$@")
+# 	${zsb}_switchTrueMatching "${args[@]}" "$@"
+# 	set -- $(${zsb}_clearFlags "${args[@]}" "$@")
 # }
 # in the previous case, if the flag
 # --aware is given, will be clean from $@
 
-clearFlags() {
+${zsb}_clearFlags() {
   local -n args=$1 >/dev/null 2>&1
 
   # Remove array of args from $@

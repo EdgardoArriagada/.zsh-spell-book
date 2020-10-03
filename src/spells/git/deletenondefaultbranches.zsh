@@ -2,12 +2,12 @@ deletenondefaultbranches() (
   local nonDefaultBranches
 
   main() {
-    if ! isGitRepo; then
+    if ! ${zsb}_isGitRepo; then
       echo "${ZSB_ERROR} You must run this command inside a git project"
       return 1
     fi
 
-    if ! userWorkingOnDefaultBranch; then
+    if ! ${zsb}_userWorkingOnDefaultBranch; then
       echo "${ZSB_ERROR} You must run this command from a default branch"
       return 1
     fi
