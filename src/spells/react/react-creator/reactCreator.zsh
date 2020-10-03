@@ -5,10 +5,10 @@ reactCreator() {
   local newComponentPath="$2"
   local newComponentName="$(basename $newComponentPath)"
 
-  local flags="$3"
+  local inputFlags="$3"
   local GROUP_FLAGS='o'
 
-  ! areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
+  ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
   if [ -z "$newComponentPath" ]; then
     echo "${ZSB_ERROR} You must provide a React Component directory path"
@@ -16,7 +16,7 @@ reactCreator() {
   fi
 
 
-  if [ -d "$newComponentPath" ] && [[ "$flags" != *'o'* ]] ; then
+  if [ -d "$newComponentPath" ] && [[ "$inputFlags" != *'o'* ]] ; then
     echo "${ZSB_ERROR} Can't overwrite already existing component, use $(hl "-o") flag to do it anyway"
     return 1
   fi

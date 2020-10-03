@@ -15,6 +15,9 @@
 # if [[ "$flags" == *'y'* ]]; then {...}
 # if [[ "$flags" == *'z'* ]]; then {...}
 #
+# or write this helper function to improve readability
+# inputFlagsContains() return $(([[ "$inputFlags" == *"$1"* ]]))
+#
 # then you can call your command like this:
 # mycommand -xyz
 # mycommand -zyx

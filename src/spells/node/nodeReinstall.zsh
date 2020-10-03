@@ -3,21 +3,21 @@ nodeReinstall() {
   local packageManagerLock=$2
 
   {
-    local flags=$3
+    local inputFlags=$3
     local GROUP_FLAGS='lni'
 
-    ! areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
+    ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
   }
 
-  if [[ ! "$flags" == *"l"* ]] && [ -f ${packageManagerLock} ]; then
+  if [[ ! "$inputFlags" == *"l"* ]] && [ -f ${packageManagerLock} ]; then
     rm ${packageManagerLock} && echo "${ZSB_INFO} $(hl ${packageManagerLock}) deleted"
   fi
 
-  if [[ ! "$flags" == *"n"* ]] && [ -d node_modules ]; then
+  if [[ ! "$inputFlags" == *"n"* ]] && [ -d node_modules ]; then
     rm -rf node_modules && echo "${ZSB_INFO} $(hl 'node_modules') deleted"
   fi
 
-  if [[ "$flags" == *"i"* ]]; then
+  if [[ "$inputFlags" == *"i"* ]]; then
     echo "${ZSB_INFO} installation cancelled"
     return 0
   fi

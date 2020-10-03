@@ -1,20 +1,20 @@
 sendmeto() (
   local argumentURL="$1"
 
-  local flags="$2"
+  local inputFlags="$2"
   local GROUP_FLAGS='cs'
 
   local highlightedURL="$(hl "${argumentURL}")"
 
   main() {
-    ! areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
+    ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
     if ! isUrl "$argumentURL" || [ -z $argumentURL ]; then
       echo "${ZSB_ERROR} You must specify a valid url"
       return 1
     fi
 
-    if [[ "$flags" == *'c'* ]]; then
+    if inputFlagsContains "c"; then
       copyUrl && echo "${ZSB_SUCCESS} ${highlightedURL} copied"
       return 0
     fi
@@ -22,12 +22,13 @@ sendmeto() (
     openlink "$argumentURL"
     didSucessOpenLink=$([ "$?" = "0" ])
 
-
-    if $didSucessOpenLink && [[ "$flags" != *'s'* ]]; then
+    if $didSucessOpenLink && ! inputFlagsContains "s"; then
       close
     fi
 
   }
+
+  inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])
 
   isUrl() {
     local URL_REGEX="^http[s]?:\/{2}"
