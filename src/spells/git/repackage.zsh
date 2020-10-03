@@ -14,7 +14,7 @@ repackage() {
     return 1
   fi
 
-  if isLastCommitOnline && ! "${args[--force]}"; then
+  if ${zsb}_isLastCommitOnline && ! "${args[--force]}"; then
     echo "${ZSB_ERROR} Can't repackage, HEAD commit has already been pushed online, use ${ZSB_SHL}--force${ZSB_EHL} flag to do it anyway"
     return 1
   fi
