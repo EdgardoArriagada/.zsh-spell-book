@@ -14,7 +14,7 @@ gp() {
   local INPUT_REMOTE_BRANCH="$1"
   shift 1
 
-  if isDefaultBranch "$INPUT_REMOTE_BRANCH" && ! "${args[--aware]}"; then
+  if ${zsb}_isDefaultBranch "$INPUT_REMOTE_BRANCH" && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} It's not safe to push to default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
     return 1
   fi
