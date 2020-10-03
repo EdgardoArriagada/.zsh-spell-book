@@ -5,7 +5,7 @@ gc() {
   {
     declare -A args
     args[--aware]=false
-    switchTrueMatching "${args[@]}" "$@"
+    ${zsb}_switchTrueMatching "${args[@]}" "$@"
     set -- $(${zsb}_clearFlags "${args[@]}" "$@")
   }
 

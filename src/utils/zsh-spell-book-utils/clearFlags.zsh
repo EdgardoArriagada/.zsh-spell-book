@@ -1,9 +1,9 @@
-# use this function after switchTrueMatching
+# use this function after ${zsb}_switchTrueMatching
 # to clear flags from arguments like:
 # {
 # 	declare -A args
 # 	args[--aware]=false
-# 	switchTrueMatching "${args[@]}" "$@"
+# 	${zsb}_switchTrueMatching "${args[@]}" "$@"
 # 	set -- $(${zsb}_clearFlags "${args[@]}" "$@")
 # }
 # in the previous case, if the flag

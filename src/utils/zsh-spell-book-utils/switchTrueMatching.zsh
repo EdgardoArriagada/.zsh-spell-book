@@ -5,7 +5,7 @@
 #     declare -A args
 #     args[--aware]=false
 #     args[--signed]=false
-#     switchTrueMatching "${args[@]}" "$@"
+#     ${zsb}_switchTrueMatching "${args[@]}" "$@"
 #   }
 
 #   if "${args[--aware]}" ; then
@@ -21,7 +21,7 @@
 # $ funcTest --signed
 # check it amazing power
 
-switchTrueMatching() {
+${zsb}_switchTrueMatching() {
   local -n args=$1 >/dev/null 2>&1
 
   # Remove array of flags from local args
