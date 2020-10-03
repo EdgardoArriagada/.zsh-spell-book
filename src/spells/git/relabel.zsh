@@ -15,7 +15,7 @@ relabel() {
     return 1
   fi
 
-  if userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
+  if ${zsb}_userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} can't relabel in default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
     return 1
   fi

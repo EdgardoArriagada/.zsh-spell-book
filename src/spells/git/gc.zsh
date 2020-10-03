@@ -9,7 +9,7 @@ gc() {
     set -- $(${zsb}_clearFlags "${args[@]}" "$@")
   }
 
-  if userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
+  if ${zsb}_userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
     return 1
   fi
@@ -21,7 +21,7 @@ gc() {
     git commit --gpg-sign -m "$*" && ${zsb}_gitStatus && commitSuccess=true
   fi
 
-  if userWorkingOnDefaultBranch && "$commitSuccess"; then
+  if ${zsb}_userWorkingOnDefaultBranch && "$commitSuccess"; then
     echo "${ZSB_WARNING} Commit made into default branch, use $(hl "git reset HEAD~") to undo the entire previous commit"
   fi
 

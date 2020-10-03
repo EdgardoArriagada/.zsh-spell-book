@@ -9,7 +9,7 @@ repackage() {
     ${zsb}_switchTrueMatching "${args[@]}" "$@"
   }
 
-  if userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
+  if ${zsb}_userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} Can't repackage into default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
     return 1
   fi
