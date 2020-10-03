@@ -7,7 +7,7 @@ relabel() {
     args[--aware]=false
     args[--force]=false
     switchTrueMatching "${args[@]}" "$@"
-    set -- $(clearFlags "${args[@]}" "$@")
+    set -- $(${zsb}_clearFlags "${args[@]}" "$@")
   }
 
   if [ -z "$1" ]; then

@@ -6,7 +6,7 @@ gc() {
     declare -A args
     args[--aware]=false
     switchTrueMatching "${args[@]}" "$@"
-    set -- $(clearFlags "${args[@]}" "$@")
+    set -- $(${zsb}_clearFlags "${args[@]}" "$@")
   }
 
   if userWorkingOnDefaultBranch && ! "${args[--aware]}"; then

@@ -3,7 +3,7 @@ gp() {
     declare -A args
     args[--aware]=false
     switchTrueMatching "${args[@]}" "$@"
-    set -- $(clearFlags "${args[@]}" "$@")
+    set -- $(${zsb}_clearFlags "${args[@]}" "$@")
   }
 
   if [ -z "$1" ]; then
