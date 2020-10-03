@@ -19,7 +19,7 @@ repackage() {
     return 1
   fi
 
-  git commit --amend --no-edit --gpg-sign && gitStatus
+  git commit --amend --no-edit --gpg-sign && ${zsb}_gitStatus
   return 0
 }
 

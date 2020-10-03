@@ -16,9 +16,9 @@ gc() {
 
   local commitSuccess=false
   if [ -z "$1" ]; then
-    git commit --gpg-sign && gitStatus && commitSuccess=true
+    git commit --gpg-sign && ${zsb}_gitStatus && commitSuccess=true
   else
-    git commit --gpg-sign -m "$*" && gitStatus && commitSuccess=true
+    git commit --gpg-sign -m "$*" && ${zsb}_gitStatus && commitSuccess=true
   fi
 
   if userWorkingOnDefaultBranch && "$commitSuccess"; then

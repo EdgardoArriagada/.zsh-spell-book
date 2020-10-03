@@ -5,12 +5,12 @@ alias gcd='git checkout develop'
 alias gcm='git checkout master'
 alias gbm='git branch -m'
 alias gsp='git status --porcelain=v2'
-alias gs='gitStatus'
+alias gs='${zsb}_gitStatus'
 alias GS='toggleCapsLock && gs'
 alias gst='git status'
-alias stash='git stash --include-untracked && gitStatus'
+alias stash='git stash --include-untracked && ${zsb}_gitStatus'
 alias pop='git stash pop'
-alias sign='git commit --amend --no-edit --gpg-sign && gitStatus'
+alias sign='git commit --amend --no-edit --gpg-sign && ${zsb}_gitStatus'
 alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit --branches"
 
 alias onotif="sendmeto 'https://github.com/notifications'"

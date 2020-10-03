@@ -1,6 +1,6 @@
 # vim resent modified files in git
 vimr() {
-  vim "$@" && isGitRepo && gitStatus
+  vim "$@" && isGitRepo && ${zsb}_gitStatus
 }
 
 # Complete with git status files relative to current directory

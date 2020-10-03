@@ -1,11 +1,11 @@
-gitStatus() {
+${zsb}_gitStatus() {
   echo " "
 
-  local gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
-  if [ -z "$gitStatusOutput" ]; then
+  local ${zsb}_gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
+  if [ -z "$${zsb}_gitStatusOutput" ]; then
     git status
   else
-    echo "$gitStatusOutput"
+    echo "$${zsb}_gitStatusOutput"
   fi
 
   echo " "

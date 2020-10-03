@@ -4,7 +4,7 @@ cds() {
 
   if isGitRepo; then
     printf %"$COLUMNS"s | tr " " "_"
-    gitStatus
+    ${zsb}_gitStatus
     return 0
   fi
 

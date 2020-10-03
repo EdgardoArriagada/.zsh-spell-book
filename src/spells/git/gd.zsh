@@ -1,10 +1,10 @@
 gd() {
   if [ -z "$1" ]; then
-    git diff && gitStatus
+    git diff && ${zsb}_gitStatus
     return 0
   fi
 
-  git diff "$@" && gitStatus
+  git diff "$@" && ${zsb}_gitStatus
   return 0
 }
 

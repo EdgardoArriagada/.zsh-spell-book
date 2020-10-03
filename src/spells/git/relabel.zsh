@@ -25,7 +25,7 @@ relabel() {
     return 1
   fi
 
-  git commit --amend --gpg-sign --message "$*" && gitStatus && echo "${ZSB_WARNING} files already added to git may have been commited, use ${ZSB_SHL}git reset HEAD~${ZSB_EHL} to undo the entire previous commit"
+  git commit --amend --gpg-sign --message "$*" && ${zsb}_gitStatus && echo "${ZSB_WARNING} files already added to git may have been commited, use ${ZSB_SHL}git reset HEAD~${ZSB_EHL} to undo the entire previous commit"
 
   return 0
 }
