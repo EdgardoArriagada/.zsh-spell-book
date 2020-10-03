@@ -1,0 +1,12 @@
+alias aptget='sudo apt-get'
+
+alias instala='aptget install'
+alias updatea='time aptget update'
+alias upgradea='time aptget dist-upgrade -y'
+alias morning='updatea && upgradea'
+alias remueve='aptget purge'
+alias autoremueve='aptget clean && aptget autoclean && aptget autoremove'
+alias mata='sudo killall -9'
+alias escapeswap='setxkbmap -option caps:swapescape'
+alias keysbacktonormal='setxkbmap -option'
+alias vouembora='shutdown -h now'

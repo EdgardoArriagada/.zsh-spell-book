@@ -1,0 +1,26 @@
+"Set this file as local options so it override any plugin
+filetype plugin indent on
+
+set tabstop=2 "show existing tab with 2 spaces width
+set shiftwidth=2 "when indenting with '>', use 2 spaces width
+set expandtab "On pressing tab, insert 2 spaces
+set relativenumber "Relative numbers to current cursor
+set number "Show line numbers
+set hlsearch "Enable search highlighting.
+set incsearch "Highlight as you search (use :noh to clear)
+set laststatus=2 "Always display the status bar.
+
+set path+=** "Better search when :e
+set wildmenu "Allow tab in menu when searching for a file
+
+"Search and replace matches for highlighted text
+vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
+
+"Move highlighted text down 'Shift j'
+vnoremap J :m '>+1<CR>gv=gv
+"Move highlighted text up 'Shift k'
+vnoremap K :m '<-2<CR>gv=gv
+
+"Custom commands
+command Q execute ":q"
+command W execute ":w"
