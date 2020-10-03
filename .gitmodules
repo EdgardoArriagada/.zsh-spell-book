@@ -1,0 +1,3 @@
+[submodule "src/spells/kali"]
+	path = src/spells/kali
+	url = https://github.com/EdgardoArriagada/kali
