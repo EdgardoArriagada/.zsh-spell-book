@@ -19,7 +19,7 @@ countdown() (
   setTotalSeconds() {
     if isShortTimeFormat; then setTotalSecondsFromShortTimeFormat;
 
-    elif isInteger "$time"; then totalSeconds="$time";
+    elif ${zsb}_isInteger "$time"; then totalSeconds="$time";
 
     elif isTimeFormat; then setTotalSecondsFromTimeFormat; fi
   }

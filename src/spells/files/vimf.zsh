@@ -6,7 +6,7 @@ vimf() (
   main() {
     [ ! -f "$fileInput" ] && echo "${ZSB_ERROR} File not found" && return 1
 
-    if existsLineNumber && isInteger "$lineNumber"; then
+    if existsLineNumber && ${zsb}_isInteger "$lineNumber"; then
       openFileInNumber
       return 0
     fi
