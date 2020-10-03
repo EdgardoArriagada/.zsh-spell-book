@@ -2,7 +2,7 @@ copythis() {
   local GROUP_FLAGS='c'
   local inputFlags="$2"
 
-  ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+  ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
   if ! xclip -version >/dev/null 2>&1; then
     echo "${ZSB_ERROR} You need to install $(hl xclip) first"

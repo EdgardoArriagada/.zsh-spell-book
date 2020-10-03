@@ -5,7 +5,7 @@ sendmeto() (
   local GROUP_FLAGS='cs'
 
   main() {
-    ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+    ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
     if ! isInputUrlValid; then
       echo "${ZSB_ERROR} You must specify a valid url"

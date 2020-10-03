@@ -6,7 +6,7 @@ nodeReinstall() {
     local inputFlags=$3
     local GROUP_FLAGS='lni'
 
-    ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+    ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
   }
 
   if [[ ! "$inputFlags" == *"l"* ]] && [ -f ${packageManagerLock} ]; then

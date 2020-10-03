@@ -7,7 +7,7 @@
 #     local flags=$1 # or the possition where flags args goes
 #     local GROUP_FLAGS='xyx'
 #
-#     ! areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
+#     ! ${zsb}_areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
 # }
 #
 # and ask if flags contains a char like:
@@ -25,7 +25,7 @@
 # mycommand -xz
 # etc.
 
-areFlagsInGroup() {
+${zsb}_areFlagsInGroup() {
   local flags="$1"
   local groupFlags="$2"
 

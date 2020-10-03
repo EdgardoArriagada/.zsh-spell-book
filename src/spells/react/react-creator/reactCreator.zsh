@@ -8,7 +8,7 @@ reactCreator() {
   local inputFlags="$3"
   local GROUP_FLAGS='o'
 
-  ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+  ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
   if [ -z "$newComponentPath" ]; then
     echo "${ZSB_ERROR} You must provide a React Component directory path"
