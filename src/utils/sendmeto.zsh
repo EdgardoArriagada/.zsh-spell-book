@@ -1,42 +1,40 @@
 sendmeto() (
-  local argumentURL="$1"
+  local inputUrl="$1"
 
   local inputFlags="$2"
   local GROUP_FLAGS='cs'
 
-  local highlightedURL="$(hl "${argumentURL}")"
-
   main() {
     ! areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
-    if ! isUrl "$argumentURL" || [ -z $argumentURL ]; then
+    if ! isInputUrlValid; then
       echo "${ZSB_ERROR} You must specify a valid url"
       return 1
     fi
 
     if inputFlagsContains "c"; then
-      copyUrl && echo "${ZSB_SUCCESS} ${highlightedURL} copied"
+      copyUrl && echo "${ZSB_SUCCESS} $(hl "$inputUrl") copied"
       return 0
     fi
 
-    openlink "$argumentURL"
+    openlink "$inputUrl"
     didSucessOpenLink=$([ "$?" = "0" ])
 
     if $didSucessOpenLink && ! inputFlagsContains "s"; then
       close
     fi
+  }
 
+  isInputUrlValid() {
+    [ -z "$inputUrl" ] && return 1
+    local URL_REGEX="^http[s]?:\/{2}"
+    return $(doesMatch "$inputUrl" "$URL_REGEX")
   }
 
   inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])
 
-  isUrl() {
-    local URL_REGEX="^http[s]?:\/{2}"
-    return $(doesMatch "$1" "$URL_REGEX")
-  }
-
   copyUrl() {
-    echo "$argumentURL" | xclip -selection clipboard
+    echo "$inputUrl" | xclip -selection clipboard
   }
 
   main "$@"
