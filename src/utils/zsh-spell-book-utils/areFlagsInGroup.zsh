@@ -37,7 +37,7 @@ ${zsb}_areFlagsInGroup() {
   [ -z "$flags" ] && return 0
 
   local flagsRegex="^-[${groupFlags}]+$"
-  if ! doesMatch "$flags" "$flagsRegex"; then
+  if ! ${zsb}_doesMatch "$flags" "$flagsRegex"; then
     echo "${ZSB_ERROR} One or more unknown flags in the list"
     return 1
   fi

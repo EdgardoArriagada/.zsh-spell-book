@@ -28,7 +28,7 @@ sendmeto() (
   isInputUrlValid() {
     [ -z "$inputUrl" ] && return 1
     local URL_REGEX="^http[s]?:\/{2}"
-    return $(doesMatch "$inputUrl" "$URL_REGEX")
+    return $(${zsb}_doesMatch "$inputUrl" "$URL_REGEX")
   }
 
   inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])
