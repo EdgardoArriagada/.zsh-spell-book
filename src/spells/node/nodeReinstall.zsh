@@ -24,7 +24,7 @@ nodeReinstall() {
 
   # BUG: npm always tries to acess to zsb_lazy_load inside a bash function
   # eval is a workaround
-  eval "${packageManager} install" && isGitRepo && ${zsb}_gitStatus
+  eval "${packageManager} install" && ${zsb}_isGitRepo && ${zsb}_gitStatus
 }
 
 complete -W "-l -n -i -lni" nodeReinstall

@@ -24,4 +24,4 @@ gp() {
   return 0
 }
 
-complete -C "isGitRepo && git branch | sed 's/^\*//'" -W '--aware' gp
+complete -C "${zsb}_isGitRepo && git branch | sed 's/^\*//'" -W '--aware' gp

@@ -2,7 +2,7 @@ deletenondefaultbranches() (
   local nonDefaultBranches
 
   main() {
-    if ! isGitRepo; then
+    if ! ${zsb}_isGitRepo; then
       echo "${ZSB_ERROR} You must run this command inside a git project"
       return 1
     fi
