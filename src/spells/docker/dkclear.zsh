@@ -23,14 +23,6 @@ dkclear() (
     pruneContainersVolumesAndNetworks
   }
 
-  stopRunningContainers() {
-    local containers=$(docker container ls -aq)
-    if [ ! -z "$containers" ]; then
-      echo "${ZSB_INFO} Stopping all running containers"
-      docker stop $(echo "$containers") && echo "${ZSB_SUCCESS} All running containers stopped\n" &&
-    fi
-  }
-
   pruneContainersVolumesAndNetworks() {
     echorun 'docker container prune --force' &&
     echorun 'docker volume prune --force' &&
