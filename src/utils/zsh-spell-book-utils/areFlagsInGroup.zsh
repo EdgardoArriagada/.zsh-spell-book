@@ -25,22 +25,38 @@
 # mycommand -xz
 # etc.
 
-${zsb}_areFlagsInGroup() {
-  local flags="$1"
+${zsb}_areFlagsInGroup() (
+  local inputFlags="$1"
   local groupFlags="$2"
 
-  if [ -z "$groupFlags" ]; then
-    echo "${ZSB_ERROR} You must provide at least one possible flag as second arg. IE $(hl "xyz")"
-    return 1
-  fi
+  main() {
+    if ! areFlagsValid; then
+      return 0
+    fi
 
-  [ -z "$flags" ] && return 0
+    if ! doesInputFlagsBelongsToGroupFlags; then
+      throwUnknowFlagsException; return $?
+    fi
+  }
 
-  local flagsRegex="^-[${groupFlags}]+$"
-  if ! ${zsb}_doesMatch "$flags" "$flagsRegex"; then
+  areFlagsValid() {
+    [ -z "$inputFlags" ] && return 1
+
+    local FLAG_REGEX="^-[a-z]+$"
+
+    return $(${zsb}_doesMatch "$inputFlags" "$FLAG_REGEX")
+  }
+
+  doesInputFlagsBelongsToGroupFlags() {
+    local groupFlagsRegex="^-[${groupFlags}]+$"
+    return $(${zsb}_doesMatch "$inputFlags" "$groupFlagsRegex")
+  }
+
+  throwUnknowFlagsException() {
     echo "${ZSB_ERROR} One or more unknown flags in the list"
     return 1
-  fi
+  }
 
-  return 0
-}
+  main "$@"
+)
+
