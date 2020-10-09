@@ -1,14 +1,32 @@
 tmkill() (
-  local activeTmuxSessions=$(tmux ls 2>&1 | cut -d':' -s -f1)
+  local activeTmuxSessions=$(tml)
+  local inputSession="$1"
 
   main() {
-    if [ -z "$activeTmuxSessions" ]; then
-      echo "${ZSB_INFO} There are no active tmux sessions."
-      return 1
+    if ! existsActiveTmuxSessions; then
+      throwNoTmuxSessions; return $?
+    fi
+
+    if tooManyArgs "$@"; then
+      throwTooManyArgsException; return $?
+    fi
+
+    if existsInputSession; then
+      killInputSession; return $?
     fi
 
     printPrompt
     playOptionsMenu
+  }
+
+  tooManyArgs() return $([ "$#" -gt "1" ])
+
+  existsActiveTmuxSessions() return $([ ! -z "$activeTmuxSessions" ])
+
+  existsInputSession() return $([ ! -z "$inputSession" ])
+
+  killInputSession() {
+      return $(tmux kill-session -t "$inputSession")
   }
 
   printPrompt() {
@@ -26,5 +44,17 @@ tmkill() (
 
   killTmuxServer() tmux kill-server
 
+  throwNoTmuxSessions() {
+    echo "${ZSB_INFO} There are no active tmux sessions."
+    return 0
+  }
+
+  throwTooManyArgsException() {
+    echo "${ZSB_ERROR} Only one argument expected."
+    return 1
+  }
+
   main "$@"
 )
+
+complete -C "tml" tmkill
