@@ -34,10 +34,10 @@ Like this:
 
 ### Dynamic prefixing
 
-To use dynamic prefixing, just use the `_${zsb}_` variable to prefix function names. I.E:
+To use dynamic prefixing, just use the `__${zsb}_` variable to prefix function names. I.E:
 
 ```shell
-  _${zsb}_example () { ... }
+  __${zsb}_example () { ... }
 ```
 
 - All these functions will be deleted after _main.zsh_ is finished

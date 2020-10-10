@@ -44,7 +44,7 @@ ${zsb}_lazy_load() {
 
 }
 
-_${zsb}_prepare_lazy_load() {
+__${zsb}_prepare_lazy_load() {
   local script="$1"
   shift 1
 

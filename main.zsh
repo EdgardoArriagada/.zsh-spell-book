@@ -22,21 +22,21 @@ ZSB_DIR=$(dirname $0)
   local automaticCallFiles=(${ZSB_DIR}/src/automatic-calls/**/*.zsh)>/dev/null 2>&1
 
   # Create a dynamic prefixed function
-  _${zsb}_source_files() for file in $*; do source "$file"; done
+  __${zsb}_source_files() for file in $*; do source "$file"; done
 
   # Source files in this specific order
-  _${zsb}_source_files $utilFiles
-  _${zsb}_source_files $configurationFiles
-  _${zsb}_source_files $shortcutFiles
-  _${zsb}_source_files $automaticCallFiles
+  __${zsb}_source_files $utilFiles
+  __${zsb}_source_files $configurationFiles
+  __${zsb}_source_files $shortcutFiles
+  __${zsb}_source_files $automaticCallFiles
 
   # Source temporal files (ignored by git)
   local tempDir=${ZSB_DIR}/src/temp
   if [ -d $tempDir ]; then
     local tempFiles=(${tempDir}/**/*.zsh)>/dev/null 2>&1
-    _${zsb}_source_files $tempFiles
+    __${zsb}_source_files $tempFiles
   fi
 }
 
 # Remove dynamic prefixed functions
-unfunction -m "_${zsb}_*"
+unfunction -m "__${zsb}_*"
