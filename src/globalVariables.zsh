@@ -29,6 +29,9 @@ ZSB_WARNING="${ZSB_LABEL} ${ZSB_COLOR_FOREGROUND_YELLOW}WARNING${ZSB_NO_COLOR}:"
 ZSB_INFO="${ZSB_LABEL} ${ZSB_COLOR_FOREGROUND_BLUE}INFO${ZSB_NO_COLOR}:"
 ZSB_PROMPT="${ZSB_LABEL} ${ZSB_COLOR_FOREGROUND_PURPLE}PROMPT${ZSB_NO_COLOR}:"
 
+ZSB_EXPECTED=" ${ZSB_COLOR_FOREGROUND_GREEN}+ Expected${ZSB_NO_COLOR}:"
+ZSB_CURRENT=" ${ZSB_COLOR_FOREGROUND_RED}- Current${ZSB_NO_COLOR}:"
+
 # we create functions instead of subshells (for clear global namespace)
 # because we need to source files in this current shell
 
