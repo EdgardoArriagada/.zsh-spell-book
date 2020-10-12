@@ -1,5 +1,16 @@
 ${zsb}_doesMatch() {
-  local word="$1"
+  local input="$1"
   local regexString="$2"
-  return $(echo -E - "$word" | grep -E -q "$regexString")
+  return $(echo -E - "$input" | grep -E -q "$regexString")
 }
+
+${zsb}_isInteger() {
+  local INTEGER_REGEX="^-?[0-9]+$"
+  return $(${zsb}_doesMatch "$1" "$INTEGER_REGEX")
+}
+
+${zsb}_isFloat() {
+  local FLOAT_REGEX="^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"
+  return $(${zsb}_doesMatch "$1" "$FLOAT_REGEX")
+}
+
