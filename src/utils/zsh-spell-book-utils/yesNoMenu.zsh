@@ -1,11 +1,12 @@
-# callback function should not receive args
 ${zsb}_yesNoMenu() {
-  local onYesCallback="$1"
+  local onYesCallback="$@"
   while true; do
     read yn
     case $yn in
     [Yy]*)
-      $onYesCallback
+      [ -z "$onYesCallback" ] && return 0
+
+      eval "$onYesCallback"
       return $?
       ;;
     [Nn]*)
