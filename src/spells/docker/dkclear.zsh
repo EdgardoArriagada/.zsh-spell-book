@@ -8,7 +8,6 @@ dkclear() (
     echo "${ZSB_WARNING} The following items will be removed"
     echo " "
     echo "$(hl "All running/stopped containers")"
-    echo "$(hl "All volumes")"
     echo "$(hl "All networks")"
     echo " "
     echo "${ZSB_PROMPT} Do you really want to proceed [Y/n]"
@@ -25,7 +24,6 @@ dkclear() (
 
   pruneContainersVolumesAndNetworks() {
     echorun 'docker container prune --force' &&
-    echorun 'docker volume prune --force' &&
     echorun 'docker network prune --force'
   }
 
