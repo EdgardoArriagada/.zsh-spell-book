@@ -1,15 +1,11 @@
-startPomodoro() (
-  local time="$1"
-  shift 1
-  local label="${*}"
+${zsb}_startPomodoro() (
+  local totalSeconds="$1"
+  local inputTime="$2"
+  local label="$3"
   local beginString
   local thisMonthFolder
 
   main() {
-    if [ -z "$time" ]; then
-      echo "${ZSB_ERROR} 1 arg expected."; return 1
-    fi
-
     setBeginString
 
     setThisMonthFolder
@@ -18,10 +14,9 @@ startPomodoro() (
 
     appendPomodoroInfoToLog "started"
 
-    countdown "$time"
+    ${zsb}_runTimerFromSeconds "$totalSeconds"
 
     appendPomodoroInfoToLog "ended"
-
   }
 
   setBeginString() {
@@ -37,7 +32,7 @@ startPomodoro() (
 
   appendPomodoroInfoToLog() {
     local verb="$1" # stared | ended
-    logToZsb "${beginString} $time $verb at $(generateDate)" "$thisMonthFolder"
+    logToZsb "${beginString} $inputTime $verb at $(generateDate)" "$thisMonthFolder"
   }
 
   generateDate() echo $(date +%H:%M:%S)
