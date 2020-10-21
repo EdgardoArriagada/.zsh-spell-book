@@ -1,5 +1,5 @@
 dice() (
-  local sides=$1
+  local sides="$1"
   local DEFAULT_SIDES=6
 
   main() {
@@ -14,7 +14,7 @@ dice() (
   }
 
   setDefaultSides() {
-    [ -z $sides ] && sides=${DEFAULT_SIDES}
+    [ -z "$sides" ] && sides="$DEFAULT_SIDES"
   }
 
   areSidesValid() {
@@ -22,14 +22,14 @@ dice() (
   }
 
   rollTheDice() {
-    local result=$(generateRandom "$sides")
+    local result=$(generateRandom)
     echo "[${sides}]: $(hl "$result")"
   }
 
   generateRandom() {
     # changing seed is mandatory as base seed doesn't change in a subshell
-    RANDOM=$(head -1 /dev/urandom | od -N 1 | awk '{ print $2 }')
-    echo $((RANDOM % $1 + 1))
+    local randomNumber=$(head -1 /dev/urandom | od -N 1 | awk '{ print $2 }')
+    echo $((randomNumber % ${sides} + 1))
   }
 
   main "$@"
