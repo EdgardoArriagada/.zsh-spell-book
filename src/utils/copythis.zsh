@@ -1,26 +1,55 @@
-copythis() {
+copythis() (
   local GROUP_FLAGS='c'
+
+  local inputText="$1"
   local inputFlags="$2"
+  local totalArgs="$#"
 
-  ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+  local copyCommand
 
-  if ! xclip -version >/dev/null 2>&1; then
+  main() {
+    !  areFlagsValid && return 1
+
+    if ! isXclipInstalled; then
+      throwXclipNotInstalled; return $?
+    fi
+
+    if ! areArgsValid; then
+      throwInvalidUsage; return $?
+    fi
+
+    setCopyCommand
+    executeCopyCommand
+  }
+
+  areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
+
+  isXclipInstalled() xclip -version >/dev/null 2>&1
+
+  throwXclipNotInstalled () {
     echo "${ZSB_ERROR} You need to install $(hl xclip) first"
     return 1
-  fi
+  }
 
-  if [ -z "$1" ]; then
-    echo "${ZSB_ERROR} You need to provide one argument"
+  areArgsValid() {
+    [ ! -z "$inputText" ] && [ "$totalArgs" -lt "3" ] && $([ -z "$inputFlags" ] || [ "$inputFlags" = "-c" ])
+  }
+
+
+  throwInvalidUsage() {
+    echo "${ZSB_ERROR} How to use: $(hl "copythis 'example text' -c") $(it "-c is optional")"
     return 1
-  fi
+  }
 
-  local command="echo "$1" | xclip -selection clipboard"
-  if [[ "$inputFlags" == *'c'* ]]; then
-    eval "$command"
-    return 0
-  fi
+  setCopyCommand() copyCommand="echo -E - '$inputText' | xclip -selection clipboard"
 
-  eval "$command" && close
-}
+  executeCopyCommand() {
+    eval "$copyCommand"
+    [[ "$inputFlags" == *'c'* ]] && return 0
+    close
+  }
+
+  main "$@"
+)
 
 complete -W "-c" copythis
