@@ -4,7 +4,7 @@ dcossh() {
     return 1
   fi
 
-  echorun docker-compose exec "$1" bash
+  printAndRun "docker-compose exec $1 bash"
 }
 
 complete -C 'docker-compose ps --services' dcossh

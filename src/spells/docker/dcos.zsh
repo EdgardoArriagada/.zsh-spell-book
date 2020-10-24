@@ -22,7 +22,7 @@ dcos() (
     ${zsb}_yesNoMenu stopComposedContainers
   }
 
-  stopComposedContainers() echorun docker-compose stop
+  stopComposedContainers() printAndRun "docker-compose stop"
 
   main "$@"
 )

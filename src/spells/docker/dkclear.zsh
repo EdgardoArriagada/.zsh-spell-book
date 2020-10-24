@@ -23,8 +23,8 @@ dkclear() (
   }
 
   pruneContainersVolumesAndNetworks() {
-    echorun 'docker container prune --force' &&
-    echorun 'docker network prune --force'
+    printAndRun 'docker container prune --force' &&
+    printAndRun 'docker network prune --force'
   }
 
   main "$@"
