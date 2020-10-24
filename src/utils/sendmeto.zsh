@@ -1,29 +1,27 @@
 sendmeto() (
   local inputUrl="$1"
-
   local inputFlags="$2"
   local GROUP_FLAGS='cs'
 
   main() {
-    ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+    ! areFlagsValid && return $?
 
     if ! isInputUrlValid; then
-      echo "${ZSB_ERROR} You must specify a valid url"
-      return 1
+      throwInvalidUrl; return $?
     fi
 
     if inputFlagsContains "c"; then
-      copyUrl && echo "${ZSB_SUCCESS} $(hl "$inputUrl") copied"
-      return 0
+      copyInputUrlToClipboard;
+    else
+      openInputUrlInBrowser
     fi
 
-    openlink "$inputUrl"
-    didSucessOpenLink=$([ "$?" = "0" ])
+    inputFlagsContains "s" && return $?
 
-    if $didSucessOpenLink && ! inputFlagsContains "s"; then
-      close
-    fi
+    close
   }
+
+  areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
 
   isInputUrlValid() {
     [ -z "$inputUrl" ] && return 1
@@ -31,7 +29,19 @@ sendmeto() (
     return $(${zsb}_doesMatch "$inputUrl" "$URL_REGEX")
   }
 
+  throwInvalidUrl() {
+    echo "${ZSB_ERROR} You must specify a valid url"
+    return 1
+  }
+
   inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])
+
+  copyInputUrlToClipboard() {
+    copyUrl && echo "${ZSB_SUCCESS} $(hl "$inputUrl") copied"
+    return 0
+  }
+
+  openInputUrlInBrowser() openlink "$inputUrl"
 
   copyUrl() {
     echo "$inputUrl" | xclip -selection clipboard
