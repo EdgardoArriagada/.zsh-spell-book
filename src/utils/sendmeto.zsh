@@ -24,7 +24,6 @@ sendmeto() (
   areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
 
   isInputUrlValid() {
-    [ -z "$inputUrl" ] && return 1
     local URL_REGEX="^http[s]?:\/{2}"
     return $(${zsb}_doesMatch "$inputUrl" "$URL_REGEX")
   }
