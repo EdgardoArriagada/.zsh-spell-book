@@ -16,7 +16,7 @@
 # if [[ "$flags" == *'z'* ]]; then {...}
 #
 # or write this helper function to improve readability
-# inputFlagsContains() return $(([[ "$inputFlags" == *"$1"* ]]))
+# inputFlagsContains() [[ "$inputFlags" == *"$1"* ]]
 #
 # then you can call your command like this:
 # mycommand -xyz
@@ -44,12 +44,12 @@ ${zsb}_areFlagsInGroup() (
 
     local FLAG_REGEX="^-[a-z]+$"
 
-    return $(${zsb}_doesMatch "$inputFlags" "$FLAG_REGEX")
+    ${zsb}_doesMatch "$inputFlags" "$FLAG_REGEX"
   }
 
   doesInputFlagsBelongsToGroupFlags() {
     local groupFlagsRegex="^-[${groupFlags}]+$"
-    return $(${zsb}_doesMatch "$inputFlags" "$groupFlagsRegex")
+    ${zsb}_doesMatch "$inputFlags" "$groupFlagsRegex"
   }
 
   throwUnknowFlagsException() {

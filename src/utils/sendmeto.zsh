@@ -25,7 +25,7 @@ sendmeto() (
 
   isInputUrlValid() {
     local URL_REGEX="^http[s]?:\/{2}"
-    return $(${zsb}_doesMatch "$inputUrl" "$URL_REGEX")
+    ${zsb}_doesMatch "$inputUrl" "$URL_REGEX"
   }
 
   throwInvalidUrl() {
@@ -33,7 +33,7 @@ sendmeto() (
     return 1
   }
 
-  inputFlagsContains() return $([[ "$inputFlags" == *"$1"* ]])
+  inputFlagsContains() [[ "$inputFlags" == *"$1"* ]]
 
   copyInputUrlToClipboard() {
     copyUrl && echo "${ZSB_SUCCESS} $(hl "$inputUrl") copied"

@@ -1,1 +1,1 @@
-${zsb}_didSuccess() return $([ "$1" = "0" ])
+${zsb}_didSuccess() [ "$1" = "0" ]

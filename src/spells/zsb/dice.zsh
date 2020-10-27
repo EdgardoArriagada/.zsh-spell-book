@@ -18,7 +18,7 @@ dice() (
   }
 
   areSidesValid() {
-    return $(${zsb}_isInteger "$sides" && [ "$sides" -gt "1" ])
+    ${zsb}_isInteger "$sides" && [ "$sides" -gt "1" ]
   }
 
   rollTheDice() {

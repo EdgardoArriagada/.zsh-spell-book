@@ -19,14 +19,14 @@ tmkill() (
     playOptionsMenu
   }
 
-  tooManyArgs() return $([ "$#" -gt "1" ])
+  tooManyArgs() [ "$#" -gt "1" ]
 
-  existsActiveTmuxSessions() return $([ ! -z "$activeTmuxSessions" ])
+  existsActiveTmuxSessions() [ ! -z "$activeTmuxSessions" ]
 
-  existsInputSession() return $([ ! -z "$inputSession" ])
+  existsInputSession() [ ! -z "$inputSession" ]
 
   killInputSession() {
-      return $(tmux kill-session -t "$inputSession")
+     tmux kill-session -t "$inputSession"
   }
 
   printPrompt() {

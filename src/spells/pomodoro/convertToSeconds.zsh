@@ -22,12 +22,12 @@ ${zsb}_convertToSeconds() (
 
   isShortTimeFormat() {
     local SHORT_TIME_REGEX="^[0-9]+[hHmMsS]$"
-    return $(${zsb}_doesMatch "$inputTime" "$SHORT_TIME_REGEX")
+    ${zsb}_doesMatch "$inputTime" "$SHORT_TIME_REGEX"
   }
 
   isTimeFormat() {
     local TIME_REGEX="^[0-5]?[0-9]:[0-5]?[0-9](:[0-5]?[0-9])?$"
-    return $(${zsb}_doesMatch "$inputTime" "$TIME_REGEX")
+    ${zsb}_doesMatch "$inputTime" "$TIME_REGEX"
   }
 
   setTotalSecondsFromShortTimeFormat() {

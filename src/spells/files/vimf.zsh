@@ -15,7 +15,7 @@ vimf() (
   }
 
   existsLineNumber() {
-    return $([ ! -z "$lineNumber" ])
+    [ ! -z "$lineNumber" ]
   }
 
   openFileInNumber() eval "vim +${lineNumber} ${fileInput}"

@@ -9,6 +9,6 @@ stopRunningContainers() {
   echo "${ZSB_INFO} Stopping all running containers..."
 
   docker stop $(echo "$runningContainers") && \
-    echo "${ZSB_SUCCESS} All containers did halt.\n" && \
+    echo "${ZSB_SUCCESS} All containers did halt." && \
     return 0
 } 

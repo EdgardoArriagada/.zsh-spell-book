@@ -37,7 +37,7 @@ pomodoro() (
 
   isPomodoroRunning() {
     local lastPomodoroLines=$(tmux capture-pane -p -t pomodoro | sed '/^$/d' | tail -1)
-    return $(${zsb}_doesMatch "$lastPomodoroLines" "$POMODORO_REGEX")
+    ${zsb}_doesMatch "$lastPomodoroLines" "$POMODORO_REGEX"
   }
 
   throwPomodoroAlreadyRunning() {

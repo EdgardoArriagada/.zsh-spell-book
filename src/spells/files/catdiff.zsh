@@ -32,7 +32,7 @@ catdiff() (
     echo " "
   }
 
-  areArgsInvalid() return $([ ! -f "$file_1" ] || [ ! -f "$file_2" ])
+  areArgsInvalid() $([ ! -f "$file_1" ] || [ ! -f "$file_2" ])
 
   throwArgsInvalidException() {
     echo "${ZSB_ERROR} Two valid files to compare expected."
