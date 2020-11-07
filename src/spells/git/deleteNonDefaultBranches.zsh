@@ -1,4 +1,4 @@
-deletenondefaultbranches() (
+deleteNonDefaultBranches() (
   local nonDefaultBranches
 
   main() {
