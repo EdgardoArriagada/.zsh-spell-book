@@ -4,12 +4,14 @@
 () {
   local LOCAL_TMUX_CONF=${ZSB_DIR}/src/configurations/tmux-config/tmux.conf
 
-  # if: is this config already set, return 0
-  [ "$(readlink -f ~/.tmux.conf)" = "$LOCAL_TMUX_CONF" ] && return 0
+  if [ "$(readlink -f ~/.tmux.conf)" = "$LOCAL_TMUX_CONF" ]; then
+    echo "${ZSB_INFO} tmux setup is already done."
+    return 0
+  fi
 
   if [ -f ~/.tmux.conf ]; then
-    echo "${ZSB_INFO} ~/.tmux.conf is already busy."
-    return 0
+    echo "${ZSB_ERROR} ~/.tmux.conf is already busy. Please back up it manually before proceeding"
+    return 1
   fi
 
   ln -s ${LOCAL_TMUX_CONF} ~/.tmux.conf && \
