@@ -10,6 +10,9 @@ set hlsearch "Enable search highlighting.
 set incsearch "Highlight as you search (use :noh to clear)
 set laststatus=2 "Always display the status bar.
 
+"Fix vim colors if tmux  default-terminal is 'screen-256color'
+set background=dark
+
 set path+=** "Better search when :e
 set wildmenu "Allow tab in menu when searching for a file
 
@@ -24,3 +27,14 @@ vnoremap K :m '<-2<CR>gv=gv
 "Custom commands
 command Q execute ":q"
 command W execute ":w"
+
+" if tmux default-terminal is 'screen-256color'
+" this will prevent <Ctrl+Arrow> form deleting
+" random amount of lines under the cursor
+" (tmux will send xterm-style keys when its xterm-keys option is on)
+if &term =~ '^screen'
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
+endif
