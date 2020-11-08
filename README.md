@@ -32,6 +32,8 @@ Like this:
 
 - Use the _src/automatic-calls_ folder to add anything you want to be executed and printed to console right after a new terminal is initialized
 
+- User the _setup_ folder to setup (once per installation) some programs to use configurations stored in this project, then use the `source` command to source these scripts manually
+
 ### Dynamic prefixing
 
 To use dynamic prefixing, just use the `__${zsb}_` variable to prefix function names. I.E:
