@@ -1,5 +1,11 @@
 tm() {
-  tmux attach-session -t $1>/dev/null 2>&1 || tmux new -s $1>/dev/null 2>&1
+  local targetSession="$1"
+  local DEFAULT_SESSION="main"
+
+  [ -z "$targetSession" ] && targetSession="$DEFAULT_SESSION"
+
+  tmux attach-session -t "$targetSession">/dev/null 2>&1 || \
+    tmux new -s "$targetSession">/dev/null 2>&1
 }
 
 # If any, complete with a list of current tmux sessions
