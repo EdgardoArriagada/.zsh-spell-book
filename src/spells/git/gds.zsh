@@ -8,5 +8,4 @@ gds() {
   return 0
 }
 
-# Complete only with staged files
-complete -C "git status --short | grep '^[MARCD]' | sed s/^...//" gds
+complete -C "$ZSB_GIT_STAGED_FILES" gds
