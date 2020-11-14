@@ -1,5 +1,5 @@
-alias gco='git checkout'
-alias gcb='git checkout -b'
+alias gsw='git switch'
+alias gswc='git switch -c'
 alias gcd='git checkout develop'
 alias gcm='git checkout master'
 alias gbm='git branch -m'
