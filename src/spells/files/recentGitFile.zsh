@@ -4,8 +4,7 @@ ${zsb}_recentGitFile() (
   eval "$callback $inputFile"
 )
 
-# Complete with git status files relative to current directory
-complete -C "${zsb}_isGitRepo && git status --short | sed s/^...// || ls" ${zsb}_recentGitFile
+complete -C "$ZSB_GIT_MODIFIED_FILES" ${zsb}_recentGitFile
 
 alias vimr="${zsb}_recentGitFile vims"
 alias vr="vimr"

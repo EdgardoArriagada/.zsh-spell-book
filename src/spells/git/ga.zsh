@@ -3,7 +3,7 @@
 
 ga() {
   if [ "$1" = "new" ] || [ "$1" = "." ]; then
-    if [ -z $2 ]; then
+    if [ -z "$2" ]; then
       git add . && ${zsb}_gitStatus
       return 0
     fi
@@ -16,5 +16,4 @@ ga() {
   return 0
 }
 
-# Complete with unstaged/untracked files (from current dir)
-complete -C "git status --short | grep -E '(^ [MARCD\?])|(^[MARCD\?]{2})' | sed s/^...//" ga
+complete -C "$ZSB_GIT_UNSTAGED_AND_NEW_FILES" ga
