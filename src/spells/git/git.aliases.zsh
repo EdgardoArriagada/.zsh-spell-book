@@ -1,5 +1,4 @@
 alias gco='git checkout'
-alias grh='git reset'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
 alias gcm='git checkout master'
