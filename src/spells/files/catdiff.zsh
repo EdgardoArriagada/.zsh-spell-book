@@ -1,38 +1,38 @@
 catdiff() (
-  local file_1="$1"
-  local file_2="$2"
+  local file1="$1"
+  local file2="$2"
 
   main() {
     if areArgsInvalid; then
       throwArgsInvalidException; return $?
     fi
 
-    local file_1_lacks=$(compareFiles "$file_1" "$file_2")
-    local file_2_lacks=$(compareFiles "$file_2" "$file_1")
+    local file1Lacks=$(compareFiles "$file1" "$file2")
+    local file2Lacks=$(compareFiles "$file2" "$file1")
 
-    if [ -z "$file_1_lacks" ] && [ -z "$file_2_lacks" ]; then
+    if [ -z "$file1Lacks" ] && [ -z "$file2Lacks" ]; then
       echo "${ZSB_INFO} Both files are equal."
       return 0
     fi
 
-    if [ ! -z "$file_1_lacks" ]; then
-      printFileInfo "$file_1"
-      echo "$file_1_lacks"
+    if [ ! -z "$file1Lacks" ]; then
+      printFileInfo "$file1"
+      echo "$file1Lacks"
     fi
 
-    if [ ! -z "$file_1_lacks" ] && [ ! -z "$file_2_lacks" ]; then
+    if [ ! -z "$file1Lacks" ] && [ ! -z "$file2Lacks" ]; then
       ${zsb}_printHr
     fi
 
-    if [ ! -z "$file_2_lacks" ]; then
-      printFileInfo "$file_2"
-      echo "$file_2_lacks"
+    if [ ! -z "$file2Lacks" ]; then
+      printFileInfo "$file2"
+      echo "$file2Lacks"
     fi
 
     echo " "
   }
 
-  areArgsInvalid() $([ ! -f "$file_1" ] || [ ! -f "$file_2" ])
+  areArgsInvalid() $([ ! -f "$file1" ] || [ ! -f "$file2" ])
 
   throwArgsInvalidException() {
     echo "${ZSB_ERROR} Two valid files to compare expected."
