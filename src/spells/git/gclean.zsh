@@ -11,4 +11,4 @@ gclean() {
   ${zsb}_yesNoMenu git clean -fd
 }
 
-complete -C "$ZSB_GIT_NEW_FILES" gclean
+complete -C "$ZSB_GIT_UNTRACKED_FILES" gclean

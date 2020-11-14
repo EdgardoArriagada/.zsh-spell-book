@@ -27,7 +27,7 @@ _${zsb}_ga() {
   fi
 
   if [ "${COMP_WORDS[1]}" = "new" ]; then
-    COMPREPLY=( $(compgen -C "$ZSB_GIT_UNSTAGED_AND_NEW_FILES") )
+    COMPREPLY=( $(compgen -C "$ZSB_GIT_UNSTAGED_AND_UNTRACKED_FILES") )
     return 0
   fi
 
