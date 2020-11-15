@@ -9,3 +9,5 @@ gb() {
 }
 
 complete -C "$ZSB_GIT_BRANCHES" gb
+
+alias GB="toggleCapsLock && gb"
