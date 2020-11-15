@@ -6,3 +6,5 @@ ZSB_GIT_UNSTAGED_FILES="${zsb}_isGitRepo && git status --short | grep -E '(^ [MA
 ZSB_GIT_UNTRACKED_FILES="${zsb}_isGitRepo && git status --short | grep -E '(^ \?)|(^\?{2})' | sed s/^...//"
 ZSB_GIT_UNSTAGED_AND_UNTRACKED_FILES="${zsb}_isGitRepo && git status --short | grep -E '(^ [MARCD\?])|(^[MARCD\?]{2})' | sed s/^...//"
 ZSB_GIT_MODIFIED_FILES="${zsb}_isGitRepo && git status --short | sed s/^...// || ls"
+
+ZSB_GIT_BRANCHES="${zsb}_isGitRepo && git branch | sed 's/^\*//'"

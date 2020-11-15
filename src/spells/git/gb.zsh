@@ -8,4 +8,4 @@ gb() {
   return 0
 }
 
-complete -C 'git branch' gb
+complete -C "$ZSB_GIT_BRANCHES" gb
