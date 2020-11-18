@@ -9,3 +9,6 @@ alias rg="rails generate"
 
 # Bundle
 alias be="printAndRun bundle exec"
+
+# Rbenv
+alias rbenvUpdate="(cd ~/.rbenv && git pull && cd ~/.rbenv/plugins/ruby-build/ && git pull)"
