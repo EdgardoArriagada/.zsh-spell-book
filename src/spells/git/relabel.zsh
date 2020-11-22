@@ -30,4 +30,14 @@ relabel() {
   return 0
 }
 
-complete -W "--aware --force" relabel
+_${zsb}_relabel() {
+  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local array=( "--aware" "--force" )
+  local joined=("${currentCompletion[@]}" "${array[@]}")
+
+  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
+
+  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+}
+
+complete -F _${zsb}_relabel relabel

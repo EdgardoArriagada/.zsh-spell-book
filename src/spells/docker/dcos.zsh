@@ -26,3 +26,5 @@ dcos() (
 
   main "$@"
 )
+
+complete dcos

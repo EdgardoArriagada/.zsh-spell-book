@@ -23,4 +23,14 @@ repackage() {
   return 0
 }
 
-complete -W "--aware --force" repackage
+_${zsb}_repackage() {
+  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local array=( "--aware" "--force" )
+  local joined=("${currentCompletion[@]}" "${array[@]}")
+
+  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
+
+  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+}
+
+complete -F _${zsb}_repackage repackage

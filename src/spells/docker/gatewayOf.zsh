@@ -41,4 +41,10 @@ gatewayOf() (
   main "$@"
 )
 
-complete -C 'docker ps --format "{{.Names}}"' gatewayOf
+_${zsb}_gatewayOf() {
+  [ "$COMP_CWORD" -gt "1" ] && return 0
+
+  COMPREPLY=( $(compgen -C "docker ps --format "{{.Names}}"") )
+}
+
+complete -F _${zsb}_gatewayOf gatewayOf

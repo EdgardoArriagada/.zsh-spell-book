@@ -29,3 +29,5 @@ dkclear() (
 
   main "$@"
 )
+
+complete dkclear

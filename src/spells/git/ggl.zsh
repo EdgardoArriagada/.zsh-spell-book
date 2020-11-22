@@ -7,4 +7,10 @@ ggl() {
   git pull origin "$1" && copythis " " -c
 }
 
-complete -C "$ZSB_GIT_BRANCHES" ggl
+_${zsb}_ggl() {
+  [ "$COMP_CWORD" -gt "1" ] && return 0
+
+  COMPREPLY=( $(compgen -C "${zsb}_gitBranches") )
+}
+
+complete -F _${zsb}_ggl ggl

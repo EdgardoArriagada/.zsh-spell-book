@@ -5,3 +5,5 @@ gpristine(){
   ${zsb}_yesNoMenu && \
     git reset --hard && git clean -dffx
 }
+
+complete gpristine

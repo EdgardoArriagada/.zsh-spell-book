@@ -11,4 +11,14 @@ gclean() {
   ${zsb}_yesNoMenu git clean -fd
 }
 
-complete -C "$ZSB_GIT_UNTRACKED_FILES" gclean
+_${zsb}_gclean() {
+  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local array=( $(${zsb}_getGitUntrackedFiles) )
+  local joined=("${currentCompletion[@]}" "${array[@]}")
+
+  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
+
+  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+}
+
+complete -F _${zsb}_gclean gclean
