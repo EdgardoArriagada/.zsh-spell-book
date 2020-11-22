@@ -7,4 +7,10 @@ dcossh() {
   printAndRun "docker-compose exec $1 bash"
 }
 
-complete -C 'docker-compose ps --services' dcossh
+_${zsb}_dcossh() {
+  [ "$COMP_CWORD" -gt "1" ] && return 0
+
+  COMPREPLY=( $(compgen -C "docker-compose ps --services") )
+}
+
+complete -F _${zsb}_dcossh dcossh
