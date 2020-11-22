@@ -46,3 +46,5 @@ deleteNonDefaultBranches() (
 
   main "$@"
 )
+
+complete deleteNonDefaultBranches

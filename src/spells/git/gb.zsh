@@ -8,6 +8,6 @@ gb() {
   return 0
 }
 
-complete -C "$ZSB_GIT_BRANCHES" gb
+complete -C "${zsb}_gitBranches" gb
 
 alias GB="toggleCapsLock && gb"

@@ -24,4 +24,4 @@ gp() {
   return 0
 }
 
-complete -C "$ZSB_GIT_BRANCHES" -W '--aware' gp
+complete -C "${zsb}_gitBranches" -W '--aware' gp

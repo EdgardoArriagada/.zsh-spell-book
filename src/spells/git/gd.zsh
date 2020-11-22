@@ -8,4 +8,14 @@ gd() {
   return 0
 }
 
-complete -C "$ZSB_GIT_UNSTAGED_FILES" gd
+_${zsb}_gd() {
+  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local array=( $(${zsb}_getGitUnstagedFiles) )
+  local joined=("${currentCompletion[@]}" "${array[@]}")
+
+  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
+
+  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+}
+
+complete -F _${zsb}_gd gd

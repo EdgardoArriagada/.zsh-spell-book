@@ -4,7 +4,13 @@ ${zsb}_recentGitFile() (
   eval "$callback $inputFile"
 )
 
-complete -C "$ZSB_GIT_MODIFIED_FILES" ${zsb}_recentGitFile
+_${zsb}_recentGitFile() {
+  [ "$COMP_CWORD" -gt "2" ] && return 0
+
+  COMPREPLY=( $(compgen -C "${zsb}_getGitModifiedFiles") )
+}
+
+complete -F _${zsb}_recentGitFile ${zsb}_recentGitFile
 
 alias vimr="${zsb}_recentGitFile vims"
 alias vr="vimr"

@@ -28,4 +28,13 @@ gc() {
   return 0
 }
 
-complete -W "--aware" gc
+
+_${zsb}_gc() {
+  for item in "${COMP_WORDS[@]}"; do
+    [ "$item" = "--aware" ] && return 0
+  done
+
+  COMPREPLY=( $(compgen -W "--aware") )
+}
+
+complete -F _${zsb}_gc gc
