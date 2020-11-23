@@ -4,13 +4,11 @@ grh() {
 }
 
 _${zsb}_grh() {
-  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
-  local array=( $(${zsb}_getGitStagedFiles) )
-  local joined=("${currentCompletion[@]}" "${array[@]}")
+  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local completionList=( $(${zsb}_getGitStagedFiles) )
+  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
-
-  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
 
 complete -F _${zsb}_grh grh

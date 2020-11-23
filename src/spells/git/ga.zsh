@@ -29,29 +29,21 @@ ga() {
 }
 
 _${zsb}_ga() {
-  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
-  local arrayFromCommand
-  local undesiredCompletion=("new" "full")
+  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local completionList
 
   if [ "${COMP_WORDS[1]}" = "." ]; then
     return 0
   fi
 
   if [ "${COMP_WORDS[1]}" = "new" ]; then
-    arrayFromCommand=( $(${zsb}_getGitUntrackedFiles) )
+    completionList=( $(${zsb}_getGitUntrackedFiles) )
   else
-    arrayFromCommand=( $(${zsb}_getGitUnstagedFiles) )
+    completionList=( $(${zsb}_getGitUnstagedFiles) )
   fi
 
-  # Hack: by appending twice, it gets ignored by `getNonRepeatedItems`
-  undesiredCompletion=("${undesiredCompletion[@]}" "${undesiredCompletion[@]}")
-  local joined=("${currentCompletion[@]}" "${arrayFromCommand[@]}" "${undesiredCompletion[@]}")
-  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
-
-  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
-
-
-
 
 complete -F _${zsb}_ga ga

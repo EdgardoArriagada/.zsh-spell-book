@@ -31,13 +31,11 @@ relabel() {
 }
 
 _${zsb}_relabel() {
-  local currentCompletion=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
-  local array=( "--aware" "--force" )
-  local joined=("${currentCompletion[@]}" "${array[@]}")
+  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local completionList=( "--aware" "--force" )
+  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  local completionArray=( $(${zsb}_getNonRepeatedItems ${joined[@]}) )
-
-  COMPREPLY=( $(compgen -W "${completionArray[*]}") )
+  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
 
 complete -F _${zsb}_relabel relabel
