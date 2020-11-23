@@ -3,7 +3,7 @@ gpristine(){
   echo ""
   echo "${ZSB_PROMPT} Are you sure? [Y/n]"
   ${zsb}_yesNoMenu && \
-    git reset --hard && git clean -dffx
+  git reset -q && git checkout . && git clean -fd
 }
 
 complete gpristine
