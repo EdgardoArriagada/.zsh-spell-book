@@ -1,5 +1,5 @@
-alias gcd='git checkout develop'
-alias gcm='git checkout master'
+alias gswd='git checkout develop'
+alias gswm='git checkout master'
 alias gs='${zsb}_gitStatus'
 alias stash='git stash --include-untracked && ${zsb}_gitStatus'
 alias pop='git stash pop'
@@ -8,8 +8,8 @@ alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(
 alias gsp='git status --porcelain=v2'
 alias gst='git status'
 
-alias GCD='toggleCapsLock && gcd'
-alias GCM='toggleCapsLock && gcm'
+alias GSWD='toggleCapsLock && gswd'
+alias GSWM='toggleCapsLock && gswm'
 alias GS='toggleCapsLock && gs'
 alias STASH='toggleCapsLock && stash'
 alias POP='toggleCapsLock && pop'
