@@ -1,32 +1,62 @@
-ga() {
-  if [ "$1" = "." ]; then
-    git add . && ${zsb}_gitStatus
-    return 0
-  fi
+ga() (
+  local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
+  local amountOfArgs="$#"
+  local filesToAdd=( )
 
-  if [ "$1" = "new" ]; then
-    if [ -z "$2" ]; then
-      echo "${ZSB_ERROR} Untracked file(s) expected."
-      return 1
+  main() {
+    if [ "$firstArg" = "." ]; then
+      git add .
+      return 0
     fi
-    shift 1 # remove 'new' flag
-    git add "$@" && ${zsb}_gitStatus
-    return 0
-  fi
 
-  if [ "$1" = "full" ]; then
-    if [ -z "$2" ]; then
-      echo "${ZSB_ERROR} Unstaged file(s) expected."
-      return 1
+    if existFlag && hasManyArgs; then
+      shift 1
+      git add "$@"
+      return 0
     fi
-    shift 1 # remove 'full' flag
-    git add "$@" && ${zsb}_gitStatus
-    return 0
-  fi
 
-  git add -p "$@" && ${zsb}_gitStatus
-  return 0
-}
+    setFilesToAdd
+
+    if ! thereAreFilesToAdd; then
+      informNoChanges; return 0
+    fi
+
+    addFilesToGitStaging
+
+    return 0
+  }
+
+  existFlag() ([ "$firstArg" = "new" ] || [ "$firstArg" = "fast" ])
+
+  hasManyArgs() [ "$amountOfArgs" -gt 1 ]
+
+  setFilesToAdd() {
+    if [ "$firstArg" = "new" ]; then
+      filesToAdd=( $(${zsb}_getGitUntrackedFiles) )
+      return 0
+    fi
+
+    filesToAdd=( $(${zsb}_getGitUnstagedFiles) )
+  }
+
+  thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
+
+  informNoChanges() {
+    echo "${ZSB_INFO} No changes."
+    return 0
+  }
+
+  addFilesToGitStaging() {
+    if existFlag; then
+      git add "${filesToAdd[@]}"
+    else
+      git add -p "${filesToAdd[@]}"
+    fi
+  }
+
+  main "$@"
+  ${zsb}_gitStatus
+)
 
 _${zsb}_ga() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
