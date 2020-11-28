@@ -1,41 +1,40 @@
 ga() (
   local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
-  local amountOfArgs="$#"
   local filesToAdd=( )
 
   main() {
-    if [ "$firstArg" = "." ]; then
-      git add .
-      return 0
-    fi
+    tryToAddFilesWithDotArg && return 0
 
-    if existFlag && hasManyArgs; then
-      shift 1
-      git add "$@"
-      return 0
-    fi
+    existFlag && shift 1
 
-    setFilesToAdd
+    if [ "$#" = "0" ]; then
+      setFilesToAddFromGitList
+    else
+      filesToAdd=( "$@" )
+    fi
 
     if ! thereAreFilesToAdd; then
       informNoChanges; return 0
     fi
 
     addFilesToGitStaging
+  }
 
-    return 0
+  tryToAddFilesWithDotArg() {
+    if [ "$firstArg" = "." ]; then
+      git add .
+      return 0
+    fi
+    return 1
   }
 
   existFlag() ([ "$firstArg" = "new" ] || [ "$firstArg" = "fast" ])
 
-  hasManyArgs() [ "$amountOfArgs" -gt 1 ]
-
-  setFilesToAdd() {
+  setFilesToAddFromGitList() {
     if [ "$firstArg" = "new" ]; then
       filesToAdd=( $(${zsb}_getGitUntrackedFiles) )
       return 0
     fi
-
     filesToAdd=( $(${zsb}_getGitUnstagedFiles) )
   }
 
