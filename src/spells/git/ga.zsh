@@ -5,16 +5,18 @@ ga() (
 
   ${this}.main() {
     case "$firstArg" in
+      '.')
+        ${this}.addFilesWithDotArg ;;
       'new')
         ${this}.addFilesWithNewArg "$@" ;;
       'fast')
         ${this}.addFilesWithFastArg "$@" ;;
-      '.')
-        ${this}.addFilesWithDotArg ;;
       *)
         ${this}.addFilesDefault "$@" ;;
     esac
   }
+
+  ${this}.addFilesWithDotArg() git add .
 
   ${this}.addFilesWithNewArg() {
     shift 1 # remove 'new' flag
@@ -51,11 +53,6 @@ ga() (
   ${this}.informNoChanges() {
     local gitFileType="$1"
     echo "${ZSB_INFO} There are no $(hl "$gitFileType") files to add."
-    return 0
-  }
-
-  ${this}.addFilesWithDotArg() {
-    git add .
     return 0
   }
 
