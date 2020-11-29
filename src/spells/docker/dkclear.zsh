@@ -1,10 +1,12 @@
 dkclear() (
-  main() {
-    printPrompt
-    playOptionsMenu
+  local this="$0"
+
+  ${this}.main() {
+    ${this}.printPrompt
+    ${this}.playOptionsMenu
   }
 
-  printPrompt() {
+  ${this}.printPrompt() {
     echo "${ZSB_WARNING} The following items will be removed"
     echo " "
     echo "$(hl "All running/stopped containers")"
@@ -13,21 +15,21 @@ dkclear() (
     echo "${ZSB_PROMPT} Do you really want to proceed [Y/n]"
   }
 
-  playOptionsMenu() {
-    ${zsb}_yesNoMenu performClear
+  ${this}.playOptionsMenu() {
+    ${zsb}_yesNoMenu ${this}.performClear
   }
 
-  performClear() {
-    stopRunningContainers
-    pruneContainersVolumesAndNetworks
+  ${this}.performClear() {
+    ${this}.stopRunningContainers
+    ${this}.pruneContainersVolumesAndNetworks
   }
 
-  pruneContainersVolumesAndNetworks() {
+  ${this}.pruneContainersVolumesAndNetworks() {
     printAndRun 'docker container prune --force' &&
     printAndRun 'docker network prune --force'
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 complete dkclear

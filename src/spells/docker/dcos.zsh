@@ -1,16 +1,18 @@
 dcos() (
+  local this="$0"
   local activeServices=$(docker-compose ps --services --filter "status=running")
-  main() {
+
+  ${this}.main() {
     if [ -z "$activeServices" ]; then
       echo "${ZSB_INFO} No services are running for this docker-compose"
       return 0
     fi
 
-    printPrompt
-    playOptionsMenu
+    ${this}.printPrompt
+    ${this}.playOptionsMenu
   }
 
-  printPrompt() {
+  ${this}.printPrompt() {
     echo "${ZSB_WARNING} The following containers will stop:"
     echo " "
     echo "$(hl "$activeServices")"
@@ -18,13 +20,13 @@ dcos() (
     echo "${ZSB_PROMPT} Do you really want to stop these containers? [Y/n]"
   }
 
-  playOptionsMenu() {
-    ${zsb}_yesNoMenu stopComposedContainers
+  ${this}.playOptionsMenu() {
+    ${zsb}_yesNoMenu ${this}.stopComposedContainers
   }
 
-  stopComposedContainers() printAndRun "docker-compose stop"
+  ${this}.stopComposedContainers() printAndRun "docker-compose stop"
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 complete dcos
