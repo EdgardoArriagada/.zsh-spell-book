@@ -1,36 +1,37 @@
 ${zsb}_convertToSeconds() (
+  local this="$0"
   local inputTime="$1"
   local totalSeconds
 
-  main () {
-    setTotalSeconds
+  ${this}.main () {
+    ${this}.setTotalSeconds
 
-    if [ -z "$totalSeconds" ] || timerOutOfRange; then
-      throwBadArgumentException; return $?
+    if [ -z "$totalSeconds" ] || ${this}.timerOutOfRange; then
+      ${this}.throwBadArgumentException; return $?
     fi
 
     echo "$totalSeconds"
   }
 
-  setTotalSeconds() {
-    if isShortTimeFormat; then setTotalSecondsFromShortTimeFormat;
+  ${this}.setTotalSeconds() {
+    if ${this}.isShortTimeFormat; then ${this}.setTotalSecondsFromShortTimeFormat;
 
     elif ${zsb}_isInteger "$inputTime"; then totalSeconds="$inputTime";
 
-    elif isTimeFormat; then setTotalSecondsFromTimeFormat; fi
+    elif ${this}.isTimeFormat; then ${this}.setTotalSecondsFromTimeFormat; fi
   }
 
-  isShortTimeFormat() {
+  ${this}.isShortTimeFormat() {
     local SHORT_TIME_REGEX="^[0-9]+[hHmMsS]$"
     ${zsb}_doesMatch "$inputTime" "$SHORT_TIME_REGEX"
   }
 
-  isTimeFormat() {
+  ${this}.isTimeFormat() {
     local TIME_REGEX="^[0-5]?[0-9]:[0-5]?[0-9](:[0-5]?[0-9])?$"
     ${zsb}_doesMatch "$inputTime" "$TIME_REGEX"
   }
 
-  setTotalSecondsFromShortTimeFormat() {
+  ${this}.setTotalSecondsFromShortTimeFormat() {
     local timeChar="$(echo "$inputTime" | rev | cut -c 1)"
     local timeValue="${inputTime%?}"
 
@@ -50,7 +51,7 @@ ${zsb}_convertToSeconds() (
     esac
   }
 
-  setTotalSecondsFromTimeFormat() {
+  ${this}.setTotalSecondsFromTimeFormat() {
     local reverseTime=$(echo "$inputTime" | rev)
 
     seconds=$(echo "$reverseTime" | cut -d":" -f1 | rev)
@@ -63,7 +64,7 @@ ${zsb}_convertToSeconds() (
     totalSeconds=$(($hoursToSeconds + $minutesToSeconds + $seconds ))
   }
 
-  timerOutOfRange() {
+  ${this}.timerOutOfRange() {
     local sixtyHoursMinusOneSecond="215999"
 
     [ "$totalSeconds" -gt "$sixtyHoursMinusOneSecond" ] || \
@@ -71,7 +72,7 @@ ${zsb}_convertToSeconds() (
     return 1
   }
 
-  throwBadArgumentException() {
+  ${this}.throwBadArgumentException() {
     echo "\
       \r${ZSB_ERROR} Bad argument.
           \rTry with (hh:)?mm:ss $(it '(min 1, max 59:59:59)')
@@ -80,6 +81,6 @@ ${zsb}_convertToSeconds() (
     return 1
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 

@@ -1,44 +1,45 @@
 gatewayOf() (
+  local this="$0"
   local inputDockerContainer="$1"
 
-  main() {
-    if ! isInputValid; then
-      throwInvalidInputError; return $?
+  ${this}.main() {
+    if ! ${this}.isInputValid; then
+      ${this}.throwInvalidInputError; return $?
     fi
 
-    printGatewayOfContainer
+    ${this}.printGatewayOfContainer
   }
 
-  isInputValid() [ ! -z "$inputDockerContainer" ]
+  ${this}.isInputValid() [ ! -z "$inputDockerContainer" ]
 
-  throwInvalidInputError() {
+  ${this}.throwInvalidInputError() {
     echo "${ZSB_ERROR} You have to provide a running docker container"
     return 1
   }
 
-  printGatewayOfContainer() {
-    printContainerNetworkInformation \
-    | extractGatewayKeyValuePair \
-    | extractGatewayValue
+  ${this}.printGatewayOfContainer() {
+    ${this}.printContainerNetworkInformation \
+    | ${this}.extractGatewayKeyValuePair \
+    | ${this}.extractGatewayValue
   }
 
-  printContainerNetworkInformation() {
+  ${this}.printContainerNetworkInformation() {
     local NETWORKS_KEY='{{json .NetworkSettings.Networks }}'
     docker inspect ${inputDockerContainer} -f ${NETWORKS_KEY}
   }
 
-  extractGatewayKeyValuePair() {
+  ${this}.extractGatewayKeyValuePair() {
     local input=$(< /dev/stdin)
     local GATEWAY_KEYVALUE_REGEX='"Gateway":.*?[^\\]",'
     echo "$input" | grep -Po ${GATEWAY_KEYVALUE_REGEX} | sed s/,$//
   }
 
-  extractGatewayValue() {
+  ${this}.extractGatewayValue() {
    local input=$(< /dev/stdin)
    echo "$input" | awk -F '"' '{print $4}'
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 _${zsb}_gatewayOf() {

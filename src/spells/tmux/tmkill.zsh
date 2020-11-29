@@ -1,35 +1,36 @@
 tmkill() (
+  local this="$0"
   local activeTmuxSessions=$(tml)
   local inputSession="$1"
 
-  main() {
-    if ! existsActiveTmuxSessions; then
-      throwNoTmuxSessions; return $?
+  ${this}.main() {
+    if ! ${this}.existsActiveTmuxSessions; then
+      ${this}.throwNoTmuxSessions; return $?
     fi
 
-    if tooManyArgs "$@"; then
-      throwTooManyArgsException; return $?
+    if ${this}.tooManyArgs "$@"; then
+      ${this}.throwTooManyArgsException; return $?
     fi
 
-    if existsInputSession; then
-      killInputSession; return $?
+    if ${this}.existsInputSession; then
+      ${this}.killInputSession; return $?
     fi
 
-    printPrompt
-    playOptionsMenu
+    ${this}.printPrompt
+    ${this}.playOptionsMenu
   }
 
-  tooManyArgs() [ "$#" -gt "1" ]
+  ${this}.tooManyArgs() [ "$#" -gt "1" ]
 
-  existsActiveTmuxSessions() [ ! -z "$activeTmuxSessions" ]
+  ${this}.existsActiveTmuxSessions() [ ! -z "$activeTmuxSessions" ]
 
-  existsInputSession() [ ! -z "$inputSession" ]
+  ${this}.existsInputSession() [ ! -z "$inputSession" ]
 
-  killInputSession() {
+  ${this}.killInputSession() {
      tmux kill-session -t "$inputSession"
   }
 
-  printPrompt() {
+  ${this}.printPrompt() {
     echo "${ZSB_WARNING} The following tmux sessions will be deleted:"
     echo " "
     echo "$(hl "$activeTmuxSessions")"
@@ -37,24 +38,24 @@ tmkill() (
     echo "${ZSB_PROMPT} Do you really want to delete these sessions? [Y/n]."
   }
 
-  playOptionsMenu() {
-    ${zsb}_yesNoMenu killTmuxServer &&
+  ${this}.playOptionsMenu() {
+    ${zsb}_yesNoMenu ${this}.killTmuxServer &&
       echo "${ZSB_SUCCESS} All tmux sessions have been deleted."
   }
 
-  killTmuxServer() tmux kill-server
+  ${this}.killTmuxServer() tmux kill-server
 
-  throwNoTmuxSessions() {
+  ${this}.throwNoTmuxSessions() {
     echo "${ZSB_INFO} There are no active tmux sessions."
     return 0
   }
 
-  throwTooManyArgsException() {
+  ${this}.throwTooManyArgsException() {
     echo "${ZSB_ERROR} Only one argument expected."
     return 1
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 complete -C "tml" tmkill

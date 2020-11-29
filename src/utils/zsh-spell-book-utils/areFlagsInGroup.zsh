@@ -26,20 +26,21 @@
 # etc.
 
 ${zsb}_areFlagsInGroup() (
+  local this="$0"
   local inputFlags="$1"
   local groupFlags="$2"
 
-  main() {
-    if ! areFlagsValid; then
+  ${this}.main() {
+    if ! ${this}.areFlagsValid; then
       return 0
     fi
 
-    if ! doesInputFlagsBelongsToGroupFlags; then
-      throwUnknowFlagsException; return $?
+    if ! ${this}.doesInputFlagsBelongsToGroupFlags; then
+      ${this}.throwUnknowFlagsException; return $?
     fi
   }
 
-  areFlagsValid() {
+  ${this}.areFlagsValid() {
     [ -z "$inputFlags" ] && return 1
 
     local FLAG_REGEX="^-[a-z]+$"
@@ -47,16 +48,16 @@ ${zsb}_areFlagsInGroup() (
     ${zsb}_doesMatch "$inputFlags" "$FLAG_REGEX"
   }
 
-  doesInputFlagsBelongsToGroupFlags() {
+  ${this}.doesInputFlagsBelongsToGroupFlags() {
     local groupFlagsRegex="^-[${groupFlags}]+$"
     ${zsb}_doesMatch "$inputFlags" "$groupFlagsRegex"
   }
 
-  throwUnknowFlagsException() {
+  ${this}.throwUnknowFlagsException() {
     echo "${ZSB_ERROR} One or more unknown flags in the list"
     return 1
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 

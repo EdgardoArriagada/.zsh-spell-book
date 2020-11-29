@@ -1,7 +1,7 @@
 # usefull link https://gist.github.com/QinMing/364774610afc0e06cc223b467abe83c0#file-zshrc-L15-L37
 # thanks to QinMing for the code!
 ${zsb}_lazy_load() {
-  local o=$(${zsb}_timeId)
+  local this="$0_$(${zsb}_timeId)"
   local -a involvedScripts
   local aliasesToRelease=("${(@s: :)${1}}") # space separated list
   local scriptToLazyLoad="$2"
@@ -10,38 +10,36 @@ ${zsb}_lazy_load() {
   local commandToRunArgs=$*
 
   {
-    ${o}_main() {
-      ${o}_showLoadingMessage
+    ${this}.main() {
+      ${this}.showLoadingMessage
 
-      ${o}_unaliasInvolvedScripts "$@"
+      ${this}.unaliasInvolvedScripts "$@"
 
-      ${o}_sourceScriptToLazyLoad
+      ${this}.sourceScriptToLazyLoad
 
-      ${o}_runOriginalCommandWithArgs
+      ${this}.runOriginalCommandWithArgs
     }
 
-    ${o}_showLoadingMessage() {
+    ${this}.showLoadingMessage() {
       echo "${ZSB_INFO} Lazy loading..."
     }
 
-    ${o}_unaliasInvolvedScripts() {
+    ${this}.unaliasInvolvedScripts() {
       unalias "${aliasesToRelease[@]}"
     }
 
-    ${o}_sourceScriptToLazyLoad() {
+    ${this}.sourceScriptToLazyLoad() {
       source "$scriptToLazyLoad"
     }
 
-    ${o}_runOriginalCommandWithArgs() {
+    ${this}.runOriginalCommandWithArgs() {
       eval "$commandToRun $commandToRunArgs"
     }
 
-    ${o}_main "$@"
-
+    ${this}.main "$@"
   } always {
-    unfunction -m "${o}_*"
+    unfunction -m "${this}.*"
   }
-
 }
 
 __${zsb}_prepare_lazy_load() {

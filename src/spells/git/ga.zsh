@@ -1,26 +1,27 @@
 ga() (
+  local this="$0"
   local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
   local filesToAdd=( )
 
-  main() {
-    tryToAddFilesWithDotArg && return 0
+  ${this}.main() {
+    ${this}.tryToAddFilesWithDotArg && return 0
 
-    existFlag && shift 1
+    ${this}.existFlag && shift 1
 
     if [ "$#" = "0" ]; then
-      setFilesToAddFromGitList
+      ${this}.setFilesToAddFromGitList
     else
       filesToAdd=( "$@" )
     fi
 
-    if ! thereAreFilesToAdd; then
-      informNoChanges; return 0
+    if ! ${this}.thereAreFilesToAdd; then
+      ${this}.informNoChanges; return 0
     fi
 
-    addFilesToGitStaging
+    ${this}.addFilesToGitStaging
   }
 
-  tryToAddFilesWithDotArg() {
+  ${this}.tryToAddFilesWithDotArg() {
     if [ "$firstArg" = "." ]; then
       git add .
       return 0
@@ -28,9 +29,9 @@ ga() (
     return 1
   }
 
-  existFlag() ([ "$firstArg" = "new" ] || [ "$firstArg" = "fast" ])
+  ${this}.existFlag() ([ "$firstArg" = "new" ] || [ "$firstArg" = "fast" ])
 
-  setFilesToAddFromGitList() {
+  ${this}.setFilesToAddFromGitList() {
     if [ "$firstArg" = "new" ]; then
       filesToAdd=( $(${zsb}_getGitUntrackedFiles) )
       return 0
@@ -38,22 +39,22 @@ ga() (
     filesToAdd=( $(${zsb}_getGitUnstagedFiles) )
   }
 
-  thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
+  ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
 
-  informNoChanges() {
+  ${this}.informNoChanges() {
     echo "${ZSB_INFO} No changes."
     return 0
   }
 
-  addFilesToGitStaging() {
-    if existFlag; then
+  ${this}.addFilesToGitStaging() {
+    if ${this}.existFlag; then
       git add "${filesToAdd[@]}"
     else
       git add -p "${filesToAdd[@]}"
     fi
   }
 
-  main "$@"
+  ${this}.main "$@"
   ${zsb}_gitStatus
 )
 
