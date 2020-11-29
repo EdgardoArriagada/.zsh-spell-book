@@ -37,7 +37,7 @@ deleteNonDefaultBranches() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}_yesNoMenu ${this}.performDeletion &&
+    ${zsb}_confirmMenu && ${this}.performDeletion &&
       echo "$ZSB_SUCCESS: non default branches deleted"
   }
 

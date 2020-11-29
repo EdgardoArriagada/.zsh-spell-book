@@ -21,7 +21,7 @@ dcos() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}_yesNoMenu ${this}.stopComposedContainers
+    ${zsb}_confirmMenu && ${this}.stopComposedContainers
   }
 
   ${this}.stopComposedContainers() printAndRun "docker-compose stop"

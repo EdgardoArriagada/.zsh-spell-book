@@ -1,16 +1,12 @@
-${zsb}_yesNoMenu() {
-  local onYesCallback="$@"
+${zsb}_confirmMenu() {
   while true; do
     read yn
     case $yn in
     [Yy]*)
-      [ -z "$onYesCallback" ] && return 0
-
-      eval "$onYesCallback"
-      return $?
+      return 0
       ;;
     [Nn]*)
-      echo "${ZSB_INFO} Cancelled"
+      echo "${ZSB_INFO} Cancelled."
       return 1
       ;;
     *)
