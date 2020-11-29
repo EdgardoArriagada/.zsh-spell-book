@@ -1,7 +1,8 @@
 deleteNonDefaultBranches() (
+  local this="$0"
   local nonDefaultBranches
 
-  main() {
+  ${this}.main() {
     if ! ${zsb}_isGitRepo; then
       echo "${ZSB_ERROR} You must run this command inside a git project"
       return 1
@@ -12,22 +13,22 @@ deleteNonDefaultBranches() (
       return 1
     fi
 
-    setNonDefaultBranches
+    ${this}.setNonDefaultBranches
 
     if [ -z "$nonDefaultBranches" ]; then
       echo "${ZSB_INFO} There are no non default branches to delete."
       return 0
     fi
 
-    printPrompt
-    playOptionsMenu
+    ${this}.printPrompt
+    ${this}.playOptionsMenu
   }
 
-  setNonDefaultBranches() {
+  ${this}.setNonDefaultBranches() {
     nonDefaultBranches="$(git branch --no-color | command grep -vE "^(\+|\*|\s*${ZSB_GIT_DEFAULT_BRANCHES}\s*$)")"
   }
 
-  printPrompt() {
+  ${this}.printPrompt() {
     echo "${ZSB_WARNING} The following branches will be deleted:"
     echo " "
     echo "$(hl "$nonDefaultBranches")"
@@ -35,16 +36,16 @@ deleteNonDefaultBranches() (
     echo "${ZSB_PROMPT} Do you really want to delete these branches? [Y/n]"
   }
 
-  playOptionsMenu() {
+  ${this}.playOptionsMenu() {
     ${zsb}_yesNoMenu performDeletion &&
       echo "$ZSB_SUCCESS: non default branches deleted"
   }
 
-  performDeletion() {
+  ${this}.performDeletion() {
     echo "$nonDefaultBranches" | xargs git branch -D
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 complete deleteNonDefaultBranches
