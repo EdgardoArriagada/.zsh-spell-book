@@ -74,8 +74,11 @@ ga() (
 
 _${zsb}.ga() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList
-  case "${COMP_WORDS[1]}" in
+  local firstItemUsed="${COMP_WORDS[1]}"
+  local currentCompletion="${COMP_WORDS[COMP_CWORD]}"
+  local completionList=( )
+
+  case "$firstItemUsed" in
     'new')
       completionList=( $(${zsb}.getGitUntrackedFiles) )
     ;;
@@ -89,6 +92,18 @@ _${zsb}.ga() {
       completionList=( $(${zsb}.getGitUnstagedFiles) )
     ;;
   esac
+
+  # if we are completing the first item
+  if [ "$COMP_CWORD" = "1" ]; then
+    case "$currentCompletion" in
+      [n]*) # matches 'new'
+        completionList+=( 'new' )
+      ;;
+      [f]*) # matches 'fast'
+        completionList=( 'fast' )
+      ;;
+    esac
+  fi
 
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
