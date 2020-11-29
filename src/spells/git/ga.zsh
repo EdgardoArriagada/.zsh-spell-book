@@ -25,7 +25,7 @@ ga() (
     fi
 
     if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges; return $?
+      ${this}.informNoChanges 'untracked'; return $?
     fi
 
     git add "${filesToAdd[@]}"
@@ -40,10 +40,18 @@ ga() (
     fi
 
     if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges; return $?
+      ${this}.informNoChanges 'unstaged'; return $?
     fi
 
     git add "${filesToAdd[@]}"
+  }
+
+  ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
+
+  ${this}.informNoChanges() {
+    local gitFileType="$1"
+    echo "${ZSB_INFO} There are no $(hl "$gitFileType") files to add."
+    return 0
   }
 
   ${this}.addFilesWithDotArg() {
@@ -52,16 +60,17 @@ ga() (
   }
 
   ${this}.addFilesDefault() {
-    filesToAdd=( "$@" )
+    if [ "$#"  = "0" ]; then
+      filesToAdd=( $(${zsb}.getGitUnstagedFiles) )
+    else
+      filesToAdd=( "$@" )
+    fi
+
+    if ! ${this}.thereAreFilesToAdd; then
+      ${this}.informNoChanges 'unstaged'; return $?
+    fi
 
     git add -p "${filesToAdd[@]}"
-  }
-
-  ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
-
-  ${this}.informNoChanges() {
-    echo "${ZSB_INFO} No changes."
-    return 0
   }
 
   ${this}.main "$@"
