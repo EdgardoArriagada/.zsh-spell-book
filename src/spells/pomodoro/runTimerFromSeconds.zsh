@@ -1,24 +1,25 @@
 ${zsb}_runTimerFromSeconds() (
+  local this="$0"
   local totalSeconds="$1"
 
-  main () {
-    runTimer
+  ${this}.main () {
+    ${this}.runTimer
 
-    displayNotifCard
-    playNotifSound
-    printEndOfTimeMsg
+    ${this}.displayNotifCard
+    ${this}.playNotifSound
+    ${this}.printEndOfTimeMsg
   }
 
-  runTimer() {
+  ${this}.runTimer() {
     local spacesToKeepOutputClean="   "
     for i in {$totalSeconds..01}
     do
-      echo -ne "\r⏳ $(convertSecondsToTime $i)${spacesToKeepOutputClean}"
+      echo -ne "\r⏳ $(${this}.convertSecondsToTime $i)${spacesToKeepOutputClean}"
       sleep 1
     done
   }
 
-  convertSecondsToTime() {
+  ${this}.convertSecondsToTime() {
     local seconds="$1"
     local hours=$(($seconds / 3600))
     local mins=$(($seconds / 60 % 60))
@@ -39,9 +40,9 @@ ${zsb}_runTimerFromSeconds() (
     echo "$hours:$mins:$secs"
   }
 
-  displayNotifCard() alert "The timer for $(getCustomTimeMessage) is over"
+  ${this}.displayNotifCard() alert "The timer for $(${this}.getCustomTimeMessage) is over"
 
-  getCustomTimeMessage() {
+  ${this}.getCustomTimeMessage() {
     local customTimeMessage
 
     if [ "$totalSeconds" -eq "1" ]; then
@@ -49,19 +50,19 @@ ${zsb}_runTimerFromSeconds() (
     elif [ "$totalSeconds" -lt "60" ]; then
       customTimeMessage="$totalSeconds seconds"
     else
-      customTimeMessage="$(convertSecondsToTime $totalSeconds)"
+      customTimeMessage="$(${this}.convertSecondsToTime $totalSeconds)"
     fi
 
     echo "$customTimeMessage"
   }
 
-  playNotifSound() {
+  ${this}.playNotifSound() {
     local soundFile=${ZSB_DIR}/src/media/sounds/xylofon.wav
     [ -f $soundFile ] && aplay $soundFile>/dev/null 2>&1
   }
 
-  printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
+  ${this}.printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
 
-  main "$@"
+  ${this}.main "$@"
 )
 

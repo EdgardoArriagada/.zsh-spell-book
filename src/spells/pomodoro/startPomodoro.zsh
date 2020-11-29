@@ -1,25 +1,26 @@
 ${zsb}_startPomodoro() (
+  local this="$0"
   local totalSeconds="$1"
   local inputTime="$2"
   local label="$3"
   local beginString
   local thisMonthFolder
 
-  main() {
-    setBeginString
+  ${this}.main() {
+    ${this}.setBeginString
 
-    setThisMonthFolder
+    ${this}.setThisMonthFolder
 
-    appendSpaceToLog
+    ${this}.appendSpaceToLog
 
-    appendPomodoroInfoToLog "started"
+    ${this}.appendPomodoroInfoToLog "started"
 
     ${zsb}_runTimerFromSeconds "$totalSeconds"
 
-    appendPomodoroInfoToLog "ended"
+    ${this}.appendPomodoroInfoToLog "ended"
   }
 
-  setBeginString() {
+  ${this}.setBeginString() {
     if [ -z "$label" ]; then
       beginString="Session for"
       return 0
@@ -28,20 +29,20 @@ ${zsb}_startPomodoro() (
     beginString="${uppercaseLabel} for"
   }
 
-  appendSpaceToLog() logToZsb " " "$thisMonthFolder"
-
-  appendPomodoroInfoToLog() {
-    local verb="$1" # stared | ended
-    logToZsb "${beginString} $inputTime $verb at $(generateDate)" "$thisMonthFolder"
-  }
-
-  generateDate() echo $(date +%H:%M:%S)
-
-  setThisMonthFolder() {
+  ${this}.setThisMonthFolder() {
     local year="$(date +%Y)"
     local month="$(date +%b)"
     thisMonthFolder="pomodoro/${year}/${month}"
   }
 
-  main "$@"
+  ${this}.appendSpaceToLog() logToZsb " " "$thisMonthFolder"
+
+  ${this}.appendPomodoroInfoToLog() {
+    local verb="$1" # stared | ended
+    logToZsb "${beginString} $inputTime $verb at $(${this}.generateDate)" "$thisMonthFolder"
+  }
+
+  ${this}.generateDate() echo $(date +%H:%M:%S)
+
+  ${this}.main "$@"
 )
