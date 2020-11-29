@@ -6,17 +6,13 @@ ga() (
   ${this}.main() {
     case "$firstArg" in
       'new')
-        ${this}.addFilesWithNewArg "$@"
-      ;;
+        ${this}.addFilesWithNewArg "$@" ;;
       'fast')
-        ${this}.addFilesWithFastArg "$@"
-      ;;
+        ${this}.addFilesWithFastArg "$@" ;;
       '.')
-        ${this}.addFilesWithDotArg
-      ;;
+        ${this}.addFilesWithDotArg ;;
       *)
-        ${this}.addFilesDefault
-      ;;
+        ${this}.addFilesDefault "$@" ;;
     esac
   }
 
@@ -80,28 +76,22 @@ _${zsb}.ga() {
 
   case "$firstItemUsed" in
     'new')
-      completionList=( $(${zsb}.getGitUntrackedFiles) )
-    ;;
+      completionList=( $(${zsb}.getGitUntrackedFiles) ) ;;
     'fast')
-      completionList=( $(${zsb}.getGitUnstagedFiles) )
-    ;;
+      completionList=( $(${zsb}.getGitUnstagedFiles) ) ;;
     '.')
-      return 0
-    ;;
+      return 0 ;;
     *)
-      completionList=( $(${zsb}.getGitUnstagedFiles) )
-    ;;
+      completionList=( $(${zsb}.getGitUnstagedFiles) ) ;;
   esac
 
   # if we are completing the first item
   if [ "$COMP_CWORD" = "1" ]; then
     case "$currentCompletion" in
       [n]*) # matches 'new'
-        completionList+=( 'new' )
-      ;;
+        completionList+=( 'new' ) ;;
       [f]*) # matches 'fast'
-        completionList=( 'fast' )
-      ;;
+        completionList=( 'fast' ) ;;
     esac
   fi
 

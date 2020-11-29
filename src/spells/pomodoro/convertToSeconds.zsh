@@ -37,17 +37,13 @@ ${zsb}.convertToSeconds() (
 
     case $timeChar in
       [hH])
-        totalSeconds="$(($timeValue * 60 * 60))"
-        ;;
+        totalSeconds="$(($timeValue * 60 * 60))" ;;
       [mM])
-        totalSeconds="$(($timeValue * 60))"
-        ;;
+        totalSeconds="$(($timeValue * 60))" ;;
       [sS])
-        totalSeconds="$timeValue"
-        ;;
+        totalSeconds="$timeValue" ;;
       *)
-        echo "${ZSB_ERROR} Unhandled error"
-        ;;
+        echo "${ZSB_ERROR} Unhandled error" ;;
     esac
   }
 
