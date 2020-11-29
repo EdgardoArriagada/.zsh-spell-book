@@ -1,4 +1,5 @@
 copythis() (
+  local this="$0"
   local GROUP_FLAGS='c'
 
   local inputText="$1"
@@ -7,49 +8,50 @@ copythis() (
 
   local copyCommand
 
-  main() {
-    !  areFlagsValid && return 1
 
-    if ! isXclipInstalled; then
-      throwXclipNotInstalled; return $?
+  ${this}.main() {
+    !  ${this}.areFlagsValid && return 1
+
+    if ! ${this}.isXclipInstalled; then
+      ${this}.throwXclipNotInstalled; return $?
     fi
 
-    if ! areArgsValid; then
-      throwInvalidUsage; return $?
+    if ! ${this}.areArgsValid; then
+      ${this}.throwInvalidUsage; return $?
     fi
 
-    setCopyCommand
-    executeCopyCommand
+    ${this}.setCopyCommand
+    ${this}.executeCopyCommand
   }
 
-  areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
+  ${this}.areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
 
-  isXclipInstalled() xclip -version >/dev/null 2>&1
+  ${this}.isXclipInstalled() xclip -version >/dev/null 2>&1
 
-  throwXclipNotInstalled () {
+  ${this}.throwXclipNotInstalled () {
     echo "${ZSB_ERROR} You need to install $(hl xclip) first"
     return 1
   }
 
-  areArgsValid() {
+  ${this}.areArgsValid() {
     [ ! -z "$inputText" ] && [ "$totalArgs" -lt "3" ] && $([ -z "$inputFlags" ] || [ "$inputFlags" = "-c" ])
   }
 
 
-  throwInvalidUsage() {
+  ${this}.throwInvalidUsage() {
     echo "${ZSB_ERROR} How to use: $(hl "copythis 'example text' -c") $(it "-c is optional")"
     return 1
   }
 
-  setCopyCommand() copyCommand="echo -E - '$inputText' | xclip -selection clipboard"
+  ${this}.setCopyCommand() copyCommand="echo -E - '$inputText' | xclip -selection clipboard"
 
-  executeCopyCommand() {
+  ${this}.executeCopyCommand() {
     eval "$copyCommand"
     [[ "$inputFlags" == *'c'* ]] && return 0
     close
   }
 
-  main "$@"
+  ${this}.main "$@"
 )
 
 complete -W "-c" copythis
