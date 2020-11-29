@@ -1,10 +1,11 @@
 catdiff() (
+  local this="$0"
   local file1="$1"
   local file2="$2"
 
-  main() {
-    if areArgsInvalid; then
-      throwArgsInvalidException; return $?
+  ${this}.main() {
+    if ${this}.areArgsInvalid; then
+      ${this}.throwArgsInvalidException; return $?
     fi
 
     local file1Lacks=$(compareFiles "$file1" "$file2")
@@ -32,19 +33,19 @@ catdiff() (
     echo " "
   }
 
-  areArgsInvalid() $([ ! -f "$file1" ] || [ ! -f "$file2" ])
+  ${this}.areArgsInvalid() $([ ! -f "$file1" ] || [ ! -f "$file2" ])
 
-  throwArgsInvalidException() {
+  ${this}.throwArgsInvalidException() {
     echo "${ZSB_ERROR} Two valid files to compare expected."
     return 1
   }
 
-  printFileInfo() {
+  ${this}.printFileInfo() {
     echo "${ZSB_INFO} $(hl $1) lacks of the following lines:"
     echo " "
   }
 
-  compareFiles() comm -13 <(sort $1) <(sort $2)
+  ${this}.compareFiles() comm -13 <(sort $1) <(sort $2)
 
   main "$@"
 )

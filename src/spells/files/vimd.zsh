@@ -7,9 +7,9 @@
 # 5.- if $1 is not a valid file or directory, it should create a new file out of it, calling git status after closing it
 
 vimd() {
-  local o=$(${zsb}_timeId)
+  local this="$0_$(${zsb}_timeId)"
   {
-    ${o}_main() {
+    ${this}.main() {
       local USER_INPUT=$1
 
       if [ -z "$USER_INPUT" ]; then
@@ -22,21 +22,21 @@ vimd() {
         return 0
       fi
 
-      ${o}_handleFullFilePath "$USER_INPUT"
+      ${this}.handleFullFilePath "$USER_INPUT"
       return 0
     }
 
-    ${o}_handleFullFilePath() {
+    ${this}.handleFullFilePath() {
       local fullFilePath=$1
       local fileDirectoryName=$(dirname ${fullFilePath})
       vim "$fullFilePath" && cds "$fileDirectoryName"
       return 0
     }
 
-    ${o}_main "$@"
+    ${this}.main "$@"
 
   } always {
-    unfunction -m "${o}_*"
+    unfunction -m "${this}.*"
   }
 }
 
