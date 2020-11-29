@@ -3,12 +3,12 @@ deleteNonDefaultBranches() (
   local nonDefaultBranches
 
   ${this}.main() {
-    if ! ${zsb}_isGitRepo; then
+    if ! ${zsb}.isGitRepo; then
       echo "${ZSB_ERROR} You must run this command inside a git project"
       return 1
     fi
 
-    if ! ${zsb}_userWorkingOnDefaultBranch; then
+    if ! ${zsb}.userWorkingOnDefaultBranch; then
       echo "${ZSB_ERROR} You must run this command from a default branch"
       return 1
     fi
@@ -37,7 +37,7 @@ deleteNonDefaultBranches() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}_confirmMenu && ${this}.performDeletion &&
+    ${zsb}.confirmMenu && ${this}.performDeletion &&
       echo "$ZSB_SUCCESS: non default branches deleted"
   }
 

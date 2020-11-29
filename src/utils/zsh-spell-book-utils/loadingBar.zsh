@@ -1,4 +1,4 @@
-${zsb}_loadingBar() {
+${zsb}.loadingBar() {
   local seconds="$1"
   if [ -z "$seconds" ]; then
     echo "${ZSB_ERROR} Amount of seconds expected."

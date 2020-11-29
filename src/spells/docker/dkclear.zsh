@@ -16,7 +16,7 @@ dkclear() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}_confirmMenu && ${this}.performClear
+    ${zsb}.confirmMenu && ${this}.performClear
   }
 
   ${this}.performClear() {

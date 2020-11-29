@@ -19,7 +19,7 @@ dice() (
   }
 
   ${this}.areSidesValid() {
-    ${zsb}_isInteger "$sides" && [ "$sides" -gt "1" ]
+    ${zsb}.isInteger "$sides" && [ "$sides" -gt "1" ]
   }
 
   ${this}.rollTheDice() {

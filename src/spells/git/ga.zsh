@@ -33,10 +33,10 @@ ga() (
 
   ${this}.setFilesToAddFromGitList() {
     if [ "$firstArg" = "new" ]; then
-      filesToAdd=( $(${zsb}_getGitUntrackedFiles) )
+      filesToAdd=( $(${zsb}.getGitUntrackedFiles) )
       return 0
     fi
-    filesToAdd=( $(${zsb}_getGitUnstagedFiles) )
+    filesToAdd=( $(${zsb}.getGitUnstagedFiles) )
   }
 
   ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
@@ -55,10 +55,10 @@ ga() (
   }
 
   ${this}.main "$@"
-  ${zsb}_gitStatus
+  ${zsb}.gitStatus
 )
 
-_${zsb}_ga() {
+_${zsb}.ga() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
   local completionList
 
@@ -67,13 +67,13 @@ _${zsb}_ga() {
   fi
 
   if [ "${COMP_WORDS[1]}" = "new" ]; then
-    completionList=( $(${zsb}_getGitUntrackedFiles) )
+    completionList=( $(${zsb}.getGitUntrackedFiles) )
   else
-    completionList=( $(${zsb}_getGitUnstagedFiles) )
+    completionList=( $(${zsb}.getGitUnstagedFiles) )
   fi
 
-  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
 
-complete -F _${zsb}_ga ga
+complete -F _${zsb}.ga ga

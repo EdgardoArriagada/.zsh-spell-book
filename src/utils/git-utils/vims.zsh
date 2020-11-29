@@ -1,3 +1,3 @@
 vims() {
-  vim "$@" && ${zsb}_isGitRepo && ${zsb}_gitStatus
+  vim "$@" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 }

@@ -1,19 +1,19 @@
-${zsb}_recentGitFile() (
+${zsb}.recentGitFile() (
   local callback="$1"
   local inputFile="$2"
   eval "$callback $inputFile"
 )
 
-_${zsb}_recentGitFile() {
+_${zsb}.recentGitFile() {
   [ "$COMP_CWORD" -gt "2" ] && return 0
 
-  COMPREPLY=( $(compgen -C "${zsb}_getGitModifiedFiles") )
+  COMPREPLY=( $(compgen -C "${zsb}.getGitModifiedFiles") )
 }
 
-complete -F _${zsb}_recentGitFile ${zsb}_recentGitFile
+complete -F _${zsb}.recentGitFile ${zsb}.recentGitFile
 
-alias vimr="${zsb}_recentGitFile vims"
+alias vimr="${zsb}.recentGitFile vims"
 alias vr="vimr"
 
-alias catr="${zsb}_recentGitFile cat"
+alias catr="${zsb}.recentGitFile cat"
 alias cr="catr"

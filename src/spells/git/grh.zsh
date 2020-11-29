@@ -1,14 +1,14 @@
 # I only use this to move staged files back to unstaged state
 grh() {
-  git reset -q "$@" && ${zsb}_gitStatus
+  git reset -q "$@" && ${zsb}.gitStatus
 }
 
-_${zsb}_grh() {
+_${zsb}.grh() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(${zsb}_getGitStagedFiles) )
-  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+  local completionList=( $(${zsb}.getGitStagedFiles) )
+  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
 
-complete -F _${zsb}_grh grh
+complete -F _${zsb}.grh grh

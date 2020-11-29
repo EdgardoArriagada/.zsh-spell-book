@@ -1,11 +1,11 @@
 countdown() {
   local inputTime="$1"
-  totalSeconds=$(${zsb}_convertToSeconds "$inputTime")
+  totalSeconds=$(${zsb}.convertToSeconds "$inputTime")
 
-  if ! ${zsb}_didSuccess "$?"; then
+  if ! ${zsb}.didSuccess "$?"; then
     echo "$totalSeconds" # as error
     return 1
   fi
 
-  ${zsb}_runTimerFromSeconds "$totalSeconds"
+  ${zsb}.runTimerFromSeconds "$totalSeconds"
 }

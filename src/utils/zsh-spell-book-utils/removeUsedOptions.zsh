@@ -1,4 +1,4 @@
-${zsb}_removeUsedOptions() {
+${zsb}.removeUsedOptions() {
   local inputUsedOptions=(`echo ${1}`)
   local completionList=(`echo ${2}`)
 

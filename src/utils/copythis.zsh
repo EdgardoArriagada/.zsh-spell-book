@@ -24,7 +24,7 @@ copythis() (
     ${this}.executeCopyCommand
   }
 
-  ${this}.areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
+  ${this}.areFlagsValid() ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
 
   ${this}.isXclipInstalled() xclip -version >/dev/null 2>&1
 

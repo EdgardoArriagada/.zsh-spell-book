@@ -6,7 +6,7 @@ rpomodoro() {
 
   local lastPomodoroLines=$(tmux capture-pane -p -t pomodoro | sed '/^$/d' | tail -1)
 
-  if ! ${zsb}_doesMatch "$lastPomodoroLines" "^⏳"; then
+  if ! ${zsb}.doesMatch "$lastPomodoroLines" "^⏳"; then
     echo "${ZSB_INFO} No pomodoro timer is running."
     return 0
   fi

@@ -7,7 +7,7 @@
 #     local flags=$1 # or the possition where flags args goes
 #     local GROUP_FLAGS='xyx'
 #
-#     ! ${zsb}_areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
+#     ! ${zsb}.areFlagsInGroup "$flags" "$GROUP_FLAGS" && return 1
 # }
 #
 # and ask if flags contains a char like:
@@ -25,7 +25,7 @@
 # mycommand -xz
 # etc.
 
-${zsb}_areFlagsInGroup() (
+${zsb}.areFlagsInGroup() (
   local this="$0"
   local inputFlags="$1"
   local groupFlags="$2"
@@ -45,12 +45,12 @@ ${zsb}_areFlagsInGroup() (
 
     local FLAG_REGEX="^-[a-z]+$"
 
-    ${zsb}_doesMatch "$inputFlags" "$FLAG_REGEX"
+    ${zsb}.doesMatch "$inputFlags" "$FLAG_REGEX"
   }
 
   ${this}.doesInputFlagsBelongsToGroupFlags() {
     local groupFlagsRegex="^-[${groupFlags}]+$"
-    ${zsb}_doesMatch "$inputFlags" "$groupFlagsRegex"
+    ${zsb}.doesMatch "$inputFlags" "$groupFlagsRegex"
   }
 
   ${this}.throwUnknowFlagsException() {

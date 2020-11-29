@@ -1,1 +1,1 @@
-${zsb}_isGitRepo && ${zsb}_gitStatus
+${zsb}.isGitRepo && ${zsb}.gitStatus

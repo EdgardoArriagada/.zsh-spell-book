@@ -1,4 +1,4 @@
-${zsb}_convertToSeconds() (
+${zsb}.convertToSeconds() (
   local this="$0"
   local inputTime="$1"
   local totalSeconds
@@ -16,19 +16,19 @@ ${zsb}_convertToSeconds() (
   ${this}.setTotalSeconds() {
     if ${this}.isShortTimeFormat; then ${this}.setTotalSecondsFromShortTimeFormat;
 
-    elif ${zsb}_isInteger "$inputTime"; then totalSeconds="$inputTime";
+    elif ${zsb}.isInteger "$inputTime"; then totalSeconds="$inputTime";
 
     elif ${this}.isTimeFormat; then ${this}.setTotalSecondsFromTimeFormat; fi
   }
 
   ${this}.isShortTimeFormat() {
     local SHORT_TIME_REGEX="^[0-9]+[hHmMsS]$"
-    ${zsb}_doesMatch "$inputTime" "$SHORT_TIME_REGEX"
+    ${zsb}.doesMatch "$inputTime" "$SHORT_TIME_REGEX"
   }
 
   ${this}.isTimeFormat() {
     local TIME_REGEX="^[0-5]?[0-9]:[0-5]?[0-9](:[0-5]?[0-9])?$"
-    ${zsb}_doesMatch "$inputTime" "$TIME_REGEX"
+    ${zsb}.doesMatch "$inputTime" "$TIME_REGEX"
   }
 
   ${this}.setTotalSecondsFromShortTimeFormat() {

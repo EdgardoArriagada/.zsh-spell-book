@@ -22,11 +22,11 @@ sendmeto() (
     close
   }
 
-  ${this}.areFlagsValid() ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
+  ${this}.areFlagsValid() ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
 
   ${this}.isInputUrlValid() {
     local URL_REGEX="^http[s]?:\/{2}"
-    ${zsb}_doesMatch "$inputUrl" "$URL_REGEX"
+    ${zsb}.doesMatch "$inputUrl" "$URL_REGEX"
   }
 
   ${this}.throwInvalidUrl() {

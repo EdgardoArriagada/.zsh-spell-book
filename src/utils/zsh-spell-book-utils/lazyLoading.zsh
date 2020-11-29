@@ -1,7 +1,7 @@
 # usefull link https://gist.github.com/QinMing/364774610afc0e06cc223b467abe83c0#file-zshrc-L15-L37
 # thanks to QinMing for the code!
-${zsb}_lazy_load() {
-  local this="$0_$(${zsb}_timeId)"
+${zsb}.lazy_load() {
+  local this="$0_$(${zsb}.timeId)"
   local -a involvedScripts
   local aliasesToRelease=("${(@s: :)${1}}") # space separated list
   local scriptToLazyLoad="$2"
@@ -42,11 +42,11 @@ ${zsb}_lazy_load() {
   }
 }
 
-__${zsb}_prepare_lazy_load() {
+__${zsb}.prepare_lazy_load() {
   local script="$1"
   shift 1
 
   for cmd in "$@"; do
-    alias $cmd="${zsb}_lazy_load \"$*\" $script $cmd"
+    alias $cmd="${zsb}.lazy_load \"$*\" $script $cmd"
   done
 }

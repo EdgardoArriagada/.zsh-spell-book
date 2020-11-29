@@ -7,7 +7,7 @@ vimf() (
   ${this}.main() {
     [ ! -f "$fileInput" ] && echo "${ZSB_ERROR} File not found" && return 1
 
-    if ${this}.existsLineNumber && ${zsb}_isInteger "$lineNumber"; then
+    if ${this}.existsLineNumber && ${zsb}.isInteger "$lineNumber"; then
       ${this}.openFileInNumber
       return 0
     fi

@@ -36,17 +36,17 @@ Like this:
 
 ### Dynamic prefixing
 
-To use dynamic prefixing, just use the `__${zsb}_` variable to prefix function names. I.E:
+To use dynamic prefixing, just use the `__${zsb}.` variable to prefix function names. I.E:
 
 ```shell
-  __${zsb}_example () { ... }
+  __${zsb}.example () { ... }
 ```
 
 - All these functions will be deleted after _main.zsh_ is finished
 
 - To avoid clashes, you can change the prefix string in the _.env_ file at the root of the project modifying the `zsb` global variable. _(see .env.example file)_
 
-- _(Optional)_ All functions that are mean to be used inside scripts only and need to be kept after _main.zsh_ is finished should start with `${zsb}_` instead
+- _(Optional)_ All functions that are mean to be used inside scripts only and need to be kept after _main.zsh_ is finished should start with `${zsb}.` instead
 
 ## License
 

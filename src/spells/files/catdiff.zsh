@@ -22,7 +22,7 @@ catdiff() (
     fi
 
     if [ ! -z "$file1Lacks" ] && [ ! -z "$file2Lacks" ]; then
-      ${zsb}_printHr
+      ${zsb}.printHr
     fi
 
     if [ ! -z "$file2Lacks" ]; then

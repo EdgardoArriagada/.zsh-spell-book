@@ -1,4 +1,4 @@
-${zsb}_confirmMenu() {
+${zsb}.confirmMenu() {
   while true; do
     read yn
     case $yn in

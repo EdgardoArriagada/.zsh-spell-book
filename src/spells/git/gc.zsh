@@ -5,23 +5,23 @@ gc() {
   {
     declare -A args
     args[--aware]=false
-    ${zsb}_switchTrueMatching "${args[@]}" "$@"
-    set -- $(${zsb}_clearFlags "${args[@]}" "$@")
+    ${zsb}.switchTrueMatching "${args[@]}" "$@"
+    set -- $(${zsb}.clearFlags "${args[@]}" "$@")
   }
 
-  if ${zsb}_userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
+  if ${zsb}.userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
     return 1
   fi
 
   local commitSuccess=false
   if [ -z "$1" ]; then
-    git commit --gpg-sign && ${zsb}_gitStatus && commitSuccess=true
+    git commit --gpg-sign && ${zsb}.gitStatus && commitSuccess=true
   else
-    git commit --gpg-sign -m "$*" && ${zsb}_gitStatus && commitSuccess=true
+    git commit --gpg-sign -m "$*" && ${zsb}.gitStatus && commitSuccess=true
   fi
 
-  if ${zsb}_userWorkingOnDefaultBranch && "$commitSuccess"; then
+  if ${zsb}.userWorkingOnDefaultBranch && "$commitSuccess"; then
     echo "${ZSB_WARNING} Commit made into default branch, use $(hl "git reset HEAD~") to undo the entire previous commit"
   fi
 
@@ -29,7 +29,7 @@ gc() {
 }
 
 
-_${zsb}_gc() {
+_${zsb}.gc() {
   for item in "${COMP_WORDS[@]}"; do
     [ "$item" = "--aware" ] && return 0
   done
@@ -37,4 +37,4 @@ _${zsb}_gc() {
   COMPREPLY=( $(compgen -W "--aware") )
 }
 
-complete -F _${zsb}_gc gc
+complete -F _${zsb}.gc gc

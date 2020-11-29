@@ -2,9 +2,9 @@ cds() {
   echo " "
   builtin cd $1 && ls
 
-  if ${zsb}_isGitRepo; then
-    ${zsb}_printHr '--no-space'
-    ${zsb}_gitStatus
+  if ${zsb}.isGitRepo; then
+    ${zsb}.printHr '--no-space'
+    ${zsb}.gitStatus
     return 0
   fi
 

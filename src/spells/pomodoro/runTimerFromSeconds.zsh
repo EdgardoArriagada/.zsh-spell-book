@@ -1,4 +1,4 @@
-${zsb}_runTimerFromSeconds() (
+${zsb}.runTimerFromSeconds() (
   local this="$0"
   local totalSeconds="$1"
 

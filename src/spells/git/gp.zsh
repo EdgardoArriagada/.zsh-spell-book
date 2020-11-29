@@ -2,8 +2,8 @@ gp() {
   {
     declare -A args
     args[--aware]=false
-    ${zsb}_switchTrueMatching "${args[@]}" "$@"
-    set -- $(${zsb}_clearFlags "${args[@]}" "$@")
+    ${zsb}.switchTrueMatching "${args[@]}" "$@"
+    set -- $(${zsb}.clearFlags "${args[@]}" "$@")
   }
 
   if [ -z "$1" ]; then
@@ -14,7 +14,7 @@ gp() {
   local INPUT_REMOTE_BRANCH="$1"
   shift 1
 
-  if ${zsb}_isDefaultBranch "$INPUT_REMOTE_BRANCH" && ! "${args[--aware]}"; then
+  if ${zsb}.isDefaultBranch "$INPUT_REMOTE_BRANCH" && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} It's not safe to push to default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
     return 1
   fi
@@ -24,4 +24,4 @@ gp() {
   return 0
 }
 
-complete -C "${zsb}_gitBranches" -W '--aware' gp
+complete -C "${zsb}.gitBranches" -W '--aware' gp

@@ -6,7 +6,7 @@ nodeReinstall() {
     local inputFlags=$3
     local GROUP_FLAGS='lni'
 
-    ! ${zsb}_areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
+    ! ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
   }
 
   if [[ ! "$inputFlags" == *"l"* ]] && [ -f ${packageManagerLock} ]; then
@@ -24,7 +24,7 @@ nodeReinstall() {
 
   # BUG: npm always tries to acess to zsb_lazy_load inside a bash function
   # eval is a workaround
-  eval "${packageManager} install" && ${zsb}_isGitRepo && ${zsb}_gitStatus
+  eval "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 }
 
 complete -W "-l -n -i -lni" nodeReinstall

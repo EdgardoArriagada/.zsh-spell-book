@@ -39,7 +39,7 @@ tmkill() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}_confirmMenu && ${this}.killTmuxServer &&
+    ${zsb}.confirmMenu && ${this}.killTmuxServer &&
       echo "${ZSB_SUCCESS} All tmux sessions have been deleted."
   }
 

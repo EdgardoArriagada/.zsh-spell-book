@@ -8,15 +8,15 @@ gclean() {
   echo ""
   echo "${ZSB_PROMPT} Are you sure? [Y/n]"
 
-  ${zsb}_confirmMenu && git clean -fd
+  ${zsb}.confirmMenu && git clean -fd
 }
 
-_${zsb}_gclean() {
+_${zsb}.gclean() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(${zsb}_getGitUntrackedFiles) )
-  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+  local completionList=( $(${zsb}.getGitUntrackedFiles) )
+  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
 
-complete -F _${zsb}_gclean gclean
+complete -F _${zsb}.gclean gclean

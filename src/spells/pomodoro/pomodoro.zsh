@@ -9,9 +9,9 @@ pomodoro() (
   local pomodoroLabel="${*}"
 
   ${this}.main() {
-    totalSeconds=$(${zsb}_convertToSeconds "$inputTime")
+    totalSeconds=$(${zsb}.convertToSeconds "$inputTime")
 
-    if ! ${zsb}_didSuccess "$?"; then
+    if ! ${zsb}.didSuccess "$?"; then
       echo "$totalSeconds" # as error
       return 1
     fi
@@ -38,7 +38,7 @@ pomodoro() (
 
   ${this}.isPomodoroRunning() {
     local lastPomodoroLines=$(tmux capture-pane -p -t pomodoro | sed '/^$/d' | tail -1)
-    ${zsb}_doesMatch "$lastPomodoroLines" "$POMODORO_REGEX"
+    ${zsb}.doesMatch "$lastPomodoroLines" "$POMODORO_REGEX"
   }
 
   ${this}.throwPomodoroAlreadyRunning() {
@@ -51,7 +51,7 @@ pomodoro() (
   ${this}.beginPomodoro() {
     # the white space at the beginning is to
     # skip it from being saved to zsh history
-    local pomodoroCmd=" ${zsb}_startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
+    local pomodoroCmd=" ${zsb}.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
     tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
   }
 

@@ -6,28 +6,28 @@ repackage() {
     declare -A args
     args[--aware]=false
     args[--force]=false
-    ${zsb}_switchTrueMatching "${args[@]}" "$@"
+    ${zsb}.switchTrueMatching "${args[@]}" "$@"
   }
 
-  if ${zsb}_userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
+  if ${zsb}.userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
     echo "${ZSB_ERROR} Can't repackage into default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
     return 1
   fi
 
-  if ${zsb}_isLastCommitOnline && ! "${args[--force]}"; then
+  if ${zsb}.isLastCommitOnline && ! "${args[--force]}"; then
     echo "${ZSB_ERROR} Can't repackage, HEAD commit has already been pushed online, use ${ZSB_SHL}--force${ZSB_EHL} flag to do it anyway"
     return 1
   fi
 
-  git commit --amend --no-edit --gpg-sign && ${zsb}_gitStatus
+  git commit --amend --no-edit --gpg-sign && ${zsb}.gitStatus
   return 0
 }
 
-_${zsb}_repackage() {
+_${zsb}.repackage() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
   local completionList=( "--aware" "--force" )
-  local newCompletion=( $(${zsb}_removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
 }
-complete -F _${zsb}_repackage repackage
+complete -F _${zsb}.repackage repackage
