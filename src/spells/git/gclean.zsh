@@ -8,7 +8,7 @@ gclean() {
   echo ""
   echo "${ZSB_PROMPT} Are you sure? [Y/n]"
 
-  ${zsb}_yesNoMenu git clean -fd
+  ${zsb}_confirmMenu && git clean -fd
 }
 
 _${zsb}_gclean() {
