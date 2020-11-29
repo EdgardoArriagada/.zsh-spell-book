@@ -61,7 +61,7 @@ ${zsb}.runTimerFromSeconds() (
     [ -f $soundFile ] && aplay $soundFile>/dev/null 2>&1
   }
 
-  ${this}.printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
+  ${this}.printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(${this}.getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
 
   ${this}.main "$@"
 )
