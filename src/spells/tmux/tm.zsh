@@ -18,5 +18,10 @@ tm() {
     tmux new -s "$targetSession">/dev/null 2>&1
 }
 
-# If any, complete with a list of current tmux sessions
-complete -C "tmux ls 2>&1 | cut -d':' -s -f1" tm
+_${zsb}.tm() {
+  [ "$COMP_CWORD" -gt "1" ] && return 0
+
+  COMPREPLY=( $(tmls) )
+}
+
+complete -F _${zsb}.tm tm
