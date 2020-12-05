@@ -1,33 +1,33 @@
 tmkill() (
   local this="$0"
   local activeTmuxSessions=$(tmls)
-  local inputSession="$1"
+  local inputSessions=( "$@" )
 
   ${this}.main() {
     if ! ${this}.existsActiveTmuxSessions; then
       ${this}.throwNoTmuxSessions; return $?
     fi
 
-    if ${this}.tooManyArgs "$@"; then
-      ${this}.throwTooManyArgsException; return $?
+    if ${this}.inputSessionsReceived; then
+      ${this}.killInputSessions; return $?
     fi
 
-    if ${this}.existsInputSession; then
-      ${this}.killInputSession; return $?
-    fi
-
-    ${this}.printPrompt
-    ${this}.playOptionsMenu
+    ${this}.playMenu
   }
 
-  ${this}.tooManyArgs() [ "$#" -gt "1" ]
+  ${this}.inputSessionsReceived() [ "${#inputSessions[@]}" -gt "0" ]
 
   ${this}.existsActiveTmuxSessions() [ ! -z "$activeTmuxSessions" ]
 
-  ${this}.existsInputSession() [ ! -z "$inputSession" ]
+  ${this}.killInputSessions() {
+    for session in "${inputSessions[@]}"; do
+      tmux kill-session -t "$session" >/dev/null 2>&1
+    done
+  }
 
-  ${this}.killInputSession() {
-     tmux kill-session -t "$inputSession"
+  ${this}.playMenu() {
+    ${this}.printPrompt
+    ${this}.killTmuxServerOnConfirm
   }
 
   ${this}.printPrompt() {
@@ -38,7 +38,7 @@ tmkill() (
     echo "${ZSB_PROMPT} Do you really want to delete these sessions? [Y/n]."
   }
 
-  ${this}.playOptionsMenu() {
+  ${this}.killTmuxServerOnConfirm() {
     ${zsb}.confirmMenu && ${this}.killTmuxServer &&
       echo "${ZSB_SUCCESS} All tmux sessions have been deleted."
   }
@@ -48,11 +48,6 @@ tmkill() (
   ${this}.throwNoTmuxSessions() {
     echo "${ZSB_INFO} There are no active tmux sessions."
     return 0
-  }
-
-  ${this}.throwTooManyArgsException() {
-    echo "${ZSB_ERROR} Only one argument expected."
-    return 1
   }
 
   ${this}.main "$@"
