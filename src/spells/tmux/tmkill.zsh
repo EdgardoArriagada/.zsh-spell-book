@@ -1,6 +1,6 @@
 tmkill() (
   local this="$0"
-  local activeTmuxSessions=$(tml)
+  local activeTmuxSessions=$(tmls)
   local inputSession="$1"
 
   ${this}.main() {
@@ -58,4 +58,4 @@ tmkill() (
   ${this}.main "$@"
 )
 
-complete -C "tml" tmkill
+complete -C "tmls" tmkill
