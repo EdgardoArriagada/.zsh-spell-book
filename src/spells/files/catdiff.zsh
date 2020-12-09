@@ -8,8 +8,8 @@ catdiff() (
       ${this}.throwArgsInvalidException; return $?
     fi
 
-    local file1Lacks=$(compareFiles "$file1" "$file2")
-    local file2Lacks=$(compareFiles "$file2" "$file1")
+    local file1Lacks=$(${this}.compareFiles "$file1" "$file2")
+    local file2Lacks=$(${this}.compareFiles "$file2" "$file1")
 
     if [ -z "$file1Lacks" ] && [ -z "$file2Lacks" ]; then
       echo "${ZSB_INFO} Both files are equal."
@@ -47,5 +47,5 @@ catdiff() (
 
   ${this}.compareFiles() comm -13 <(sort $1) <(sort $2)
 
-  main "$@"
+  ${this}.main "$@"
 )
