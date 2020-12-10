@@ -30,6 +30,8 @@ set pastetoggle=<F2>
 command Q execute ":q"
 command W execute ":w"
 command Pjson execute ":%!python -m json.tool"
+command Snn execute ":set nonu nornu"
+command Srr execute ":set nu rnu"
 
 " if tmux default-terminal is 'screen-256color'
 " this will prevent <Ctrl+Arrow> form deleting

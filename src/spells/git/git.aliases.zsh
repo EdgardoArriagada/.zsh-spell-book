@@ -7,6 +7,7 @@ alias sign='git commit --amend --no-edit --gpg-sign && ${zsb}.gitStatus'
 alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit --branches"
 alias gsp='git status --porcelain=v2'
 alias gst='git status'
+alias gf='git fetch'
 
 alias GSWD='toggleCapsLock && gswd'
 alias GSWM='toggleCapsLock && gswm'
@@ -17,6 +18,7 @@ alias SIGN='toggleCapsLock && sign'
 alias GLOG='toggleCapsLock && glog'
 alias GSP='toggleCapsLock && gsp'
 alias GST='toggleCapsLock && gst'
+alias GF='toggleCapsLock && gf'
 
 # this aliases reveice args, so toggleCapsLocks makes no sense
 alias gbm='git branch -m'
