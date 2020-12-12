@@ -46,14 +46,14 @@ window:
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
   padding:
-    x: 6
-    y: 6
+    x: 0 
+    y: 0
 
   # Spread additional padding evenly around the terminal content.
   #dynamic_padding: false
-
   # Window decorations
   #
+  decorations: none
   # Values for `decorations`:
   #     - full: Borders and title bar
   #     - none: Neither borders nor title bar
@@ -329,7 +329,7 @@ window:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 0.5
+background_opacity: 0.8
 
 #selection:
   # This string contains all characters that are used as separators for
