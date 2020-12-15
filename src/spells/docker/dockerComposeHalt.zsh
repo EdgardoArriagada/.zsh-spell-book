@@ -1,5 +1,6 @@
-dcos() (
+${zsb}.dockerComposeHalt() (
   local this="$0"
+  local callback="$1"
   local activeServices=$(docker-compose ps --services --filter "status=running")
 
   ${this}.main() {
@@ -13,7 +14,7 @@ dcos() (
   }
 
   ${this}.printPrompt() {
-    echo "${ZSB_WARNING} The following containers will stop:"
+    echo "${ZSB_WARNING} The following containers will halt with $(hl ${callback}):"
     echo " "
     echo "$(hl "$activeServices")"
     echo " "
@@ -21,12 +22,16 @@ dcos() (
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}.confirmMenu && ${this}.stopComposedContainers
+    ${zsb}.confirmMenu && ${this}.haltComposedContainers
   }
 
-  ${this}.stopComposedContainers() printAndRun "docker-compose stop"
+  ${this}.haltComposedContainers() printAndRun "${callback}"
 
   ${this}.main "$@"
 )
 
-complete dcos
+alias dcos="${zsb}.dockerComposeHalt 'docker-compose stop'"
+alias dcod="${zsb}.dockerComposeHalt 'docker-compose down'"
+
+complete ${zsb}.dockerComposeHalt
+
