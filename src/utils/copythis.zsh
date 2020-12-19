@@ -1,6 +1,6 @@
 copythis() (
   local this="$0"
-  local GROUP_FLAGS='c'
+  local GROUP_FLAGS='ps'
 
   local inputText="$1"
   local inputFlags="$2"
@@ -20,8 +20,8 @@ copythis() (
       ${this}.throwInvalidUsage; return $?
     fi
 
-    ${this}.setCopyCommand
     ${this}.executeCopyCommand
+    ${this}.executeSideEffects
   }
 
   ${this}.areFlagsValid() ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
@@ -34,24 +34,25 @@ copythis() (
   }
 
   ${this}.areArgsValid() {
-    [ ! -z "$inputText" ] && [ "$totalArgs" -lt "3" ] && $([ -z "$inputFlags" ] || [ "$inputFlags" = "-c" ])
+    [ ! -z "$inputText" ] && [ "$totalArgs" -lt "3" ] && $([ -z "$inputFlags" ] || [[ "$inputFlags" == '-'* ]])
   }
 
 
   ${this}.throwInvalidUsage() {
-    echo "${ZSB_ERROR} How to use: $(hl "copythis 'example text' -c") $(it "-c is optional")"
+    echo "${ZSB_ERROR} How to use: $(hl "copythis 'example text' -<flag>") $(it "-<flag> is optional")"
     return 1
   }
 
-  ${this}.setCopyCommand() copyCommand="echo -E - '$inputText' | xclip -selection clipboard"
-
   ${this}.executeCopyCommand() {
-    eval "$copyCommand"
-    [[ "$inputFlags" == *'c'* ]] && return 0
-    close
+    echo -E - ${inputText} | xclip -selection clipboard
+  }
+
+  ${this}.executeSideEffects() {
+    [[ "$inputFlags" == *'p'* ]] && echo "${ZSB_SUCCESS} $(hl ${inputText}) copied!"
+    [[ "$inputFlags" != *'s'* ]] && close
   }
 
   ${this}.main "$@"
 )
 
-complete -W "-c" copythis
+complete -W "-p -s -ps" copythis

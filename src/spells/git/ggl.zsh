@@ -4,7 +4,7 @@ ggl() {
     return 1
   fi
 
-  git pull origin "$1" && copythis " " -c
+  git pull origin "$1" && copythis " " -s
 }
 
 _${zsb}.ggl() {

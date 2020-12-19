@@ -19,7 +19,7 @@ gp() {
     return 1
   fi
 
-  git push origin "$INPUT_REMOTE_BRANCH" "$@" && copythis " " -c
+  git push origin "$INPUT_REMOTE_BRANCH" "$@" && copythis " " -s
 
   return 0
 }
