@@ -29,7 +29,7 @@ set pastetoggle=<F2>
 "Custom commands
 command Q execute ":q"
 command W execute ":w"
-command Pjson execute ":%!python -m json.tool"
+command Pjson execute ":%!python3 -m json.tool"
 command Snn execute ":set nonu nornu"
 command Srr execute ":set nu rnu"
 
