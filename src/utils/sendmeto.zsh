@@ -17,9 +17,7 @@ sendmeto() (
       ${this}.openInputUrlInBrowser
     fi
 
-    ${this}.inputFlagsContains "s" && return $?
-
-    close
+    ${this}.executeSideEffects
   }
 
   ${this}.areFlagsValid() ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
@@ -45,6 +43,10 @@ sendmeto() (
 
   ${this}.copyUrl() {
     echo "$inputUrl" | xclip -selection clipboard
+  }
+
+  ${this}.executeSideEffects() {
+    ! ${this}.inputFlagsContains "s" && close
   }
 
   ${this}.main "$@"
