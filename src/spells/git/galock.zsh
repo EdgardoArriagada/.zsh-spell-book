@@ -5,7 +5,7 @@ galock() (
   lockFiles[Gemfile.lock]=true
   lockFiles[yarn.lock]=true
 
-  local redGitFiles=( $(${zsb}.getGitUnstagedAndUntrackedFiles) )
+  local redGitFiles=( $(${zsb}.getGitFiles 'red') )
   local hasAFileBeenAdded=false
 
   for file in "${redGitFiles[@]}"; do
