@@ -15,7 +15,6 @@ ${zsb}.getGitFiles() {
     'red')
       git status --short | grep -E '(^ [MARCD\?])|(^[MARCD\?]{2})' | sed s/^...// ;;
     *)
-      git status --short | sed s/^...// || ls
-    ;;
+      git status --short | sed s/^...// ;;
   esac
 }
