@@ -21,7 +21,7 @@ ga() (
   ${this}.addFilesWithNewArg() {
     shift 1 # remove 'new' flag
     if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitUntrackedFiles) )
+      filesToAdd=( $(${zsb}.getGitFiles 'untracked') )
     else
       filesToAdd=( "$@" )
     fi
@@ -36,7 +36,7 @@ ga() (
   ${this}.addFilesWithFastArg() {
     shift 1 # remove 'fast' flag
     if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitUnstagedFiles) )
+      filesToAdd=( $(${zsb}.getGitFiles 'unstaged') )
     else
       filesToAdd=( "$@" )
     fi
@@ -58,7 +58,7 @@ ga() (
 
   ${this}.addFilesDefault() {
     if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitUnstagedFiles) )
+      filesToAdd=( $(${zsb}.getGitFiles 'unstaged') )
     else
       filesToAdd=( "$@" )
     fi
@@ -82,13 +82,13 @@ _${zsb}.ga() {
 
   case "$firstItemUsed" in
     'new')
-      completionList=( $(${zsb}.getGitUntrackedFiles) ) ;;
+      completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
     'fast')
-      completionList=( $(${zsb}.getGitUnstagedFiles) ) ;;
+      completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
     '.')
       return 0 ;;
     *)
-      completionList=( $(${zsb}.getGitUnstagedFiles) ) ;;
+      completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
   esac
 
   # if we are completing the first item

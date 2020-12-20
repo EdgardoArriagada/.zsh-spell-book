@@ -13,7 +13,7 @@ gclean() {
 
 _${zsb}.gclean() {
   local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(${zsb}.getGitUntrackedFiles) )
+  local completionList=( $(${zsb}.getGitFiles 'untracked') )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
   COMPREPLY=( $(compgen -W "${newCompletion[*]}") )

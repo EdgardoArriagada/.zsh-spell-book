@@ -7,7 +7,7 @@ ${zsb}.recentGitFile() (
 _${zsb}.recentGitFile() {
   [ "$COMP_CWORD" -gt "2" ] && return 0
 
-  COMPREPLY=( $(compgen -C "${zsb}.getGitModifiedFiles") )
+  COMPREPLY=( $(compgen -C "${zsb}.getGitFiles") )
 }
 
 complete -F _${zsb}.recentGitFile ${zsb}.recentGitFile
