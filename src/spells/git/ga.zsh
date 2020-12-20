@@ -9,6 +9,7 @@ ga() (
     case "$firstArg" in
       '.')
         ${this}.addFilesWithDotArg
+        return 0
         ;;
       'new')
         shift 1 # remove 'new' flag
