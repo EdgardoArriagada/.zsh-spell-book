@@ -1,73 +1,67 @@
 ga() (
   local this="$0"
   local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
+  local gitFileType
   local filesToAdd=( )
+  local gitAddFlag
 
   ${this}.main() {
     case "$firstArg" in
       '.')
-        ${this}.addFilesWithDotArg ;;
+        ${this}.addFilesWithDotArg
+        ;;
       'new')
-        ${this}.addFilesWithNewArg "$@" ;;
+        shift 1 # remove 'new' flag
+        ${this}.setGitFileType 'untracked'
+        ${this}.setFilesToAdd "$@"
+        ;;
       'fast')
-        ${this}.addFilesWithFastArg "$@" ;;
+        shift 1 # remove 'fast' flag
+        ${this}.setGitFileType 'unstaged'
+        ${this}.setFilesToAdd "$@"
+        ;;
       *)
-        ${this}.addFilesDefault "$@" ;;
+        ${this}.setGitFileType 'unstaged'
+        ${this}.setFilesToAdd "$@"
+        ${this}.setGitAddFlag '-p'
+        ;;
     esac
+
+    if ! ${this}.thereAreFilesToAdd; then
+      ${this}.informNoChanges; return $?
+    fi
+
+    ${this}.addFiles
   }
 
   ${this}.addFilesWithDotArg() git add .
 
-  ${this}.addFilesWithNewArg() {
-    shift 1 # remove 'new' flag
+  ${this}.setGitFileType() gitFileType="$1"
+
+  ${this}.addFiles() {
+    if [ -z "$gitAddFlag" ]; then
+      git add "${filesToAdd[@]}"
+      return $?
+    fi
+
+    git add "$gitAddFlag" "${filesToAdd[@]}"
+  }
+
+  ${this}.setFilesToAdd() {
     if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitFiles 'untracked') )
+      filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
     else
       filesToAdd=( "$@" )
     fi
-
-    if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges 'untracked'; return $?
-    fi
-
-    git add "${filesToAdd[@]}"
   }
 
-  ${this}.addFilesWithFastArg() {
-    shift 1 # remove 'fast' flag
-    if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitFiles 'unstaged') )
-    else
-      filesToAdd=( "$@" )
-    fi
-
-    if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges 'unstaged'; return $?
-    fi
-
-    git add "${filesToAdd[@]}"
-  }
+  ${this}.setGitAddFlag() gitAddFlag="$1"
 
   ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
 
   ${this}.informNoChanges() {
-    local gitFileType="$1"
     echo "${ZSB_INFO} There are no $(hl "$gitFileType") files to add."
     return 0
-  }
-
-  ${this}.addFilesDefault() {
-    if [ "$#"  = "0" ]; then
-      filesToAdd=( $(${zsb}.getGitFiles 'unstaged') )
-    else
-      filesToAdd=( "$@" )
-    fi
-
-    if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges 'unstaged'; return $?
-    fi
-
-    git add -p "${filesToAdd[@]}"
   }
 
   ${this}.main "$@"
