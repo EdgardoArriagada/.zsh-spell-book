@@ -14,7 +14,7 @@ dkni() (
     fi
 
     if [ -z "$inputFlag" ]; then
-      ${this}.printContainerNetworkInformation
+      ${this}.prettyPrintContainerNetworkInformation
       return $?
     fi
 
@@ -26,6 +26,11 @@ dkni() (
   ${this}.throwInvalidInputError() {
     echo "${ZSB_ERROR} You have to provide a running docker container"
     return 1
+  }
+
+  ${this}.prettyPrintContainerNetworkInformation() {
+      ${this}.printContainerNetworkInformation \
+        | python3 -m json.tool
   }
 
   ${this}.printValueOfContainerNetworkInformation() {
