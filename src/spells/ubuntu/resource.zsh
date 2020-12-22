@@ -1,4 +1,6 @@
 resource() {
+  PATH="$ZSB_SNAPSHOT_PATH"
+
   clear
 
   if [ ! "$(echo $ZSH_VERSION)" ]; then

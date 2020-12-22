@@ -1,5 +1,6 @@
-# Root global variable
+# Root global variables
 ZSB_DIR=$(dirname $0)
+ZSB_SNAPSHOT_PATH="$PATH"
 
 () {
   # Source environment variables
