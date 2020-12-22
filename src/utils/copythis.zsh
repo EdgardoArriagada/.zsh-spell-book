@@ -2,8 +2,9 @@ copythis() (
   local this="$0"
   local GROUP_FLAGS='ps'
 
-  local inputText="$1"
-  local inputFlags="$2"
+  local inputText=$(${zsb}.nonPiped "$1")
+  local inputFlags=$(${zsb}.nonPiped "$2" "$1")
+
   local totalArgs="$#"
 
   local copyCommand
@@ -55,4 +56,4 @@ copythis() (
   ${this}.main "$@"
 )
 
-complete -W "-p -s -ps" copythis
+complete -W "-ps" copythis

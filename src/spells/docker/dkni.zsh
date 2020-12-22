@@ -21,10 +21,17 @@ dkni() (
     ${this}.printValueOfContainerNetworkInformation
   }
 
-  ${this}.isInputValid() [ ! -z "$inputDockerContainer" ]
+  ${this}.isInputValid() {
+    local containerNames=( $(docker container ls --format '{{.Names}}') )
+    [[ " ${containerNames[@]} " =~ " ${inputDockerContainer} " ]]
+  }
 
   ${this}.throwInvalidInputError() {
-    echo "${ZSB_ERROR} You have to provide a running docker container"
+    if [ -z "$inputDockerContainer" ]; then
+      echo "${ZSB_ERROR} You have to provide a running docker container"
+    else
+      echo "${ZSB_ERROR} $(hl ${inputDockerContainer}) is not in the running containers list."
+    fi
     return 1
   }
 
@@ -36,7 +43,8 @@ dkni() (
   ${this}.printValueOfContainerNetworkInformation() {
     ${this}.printContainerNetworkInformation \
     | ${this}.extractKeyValuePair \
-    | ${this}.extractValue
+    | ${this}.extractValue \
+    | copythis -ps
   }
 
   ${this}.printContainerNetworkInformation() {
