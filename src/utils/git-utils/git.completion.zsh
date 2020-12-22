@@ -1,11 +1,16 @@
 ${zsb}.gitBranches() {
-  ${zsb}.isGitRepo && git branch | sed 's/^\*//'
+  ! ${zsb}.isGitRepo && return 0
+  case "$1" in
+    'current')
+      git branch --show-current ;;
+    *)
+      git branch | sed 's/^\*//' ;;
+  esac
 }
 
 ${zsb}.getGitFiles() {
   ! ${zsb}.isGitRepo && return 0
-  local gitFileType="$1"
-  case "$gitFileType" in
+  case "$1" in
     'staged'|'green')
       git status --short | grep '^[MARCD]' | sed s/^...// ;;
     'unstaged')
