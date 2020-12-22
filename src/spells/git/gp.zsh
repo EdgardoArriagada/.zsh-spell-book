@@ -24,4 +24,24 @@ gp() {
   return 0
 }
 
-complete -C "${zsb}.gitBranches" -W '--aware' gp
+
+_${zsb}.gp() {
+  case $COMP_CWORD in
+    1)
+      local currentCompletion="${COMP_WORDS[COMP_CWORD]}"
+      if [ -z "$currentCompletion" ]; then
+        COMPREPLY=( $(compgen -C "${zsb}.gitBranches 'current'") )
+      else
+        COMPREPLY=( $(compgen -C "${zsb}.gitBranches") )
+      fi
+      ;;
+    2)
+      local firstItemUsed="${COMP_WORDS[1]}"
+      if ${zsb}.isDefaultBranch "$firstItemUsed"; then
+        COMPREPLY=( $(compgen -W "--aware") )
+      fi
+      ;;
+  esac
+}
+
+complete -F _${zsb}.gp gp
