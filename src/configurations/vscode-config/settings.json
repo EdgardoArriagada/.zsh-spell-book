@@ -1,0 +1,35 @@
+{
+    "window.zoomLevel": 0,
+    "vim.vimrc.enable": true,
+    "editor.lineNumbers": "relative",
+    "cSpell.userWords": [
+        "Before",
+        "Bounding",
+        "Closest",
+        "Drag",
+        "Elements",
+        "LEGALTECH",
+        "Props",
+        "depends",
+        "draggable",
+        "draggables",
+        "dragging",
+        "height",
+        "self",
+        "sidekiq",
+        "spody",
+        "tmpfs",
+        "unmount",
+        "wfile"
+    ],
+    "editor.tabSize": 2,
+    "emmet.includeLanguages": {
+        "erb": "html"
+    },
+    "cSpell.language": ",es,en",
+    "cSpell.enabled": true,
+    "ruby.intellisense": "rubyLocate",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+
