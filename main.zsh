@@ -19,7 +19,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
   # Declare source files
   local utilFiles=(${ZSB_DIR}/src/utils/**/*.zsh)>/dev/null 2>&1
   local configurationFiles=(${ZSB_DIR}/src/configurations/**/*.zsh)>/dev/null 2>&1
-  local shortcutFiles=(${ZSB_DIR}/src/spells/**/*.zsh)>/dev/null 2>&1
+  local spellPages=(${ZSB_DIR}/src/spells/**/*.zsh)>/dev/null 2>&1
   local automaticCallFiles=(${ZSB_DIR}/src/automatic-calls/**/*.zsh)>/dev/null 2>&1
 
   # Create a dynamic prefixed function
@@ -28,7 +28,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
   # Source files in this specific order
   __${zsb}.source_files $utilFiles
   __${zsb}.source_files $configurationFiles
-  __${zsb}.source_files $shortcutFiles
+  __${zsb}.source_files $spellPages
   __${zsb}.source_files $automaticCallFiles
 
   # Source temporal files (ignored by git)
