@@ -31,7 +31,10 @@ ${zsb}.getGitFiles() (
     ${this}.gitShortStatus | grep -E "$1" | ${this}.removeGitTokens
   }
 
-  ${this}.gitShortStatus() git status --porcelain
+  # '--short' is better than '--porcelain' because
+  # it keeps the paths of the git files relative
+  # to current working folder
+  ${this}.gitShortStatus() git status --short
 
   ${this}.removeGitTokens() sed 's/^...//'
 
