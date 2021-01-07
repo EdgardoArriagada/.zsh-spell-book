@@ -17,7 +17,7 @@ catdiff() (
     fi
 
     if [ ! -z "$file1Lacks" ]; then
-      printFileInfo "$file1"
+      ${this}.printFileInfo "$file1"
       echo "$file1Lacks"
     fi
 
@@ -26,7 +26,7 @@ catdiff() (
     fi
 
     if [ ! -z "$file2Lacks" ]; then
-      printFileInfo "$file2"
+      ${this}.printFileInfo "$file2"
       echo "$file2Lacks"
     fi
 
