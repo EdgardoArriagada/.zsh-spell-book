@@ -1,11 +1,11 @@
-ccp() {
+fox() {
   local inputFile="$1"
   local leftRange="$2"
   local rightRange="$3"
 
   case "$#" in
     1)
-      cat "$inputFile" ;;
+      < "$inputFile" ;;
     2)
       awk "FNR==$leftRange" $inputFile ;;
     3)
@@ -15,7 +15,7 @@ ccp() {
   esac
 }
 
-cclp() {
-  ccp ${*} | clipcopy
+ccp() {
+  fox ${*} | clipcopy
 }
 
