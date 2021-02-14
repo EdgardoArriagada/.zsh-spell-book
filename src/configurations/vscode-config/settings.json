@@ -1,7 +1,9 @@
 {
-    "window.zoomLevel": 0,
-    "vim.vimrc.enable": true,
+    "editor.tabSize": 2,
+    "editor.scrollBeyondLastLine": false,
     "editor.lineNumbers": "relative",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "cSpell.userWords": [
         "Before",
         "Bounding",
@@ -22,14 +24,13 @@
         "unmount",
         "wfile"
     ],
-    "editor.tabSize": 2,
     "emmet.includeLanguages": {
         "erb": "html"
     },
     "cSpell.language": ",es,en",
     "cSpell.enabled": true,
     "ruby.intellisense": "rubyLocate",
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/init.vim"
 }
 
