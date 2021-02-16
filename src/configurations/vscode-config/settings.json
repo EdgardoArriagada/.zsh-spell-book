@@ -4,6 +4,8 @@
     "editor.lineNumbers": "relative",
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.minimap.enabled": false,
+    "editor.scrollbar.verticalScrollbarSize": 0,
     "cSpell.userWords": [
         "Before",
         "Bounding",
