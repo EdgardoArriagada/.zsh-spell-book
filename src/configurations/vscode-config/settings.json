@@ -33,6 +33,7 @@
     "cSpell.enabled": true,
     "ruby.intellisense": "rubyLocate",
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/init.vim"
+    "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/init.vim",
+    "window.zoomLevel": 1
 }
 
