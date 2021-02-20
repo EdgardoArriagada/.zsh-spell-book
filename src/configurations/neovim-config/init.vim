@@ -4,6 +4,7 @@ source ~/.vimrc
 
 if exists('g:vscode')
   " VSCode extension
+  source $HOME/.config/nvim/vscode/settings.vim
 else
   " ordinary neovim
   call plug#begin('~/.config/nvim/plugged')
