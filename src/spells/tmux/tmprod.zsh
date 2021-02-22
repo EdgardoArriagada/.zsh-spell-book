@@ -8,8 +8,8 @@ tmprod() {
 
   tmux new-session -s ${sessionName} \; \
     split-window -hd -p 80 \; \
-    clock -t ${sessionName}:0.0 \; \
-    select-pane -t ${sessionName}:0.1 \; \
+    clock -t ${sessionName}:1.0 \; \
+    select-pane -t ${sessionName}:1.1 \; \
     attach
 }
 
