@@ -1,18 +1,24 @@
-" Source all vim configuration
+" Source normal vim configuration
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
 source ~/.vimrc
 
 " Source helper function
-let s:nvimConfPath = $HOME . '/.zsh-spell-book/src/configurations/neovim-config'
+let s:confPath = $HOME . '/.zsh-spell-book/src/configurations/neovim-config'
+let s:source = 'source ' . s:confPath . '/'
+
 function! Source(fileName)
-   execute "source " . s:nvimConfPath . "/" . a:fileName . ".vim"
+   execute s:source . a:fileName . ".vim"
 endfunction
 
+" Global scripts
+call Source('nvimrc')
+
 if exists('g:vscode')
+  " Vscode only scripts
   call Source('vscode')
 else
-  call Source('nvimrc')
+  " Neovim only scripts
   call Source('plugins')
   call Source('coc.config')
 endif

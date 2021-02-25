@@ -16,3 +16,4 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'peitalin/vim-jsx-typescript'
 
 call plug#end()
+
