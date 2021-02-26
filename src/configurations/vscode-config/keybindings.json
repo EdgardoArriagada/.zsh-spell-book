@@ -200,5 +200,19 @@
 		"key": "ctrl+f",
 		"command": "-vscode-neovim.ctrl-f",
 		"when": "editorTextFocus && neovim.ctrlKeysNormal && neovim.init && neovim.mode != 'insert'"
-	}
+	},
+  {
+    "key": "ctrl+s",
+    "command": "-workbench.action.files.save"
+  },
+  {
+    "key": "ctrl+s",
+    "command": "extension.multiCommand.execute",
+    "args": {
+      "sequence": [
+        "workbench.action.files.save",
+        "vscode-neovim.escape"
+      ]
+    }
+  }
 ]
