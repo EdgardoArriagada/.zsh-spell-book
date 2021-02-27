@@ -1,6 +1,5 @@
-" TODO there is a more contemporary version of this file
-" TODO Also some of it is redundant
-"VSCode
+set nonu nornu
+
 function! s:split(...) abort
     let direction = a:1
     let file = a:2
