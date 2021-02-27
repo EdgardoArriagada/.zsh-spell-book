@@ -20,6 +20,7 @@ if exists('g:vscode')
 else
   " Neovim only scripts
   call Source('plugins')
-  call Source('coc.config')
+  call Source('coc.conf')
+  call Source('telescope.conf')
 endif
 

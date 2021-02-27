@@ -2,7 +2,6 @@ call plug#begin('~/.config/nvim/plugged')
 
   Plug 'ThePrimeagen/vim-be-good'
   Plug 'fatih/vim-go', { 'tag': '*' }
-  Plug 'kien/ctrlp.vim'
   Plug 'preservim/nerdtree'
   Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
   Plug 'tpope/vim-surround'
@@ -15,5 +14,9 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'leafgarland/typescript-vim'
   Plug 'peitalin/vim-jsx-typescript'
 
+  " telescope fuzzy finder
+  Plug 'nvim-lua/popup.nvim'
+  Plug 'nvim-lua/plenary.nvim'
+  Plug 'nvim-telescope/telescope.nvim'
 call plug#end()
 
