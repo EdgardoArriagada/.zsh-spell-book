@@ -13,6 +13,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'morhetz/gruvbox'
   Plug 'leafgarland/typescript-vim'
   Plug 'peitalin/vim-jsx-typescript'
+  Plug 'psliwka/vim-smoothie'
 
   " telescope fuzzy finder
   Plug 'nvim-lua/popup.nvim'

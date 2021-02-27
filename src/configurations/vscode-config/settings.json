@@ -1000,6 +1000,7 @@
       "type": "command",
       "command": "workbench.action.toggleZenMode"
     }
-  ]
+  ],
+  "editor.smoothScrolling": true
 }
 
