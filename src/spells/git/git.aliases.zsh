@@ -8,6 +8,7 @@ alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(
 alias gsp='git status --porcelain=v2'
 alias gst='git status'
 alias gf='git fetch'
+alias gsh='git show'
 
 alias GSWD='toggleCapsLock && gswd'
 alias GSWM='toggleCapsLock && gswm'
@@ -19,6 +20,7 @@ alias GLOG='toggleCapsLock && glog'
 alias GSP='toggleCapsLock && gsp'
 alias GST='toggleCapsLock && gst'
 alias GF='toggleCapsLock && gf'
+alias GSH='toggleCapsLock && gsh'
 
 # this aliases reveice args, so toggleCapsLocks makes no sense
 alias gbm='git branch -m'
