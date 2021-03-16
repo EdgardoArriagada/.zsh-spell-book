@@ -15,5 +15,5 @@ complete -F _${zsb}.recentGitFile ${zsb}.recentGitFile
 alias vimr="${zsb}.recentGitFile vims"
 alias vr="vimr"
 
-alias catr="${zsb}.recentGitFile cat"
+alias catr="${zsb}.recentGitFile c"
 alias cr="catr"
