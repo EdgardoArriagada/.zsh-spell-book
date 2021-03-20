@@ -15,6 +15,9 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 
+## Autosuggestion plugin
+bindkey '^ ' autosuggest-accept
+
 ## Highlight plugin
 typeset -Ag ZSH_HIGHLIGHT_STYLES
 
