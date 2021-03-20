@@ -54,12 +54,12 @@ dkni() (
 
   ${this}.extractKeyValuePair() {
     local input=$(< /dev/stdin)
-    echo "$input" | grep -Po "${keyRegex[$inputFlag]}" | sed s/,$//
+    printf "$input" | grep -Po "${keyRegex[$inputFlag]}" | tail -1 | sed s/,$//
   }
 
   ${this}.extractValue() {
-   local input=$(< /dev/stdin)
-   echo "$input" | awk -F '"' '{print $4}'
+    local input=$(< /dev/stdin)
+    printf "$input" | awk -F '"' '{print $4}'
   }
 
   ${this}.main "$@"

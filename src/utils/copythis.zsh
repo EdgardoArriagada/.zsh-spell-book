@@ -45,7 +45,7 @@ copythis() (
   }
 
   ${this}.executeCopyCommand() {
-    echo -E - ${inputText} | xclip -selection clipboard
+    echo -En - ${inputText} | xclip -selection clipboard
   }
 
   ${this}.executeSideEffects() {
