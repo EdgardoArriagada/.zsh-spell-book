@@ -157,6 +157,40 @@
       ]
     },
     {
+      "key": "r",
+      "name": "Refactor...",
+      "type": "bindings",
+      "bindings": [
+        {
+          "key": "f",
+          "name": "into function",
+          "type": "command",
+          "command": "editor.action.codeAction",
+          "args": {
+            "kind": "refactor.extract.function"
+          }
+        },
+        {
+          "key": "k",
+          "name": "into class",
+          "type": "command",
+          "command": "editor.action.codeAction",
+          "args": {
+            "kind": "refactor.extract.class"
+          }
+        },
+        {
+          "key": "c",
+          "name": "into constant",
+          "type": "command",
+          "command": "editor.action.codeAction",
+          "args": {
+            "kind": "refactor.extract.constant"
+          }
+        }
+      ]
+    },
+    {
       "key": "d",
       "name": "Debug...",
       "type": "bindings",
