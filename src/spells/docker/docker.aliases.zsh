@@ -35,6 +35,7 @@ alias dkvl="printAndRun 'docker volume ls'"
 alias dkvrm="docker volume rm"
 
 # Docker Network
+alias dkip="copythis '172.17.0.1'"
 alias dkn='docker network'
 alias dknh="printAndRun 'docker network --help'"
 alias dknl="printAndRun 'docker network ls'"
