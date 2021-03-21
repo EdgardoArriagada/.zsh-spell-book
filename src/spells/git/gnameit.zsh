@@ -1,15 +1,18 @@
 gnameit() {
-  local userName="$(git config user.name)"
-
-  if [ -z "$userName" ]; then
-    echo "${ZSB_ERROR} Username not set"
-    return 1
-  fi
-
+  # Gets userName in lowercase
+  local userName="${$(git config user.name):l}"
   local oldUrl="$(git config --get remote.origin.url)"
 
-  if ${zsb}.doesMatch "$oldUrl" "^http[s]:\/{2}${userName}"; then
-    printf "${ZSB_INFO} Url is already set
+  if [ -z "$userName" ]; then
+    echo "${ZSB_ERROR} Username not set."; return 1
+  fi
+
+  if [ -z "$oldUrl" ]; then
+    echo "${ZSB_ERROR} Origin url not set."; return 1
+  fi
+
+  if ${zsb}.doesMatch "$oldUrl" "^http[s]:\/{2}.+@"; then
+    printf "${ZSB_INFO} Username in url is already set.
       $(hl $oldUrl) \n"
     return 0
   fi
