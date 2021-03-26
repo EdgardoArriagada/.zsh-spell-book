@@ -4,6 +4,8 @@ if ! bashcompinit >/dev/null 2>&1; then
   bashcompinit
 fi
 
+autoload throw catch
+
 bindkey '^e' edit-command-line
 
 # Partial tab completion color
