@@ -89,9 +89,9 @@ _${zsb}.ga() {
   # if we are completing the first item
   if [ "$COMP_CWORD" = "1" ]; then
     case "$currentCompletion" in
-      [n]*) # matches 'new'
+      n*) # matches 'new'
         completionList+=( 'new' ) ;;
-      [f]*) # matches 'fast'
+      f*) # matches 'fast'
         completionList=( 'fast' ) ;;
     esac
   fi
