@@ -6,8 +6,6 @@ fi
 
 autoload throw catch
 
-bindkey '^e' edit-command-line
-
 # Partial tab completion color
 zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==34=34}:${(s.:.)LS_COLORS}")';
 
