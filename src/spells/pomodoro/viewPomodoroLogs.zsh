@@ -1,4 +1,4 @@
-${zsb}.viewPomodoroLogs() {
+${zsb}.pomodoro.viewPomodoroLogs() {
   local fileName="$1"
   local fileOpenerProgram="$2"
 
@@ -18,7 +18,7 @@ ${zsb}.viewPomodoroLogs() {
   ${fileOpenerProgram} ${fullFilePath}
 }
 
-${zsb}.lastWorkingDay() {
+${zsb}.pomodoro.lastWorkingDay() {
   local today=`date +%w`
   local SUNDAY=0
   local MONDAY=1
@@ -32,11 +32,11 @@ ${zsb}.lastWorkingDay() {
 }
 
 
-cpomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log) batcat
-vpomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log) nvim
+cpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) batcat
+vpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) nvim
 
-cypomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") batcat
-vypomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") nvim
+cypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") batcat
+vypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") nvim
 
-cwpomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.lastWorkingDay)") batcat
-vwpomodoro() ${zsb}.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.lastWorkingDay)") nvim
+cwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.pomodoro.lastWorkingDay)") batcat
+vwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.pomodoro.lastWorkingDay)") nvim

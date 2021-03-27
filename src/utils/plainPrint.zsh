@@ -2,5 +2,3 @@
 # pass args in quotes
 plainPrint() echo -E - "$1"
 
-alias puts='plainPrint'
-

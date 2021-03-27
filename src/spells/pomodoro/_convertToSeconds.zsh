@@ -1,4 +1,4 @@
-${zsb}.convertToSeconds() (
+${zsb}.pomodoro.convertToSeconds() (
   local this="$0"
   local inputTime="$1"
   local totalSeconds
@@ -6,19 +6,15 @@ ${zsb}.convertToSeconds() (
   ${this}.main () {
     ${this}.setTotalSeconds
 
-    if [ -z "$totalSeconds" ] || ${this}.timerOutOfRange; then
-      ${this}.throwBadArgumentException; return $?
-    fi
-
     echo "$totalSeconds"
   }
 
   ${this}.setTotalSeconds() {
     if ${this}.isShortTimeFormat; then ${this}.setTotalSecondsFromShortTimeFormat;
-
     elif ${zsb}.isInteger "$inputTime"; then totalSeconds="$inputTime";
-
-    elif ${this}.isTimeFormat; then ${this}.setTotalSecondsFromTimeFormat; fi
+    elif ${this}.isTimeFormat; then ${this}.setTotalSecondsFromTimeFormat;
+    else totalSeconds=0;
+    fi
   }
 
   ${this}.isShortTimeFormat() {
@@ -58,23 +54,6 @@ ${zsb}.convertToSeconds() (
     local minutesToSeconds=$(($minutes * 60))
 
     totalSeconds=$(($hoursToSeconds + $minutesToSeconds + $seconds ))
-  }
-
-  ${this}.timerOutOfRange() {
-    local sixtyHoursMinusOneSecond="215999"
-
-    [ "$totalSeconds" -gt "$sixtyHoursMinusOneSecond" ] || \
-      [ "$totalSeconds" -lt "1" ] && return 0
-    return 1
-  }
-
-  ${this}.throwBadArgumentException() {
-    echo "\
-      \r${ZSB_ERROR} Bad argument.
-          \rTry with (hh:)?mm:ss $(it '(min 1, max 59:59:59)')
-          OR {s : s ∈ Z and 1 ≤ s ≤ 215999}
-          OR ^n[hHmMsS]$ $(it '(min 1s, max 59h)')"
-    return 1
   }
 
   ${this}.main "$@"

@@ -1,0 +1,1 @@
+alias puts="echo -"

@@ -9,17 +9,14 @@ pomodoro() (
   local pomodoroLabel="${*}"
 
   ${this}.main() {
-    totalSeconds=$(${zsb}.convertToSeconds "$inputTime")
+    totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
 
-    if ! ${zsb}.didSuccess "$?"; then
-      echo "$totalSeconds" # as error
-      return 1
-    fi
+    ${zsb}.pomodoro.validateSeconds "$totalSeconds"
 
     ${this}.createPomodoroTmuxSession
 
     if ${this}.isPomodoroRunning; then
-      ${this}.throwPomodoroAlreadyRunning; return $?
+      ${zsb}.throw "A pomodoro timer is already running."
     fi
 
     ${this}.clearPomodoroSessionTty
@@ -41,17 +38,12 @@ pomodoro() (
     ${zsb}.doesMatch "$lastPomodoroLines" "$POMODORO_REGEX"
   }
 
-  ${this}.throwPomodoroAlreadyRunning() {
-    echo "${ZSB_ERROR} A pomodoro timer is already running."
-    return 1
-  }
-
   ${this}.clearPomodoroSessionTty() tmux send-keys -t pomodoro.0 C-g
 
   ${this}.beginPomodoro() {
     # the white space at the beginning is to
     # skip it from being saved to zsh history
-    local pomodoroCmd=" ${zsb}.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
+    local pomodoroCmd=" ${zsb}.pomodoro.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
     tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
   }
 

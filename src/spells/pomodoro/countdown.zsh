@@ -1,11 +1,9 @@
 countdown() {
   local inputTime="$1"
-  totalSeconds=$(${zsb}.convertToSeconds "$inputTime")
+  local totalSeconds="$(${zsb}.pomodoro.convertToSeconds "$inputTime")"
 
-  if ! ${zsb}.didSuccess "$?"; then
-    echo "$totalSeconds" # as error
-    return 1
-  fi
+  ${zsb}.pomodoro.validateSeconds "$totalSeconds"
 
-  ${zsb}.runTimerFromSeconds "$totalSeconds"
+  ${zsb}.pomodoro.runTimerFromSeconds "$totalSeconds"
 }
+
