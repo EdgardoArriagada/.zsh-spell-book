@@ -1,4 +1,4 @@
-o() (
+o() {
   local file="$1"
   local extension=$(${zsb}.extensionOf "$file")
 
@@ -8,7 +8,7 @@ o() (
     pdf)
       xdg-open "$file" ;;
     *)
-      vim "$file" ;;
+      eval "nnvim ${file}" ;;
   esac
-)
+}
 
