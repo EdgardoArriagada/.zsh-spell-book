@@ -9,7 +9,7 @@ pomodoro() (
   local pomodoroLabel="${*}"
 
   ${this}.main() {
-    totalSeconds=$(${zsb}.convertToSeconds "$inputTime")
+    totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
 
     ${zsb}.pomodoro.validateSeconds "$totalSeconds"
 

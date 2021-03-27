@@ -1,4 +1,4 @@
-${zsb}.convertToSeconds() (
+${zsb}.pomodoro.convertToSeconds() (
   local this="$0"
   local inputTime="$1"
   local totalSeconds

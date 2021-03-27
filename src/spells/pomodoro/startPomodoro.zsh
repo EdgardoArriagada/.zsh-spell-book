@@ -15,7 +15,7 @@ ${zsb}.startPomodoro() (
 
     ${this}.appendPomodoroInfoToLog "started"
 
-    ${zsb}.runTimerFromSeconds "$totalSeconds"
+    ${zsb}.pomodoro.runTimerFromSeconds "$totalSeconds"
 
     ${this}.appendPomodoroInfoToLog "ended"
   }

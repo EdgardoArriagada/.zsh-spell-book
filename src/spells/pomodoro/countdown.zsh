@@ -1,9 +1,9 @@
 countdown() {
   local inputTime="$1"
-  local totalSeconds="$(${zsb}.convertToSeconds "$inputTime")"
+  local totalSeconds="$(${zsb}.pomodoro.convertToSeconds "$inputTime")"
 
   ${zsb}.pomodoro.validateSeconds "$totalSeconds"
 
-  ${zsb}.runTimerFromSeconds "$totalSeconds"
+  ${zsb}.pomodoro.runTimerFromSeconds "$totalSeconds"
 }
 
