@@ -1,4 +1,4 @@
-${zsb}.startPomodoro() (
+${zsb}.pomodoro.startPomodoro() (
   local this="$0"
   local totalSeconds="$1"
   local inputTime="$2"

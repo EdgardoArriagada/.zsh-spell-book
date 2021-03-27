@@ -43,7 +43,7 @@ pomodoro() (
   ${this}.beginPomodoro() {
     # the white space at the beginning is to
     # skip it from being saved to zsh history
-    local pomodoroCmd=" ${zsb}.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
+    local pomodoroCmd=" ${zsb}.pomodoro.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
     tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
   }
 
