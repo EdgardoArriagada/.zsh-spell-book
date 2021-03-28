@@ -9,3 +9,5 @@ alias mata='sudo killall -9'
 alias escapeswap='setxkbmap -option caps:swapescape'
 alias keysbacktonormal='setxkbmap -option'
 alias vouembora='shutdown -h now'
+alias ee="exit"
+
