@@ -35,7 +35,6 @@
   "ruby.intellisense": "rubyLocate",
   "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
   "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/init.vim",
-  "window.zoomLevel": 1,
   "whichkey.sortOrder": "alphabetically",
   "workbench.list.automaticKeyboardNavigation": false,
   "whichkey.delay": 0,
@@ -1048,6 +1047,8 @@
       "command": "workbench.action.toggleZenMode"
     }
   ],
-  "editor.smoothScrolling": true
+  "editor.smoothScrolling": true,
+  "window.zoomLevel": 1,
+  "typescript.preferences.importModuleSpecifier": "relative"
 }
 
