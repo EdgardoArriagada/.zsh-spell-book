@@ -8,10 +8,10 @@
     "description": "Log output to console"
   },
   "Smart Print": {
-    "prefix": "les",
+    "prefix": "le",
     "body": [
-      "puts \"le $1: #{$1}\"",
-      "$2"
+      "puts \"le $1: #{$1$2}\"",
+      "$3"
     ],
     "description": "Smart print"
   }
