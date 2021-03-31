@@ -1,0 +1,19 @@
+{
+  "Write Test Block": {
+    "prefix": "test",
+    "body": [
+      "test('$1', () => {",
+      "  $2",
+      "})"
+    ],
+    "description": ""
+  },
+  "Write Arrow function": {
+    "prefix": "af",
+    "body": [
+      "($1) => {$2}"
+    ],
+    "description": "Log output to console"
+  }
+}
+

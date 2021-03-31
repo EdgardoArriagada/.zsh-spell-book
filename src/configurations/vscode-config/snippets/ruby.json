@@ -14,6 +14,14 @@
       "$3"
     ],
     "description": "Smart print"
+  },
+  "Hacky Log": {
+    "prefix": "log",
+    "body": [
+      "$$console.log(\"$1\")",
+      "$3"
+    ],
+    "description": "Hacky log print"
   }
 }
 
