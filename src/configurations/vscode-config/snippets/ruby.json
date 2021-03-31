@@ -1,0 +1,19 @@
+{
+  "Print to console": {
+    "prefix": "puts",
+    "body": [
+      "puts \"$1\"",
+      "$2"
+    ],
+    "description": "Log output to console"
+  },
+  "Smart Print": {
+    "prefix": "les",
+    "body": [
+      "puts \"le $1: #{$1}\"",
+      "$2"
+    ],
+    "description": "Smart print"
+  }
+}
+
