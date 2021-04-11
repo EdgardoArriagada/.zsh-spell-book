@@ -6,14 +6,30 @@
       "  $2",
       "})"
     ],
-    "description": ""
+    "description": "test block"
+  },
+  "Write Describe Block": {
+    "prefix": "describe",
+    "body": [
+      "describe('$1', () => {",
+      "  $2",
+      "})"
+    ],
+    "description": "describe block"
   },
   "Write Arrow function": {
     "prefix": "af",
     "body": [
       "($1) => {$2}"
     ],
-    "description": "Log output to console"
+    "description": "write arrow function"
+  },
+  "Write Full Arrow function": {
+    "prefix": "faf",
+    "body": [
+      "const $1 = ($2) => {$3}"
+    ],
+    "description": "write full arrow function"
   }
 }
 
