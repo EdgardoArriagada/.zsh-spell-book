@@ -3,6 +3,8 @@ ${zsb}.updateGroup() (
   local repoFile="$1"
   local pass
   local repoList=($(< ${repoFile}))
+  local currentRepo
+  local currentBranch
 
   ${this}.main() {
     ${this}.validateRepoList
@@ -13,7 +15,7 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.validateRepoList() {
-      [ -z "$repoList" ] && ${zsb}.throw "Invalid repolist."
+    [ -z "$repoList" ] && ${zsb}.throw "Invalid repolist."
   }
 
   ${this}.inputCredentials() {
@@ -24,28 +26,31 @@ ${zsb}.updateGroup() (
   ${this}.manageEachRepo() {
     for repo in "${repoList[@]}"; do
       ${zsb}.fillWithToken '_'
-      ${zsb}.info "Checking $(hl $repo)."
-      ${zsb}.validateRepo
-      ${this}.manageRepo "$repo"
+
+      currentRepo="$repo"
+      ${this}.validateRepo
+
+      ${this}.setShellState
+
+      if ${this}.isRepoInCleanState; then
+        ${this}.printCleanHeader
+        ${this}.updateRepo
+      else
+        ${this}.printDirtyHeader
+        ${this}.manageManually
+      fi
     done
   }
 
-  ${this}.manageRepo() {
-    local repo="$1"
+  ${this}.validateRepo() {
+    [ -d "$HOME/$currentRepo" ] && return 0
 
-    builtin cd $HOME/$repo
-
-    if ${this}.isRepoInCleanState; then
-      ${this}.updateRepo "$repo"
-    else
-      ${this}.manageManually
-    fi
+    ${zsb}.throw "$(hl $currentRepo) does not exists, aborting.\nPlease check $(hl $repoFile)"
   }
 
-  ${zsb}.validateRepo() {
-    if [ ! -d "$HOME/$repo" ]; then
-      ${zsb}.throw "Repo does not exists, aborting.\nPlease check $(hl $repoFile)"
-    fi
+  ${this}.setShellState() {
+    builtin cd $HOME/$currentRepo
+    currentBranch="$(git branch --show-current)"
   }
 
   ${this}.isRepoInCleanState() {
@@ -53,24 +58,36 @@ ${zsb}.updateGroup() (
     ${zsb}.userWorkingOnDefaultBranch && [ -z "$gitStatusOutput" ]
   }
 
+  ${this}.printCleanHeader() {
+    printf "[ $(hl $currentRepo) ($currentBranch) ]\n"
+  }
+
+  ${this}.printDirtyHeader() {
+    printf "[ $(hl $currentRepo) ($currentBranch) ± ]\n"
+  }
+
   ${this}.updateRepo() {
+    local withCredUrl="$(${this}.getWithCredUrl)"
+
+    ${zsb}.info "Pulling from ${currentBranch}"
+    git pull "$withCredUrl" "$currentBranch"
+  }
+
+  ${this}.getWithCredUrl() {
     local originUrl="$(git config --get remote.origin.url)"
     local regexReplacer="s/@/:${pass}@/"
-    local withCredUrl="$(printf "$originUrl" | sed -E "$regexReplacer")"
-    git pull "$withCredUrl"
+    printf "$originUrl" | sed -E "$regexReplacer"
   }
 
   ${this}.manageManually() {
-    ${zsb}.info "Stopped at dirty repo.\nOpen a new terminal to manage"
-    ${zsb}.prompt "Enter $(hl c) or $(hl n) to continue:"
+    ${zsb}.prompt "Enter $(hl n) to continue:"
 
     while true; do
       read key
       case $key in
-      [CcNn]*)
-        ${zsb}.info "Continuing..."
-        return 0
-        ;;
+      [Nn]*)
+        # continue
+        return 0 ;;
       esac
     done
   }
