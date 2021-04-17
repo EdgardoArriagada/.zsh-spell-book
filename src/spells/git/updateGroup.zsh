@@ -1,8 +1,8 @@
 ${zsb}.updateGroup() (
   local this="$0"
-  local repoList="$1"
+  local repoFile="$1"
   local pass
-  local repoList=($(< ${repoList}))
+  local repoList=($(< ${repoFile}))
 
   ${this}.main() {
     ${this}.validateRepoList
@@ -24,17 +24,14 @@ ${zsb}.updateGroup() (
   ${this}.manageEachRepo() {
     for repo in "${repoList[@]}"; do
       ${zsb}.fillWithToken '_'
+      ${zsb}.info "Checking $(hl $repo)."
+      ${zsb}.validateRepo
       ${this}.manageRepo "$repo"
     done
   }
 
   ${this}.manageRepo() {
     local repo="$1"
-    ${zsb}.info "Managing $(hl $repo)."
-
-    if [ ! -d "$HOME/$repo" ]; then
-      ${zsb}.throw "Repo does not exists, aborting."
-    fi
 
     builtin cd $HOME/$repo
 
@@ -42,6 +39,12 @@ ${zsb}.updateGroup() (
       ${this}.updateRepo "$repo"
     else
       ${this}.manageManually
+    fi
+  }
+
+  ${zsb}.validateRepo() {
+    if [ ! -d "$HOME/$repo" ]; then
+      ${zsb}.throw "Repo does not exists, aborting.\nPlease check $(hl $repoFile)"
     fi
   }
 
