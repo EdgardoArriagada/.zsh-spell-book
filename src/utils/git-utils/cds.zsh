@@ -3,7 +3,7 @@ cds() {
   builtin cd $1 && ls
 
   if ${zsb}.isGitRepo; then
-    ${zsb}.printHr '--no-space'
+    ${zsb}.fillWithToken '_'
     ${zsb}.gitStatus
     return 0
   fi
