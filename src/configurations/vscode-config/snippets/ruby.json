@@ -23,7 +23,7 @@
     ],
     "description": "Hacky log print"
   },
-  "Hacky Log": {
+  "Hacky smart Log": {
     "prefix": "leg",
     "body": [
       "$$console.log(\"le $1: #{$1$2}\")",
