@@ -1,0 +1,35 @@
+{
+  "Write Test Block": {
+    "prefix": "test",
+    "body": [
+      "test('$1', () => {",
+      "  $2",
+      "})"
+    ],
+    "description": "test block"
+  },
+  "Write Describe Block": {
+    "prefix": "describe",
+    "body": [
+      "describe('$1', () => {",
+      "  $2",
+      "})"
+    ],
+    "description": "describe block"
+  },
+  "Write Arrow function": {
+    "prefix": "af",
+    "body": [
+      "($1) => {$2}"
+    ],
+    "description": "write arrow function"
+  },
+  "Write Full Arrow function": {
+    "prefix": "faf",
+    "body": [
+      "const $1 = ($2) => {$3}"
+    ],
+    "description": "write full arrow function"
+  }
+}
+
