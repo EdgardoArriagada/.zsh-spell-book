@@ -14,6 +14,6 @@ dondedice() {
   fi
 
   # You CAN move to any excluded folder to perform a search inside it
-  grep -rn --exclude-dir={log,node_modules,build,dist,public,.cache,coverage,target,tmp} "$1" "$dir"
+  grep -rn --exclude-dir={log,node_modules,build,dist,public,.cache,coverage,target,tmp,venv} "$1" "$dir"
   return 0
 }

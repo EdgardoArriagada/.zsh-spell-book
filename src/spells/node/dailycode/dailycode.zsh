@@ -7,5 +7,5 @@ dailycode() {
   fi
 
   cp -pr ${ZSB_DIR}/src/spells/node/dailycode/template/ ./${problemName} &&
-    cd ${problemName} && git init
+    cd ${problemName} && git init && eval "npm install jest"
 }
