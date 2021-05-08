@@ -37,10 +37,10 @@ sqlineOf() (
 _${zsb}.sqlineOf() {
   case $COMP_CWORD in
     1)
-      COMPREPLY=( $(compgen -W "'INSERT_INTO' 'CREATE_TABLE'") )
+      COMPREPLY=( INSERT_INTO CREATE_TABLE )
       ;;
     2)
-      COMPREPLY=( $(compgen -W "my_table") )
+      COMPREPLY=( my_table )
       ;;
     3)
       COMPREPLY=( $(compgen -f -X  "!*.sql") )

@@ -15,7 +15,7 @@ _${zsb}.gds() {
   local completionList=( $(${zsb}.getGitFiles 'staged') )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.gds gds

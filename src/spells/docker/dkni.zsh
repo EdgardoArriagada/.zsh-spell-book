@@ -71,7 +71,7 @@ _${zsb}.dkni() {
       COMPREPLY=( $(compgen -C "docker ps --format "{{.Names}}"") )
       ;;
     2)
-      COMPREPLY=( $(compgen -W "ip gateway") )
+      COMPREPLY=( ip gateway )
       ;;
   esac
 }

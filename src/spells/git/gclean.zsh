@@ -16,7 +16,7 @@ _${zsb}.gclean() {
   local completionList=( $(${zsb}.getGitFiles 'untracked') )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.gclean gclean

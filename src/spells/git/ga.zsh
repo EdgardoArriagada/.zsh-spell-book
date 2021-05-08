@@ -97,7 +97,7 @@ _${zsb}.ga() {
   fi
 
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.ga ga

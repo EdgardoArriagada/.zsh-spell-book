@@ -34,7 +34,7 @@ _${zsb}.gc() {
     [ "$item" = "--aware" ] && return 0
   done
 
-  COMPREPLY=( $(compgen -W "--aware") )
+  COMPREPLY=( --aware )
 }
 
 complete -F _${zsb}.gc gc

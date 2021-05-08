@@ -35,7 +35,7 @@ _${zsb}.relabel() {
   local completionList=( "--aware" "--force" )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.relabel relabel

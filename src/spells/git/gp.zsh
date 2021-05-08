@@ -38,7 +38,7 @@ _${zsb}.gp() {
     2)
       local firstItemUsed="${COMP_WORDS[1]}"
       if ${zsb}.isDefaultBranch "$firstItemUsed"; then
-        COMPREPLY=( $(compgen -W "--aware") )
+        COMPREPLY=( --aware )
       fi
       ;;
   esac

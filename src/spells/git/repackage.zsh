@@ -28,6 +28,6 @@ _${zsb}.repackage() {
   local completionList=( "--aware" "--force" )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 complete -F _${zsb}.repackage repackage

@@ -8,7 +8,7 @@ _${zsb}.gco() {
   local completionList=( $(${zsb}.getGitFiles 'unstaged') )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.gco gco

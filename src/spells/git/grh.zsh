@@ -8,7 +8,7 @@ _${zsb}.grh() {
   local completionList=( $(${zsb}.getGitFiles 'staged') )
   local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( $(compgen -W "${newCompletion[*]}") )
+  COMPREPLY=( "${newCompletion[@]}" )
 }
 
 complete -F _${zsb}.grh grh
