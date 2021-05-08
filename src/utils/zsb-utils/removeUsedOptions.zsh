@@ -11,9 +11,8 @@ ${zsb}.removeUsedOptions() {
   # create a new completion list excluding usedOptions
   local newCompletionList=( )
   for item in "${completionList[@]}"; do
-    if [ "${usedOptions[$item]}" != "1" ]; then
-      newCompletionList+=( "$item" )
-    fi
+    [ "${usedOptions[$item]}" == "1" ] && continue
+    newCompletionList+=( "$item" )
   done
 
   echo ${newCompletionList[@]}
