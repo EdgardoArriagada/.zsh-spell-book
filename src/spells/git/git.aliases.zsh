@@ -24,7 +24,7 @@ alias GSH='toggleCapsLock && gsh'
 
 # this aliases reveice args, so toggleCapsLocks makes no sense
 alias gbm='git branch -m'
-alias gsw='git switch'
+alias gswa='git switch'
 alias gswc='git switch -c'
 
 alias onotif="sendmeto 'https://github.com/notifications'"
