@@ -2,17 +2,16 @@ gsw() {
   git switch ${1}
 }
 
-# Complete with local branches excluding current
 _${zsb}.gsw() {
-  [ "$COMP_CWORD" -gt "1" ] && return 0
+  [ "$CURRENT" -gt "2" ] && return 0
 
-  local currentBranch="$(${zsb}.gitBranches 'current')"
+  local -a subcmds
   local localBranhces=( $(${zsb}.gitBranches) )
+  local currentBranch=( $(${zsb}.gitBranches 'current') )
 
-  for branch in "${localBranhces[@]}"; do
-    [ "$branch" = "$currentBranch" ] && continue
-    COMPREPLY+=( "$branch" )
-  done
+  subcmds=( ${localBranhces:|currentBranch} )
+  _describe 'command' subcmds
 }
 
-complete -F _${zsb}.gsw gsw
+compdef _${zsb}.gsw gsw
+
