@@ -16,6 +16,7 @@ unz() (
     *.xz) xz -d "$file" ;;
     *.zip) unzip "$file" ;;
     *.Z) uncompress "$file" ;;
+    *.7z) 7z x "$file" ;;
     *) ${zsb}.throw 'Unhandled file extension.' ;;
   esac
 )
