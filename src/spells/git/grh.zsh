@@ -4,11 +4,12 @@ grh() {
 }
 
 _${zsb}.grh() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local usedCompletion=( "${words[@]:1:$CURRENT-1}" )
   local completionList=( $(${zsb}.getGitFiles 'staged') )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( "${newCompletion[@]}" )
+  local newCompletion=( ${completionList:|usedCompletion} )
+  _describe 'command' newCompletion
 }
 
-complete -F _${zsb}.grh grh
+compdef _${zsb}.grh grh
+

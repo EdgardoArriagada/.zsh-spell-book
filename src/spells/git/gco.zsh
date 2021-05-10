@@ -4,11 +4,12 @@ gco() {
 }
 
 _${zsb}.gco() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local usedCompletion=( "${words[@]:1:$CURRENT-1}" )
   local completionList=( $(${zsb}.getGitFiles 'unstaged') )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( "${newCompletion[@]}" )
+  local newCompletion=( ${completionList:|usedCompletion} )
+  _describe 'command' newCompletion
 }
 
-complete -F _${zsb}.gco gco
+compdef _${zsb}.gco gco
+

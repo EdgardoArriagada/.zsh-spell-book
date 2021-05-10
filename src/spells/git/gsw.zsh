@@ -5,12 +5,11 @@ gsw() {
 _${zsb}.gsw() {
   [ "$CURRENT" -gt "2" ] && return 0
 
-  local -a subcmds
   local localBranhces=( $(${zsb}.gitBranches) )
   local currentBranch=( $(${zsb}.gitBranches 'current') )
 
-  subcmds=( ${localBranhces:|currentBranch} )
-  _describe 'command' subcmds
+  local newCompletion=( ${localBranhces:|currentBranch} )
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.gsw gsw

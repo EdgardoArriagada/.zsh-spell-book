@@ -70,9 +70,9 @@ ga() (
 )
 
 _${zsb}.ga() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local firstItemUsed="${COMP_WORDS[1]}"
-  local currentCompletion="${COMP_WORDS[COMP_CWORD]}"
+  local usedCompletion=( "${words[@]:1:$CURRENT-1}" )
+  local firstItemUsed="${words[2]}"
+  local currentCompletion="${words[CURRENT]}"
   local completionList=( )
 
   case "$firstItemUsed" in
@@ -87,7 +87,7 @@ _${zsb}.ga() {
   esac
 
   # if we are completing the first item
-  if [ "$COMP_CWORD" = "1" ]; then
+  if [ "$CURRENT" = "2" ]; then
     case "$currentCompletion" in
       n*) # matches 'new'
         completionList+=( 'new' ) ;;
@@ -96,8 +96,9 @@ _${zsb}.ga() {
     esac
   fi
 
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
-  COMPREPLY=( "${newCompletion[@]}" )
+  local newCompletion=( ${completionList:|usedCompletion} )
+  _describe 'command' newCompletion
 }
 
-complete -F _${zsb}.ga ga
+compdef _${zsb}.ga ga
+
