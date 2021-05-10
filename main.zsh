@@ -7,7 +7,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
   local envFile=${ZSB_DIR}/.env
   if [ -f $envFile ]; then source $envFile; fi
 
-  # Source zsh configuration before any other zsh script
+  source ${ZSB_DIR}/src/shell.config.zsh
   source ${ZSB_DIR}/src/zsh.config.zsh
 
   # Dynamic prefix
