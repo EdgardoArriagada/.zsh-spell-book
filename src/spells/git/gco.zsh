@@ -4,7 +4,7 @@ gco() {
 }
 
 _${zsb}.gco() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-1}" )
+  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
   local completionList=( $(${zsb}.getGitFiles 'unstaged') )
 
   local newCompletion=( ${completionList:|usedCompletion} )

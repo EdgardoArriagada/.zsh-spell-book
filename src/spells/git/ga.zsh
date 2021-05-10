@@ -70,7 +70,7 @@ ga() (
 )
 
 _${zsb}.ga() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-1}" )
+  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
   local firstItemUsed="${words[2]}"
   local currentCompletion="${words[CURRENT]}"
   local completionList=( )
