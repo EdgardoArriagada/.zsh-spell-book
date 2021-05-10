@@ -3,13 +3,5 @@ grh() {
   git reset -q "$@" && ${zsb}.gitStatus
 }
 
-_${zsb}.grh() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
-  local completionList=( $(${zsb}.getGitFiles 'staged') )
-
-  local newCompletion=( ${completionList:|usedCompletion} )
-  _describe 'command' newCompletion
-}
-
-compdef _${zsb}.grh grh
+compdef "_${zsb}.gitUnrepeat 'staged'" grh
 

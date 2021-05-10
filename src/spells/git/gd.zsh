@@ -8,12 +8,5 @@ gd() {
   return 0
 }
 
-_${zsb}.gd() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(${zsb}.getGitFiles 'unstaged') )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
+compdef "_${zsb}.gitUnrepeat 'unstaged'" gd
 
-  COMPREPLY=( "${newCompletion[@]}" )
-}
-
-complete -F _${zsb}.gd gd

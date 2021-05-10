@@ -40,3 +40,13 @@ ${zsb}.getGitFiles() (
 
   ${this}.main "$@"
 )
+
+_${zsb}.gitUnrepeat() {
+  # $1 can be 'staged|unstaged|untracked|red'
+  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
+  local completionList=( $(${zsb}.getGitFiles $1) )
+
+  local newCompletion=( ${completionList:|usedCompletion} )
+  _describe 'command' newCompletion
+}
+

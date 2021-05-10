@@ -8,14 +8,5 @@ gds() {
   return 0
 }
 
-complete -C "${zsb}.getGitFiles 'staged'" gds
+compdef "_${zsb}.gitUnrepeat 'staged'" gds
 
-_${zsb}.gds() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(${zsb}.getGitFiles 'staged') )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
-
-  COMPREPLY=( "${newCompletion[@]}" )
-}
-
-complete -F _${zsb}.gds gds

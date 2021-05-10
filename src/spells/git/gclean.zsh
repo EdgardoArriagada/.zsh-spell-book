@@ -11,13 +11,5 @@ gclean() {
   ${zsb}.confirmMenu && git clean -fd
 }
 
-_${zsb}.gclean() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
-  local completionList=( $(${zsb}.getGitFiles 'untracked') )
-
-  local newCompletion=( ${completionList:|usedCompletion} )
-  _describe 'command' newCompletion
-}
-
-compdef _${zsb}.gclean gclean
+compdef "_${zsb}.gitUnrepeat 'untracked'" gclean
 
