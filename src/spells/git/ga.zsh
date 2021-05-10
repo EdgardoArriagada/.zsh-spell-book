@@ -92,7 +92,7 @@ _${zsb}.ga() {
       n*) # matches 'new'
         completionList+=( 'new' ) ;;
       f*) # matches 'fast'
-        completionList=( 'fast' ) ;;
+        completionList+=( 'fast' ) ;;
     esac
   fi
 
