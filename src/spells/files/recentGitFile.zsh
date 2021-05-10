@@ -1,19 +1,19 @@
-${zsb}.recentGitFile() (
+${zsb}.recentGitFile() {
   local callback="$1"
   local inputFile="$2"
   eval "$callback $inputFile"
-)
-
-_${zsb}.recentGitFile() {
-  [ "$COMP_CWORD" -gt "2" ] && return 0
-
-  COMPREPLY=( $(compgen -C "${zsb}.getGitFiles") )
 }
 
-complete -F _${zsb}.recentGitFile ${zsb}.recentGitFile
+_${zsb}.recentGitFile() {
+  [ "$CURRENT" -gt "3" ] && return 0
 
-alias vimr="${zsb}.recentGitFile vims"
-alias vr="vimr"
+  local completionList=( $(${zsb}.getGitFiles) )
+  _describe 'command' completionList
+}
 
-alias catr="${zsb}.recentGitFile c"
-alias cr="catr"
+compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
+
+alias vr="${zsb}.recentGitFile vims"
+alias cr="${zsb}.recentGitFile c"
+alias ccpr="${zsb}.recentGitFile ccp"
+

@@ -1,3 +1,3 @@
 vims() {
-  nvim "$@" && ${zsb}.isGitRepo && ${zsb}.gitStatus
+ eval "nnvim $@" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 }
