@@ -12,11 +12,12 @@ gclean() {
 }
 
 _${zsb}.gclean() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
+  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
   local completionList=( $(${zsb}.getGitFiles 'untracked') )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
 
-  COMPREPLY=( "${newCompletion[@]}" )
+  local newCompletion=( ${completionList:|usedCompletion} )
+  _describe 'command' newCompletion
 }
 
-complete -F _${zsb}.gclean gclean
+compdef _${zsb}.gclean gclean
+
