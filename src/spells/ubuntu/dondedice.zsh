@@ -2,18 +2,10 @@
 # for multiple words, pass the argument surrounded with double quotes, example: dondedice "foo bar"
 
 dondedice() {
-  if [ -z "$1" ]; then
-    echo "${ZSB_ERROR} At least one argument expected"
-    return 1
-  fi
-
-  local dir="$2"
-
-  if [ -z "$dir" ]; then
-    dir="."
-  fi
+  readonly searchTerm=${1:?'Provide a search term.'}
+  readonly dir=${2:='.'}
 
   # You CAN move to any excluded folder to perform a search inside it
-  grep -rn --exclude-dir={log,node_modules,build,dist,.cache,coverage,target,tmp,venv} "$1" "$dir"
+  grep -rn --exclude-dir={log,node_modules,build,dist,.cache,coverage,target,tmp,venv} "$searchTerm" "$dir"
   return 0
 }

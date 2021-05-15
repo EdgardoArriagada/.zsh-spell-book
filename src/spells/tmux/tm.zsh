@@ -1,6 +1,5 @@
 tm() {
-  local targetSession="$1"
-  : ${targetSession:='main'}
+  readonly targetSession=${1:='main'}
 
   if [ ! -z "$TMUX" ]; then # if inside tmux session
     if ! tmux has-session -t "$targetSession" 2>/dev/null; then

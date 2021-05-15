@@ -1,6 +1,6 @@
 ggl() {
-  readonly inputBranch="${1:?You must provide a branch to pull from.}"
-  local currentBranch=$(${zsb}.gitBranches 'current')
+  readonly inputBranch=${1:?'You must provide a branch to pull from.'}
+  readonly currentBranch=$(${zsb}.gitBranches 'current')
 
   if [ "$currentBranch" != "$inputBranch" ]; then
     ${zsb}.throw "You can't use this command to pull from different branches"
