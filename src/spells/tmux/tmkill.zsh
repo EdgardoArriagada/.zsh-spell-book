@@ -53,13 +53,5 @@ tmkill() (
   ${this}.main "$@"
 )
 
+compdef "_${zsb}.listFromCommand tmls" tmkill
 
-_${zsb}.tmkill() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( $(tmls) )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
-
-  COMPREPLY=( "${newCompletion[@]}" )
-}
-
-complete -F _${zsb}.tmkill tmkill
