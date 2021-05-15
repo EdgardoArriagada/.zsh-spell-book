@@ -1,15 +1,9 @@
 ggl() {
-  local inputBranch="$1"
-  if [ -z "$inputBranch" ]; then
-    echo "${ZSB_ERROR} You must provide a branch to pull from."
-    return 1
-  fi
-
+  readonly inputBranch="${1:?You must provide a branch to pull from.}"
   local currentBranch=$(${zsb}.gitBranches 'current')
 
   if [ "$currentBranch" != "$inputBranch" ]; then
-    echo "${ZSB_ERROR} You can't use this command to pull from different branches"
-    return 0
+    ${zsb}.throw "You can't use this command to pull from different branches"
   fi
 
   git pull origin "$inputBranch" && copythis " " -s

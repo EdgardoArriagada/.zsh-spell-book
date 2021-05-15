@@ -11,7 +11,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
   source ${ZSB_DIR}/src/zsh.config.zsh
 
   # Dynamic prefix
-  [ -z $zsb ] && zsb="zsb"
+  : ${zsb:='zsb'}
 
   # Source global variables
   source ${ZSB_DIR}/src/globalVariables.zsh
