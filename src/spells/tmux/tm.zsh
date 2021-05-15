@@ -6,8 +6,6 @@ tm() {
     [[ "$currentSession" = "$targetSession" ]] && ${zsb}.throw "You did not move."
 
     if ! tmux has-session -t="$targetSession" 2>/dev/null; then
-      [[ "$currentSession" =~ "$targetSession" ]] && ${zsb}.throw "You did not move."
-
       tmux new-session -d -s "$targetSession"
     fi
 
