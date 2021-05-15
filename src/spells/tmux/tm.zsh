@@ -1,10 +1,16 @@
 tm() {
-  readonly targetSession=${1:='main'}
+  local -r targetSession=${1:='main'}
 
   if [ ! -z "$TMUX" ]; then # if inside tmux session
-    if ! tmux has-session -t "$targetSession" 2>/dev/null; then
+    local -r currentSession="$(tmux display-message -p '#S')"
+    [[ "$currentSession" = "$targetSession" ]] && ${zsb}.throw "You did not move."
+
+    if ! tmux has-session -t="$targetSession" 2>/dev/null; then
+      [[ "$currentSession" =~ "$targetSession" ]] && ${zsb}.throw "You did not move."
+
       tmux new-session -d -s "$targetSession"
     fi
+
     tmux switch-client -t "$targetSession"
   fi
 
