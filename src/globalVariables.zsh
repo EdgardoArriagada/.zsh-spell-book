@@ -37,3 +37,6 @@ ZSB_CURRENT=" ${ZSB_COLOR_FOREGROUND_RED}- Current${ZSB_NO_COLOR}:"
 
 # Git
 ZSB_GIT_DEFAULT_BRANCHES="(master|develop|devel|dev|main)"
+ZSB_GIT_AWARE="'--aware:Proceed even if affecting a default branch'"
+ZSB_GIT_FORCE="'--force:Proceed even in commit have already been pushed online'"
+

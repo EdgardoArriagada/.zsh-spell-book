@@ -30,12 +30,4 @@ relabel() {
   return 0
 }
 
-_${zsb}.relabel() {
-  local usedCompletion=( "${COMP_WORDS[@]:1:$COMP_CWORD-1}" )
-  local completionList=( "--aware" "--force" )
-  local newCompletion=( $(${zsb}.removeUsedOptions "${usedCompletion[*]}" "${completionList[*]}") )
-
-  COMPREPLY=( "${newCompletion[@]}" )
-}
-
-complete -F _${zsb}.relabel relabel
+compdef "_${zsb}.nonRepeatedListD ${ZSB_GIT_AWARE} ${ZSB_GIT_FORCE}" relabel
