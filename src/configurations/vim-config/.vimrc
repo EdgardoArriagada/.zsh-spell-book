@@ -16,6 +16,9 @@ set background=dark
 set path+=** "Better search when :e
 set wildmenu "Allow tab in menu when searching for a file
 
+" Y behaves like D and C
+nnoremap Y y$
+
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
 
@@ -43,3 +46,4 @@ if &term =~ '^screen'
   execute "set <xRight>=\e[1;*C"
   execute "set <xLeft>=\e[1;*D"
 endif
+
