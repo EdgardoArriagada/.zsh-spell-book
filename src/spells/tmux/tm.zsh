@@ -16,9 +16,16 @@ tm() {
 }
 
 _${zsb}.tm() {
-  [ "$COMP_CWORD" -gt "1" ] && return 0
+  [ "$CURRENT" -gt "2" ] && return 0
+  local tmuxList=( $(tmls) )
+  if [ ! -z "$TMUX" ]; then # if inside tmux session
+    local currentSession=( "$(tmux display-message -p '#S')" )
+    local actualList=${tmuxList:|currentSession}
+    _describe 'command' actualList
+    return
+  fi
 
-  COMPREPLY=( $(tmls) )
+  _describe 'command' tmuxList
 }
 
-complete -F _${zsb}.tm tm
+compdef _${zsb}.tm tm
