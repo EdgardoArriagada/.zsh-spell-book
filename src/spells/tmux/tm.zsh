@@ -19,10 +19,11 @@ tm() {
 
 _${zsb}.tm() {
   [ "$CURRENT" -gt "2" ] && return 0
-  local tmuxList=( $(tmls) )
+
+  local -r tmuxList=( $(tmls) )
   if [ ! -z "$TMUX" ]; then # if inside tmux session
-    local currentSession=( "$(tmux display-message -p '#S')" )
-    local actualList=${tmuxList:|currentSession}
+    local -r currentSession=( "$(tmux display-message -p '#S')" )
+    local -r actualList=${tmuxList:|currentSession}
     _describe 'command' actualList
     return
   fi
@@ -31,3 +32,4 @@ _${zsb}.tm() {
 }
 
 compdef _${zsb}.tm tm
+
