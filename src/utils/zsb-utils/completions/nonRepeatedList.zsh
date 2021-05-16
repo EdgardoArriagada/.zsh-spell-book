@@ -6,7 +6,7 @@ _${zsb}.nonRepeatedListD() {
   declare -A tokenDictionary=( )
   local completionTokens=(  )
   for item in "${completionList[@]}"; do
-    local token="${item%:*}"
+    local token="${item%%:*}"
     tokenDictionary[$token]="$item"
     completionTokens+=( "$token" )
   done
