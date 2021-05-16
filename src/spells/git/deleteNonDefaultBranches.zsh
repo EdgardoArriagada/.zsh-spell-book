@@ -3,20 +3,14 @@ deleteNonDefaultBranches() (
   local nonDefaultBranches
 
   ${this}.main() {
-    if ! ${zsb}.isGitRepo; then
-      echo "${ZSB_ERROR} You must run this command inside a git project"
-      return 1
-    fi
+    ${zsb}.isGitRepo || ${zsb}.throw "You must run this command inside a git project."
 
-    if ! ${zsb}.userWorkingOnDefaultBranch; then
-      echo "${ZSB_ERROR} You must run this command from a default branch"
-      return 1
-    fi
+    ${zsb}.userWorkingOnDefaultBranch || ${zsb}.throw "You must run this command from a default branch"
 
     ${this}.setNonDefaultBranches
 
-    if [ -z "$nonDefaultBranches" ]; then
-      echo "${ZSB_INFO} There are no non default branches to delete."
+    if [[ -z "$nonDefaultBranches" ]]; then
+      ${zsb}.info "There are no non default branches to delete."
       return 0
     fi
 
@@ -29,16 +23,16 @@ deleteNonDefaultBranches() (
   }
 
   ${this}.printPrompt() {
-    echo "${ZSB_WARNING} The following branches will be deleted:"
+    ${zsb}.warning "The following branches will be deleted:"
     echo " "
     echo "$(hl "$nonDefaultBranches")"
     echo " "
-    echo "${ZSB_PROMPT} Do you really want to delete these branches? [Y/n]"
+    ${zsb}.prompt "Do you really want to delete these branches? [Y/n]"
   }
 
   ${this}.playOptionsMenu() {
     ${zsb}.confirmMenu && ${this}.performDeletion &&
-      echo "$ZSB_SUCCESS: non default branches deleted"
+      ${zsb}.success "Non default branches deleted."
   }
 
   ${this}.performDeletion() {
@@ -48,4 +42,5 @@ deleteNonDefaultBranches() (
   ${this}.main "$@"
 )
 
-complete deleteNonDefaultBranches
+_${zsb}.nocompletion deleteNonDefaultBranches
+

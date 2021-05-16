@@ -53,5 +53,5 @@ tmkill() (
   ${this}.main "$@"
 )
 
-compdef "_${zsb}.listFromCommand tmls" tmkill
+compdef "_${zsb}.nonRepeatedListC tmls" tmkill
 

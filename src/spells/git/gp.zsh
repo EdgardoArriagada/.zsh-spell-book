@@ -26,22 +26,22 @@ gp() {
 
 
 _${zsb}.gp() {
-  case $COMP_CWORD in
-    1)
-      local currentCompletion="${COMP_WORDS[COMP_CWORD]}"
-      if [ -z "$currentCompletion" ]; then
-        COMPREPLY=( $(compgen -C "${zsb}.gitBranches 'current'") )
-      else
-        COMPREPLY=( $(compgen -C "${zsb}.gitBranches") )
-      fi
-      ;;
+  [[ "$CURRENT" -gt 3 ]] && return 0
+
+  local compList
+  case $CURRENT in
     2)
-      local firstItemUsed="${COMP_WORDS[1]}"
+      compList=( $(${zsb}.gitBranches 'current') )
+      ;;
+    3)
+      local -r firstItemUsed="${words[2]}"
       if ${zsb}.isDefaultBranch "$firstItemUsed"; then
-        COMPREPLY=( --aware )
+        compList=( --aware )
       fi
       ;;
   esac
+
+  _describe 'command' compList
 }
 
-complete -F _${zsb}.gp gp
+compdef _${zsb}.gp gp

@@ -28,13 +28,5 @@ gc() {
   return 0
 }
 
+compdef "_${zsb}.nonRepeatedList --aware" gc
 
-_${zsb}.gc() {
-  for item in "${COMP_WORDS[@]}"; do
-    [ "$item" = "--aware" ] && return 0
-  done
-
-  COMPREPLY=( --aware )
-}
-
-complete -F _${zsb}.gc gc

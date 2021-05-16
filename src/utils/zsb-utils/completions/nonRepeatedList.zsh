@@ -1,3 +1,13 @@
+# Plain list
+_${zsb}.nonRepeatedList() {
+  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
+  local completionList=( "$@" )
+
+  local newCompletion=( ${completionList:|usedCompletion} )
+
+  _describe 'command' newCompletion
+}
+
 # Handles command descriptions
 _${zsb}.nonRepeatedListD() {
   local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
@@ -21,12 +31,12 @@ _${zsb}.nonRepeatedListD() {
   _describe 'command' newCompletion
 }
 
-_${zsb}.nonRepeatedList() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
-  local completionList=( "$@" )
+# List from command
+_${zsb}.nonRepeatedListC() {
+  local usedcompletion=( "${words[@]:1:$CURRENT-2}" )
+  local completionlist=( $(eval "$1") )
 
-  local newCompletion=( ${completionList:|usedCompletion} )
-
-  _describe 'command' newCompletion
+  local newcompletion=( ${completionlist:|usedcompletion} )
+  _describe 'command' newcompletion
 }
 
