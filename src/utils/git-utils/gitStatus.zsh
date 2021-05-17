@@ -1,12 +1,6 @@
 ${zsb}.gitStatus() {
   echo " "
-
-  local gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
-  if [[ -z "$gitStatusOutput" ]]; then
-    git status
-  else
-    echo "$gitStatusOutput"
-  fi
-
+  local -r gitStatusOutput=$(git -c color.status=always status --short)
+  [[ -z "$gitStatusOutput" ]] && git status || echo "$gitStatusOutput"
   echo " "
 }
