@@ -1,1 +1,2 @@
 ${zsb}.isGitRepo && ${zsb}.gitStatus
+

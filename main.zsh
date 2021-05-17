@@ -4,8 +4,8 @@ ZSB_SNAPSHOT_PATH="$PATH"
 
 () {
   # Source environment variables
-  local envFile=${ZSB_DIR}/.env
-  if [ -f $envFile ]; then source $envFile; fi
+  local -r envFile=${ZSB_DIR}/.env
+  [[ -f $envFile ]] && source $envFile
 
   source ${ZSB_DIR}/src/shell.config.zsh
   source ${ZSB_DIR}/src/zsh.config.zsh
@@ -33,11 +33,12 @@ ZSB_SNAPSHOT_PATH="$PATH"
 
   # Source temporal files (ignored by git)
   local tempDir=${ZSB_DIR}/src/temp
-  if [ -d $tempDir ]; then
-    local tempFiles=(${tempDir}/**/*.zsh)>/dev/null 2>&1
+  if [[ -d $tempDir ]]; then
+    local -r tempFiles=(${tempDir}/**/*.zsh)>/dev/null 2>&1
     __${zsb}.sourceFiles $tempFiles
   fi
 }
 
 # Remove dynamic prefixed functions
 unfunction -m "__${zsb}.*"
+

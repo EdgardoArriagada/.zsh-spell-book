@@ -43,7 +43,7 @@ ${zsb}.lazy_load() {
 }
 
 __${zsb}.prepare_lazy_load() {
-  local script="$1"
+  local -r script="$1"
   shift 1
 
   for cmd in "$@"; do

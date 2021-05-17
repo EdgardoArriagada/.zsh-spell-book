@@ -6,10 +6,11 @@
 
 export NVM_DIR="$HOME/.nvm"
 
-if [ -s "$NVM_DIR/nvm.sh" ] && [ -s "$NVM_DIR/bash_completion" ]; then
+if [[ -s "$NVM_DIR/nvm.sh" ]] && [[ -s "$NVM_DIR/bash_completion" ]]; then
   __${zsb}.prepare_lazy_load "$NVM_DIR/nvm.sh" \
     nvm yarn node npm vue npx tsc depcheck expo nest markdown-pdf
 fi
 
 ### To run global npm packages
 export PATH=~/.npm-global/bin:$PATH
+
