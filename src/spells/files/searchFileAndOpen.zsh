@@ -2,7 +2,7 @@ searchFileAndOpen() {
   local programToOpenFile="$1"
   local fileToSearch="$2"
 
-  if [ -z "$fileToSearch" ]; then
+  if [[ -z "$fileToSearch" ]]; then
     echo "${ZSB_ERROR} You must specify a file name"
     return 1
   fi
@@ -12,9 +12,9 @@ searchFileAndOpen() {
 
   local FOUND_FILE=$(fastFind "$parentDir" "$sanitizedInput" "f")
 
-  if [ ! -f "$FOUND_FILE" ]; then
+  if [[ ! -f "$FOUND_FILE" ]]; then
     local tailMessage
-    if [ "$parentDir" != "." ]; then tailMessage="in $(hl "$parentDir") directory"; fi
+    if [[ "$parentDir" != "." ]]; then tailMessage="in $(hl "$parentDir") directory"; fi
 
     echo "${ZSB_INFO} the file $(hl "$sanitizedInput") was not found ${tailMessage}"
     return 1

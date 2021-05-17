@@ -9,11 +9,11 @@ nodeReinstall() {
     ! ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
   }
 
-  if [[ ! "$inputFlags" == *"l"* ]] && [ -f ${packageManagerLock} ]; then
+  if [[ ! "$inputFlags" == *"l"* ]] && [[ -f ${packageManagerLock} ]]; then
     rm ${packageManagerLock} && echo "${ZSB_INFO} $(hl ${packageManagerLock}) deleted"
   fi
 
-  if [[ ! "$inputFlags" == *"n"* ]] && [ -d node_modules ]; then
+  if [[ ! "$inputFlags" == *"n"* ]] && [[ -d node_modules ]]; then
     rm -rf node_modules && echo "${ZSB_INFO} $(hl 'node_modules') deleted"
   fi
 

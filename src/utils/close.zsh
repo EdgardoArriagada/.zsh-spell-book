@@ -4,7 +4,7 @@ close() {
     return 1
   fi
 
-  if [ -z ${ZSB_TERMINAL_CLOSE_KEY} ]; then
+  if [[ -z ${ZSB_TERMINAL_CLOSE_KEY} ]]; then
     echo " ${ZSB_WARNING} you haven't configured $(hl ZSB_TERMINAL_CLOSE_KEY) var in .env file yet"
     return 0
   fi

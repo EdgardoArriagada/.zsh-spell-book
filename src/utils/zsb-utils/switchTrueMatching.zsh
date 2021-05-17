@@ -28,7 +28,7 @@ ${zsb}.switchTrueMatching() {
   shift ${#args[@]}
 
   for cmd in "$@"; do
-    if [ "${args[$cmd]}" = false ]; then
+    if [[ "${args[$cmd]}" = false ]]; then
       args[$cmd]=true
     fi
   done

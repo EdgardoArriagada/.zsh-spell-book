@@ -1,5 +1,5 @@
 dcossh() {
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     echo "${ZSB_ERROR} exactly one argument expected"
     return 1
   fi
@@ -8,7 +8,7 @@ dcossh() {
 }
 
 _${zsb}.dcossh() {
-  [ "$COMP_CWORD" -gt "1" ] && return 0
+  [[ "$COMP_CWORD" -gt "1" ]] && return 0
 
   COMPREPLY=( $(compgen -C "docker-compose ps --services") )
 }

@@ -15,7 +15,7 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.validateRepoList() {
-    [ -z "$repoList" ] && ${zsb}.throw "Invalid repolist."
+    [[ -z "$repoList" ]] && ${zsb}.throw "Invalid repolist."
   }
 
   ${this}.inputCredentials() {
@@ -43,7 +43,7 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.validateRepo() {
-    [ -d "$HOME/$currentRepo" ] && return 0
+    [[ -d "$HOME/$currentRepo" ]] && return 0
 
     ${zsb}.throw "$(hl $currentRepo) does not exists, aborting.\nPlease check $(hl $repoFile)"
   }
@@ -55,7 +55,7 @@ ${zsb}.updateGroup() (
 
   ${this}.isRepoInCleanState() {
     local gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
-    ${zsb}.userWorkingOnDefaultBranch && [ -z "$gitStatusOutput" ]
+    ${zsb}.userWorkingOnDefaultBranch && [[ -z "$gitStatusOutput" ]]
   }
 
   ${this}.printCleanHeader() {

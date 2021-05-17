@@ -10,13 +10,13 @@ reactCreator() {
 
   ! ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
 
-  if [ -z "$newComponentPath" ]; then
+  if [[ -z "$newComponentPath" ]]; then
     echo "${ZSB_ERROR} You must provide a React Component directory path"
     return 1
   fi
 
 
-  if [ -d "$newComponentPath" ] && [[ "$inputFlags" != *'o'* ]] ; then
+  if [[ -d "$newComponentPath" ]] && [[ "$inputFlags" != *'o'* ]] ; then
     echo "${ZSB_ERROR} Can't overwrite already existing component, use $(hl "-o") flag to do it anyway"
     return 1
   fi
@@ -33,7 +33,7 @@ reactCreator() {
     > ${newComponentPath}/index.ts
 
 
-  if [ $? ]; then
+  if [[ "$?" == "0" ]]; then
     echo "${ZSB_SUCCESS} New component -> ${newComponentPath}/$(hl "${newComponentName}.tsx")"
   fi
 }

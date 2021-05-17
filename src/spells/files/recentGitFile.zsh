@@ -5,7 +5,7 @@ ${zsb}.recentGitFile() {
 }
 
 _${zsb}.recentGitFile() {
-  [ "$CURRENT" -gt "3" ] && return 0
+  [[ "$CURRENT" -gt "3" ]] && return 0
 
   local completionList=( $(${zsb}.getGitFiles) )
   _describe 'command' completionList

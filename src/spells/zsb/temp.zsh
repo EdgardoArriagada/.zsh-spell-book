@@ -4,7 +4,7 @@
 temp() {
   local tempDir=${ZSB_DIR}/src/temp
 
-  [ ! -d ${tempDir} ] && mkdir ${tempDir}
+  [[ ! -d ${tempDir} ]] && mkdir ${tempDir}
 
   vim ${tempDir}
 }

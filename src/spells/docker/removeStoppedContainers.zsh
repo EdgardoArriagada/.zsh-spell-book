@@ -1,7 +1,7 @@
 removeStoppedContainers() {
   local stoppedContainers=$(docker container ls -aq)
 
-  if [ -z "$stoppedContainers" ]; then
+  if [[ -z "$stoppedContainers" ]]; then
     echo "${ZSB_INFO} There are no stopped containers to remove."
     return 0
   fi

@@ -40,7 +40,7 @@ ga() (
   ${this}.setGitFileType() gitFileType="$1"
 
   ${this}.addFiles() {
-    if [ -z "$gitAddFlag" ]; then
+    if [[ -z "$gitAddFlag" ]]; then
       git add "${filesToAdd[@]}"
       return $?
     fi
@@ -49,7 +49,7 @@ ga() (
   }
 
   ${this}.setFilesToAdd() {
-    if [ "$#"  = "0" ]; then
+    if [[ "$#"  = "0" ]]; then
       filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
     else
       filesToAdd=( "$@" )
@@ -58,7 +58,7 @@ ga() (
 
   ${this}.setGitAddFlag() gitAddFlag="$1"
 
-  ${this}.thereAreFilesToAdd() [ "${#filesToAdd[@]}" -gt 0 ]
+  ${this}.thereAreFilesToAdd() [[ "${#filesToAdd[@]}" -gt 0 ]]
 
   ${this}.informNoChanges() {
     echo "${ZSB_INFO} There are no $(hl "$gitFileType") files to add."
@@ -87,7 +87,7 @@ _${zsb}.ga() {
   esac
 
   # if we are completing the first item
-  if [ "$CURRENT" = "2" ]; then
+  if [[ "$CURRENT" = "2" ]]; then
     case "$currentCompletion" in
       n*) # matches 'new'
         completionList+=( 'new' ) ;;

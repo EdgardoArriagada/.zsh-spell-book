@@ -3,8 +3,8 @@ tml() {
   local currentList=(`eval "tmls"`)
   echo "\n"
   for session in "${currentList[@]}"; do
-    if [ "$session" = "$latestSession" ]; then
-      [ -z "$TMUX" ] && echo "~ ${session}" || echo "* $(hl ${session})"
+    if [[ "$session" = "$latestSession" ]]; then
+      [[ -z "$TMUX" ]] && echo "~ ${session}" || echo "* $(hl ${session})"
     else
       echo "  $session"
     fi

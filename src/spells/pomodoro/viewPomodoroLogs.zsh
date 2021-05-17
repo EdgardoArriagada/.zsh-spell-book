@@ -10,7 +10,7 @@ ${zsb}.pomodoro.viewPomodoroLogs() {
 
   local fullFilePath=${logFolder}/${fileName}
 
-  if [ ! -f $fullFilePath ]; then
+  if [[ ! -f $fullFilePath ]]; then
     echo "${ZSB_INFO} Pomodoro not found"
     return 0
   fi
@@ -22,9 +22,9 @@ ${zsb}.pomodoro.lastWorkingDay() {
   local today=`date +%w`
   local SUNDAY=0
   local MONDAY=1
-  if [ $today = $SUNDAY ] ; then
+  if [[ $today = $SUNDAY ]] ; then
     echo "2 days ago"
-  elif [ $today = $MONDAY ] ; then
+  elif [[ $today = $MONDAY ]] ; then
     echo "3 days ago"
   else
     echo "1 day ago"

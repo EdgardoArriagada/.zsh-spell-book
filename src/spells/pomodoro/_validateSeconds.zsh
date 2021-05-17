@@ -2,8 +2,8 @@ ${zsb}.pomodoro.validateSeconds() {
   local totalSeconds="$1"
   local sixtyHours="216000"
 
-  [ "$totalSeconds" -lt "$sixtyHours" ] && \
-  [ "$totalSeconds" -gt "0" ] && return 0
+  [[ "$totalSeconds" -lt "$sixtyHours" ]] && \
+  [[ "$totalSeconds" -gt "0" ]] && return 0
 
   ${zsb}.throw "Bad argument.
         \rTry with (hh:)?mm:ss $(it '(min 1, max 59:59:59)')

@@ -1,5 +1,5 @@
 dkssh() {
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     echo "${ZSB_ERROR} exactly one argument expected"
     return 1
   fi
@@ -8,7 +8,7 @@ dkssh() {
 }
 
 _${zsb}.dkssh() {
-  [ "$COMP_CWORD" -gt "1" ] && return 0
+  [[ "$COMP_CWORD" -gt "1" ]] && return 0
 
   COMPREPLY=( $(compgen -C "docker ps --format "{{.Names}}"") )
 }

@@ -15,9 +15,9 @@ tmkill() (
     ${this}.playMenu
   }
 
-  ${this}.inputSessionsReceived() [ "${#inputSessions[@]}" -gt "0" ]
+  ${this}.inputSessionsReceived() [[ "${#inputSessions[@]}" -gt "0" ]]
 
-  ${this}.existsActiveTmuxSessions() [ ! -z "$activeTmuxSessions" ]
+  ${this}.existsActiveTmuxSessions() [[ ! -z "$activeTmuxSessions" ]]
 
   ${this}.killInputSessions() {
     for session in "${inputSessions[@]}"; do

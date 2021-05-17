@@ -13,7 +13,7 @@ dkni() (
       ${this}.throwInvalidInputError; return $?
     fi
 
-    if [ -z "$inputFlag" ]; then
+    if [[ -z "$inputFlag" ]]; then
       ${this}.prettyPrintContainerNetworkInformation
       return $?
     fi
@@ -27,7 +27,7 @@ dkni() (
   }
 
   ${this}.throwInvalidInputError() {
-    if [ -z "$inputDockerContainer" ]; then
+    if [[ -z "$inputDockerContainer" ]]; then
       echo "${ZSB_ERROR} You have to provide a running docker container"
     else
       echo "${ZSB_ERROR} $(hl ${inputDockerContainer}) is not in the running containers list."

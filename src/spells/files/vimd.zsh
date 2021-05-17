@@ -12,12 +12,12 @@ vimd() {
     ${this}.main() {
       local USER_INPUT=$1
 
-      if [ -z "$USER_INPUT" ]; then
+      if [[ -z "$USER_INPUT" ]]; then
         builtin cd && ls
         return 0
       fi
 
-      if [ -d "$USER_INPUT" ]; then
+      if [[ -d "$USER_INPUT" ]]; then
         builtin cd "$USER_INPUT" && ls
         return 0
       fi

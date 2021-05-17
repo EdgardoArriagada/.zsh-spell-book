@@ -35,7 +35,7 @@ copythis() (
   }
 
   ${this}.areArgsValid() {
-    [ ! -z "$inputText" ] && [ "$totalArgs" -lt "3" ] && $([ -z "$inputFlags" ] || [[ "$inputFlags" == '-'* ]])
+    [[ ! -z "$inputText" ]] && [[ "$totalArgs" -lt "3" ]] && $([[ -z "$inputFlags" ]] || [[ "$inputFlags" == '-'* ]])
   }
 
 

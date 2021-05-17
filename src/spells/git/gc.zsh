@@ -15,7 +15,7 @@ gc() {
   fi
 
   local commitSuccess=false
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     git commit --gpg-sign && ${zsb}.gitStatus && commitSuccess=true
   else
     git commit --gpg-sign -m "$*" && ${zsb}.gitStatus && commitSuccess=true

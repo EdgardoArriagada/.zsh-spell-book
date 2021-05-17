@@ -5,7 +5,7 @@ vimf() (
   local lineNumber=$(echo "$1" | cut -s -d":" -f2)
 
   ${this}.main() {
-    [ ! -f "$fileInput" ] && echo "${ZSB_ERROR} File not found" && return 1
+    [[ ! -f "$fileInput" ]] && echo "${ZSB_ERROR} File not found" && return 1
 
     if ${this}.existsLineNumber && ${zsb}.isInteger "$lineNumber"; then
       ${this}.openFileInNumber
@@ -16,7 +16,7 @@ vimf() (
   }
 
   ${this}.existsLineNumber() {
-    [ ! -z "$lineNumber" ]
+    [[ ! -z "$lineNumber" ]]
   }
 
   ${this}.openFileInNumber() eval "vim +${lineNumber} ${fileInput}"

@@ -21,7 +21,7 @@ ${zsb}.pomodoro.startPomodoro() (
   }
 
   ${this}.setBeginString() {
-    if [ -z "$label" ]; then
+    if [[ -z "$label" ]]; then
       beginString="Session for"
       return 0
     fi

@@ -15,11 +15,11 @@ dice() (
   }
 
   ${this}.setDefaultSides() {
-    [ -z "$sides" ] && sides="$DEFAULT_SIDES"
+    [[ -z "$sides" ]] && sides="$DEFAULT_SIDES"
   }
 
   ${this}.areSidesValid() {
-    ${zsb}.isInteger "$sides" && [ "$sides" -gt "1" ]
+    ${zsb}.isInteger "$sides" && [[ "$sides" -gt "1" ]]
   }
 
   ${this}.rollTheDice() {

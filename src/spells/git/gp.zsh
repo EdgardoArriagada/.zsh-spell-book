@@ -6,7 +6,7 @@ gp() {
     set -- $(${zsb}.clearFlags "${args[@]}" "$@")
   }
 
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     echo "${ZSB_ERROR} No branch have been provided"
     return 1
   fi

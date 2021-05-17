@@ -20,7 +20,7 @@ sqlineOf() (
     esac
   }
 
-  ${this}.areArgsValid() [ "$#" -gt 2 ]
+  ${this}.areArgsValid() [[ "$#" -gt 2 ]]
 
   ${this}.throwInvalidArgs() {
     echo "${ZSB_ERROR} You must probide an action, table name and a file name."

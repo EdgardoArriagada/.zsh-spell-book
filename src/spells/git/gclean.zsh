@@ -1,5 +1,5 @@
 gclean() {
-  if [ ! -z "$1" ]; then
+  if [[ ! -z "$1" ]]; then
     git clean -fd "$@"
     return $?
   fi

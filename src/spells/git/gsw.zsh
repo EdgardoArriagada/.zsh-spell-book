@@ -3,7 +3,7 @@ gsw() {
 }
 
 _${zsb}.gsw() {
-  [ "$CURRENT" -gt "2" ] && return 0
+  [[ "$CURRENT" -gt "2" ]] && return 0
 
   local localBranhces=( $(${zsb}.gitBranches) )
   local currentBranch=( $(${zsb}.gitBranches 'current') )

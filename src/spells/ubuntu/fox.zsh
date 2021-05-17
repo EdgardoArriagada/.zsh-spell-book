@@ -20,7 +20,7 @@ fox() (
   }
 
   ${this}.showInputContent() {
-    if [ -f "$inputContent" ]; then
+    if [[ -f "$inputContent" ]]; then
       cat ${inputContent}
     else
       plainPrint "$inputContent"
@@ -28,7 +28,7 @@ fox() (
   }
 
   ${this}.showCertainLineOfInput() {
-    if [ -f "$inputContent" ]; then
+    if [[ -f "$inputContent" ]]; then
       awk "FNR==$leftRange" ${inputContent}
     else
       plainPrint "$inputContent" | awk "FNR==$leftRange"
@@ -36,7 +36,7 @@ fox() (
   }
 
   ${this}.showRangeLinesOfInput() {
-    if [ -f "$inputContent" ]; then
+    if [[ -f "$inputContent" ]]; then
       awk "FNR>=$leftRange && FNR<=$rightRange" ${inputContent}
     else
       plainPrint "$inputContent" | awk "FNR>=$leftRange && FNR<=$rightRange"

@@ -10,7 +10,7 @@ relabel() {
     set -- $(${zsb}.clearFlags "${args[@]}" "$@")
   }
 
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     echo "${ZSB_ERROR} <relabel> command must contain a message"
     return 1
   fi

@@ -1,10 +1,5 @@
 ${zsb}.loadingBar() {
-  local seconds="$1"
-  if [ -z "$seconds" ]; then
-    echo "${ZSB_ERROR} Amount of seconds expected."
-    return 1
-  fi
-
+  local -r seconds=${1:?'Amount of seconds expecte.'}
   local timeFragment=$(($seconds / 20.0))
 
   echo -ne '[>                    ]   (0%)\r'

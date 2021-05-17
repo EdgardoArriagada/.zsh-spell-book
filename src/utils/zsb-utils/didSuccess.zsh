@@ -1,1 +1,1 @@
-${zsb}.didSuccess() [ "$1" = "0" ]
+${zsb}.didSuccess() [[ "$1" = "0" ]]

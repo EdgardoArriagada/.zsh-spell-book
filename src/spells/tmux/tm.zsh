@@ -1,7 +1,7 @@
 tm() {
   local -r targetSession=${1:='main'}
 
-  if [ -z "$TMUX" ]; then # if outside tmux session
+  if [[ -z "$TMUX" ]]; then # if outside tmux session
     tmux attach-session -t "$targetSession">/dev/null 2>&1 || \
       tmux new -s "$targetSession">/dev/null 2>&1
     return $?
@@ -18,10 +18,10 @@ tm() {
 }
 
 _${zsb}.tm() {
-  [ "$CURRENT" -gt "2" ] && return 0
+  [[ "$CURRENT" -gt "2" ]] && return 0
 
   local -r tmuxList=( $(tmls) )
-  if [ ! -z "$TMUX" ]; then # if inside tmux session
+  if [[ ! -z "$TMUX" ]]; then # if inside tmux session
     local -r currentSession=( "$(tmux display-message -p '#S')" )
     local -r actualList=${tmuxList:|currentSession}
     _describe 'command' actualList

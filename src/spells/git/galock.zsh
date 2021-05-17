@@ -9,13 +9,13 @@ galock() (
   local hasAFileBeenAdded=false
 
   for file in "${redGitFiles[@]}"; do
-    if [ "${lockFiles[$file]}" = "true" ]; then
+    if [[ "${lockFiles[$file]}" = "true" ]]; then
       git add "$file"
       hasAFileBeenAdded=true
     fi
   done
 
-  if [ "$hasAFileBeenAdded" = "false" ]; then
+  if [[ "$hasAFileBeenAdded" = "false" ]]; then
     echo "${ZSB_WARNING} No $(hl "*.lock") files have been added."
   fi
 

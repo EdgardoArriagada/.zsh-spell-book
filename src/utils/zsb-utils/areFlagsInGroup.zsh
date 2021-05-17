@@ -41,7 +41,7 @@ ${zsb}.areFlagsInGroup() (
   }
 
   ${this}.areFlagsValid() {
-    [ -z "$inputFlags" ] && return 1
+    [[ -z "$inputFlags" ]] && return 1
 
     local FLAG_REGEX="^-[a-z]+$"
 

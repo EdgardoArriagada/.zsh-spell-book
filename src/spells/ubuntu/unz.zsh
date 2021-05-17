@@ -1,7 +1,7 @@
 # extract files
 unz() (
   local file="$1"
-  [ ! -f "$file" ] && ${zsb}.throw 'Input is not a file.'
+  [[ ! -f "$file" ]] && ${zsb}.throw 'Input is not a file.'
 
   case "${file}" in
     *.tar.gz) tar -xzf "$file" ;;

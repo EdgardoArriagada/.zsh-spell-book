@@ -13,7 +13,7 @@ again() {
 
   local newCommand="${@} ${lastHistoryEntryArguments}"
 
-  if [ ! "$(echo $ZSH_VERSION)" ]; then
+  if [[ ! "$(echo $ZSH_VERSION)" ]]; then
     echo "${ZSB_INFO} Executing \"${newCommand}\""
     eval "$newCommand"
     return 0
