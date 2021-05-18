@@ -15,13 +15,12 @@ _${zsb}.cachedSingleCompC() {
   local -r cacheKey=${2:?'You must provide a cacheKey'}
   local -r cacheDuration=${3:='5'}
   local comp
-  local -r isCacheAlive="$(${zsb}.cache.get "$cacheKey")"
-  if [[ "$isCacheAlive" == true ]]; then
-    comp=( "${ZSB_CACHED_COMPLETION[@]}" )
-  else
+  local -r cachedValue="$(${zsb}.cache.get "$cacheKey")"
+  if [[ -z "$cachedValue" ]]; then
     comp=( $(eval "$1") )
-    ZSB_CACHED_COMPLETION=( "${comp[@]}" )
-    ${zsb}.cache.set "$cacheKey" true "$cacheDuration"
+    ${zsb}.cache.set "$cacheKey" "${comp[*]}" "$cacheDuration"
+  else
+    comp=( $(echo "$cachedValue") )
   fi
   _describe 'command' comp
 }
