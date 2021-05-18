@@ -1,16 +1,8 @@
 dcossh() {
-  if [[ -z "$1" ]]; then
-    echo "${ZSB_ERROR} exactly one argument expected"
-    return 1
-  fi
+  local -r inputService=${1:?'Please provide a docker services'}
 
-  printAndRun "docker-compose exec $1 bash"
+  printAndRun "docker-compose exec ${inputService} bash"
 }
 
-_${zsb}.dcossh() {
-  [[ "$COMP_CWORD" -gt "1" ]] && return 0
+compdef "_${zsb}.cachedSingleCompC 'docker-compose ps --services' 'dcossh'" dcossh
 
-  COMPREPLY=( $(compgen -C "docker-compose ps --services") )
-}
-
-complete -F _${zsb}.dcossh dcossh
