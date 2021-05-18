@@ -4,5 +4,5 @@ dcossh() {
   printAndRun "docker-compose exec ${inputService} bash"
 }
 
-compdef "_${zsb}.cachedSingleCompC 'docker-compose ps --services' 'dcossh'" dcossh
+compdef "_${zsb}.cachedSingleCompC 'docker-compose ps --services' dcossh 30" dcossh
 
