@@ -18,6 +18,8 @@ set wildmenu "Allow tab in menu when searching for a file
 
 " Y behaves like D and C
 nnoremap Y y$
+" Visual till end of line without newline
+nnoremap vq vg_
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
