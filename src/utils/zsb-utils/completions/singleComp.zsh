@@ -20,7 +20,7 @@ _${zsb}.cachedSingleCompC() {
     comp=( $(eval "$1") )
     ${zsb}.cache.set "$cacheKey" "${comp[*]}" "$cacheDuration"
   else
-    comp=( $(echo "$cachedValue") )
+    comp=( "${(z)cachedValue}" )
   fi
   _describe 'command' comp
 }
