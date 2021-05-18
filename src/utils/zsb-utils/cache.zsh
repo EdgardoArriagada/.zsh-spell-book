@@ -1,25 +1,25 @@
+declare -Ag ZSB_CACHE
+
 ${zsb}.cache.set() {
-  local -r duration=${3:='5'}
-  eval "ZSB_CACHE_VALUE__${1}=${2}"
-  eval "ZSB_CACHE_START__${1}=$(date +%s)"
-  eval "ZSB_CACHE_DURATION__${1}=${duration}"
+  ZSB_CACHE[${1},VALUE]="$2"
+  ZSB_CACHE[${1},START]="$(date +%s)"
+  ZSB_CACHE[${1},DURATION]="${3:=5}"
 }
 
 ${zsb}.cache.get() {
-  local -r cacheValue="$(eval "echo \"\$ZSB_CACHE_VALUE__${1}\"")"
+  local -r cacheValue="${ZSB_CACHE[${1},VALUE]}"
   [[ -z "$cacheValue" ]] && return 0
 
-  local -r cacheStart="$(eval "echo \"\$ZSB_CACHE_START__${1}\"")"
-  local -r cacheDuration="$(eval "echo \"\$ZSB_CACHE_DURATION__${1}\"")"
-
+  local -r cacheStart="${ZSB_CACHE[${1},START]}"
+  local -r cacheDuration="${ZSB_CACHE[${1},DURATION]}"
   local -r elapsedTime="$(($(date +%s) - $cacheStart))"
-  if [[ "$elapsedTime" -gt "$cacheDuration" ]]; then
-    eval "unset ZSB_CACHE_VALUE__${1}"
-    eval "unset ZSB_CACHE_START__${1}"
-    eval "unset ZSB_CACHE_DURATION__${1}"
-    return 0
+
+  if [[ "$elapsedTime" -le "$cacheDuration" ]]; then
+    echo "$cacheValue" && return 0
   fi
 
-  echo "$cacheValue"
+  ZSB_CACHE[${1},VALUE]=""
+  ZSB_CACHE[${1},START]=""
+  ZSB_CACHE[${1},DURATION]=""
 }
 
