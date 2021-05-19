@@ -1,4 +1,4 @@
-# Plain list
+# TODO Refactor to remove dup code
 _${zsb}.nonRepeatedList() {
   local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
   local completionList=( "$@" )
@@ -8,7 +8,7 @@ _${zsb}.nonRepeatedList() {
   _describe 'command' newCompletion
 }
 
-# Handles command descriptions
+# nonRepeatedList with Descriptions
 _${zsb}.nonRepeatedListD() {
   local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
   local completionList=( "$@" )
@@ -31,7 +31,7 @@ _${zsb}.nonRepeatedListD() {
   _describe 'command' newCompletion
 }
 
-# List from command
+# nonRepeatedList with Command
 _${zsb}.nonRepeatedListC() {
   local usedcompletion=( "${words[@]:1:$CURRENT-2}" )
   local completionlist=( $(eval "$1") )
