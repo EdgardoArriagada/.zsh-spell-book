@@ -23,10 +23,6 @@ set path+=** "Better search when :e
 set wildmenu "Allow tab in menu when searching for a file
 
 " Mappings
-nnoremap 1 ^
-vnoremap 1 ^
-nnoremap 9 g_
-vnoremap 9 g_
 nnoremap Y y$
 
 "Search and replace matches for highlighted text

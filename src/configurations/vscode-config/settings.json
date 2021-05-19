@@ -6,6 +6,7 @@
   "workbench.colorCustomizations": {
       "editorRuler.foreground": "#303030"
   },
+  "editor.scrollOff": 8,
   "editor.lineNumbers": "relative",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
