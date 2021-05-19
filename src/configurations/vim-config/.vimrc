@@ -1,29 +1,36 @@
 "Set this file as local options so it override any plugin
 filetype plugin indent on
 
-set tabstop=2 "show existing tab with 2 spaces width
+set tabstop=2 softtabstop=2 "Amount of spaces when pressing tab
 set shiftwidth=2 "when indenting with '>', use 2 spaces width
 set expandtab "On pressing tab, insert 2 spaces
+set smartindent
 set relativenumber "Relative numbers to current cursor
 set number "Show line numbers
 set hlsearch "Enable search highlighting.
 set incsearch "Highlight as you search (use :noh to clear)
 set laststatus=2 "Always display the status bar.
+set scrolloff=8 "Start scolling x lines before hitting top/bottom
+set colorcolumn=80,120
+set signcolumn=yes
 
-"Fix vim colors if tmux  default-terminal is 'screen-256color'
+highlight ColorColumn ctermbg=235 guibg=#2c2d27
+
+"Fix vim colors if tmux default-terminal is 'screen-256color'
 set background=dark
 
 set path+=** "Better search when :e
 set wildmenu "Allow tab in menu when searching for a file
 
-" Y behaves like D and C
+" Mappings
+nnoremap 1 ^
+vnoremap 1 ^
+nnoremap 9 g_
+vnoremap 9 g_
 nnoremap Y y$
-" Visual till end of line without newline
-vnoremap q g_
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
-
 "Move highlighted text down 'Shift j'
 vnoremap J :m '>+1<CR>gv=gv
 "Move highlighted text up 'Shift k'
