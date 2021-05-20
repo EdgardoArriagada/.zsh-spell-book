@@ -24,6 +24,8 @@ set wildmenu "Allow tab in menu when searching for a file
 
 " Mappings
 nnoremap Y y$
+vnoremap Z "xy'>"xp
+vnoremap q g_
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
