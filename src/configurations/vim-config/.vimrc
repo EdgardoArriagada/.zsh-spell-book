@@ -26,7 +26,7 @@ set wildmenu "Allow tab in menu when searching for a file
 nnoremap Y y$
 nnoremap S vg_hs
 nnoremap + A <esc>p
-vnoremap Z "xy'>"xp
+vnoremap Z "xy'>"xpO<esc>
 vnoremap q g_
 
 "Search and replace matches for highlighted text

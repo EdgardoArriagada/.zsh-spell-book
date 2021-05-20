@@ -30,6 +30,21 @@
       "const $1 = ($2) => {$3}"
     ],
     "description": "write full arrow function"
+  },
+  "Write a React.FC": {
+    "prefix": "fcc",
+    "body": [
+      "interface Props {$3$2}",
+      "",
+      "const $1: FC<Props> = ({$2}) => {",
+      "  return (",
+      "    <>",
+      "      ${4:<div>TemplateComponent Component</div>}",
+      "    </>",
+      "  )",
+      "}"
+    ],
+    "description": "React.FC<Props>"
   }
 }
 
