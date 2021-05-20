@@ -1,4 +1,7 @@
 set nonu nornu
+set laststatus=0
+set colorcolumn=""
+set signcolumn=no
 
 function! s:split(...) abort
     let direction = a:1

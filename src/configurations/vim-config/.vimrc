@@ -24,6 +24,7 @@ set wildmenu "Allow tab in menu when searching for a file
 
 " Mappings
 nnoremap Y y$
+nnoremap S vg_hs
 vnoremap Z "xy'>"xp
 vnoremap q g_
 
