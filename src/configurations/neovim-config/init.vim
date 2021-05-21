@@ -13,13 +13,13 @@ endfunction
 
 " Global scripts
 call Source('nvimrc')
+call Source('plugins')
 
 if exists('g:vscode')
   " Vscode only scripts
   call Source('vscode')
 else
   " Neovim only scripts
-  call Source('plugins')
   call Source('coc.conf')
   call Source('telescope.conf')
 endif
