@@ -13,6 +13,7 @@ endfunction
 
 " Global scripts
 call Source('nvimrc')
+call Source('powerSurround')
 call Source('plugins')
 
 if exists('g:vscode')
