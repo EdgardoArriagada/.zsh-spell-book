@@ -6,7 +6,6 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'preservim/nerdtree'
     Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
     Plug 'tpope/vim-surround'
-    Plug 'jiangmiao/auto-pairs'
     Plug 'airblade/vim-gitgutter'
     Plug 'tomtom/tcomment_vim'
     Plug 'mileszs/ack.vim'
