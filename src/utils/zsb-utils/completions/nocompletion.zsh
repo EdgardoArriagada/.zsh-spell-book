@@ -1,4 +1,2 @@
-_${zsb}.nocompletion() {
-  compctl -k '' $1
-}
+_${zsb}.nocompletion() compctl -k '' $1
 
