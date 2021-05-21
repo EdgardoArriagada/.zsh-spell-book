@@ -1,14 +1,14 @@
 o() {
-  local file="$1"
-  local extension=$(${zsb}.extensionOf "$file")
+  local -r file="$1"
 
-  case "$extension" in
-    xlsx|csv|odt)
+  case "$file" in
+    *.xlsx|*.csv|*.odt)
       libreoffice --calc "$file" ;;
-    pdf)
+    *.pdf)
       xdg-open "$file" ;;
     *)
       eval "nnvim ${file}" ;;
   esac
 }
 
+alias v="o"
