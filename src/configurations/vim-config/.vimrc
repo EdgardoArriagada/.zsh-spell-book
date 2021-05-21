@@ -29,7 +29,11 @@ nnoremap + A <esc>p
 vnoremap Z "xy'>"xpO<esc>
 nnoremap Q va{ddd
 " You can trigger 'vap' 'vay' 'vad'
-vnoremap a $<left>
+vnoremap ay $<left>y
+vnoremap ad $<left>"_d
+vnoremap as $<left>"_s
+vnoremap ac $<left>"_c
+" 'ap' handled in nvimrc.vim because here it mess with registers
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
