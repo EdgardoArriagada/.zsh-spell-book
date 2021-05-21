@@ -3,7 +3,7 @@ ${zsb}.stashListMenu() {
   [[ -z "$stashList" ]] && ${zsb}.info "Stash list is empty." && return 0
   local -r callback=${1:?'You must provida a callback function'}
   local -r callbackArg="$2"
-  [[ ! -z "$callbackArg" ]] && "$callback" "$callbackArg" && return 0
+  [[ ! -z "$callbackArg" ]] && "$callback" "$callbackArg"; return 0
 
   gsl
   ${zsb}.prompt "Enter stash $(hl number)."
