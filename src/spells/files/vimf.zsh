@@ -1,11 +1,12 @@
 # usefull for opening  files found using `grep -rn <input> .`
-vimf() (
+# vim found
+vf() (
   local this="$0"
-  local fileInput=$(echo "$1" | cut -d":" -f1)
-  local lineNumber=$(echo "$1" | cut -s -d":" -f2)
+  local fileInput="${1%%:*}"
+  local lineNumber="$(echo "$1" | cut -s -d":" -f2)"
 
   ${this}.main() {
-    [[ ! -f "$fileInput" ]] && echo "${ZSB_ERROR} File not found" && return 1
+    [[ ! -f "$fileInput" ]] && ${zsb}.throw "File not found"
 
     if ${this}.existsLineNumber && ${zsb}.isInteger "$lineNumber"; then
       ${this}.openFileInNumber
@@ -15,16 +16,12 @@ vimf() (
     ${this}.openFileFound
   }
 
-  ${this}.existsLineNumber() {
-    [[ ! -z "$lineNumber" ]]
-  }
+  ${this}.existsLineNumber() [[ ! -z "$lineNumber" ]]
 
-  ${this}.openFileInNumber() eval "vim +${lineNumber} ${fileInput}"
+  ${this}.openFileInNumber() eval "nnvim +${lineNumber} ${fileInput}"
 
-  ${this}.openFileFound() eval "vim ${fileInput}"
+  ${this}.openFileFound() eval "nnvim ${fileInput}"
 
   ${this}.main "$@"
 )
 
-alias vif="vimf"
-alias vf="vimf"
