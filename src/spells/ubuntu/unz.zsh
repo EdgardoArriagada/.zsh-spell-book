@@ -1,9 +1,9 @@
 # extract files
-unz() (
+unz() {
   local file="$1"
   [[ ! -f "$file" ]] && ${zsb}.throw 'Input is not a file.'
 
-  case "${file}" in
+  case "$file" in
     *.tar.gz) tar -xzf "$file" ;;
     *.tar.bz2) tar -xjf $file ;;
     *.tar.xz) tar zxvf "$file";;
@@ -19,5 +19,14 @@ unz() (
     *.7z) 7z x "$file" ;;
     *) ${zsb}.throw 'Unhandled file extension.' ;;
   esac
-)
+}
+
+_${zsb}.unz() {
+  [[ "$CURRENT" -gt 2 ]] && return 0
+  local -a ext
+  ext=( *.{tar.gz,tar.bz2,tar.xz,bz2,rar,gz,tar,tbz2,tgz,xz,zip,Z,7z} )
+  _multi_parts / ext
+}
+
+compdef _${zsb}.unz unz
 

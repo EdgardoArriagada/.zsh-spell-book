@@ -1,6 +1,5 @@
 dcossh() {
   local -r inputService=${1:?'Please provide a docker services'}
-
   printAndRun "docker-compose exec ${inputService} bash"
 }
 
