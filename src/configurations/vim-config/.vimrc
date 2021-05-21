@@ -19,9 +19,6 @@ highlight ColorColumn ctermbg=235 guibg=#2c2d27
 "Fix vim colors if tmux default-terminal is 'screen-256color'
 set background=dark
 
-set path+=** "Better search when :e
-set wildmenu "Allow tab in menu when searching for a file
-
 " Mappings
 nnoremap Y y$
 nnoremap S v$<left><left>
