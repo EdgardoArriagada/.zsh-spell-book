@@ -29,6 +29,7 @@ nnoremap + A <esc>p
 vnoremap Z "xy'>"xpO<esc>
 nnoremap Q va{ddd
 " You can trigger 'vap' 'vay' 'vad'
+vnoremap aa $<left>
 vnoremap ay $<left>y
 vnoremap ad $<left>"_d
 vnoremap as $<left>"_s
