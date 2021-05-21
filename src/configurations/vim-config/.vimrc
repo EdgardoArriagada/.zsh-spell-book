@@ -24,10 +24,12 @@ set wildmenu "Allow tab in menu when searching for a file
 
 " Mappings
 nnoremap Y y$
-nnoremap S vg_hs
+nnoremap S v$<left><left>
 nnoremap + A <esc>p
 vnoremap Z "xy'>"xpO<esc>
-vnoremap q g_
+nnoremap Q va{ddd
+" You can trigger 'vap' 'vay' 'vad'
+vnoremap a $<left>
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
