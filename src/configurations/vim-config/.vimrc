@@ -24,11 +24,23 @@ onoremap w iw
 onoremap W iW
 onoremap ' i'
 onoremap " i"
+onoremap { i{
+onoremap } i}
+onoremap ( i(
+onoremap ) i)
+onoremap < i<
+onoremap > i>
 " vno
 vnoremap w iw
 vnoremap W iW
 vnoremap ' i'
 vnoremap " i"
+vnoremap { i{
+vnoremap } i}
+vnoremap ( i(
+vnoremap ) i)
+vnoremap < i<
+vnoremap > i>
 
 nnoremap Y y$
 nnoremap S v$<left><left>
