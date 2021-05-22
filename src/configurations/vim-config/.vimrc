@@ -19,10 +19,17 @@ set signcolumn=yes
 set background=dark
 
 " Mappings
+" ono
 onoremap w iw
 onoremap W iW
+onoremap ' i'
+onoremap " i"
+" vno
 vnoremap w iw
 vnoremap W iW
+vnoremap ' i'
+vnoremap " i"
+
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
@@ -44,8 +51,6 @@ vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
 vnoremap J :m '>+1<CR>gv=gv
 "Move highlighted text up 'Shift k'
 vnoremap K :m '<-2<CR>gv=gv
-"
-set pastetoggle=<F2>
 
 "Custom commands
 command Q execute ":q"
