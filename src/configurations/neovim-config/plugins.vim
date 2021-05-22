@@ -10,7 +10,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'tomtom/tcomment_vim'
     Plug 'mileszs/ack.vim'
     Plug 'tpope/vim-fugitive'
-    Plug 'morhetz/gruvbox'
+    Plug 'gruvbox-community/gruvbox'
     Plug 'leafgarland/typescript-vim'
     Plug 'peitalin/vim-jsx-typescript'
     Plug 'psliwka/vim-smoothie'
