@@ -14,6 +14,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'leafgarland/typescript-vim'
     Plug 'peitalin/vim-jsx-typescript'
     Plug 'psliwka/vim-smoothie'
+    Plug 'vim-airline/vim-airline'
 
     " telescope fuzzy finder
     Plug 'nvim-lua/popup.nvim'

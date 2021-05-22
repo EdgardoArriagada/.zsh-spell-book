@@ -11,7 +11,6 @@ set relativenumber "Relative numbers to current cursor
 set number "Show line numbers
 set hlsearch "Enable search highlighting.
 set incsearch "Highlight as you search (use :noh to clear)
-set laststatus=2 "Always display the status bar.
 set scrolloff=8 "Start scolling x lines before hitting top/bottom
 set colorcolumn=80,120
 set signcolumn=yes
