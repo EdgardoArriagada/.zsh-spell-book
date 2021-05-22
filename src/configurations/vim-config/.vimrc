@@ -22,6 +22,8 @@ set background=dark
 " Mappings
 onoremap w iw
 onoremap W iW
+vnoremap w iw
+vnoremap W iW
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
