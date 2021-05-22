@@ -1,6 +1,8 @@
 "Set this file as local options so it override any plugin
 filetype plugin indent on
 
+let mapleader=" "
+
 set tabstop=2 softtabstop=2 "Amount of spaces when pressing tab
 set shiftwidth=2 "when indenting with '>', use 2 spaces width
 set expandtab "On pressing tab, insert 2 spaces
@@ -13,8 +15,6 @@ set laststatus=2 "Always display the status bar.
 set scrolloff=8 "Start scolling x lines before hitting top/bottom
 set colorcolumn=80,120
 set signcolumn=yes
-
-highlight ColorColumn ctermbg=235 guibg=#2c2d27
 
 "Fix vim colors if tmux default-terminal is 'screen-256color'
 set background=dark

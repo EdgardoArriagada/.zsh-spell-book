@@ -23,5 +23,6 @@ else
   " Neovim only scripts
   call Source('coc.conf')
   call Source('telescope.conf')
+  call Source('theme.conf')
 endif
 
