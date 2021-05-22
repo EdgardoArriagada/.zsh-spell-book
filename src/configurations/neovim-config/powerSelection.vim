@@ -13,7 +13,7 @@ func! s:didSelectInline()
 endfunc
 
 " The order of the elements are the prioritization of the surrounds
-let g:pairList = [['(', ')'], ['<', '>'], ['[', ']'], ['{', '}']]
+let g:pairList = [['(', ')'], ['[', ']'], ['{', '}'], ['<', '>']]
 
 func! PowerSelection()
   let l:savedPos = getpos('.')
