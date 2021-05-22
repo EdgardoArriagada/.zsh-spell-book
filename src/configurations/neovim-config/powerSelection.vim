@@ -12,6 +12,7 @@ func! s:didSelectInline()
   return col('.') != col('v') && line('.') == line('v')
 endfunc
 
+" The order of the elements are the prioritization of the surrounds
 let g:pairList = [['(', ')'], ['<', '>'], ['[', ']'], ['{', '}']]
 
 func! PowerSelection()
