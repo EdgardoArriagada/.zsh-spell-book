@@ -17,10 +17,10 @@ ZSB_SNAPSHOT_PATH="$PATH"
   source ${ZSB_DIR}/src/globalVariables.zsh
 
   # Declare source files
-  local utilFiles=(${ZSB_DIR}/src/utils/**/*.zsh)>/dev/null 2>&1
-  local configurationFiles=(${ZSB_DIR}/src/configurations/**/*.zsh)>/dev/null 2>&1
-  local spellPages=(${ZSB_DIR}/src/spells/**/*.zsh)>/dev/null 2>&1
-  local automaticCallFiles=(${ZSB_DIR}/src/automatic-calls/**/*.zsh)>/dev/null 2>&1
+  local utilFiles=(${ZSB_DIR}/src/utils/**/*.zsh)
+  local configurationFiles=(${ZSB_DIR}/src/configurations/**/*.zsh)
+  local spellPages=(${ZSB_DIR}/src/spells/**/*.zsh)
+  local automaticCallFiles=(${ZSB_DIR}/src/automatic-calls/**/*.zsh)
 
   # Create a dynamic prefixed function
   __${zsb}.sourceFiles() for file in $*; do source "$file"; done
@@ -34,7 +34,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
   # Source temporal files (ignored by git)
   local tempDir=${ZSB_DIR}/src/temp
   if [[ -d $tempDir ]]; then
-    local -r tempFiles=(${tempDir}/**/*.zsh)>/dev/null 2>&1
+    local -r tempFiles=(${tempDir}/**/*.zsh)
     __${zsb}.sourceFiles $tempFiles
   fi
 }
