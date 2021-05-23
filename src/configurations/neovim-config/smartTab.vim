@@ -8,8 +8,16 @@ func! SmartTab_Visual()
 endfunc
 
 func! SmartTab()
-  " Go to beggin of line and add to jump list
-  execute "normal!".line('.')."G^"
+  let l:beforeCol = col('.')
+
+  "If we were not at the beggining when pressing TAB
+  normal! ^
+  if col('.') != l:beforeCol
+    return
+  endif
+
+  " Add to jump list
+  execute "normal!".line('.')."G"
 
   " Search for a non empty to begin with
   while IsEmptyLine()
