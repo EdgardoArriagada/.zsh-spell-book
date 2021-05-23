@@ -1,26 +1,26 @@
-nnoremap <silent> _ :call GoLessDeeperIndent()<cr>
-vnoremap <silent> _ :<c-u>call GoLessDeeperIndent_Visual()<cr>
+nnoremap <silent> <bs> :call LookDownForIndention()<cr>
+vnoremap <silent> <bs> :<c-u>call LookDownForIndention_Visual()<cr>
 
-func! GoLessDeeperIndent_Visual()
+func! LookDownForIndention_Visual()
   normal gv
-  call GoLessDeeperIndent()
+  call LookDownForIndention()
 endfunc
 
-func! GoLessDeeperIndent()
+func! LookDownForIndention()
   " Go to beggin of line and add to jump list
   normal! ^m'
 
   " Search for a non empty to begin with
   while IsEmptyLine()
-    normal! k^
+    normal! j^
   endwhile
 
   let l:originalValidFirstCol = col('.')
+  let l:endOfFile = line('$')
 
-  while line('.') > 1
-    let l:beforeKFirstCol = col('.')
+  while line('.') < l:endOfFile
 
-    normal! k^
+    normal! j^
 
     " [Step A] Don't use IsEmptyLine for better performance
     if len(getline(".")) == 0
@@ -29,7 +29,7 @@ func! GoLessDeeperIndent()
 
     let l:currentFirstCol = col('.')
 
-    if l:originalValidFirstCol > l:currentFirstCol && l:beforeKFirstCol > l:currentFirstCol
+    if l:originalValidFirstCol == l:currentFirstCol
       " [Step B] Discard any false positive
       " from Step A by applying regex function this time
       if IsEmptyLine()
