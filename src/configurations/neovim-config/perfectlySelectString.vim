@@ -15,6 +15,11 @@ func! PerfectlySelectString(quotes)
     :call s:pressEscape()
   endfunc
 
+  func! s:didMove()
+    return col('.') != g:savedColumn
+  endfunc
+
+
   " If did select between cursor
   for l:quote in a:quotes
     execute "normal! vi".l:quote
@@ -26,22 +31,20 @@ func! PerfectlySelectString(quotes)
     :call s:restoreValues()
   endfor
 
-  " If did select goind forward
   for l:quote in a:quotes
+    " If did select goind forward
     execute "normal! vi".l:quote
 
-    if s:didSelect()
+    if s:didSelect() || s:didMove()
       return
     endif
 
     :call s:restoreValues()
-  endfor
 
-  " If did select goind backwards
-  for l:quote in a:quotes
+    " If did select goind backwards
     execute "normal! F".l:quote."vi".l:quote
 
-    if s:didSelect()
+    if s:didSelect() || s:didMove()
       return
     endif
 
@@ -60,9 +63,10 @@ endfunc
 func! s:didSelectBetween(middle)
   let l:left = col('v')
   let l:right = col('.')
-  return l:left != l:right && l:left <= a:middle && a:middle <= l:right
+  return l:left != l:right && l:left -1 <= a:middle && a:middle <= l:right +1
 endfunc
 
 func! s:didSelect()
   return col('.') != col('v')
 endfunc
+
