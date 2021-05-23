@@ -22,8 +22,6 @@ set background=dark
 " ono
 onoremap w iw
 onoremap W iW
-onoremap ' i'
-onoremap " i"
 onoremap { i{
 onoremap } i}
 onoremap ( i(
@@ -31,8 +29,6 @@ onoremap ) i)
 " vno
 vnoremap w iw
 vnoremap W iW
-vnoremap ' i'
-vnoremap " i"
 vnoremap { i{
 vnoremap } i}
 vnoremap ( i(

@@ -17,6 +17,7 @@ call Source('powerSelection')
 call Source('goLessDeeperIndent')
 call Source('lookForIndention')
 call Source('smartTab')
+call Source('perfectlySelectString')
 call Source('nvimrc')
 call Source('plugins')
 
