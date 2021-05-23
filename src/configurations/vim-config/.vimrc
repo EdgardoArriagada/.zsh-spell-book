@@ -42,9 +42,6 @@ nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
 vnoremap Z "xy'>"xpO<esc>
-" Operate over entire function
-vnoremap q a{%V%^
-onoremap q :<C-U>normal! va{%V%<CR>
 " You can trigger 'vap' 'vay' 'vad'
 vnoremap aa $<left>
 vnoremap ay $<left>y
