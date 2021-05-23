@@ -40,7 +40,9 @@ func! PerfectlySelectString(quotes)
     endif
 
     :call s:restoreValues()
+  endfor
 
+  for l:quote in a:quotes
     " If did select goind backwards
     execute "normal! F".l:quote."vi".l:quote
 
