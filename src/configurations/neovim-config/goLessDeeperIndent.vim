@@ -1,5 +1,6 @@
-nnoremap <silent> _ :call GoLessDeeperIndent()<cr>
-vnoremap <silent> _ :<c-u>call GoLessDeeperIndent_Visual()<cr>
+onoremap <silent> <bs> :<c-u>call GoLessDeeperIndent()<cr>
+nnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent()<cr>
+vnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent_Visual()<cr>
 
 func! GoLessDeeperIndent_Visual()
   normal gv

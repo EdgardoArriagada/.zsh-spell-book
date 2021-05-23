@@ -12,11 +12,11 @@ function! Source(fileName)
 endfunction
 
 " Global scripts
-call Source('nvimrc')
 call Source('utils')
 call Source('powerSelection')
 call Source('goLessDeeperIndent')
-call Source('lookDownForIndention')
+call Source('lookForIndention')
+call Source('nvimrc')
 call Source('plugins')
 
 if exists('g:vscode')
