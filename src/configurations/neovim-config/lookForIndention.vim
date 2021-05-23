@@ -11,6 +11,15 @@ func! LookForIndentation_Visual(direction)
   call LookForIndentation(a:direction)
 endfunc
 
+func! s:borderNotReached(direction)
+  if a:direction == 'j'
+    return line('.') < line('$')
+  else
+    return line('.') > 1
+  endif
+endfunc
+
+
 func! LookForIndentation(direction)
   " Go to beggin of line and add to jump list
   normal! ^m'
@@ -21,10 +30,8 @@ func! LookForIndentation(direction)
   endwhile
 
   let l:originalValidFirstCol = col('.')
-  let l:endOfFile = line('$')
 
-  while line('.') < l:endOfFile
-
+  while s:borderNotReached(a:direction)
     exec 'normal! '.a:direction.'^'
 
     " [Step A] Don't use IsEmptyLine for better performance
