@@ -8,7 +8,8 @@ func! SmartTab_Visual()
 endfunc
 
 func! SmartTab()
-  normal! ^
+  " Go to beggin of line and add to jump list
+  execute "normal!".line('.')."G^"
 
   " Search for a non empty to begin with
   while IsEmptyLine()

@@ -13,7 +13,7 @@ endfunc
 
 func! LookForIndentation(direction)
   " Go to beggin of line and add to jump list
-  normal! ^m'
+  execute "normal!".line('.')."G^"
 
   " Search for a non empty to begin with
   while IsEmptyLine()
