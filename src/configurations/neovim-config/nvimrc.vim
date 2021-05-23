@@ -16,3 +16,14 @@ endfunc
 vnoremap <silent> q :<c-u>normal! \<esc>:<c-u>call ZSB_ComboSelect()<cr>
 onoremap <silent> q :<c-u>normal! :<c-u>call ZSB_ComboSelect()<cr>
 
+func! TrimWhitespace()
+  let l:save = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:save)
+endfunc
+
+augroup ZSB_NVIM_GROUP
+  autocmd!
+  autocmd BufWritePre * :call TrimWhitespace()
+augroup END
+
