@@ -8,7 +8,7 @@ xnoremap <expr> P 'Pgv"'.v:register.'y`>'
 
 func! ZSB_ComboSelect()
   call GoLessDeeperIndent()
-  normal! v
+  normal! V
   call LookForIndentation('j')
 endfunc
 
