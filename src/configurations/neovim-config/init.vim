@@ -14,6 +14,7 @@ endfunction
 " Global scripts
 call Source('nvimrc')
 call Source('powerSelection')
+call Source('goLessDeeperIndent')
 call Source('plugins')
 
 if exists('g:vscode')

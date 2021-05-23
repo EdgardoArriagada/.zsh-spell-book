@@ -1,4 +1,4 @@
-nnoremap Q :call PowerSelection()<cr>
+nnoremap <silent> Q :call PowerSelection()<cr>
 
 func! s:hasChar(inputChar)
   return match(getline("."), a:inputChar) > 0
