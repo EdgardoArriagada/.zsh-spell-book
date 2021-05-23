@@ -1,17 +1,5 @@
 nnoremap <silent> Q :call PowerSelection()<cr>
 
-func! s:hasChar(inputChar)
-  return match(getline("."), a:inputChar) > 0
-endfunc
-
-func! s:hasPair(pair)
-  return s:hasChar(a:pair[0]) && s:hasChar(a:pair[1])
-endfunc
-
-func! s:didSelectInline()
-  return col('.') != col('v') && line('.') == line('v')
-endfunc
-
 " The order of the elements are the prioritization of the surrounds
 let g:pairList = [['(', ')'], ['[', ']'], ['{', '}'], ['<', '>']]
 
@@ -30,7 +18,7 @@ func! PowerSelection()
     if s:didSelectInline()
       return
     endif
-    
+
     :call setpos('.', l:savedPos)
   endfor
 
@@ -51,7 +39,18 @@ func! PowerSelection()
       return
     endif
 
-    :call setpos('.', l:savedPos) 
+    :call setpos('.', l:savedPos)
   endfor
 endfunc
 
+func! s:hasPair(pair)
+  return s:hasChar(a:pair[0]) && s:hasChar(a:pair[1])
+endfunc
+
+func! s:hasChar(inputChar)
+  return match(getline("."), a:inputChar) > 0
+endfunc
+
+func! s:didSelectInline()
+  return col('.') != col('v') && line('.') == line('v')
+endfunc

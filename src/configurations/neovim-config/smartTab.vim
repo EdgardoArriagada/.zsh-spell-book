@@ -51,4 +51,3 @@ func! SmartTab()
     endif
   endwhile
 endfunc
-
