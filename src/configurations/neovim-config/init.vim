@@ -29,5 +29,6 @@ else
   call Source('coc.conf')
   call Source('telescope.conf')
   call Source('theme.conf')
+  call Source('nerdtree.conf')
 endif
 

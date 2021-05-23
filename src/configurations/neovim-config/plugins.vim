@@ -3,18 +3,28 @@ call plug#begin('~/.config/nvim/plugged')
   if !exists('g:vscode')
     Plug 'ThePrimeagen/vim-be-good'
     Plug 'fatih/vim-go', { 'tag': '*' }
-    Plug 'preservim/nerdtree'
     Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-    Plug 'tpope/vim-surround'
-    Plug 'airblade/vim-gitgutter'
-    Plug 'tomtom/tcomment_vim'
     Plug 'mileszs/ack.vim'
     Plug 'tpope/vim-fugitive'
-    Plug 'gruvbox-community/gruvbox'
-    Plug 'leafgarland/typescript-vim'
     Plug 'peitalin/vim-jsx-typescript'
-    Plug 'psliwka/vim-smoothie'
+
+
+    " Extra tooling
     Plug 'vim-airline/vim-airline'
+    Plug 'airblade/vim-gitgutter'
+    Plug 'preservim/nerdtree'
+
+    " Behavior
+    Plug 'psliwka/vim-smoothie'
+    Plug 'tpope/vim-surround'
+    Plug 'tomtom/tcomment_vim'
+
+    " Looks
+    Plug 'gruvbox-community/gruvbox'
+
+    " Lang Support
+    Plug 'rust-lang/rust.vim'
+    Plug 'leafgarland/typescript-vim'
 
     " telescope fuzzy finder
     Plug 'nvim-lua/popup.nvim'
