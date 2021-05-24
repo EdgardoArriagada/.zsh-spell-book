@@ -106,7 +106,7 @@
           "command": "workbench.action.moveEditorToRightGroup"
         },
         {
-          "key": "m",
+          "key": "o",
           "name": "Close other editors",
           "type": "command",
           "command": "workbench.action.closeOtherEditors"
