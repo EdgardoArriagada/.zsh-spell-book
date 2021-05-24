@@ -20,7 +20,7 @@ func! SmartTab()
   execute "normal!".line('.')."G"
 
   " Search for a non empty to begin with
-  while IsEmptyLine()
+  while IsEmptyLine('.')
     normal! j^
   endwhile
 
@@ -41,7 +41,7 @@ func! SmartTab()
     if l:currentFirstCol > l:originalValidFirstCol
       " [Step B] Discard any false positive
       " from Step A by applying regex function this time
-      if IsEmptyLine()
+      if IsEmptyLine('.')
         continue
       endif
 
@@ -49,7 +49,7 @@ func! SmartTab()
     elseif l:currentFirstCol < l:originalValidFirstCol
       " [Step B] Discard any false positive
       " from Step A by applying regex function this time
-      if IsEmptyLine()
+      if IsEmptyLine('.')
         continue
       endif
 

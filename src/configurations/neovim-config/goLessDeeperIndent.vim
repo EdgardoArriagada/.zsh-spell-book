@@ -12,7 +12,7 @@ func! GoLessDeeperIndent()
   execute "normal!".line('.')."G^"
 
   " Search for a non empty to begin with
-  while IsEmptyLine()
+  while IsEmptyLine('.')
     normal! k^
   endwhile
 
@@ -33,7 +33,7 @@ func! GoLessDeeperIndent()
     if l:originalValidFirstCol > l:currentFirstCol && l:beforeKFirstCol > l:currentFirstCol
       " [Step B] Discard any false positive
       " from Step A by applying regex function this time
-      if IsEmptyLine()
+      if IsEmptyLine('.')
         continue
       endif
 
