@@ -1,9 +1,10 @@
 # Automatically add lock files
 galock() (
-  declare -A lockFiles
+  local -A lockFiles
   lockFiles[package-lock.json]=true
   lockFiles[Gemfile.lock]=true
   lockFiles[yarn.lock]=true
+  lockFiles[Cargo.lock]=true
 
   local redGitFiles=( $(${zsb}.getGitFiles 'red') )
   local hasAFileBeenAdded=false
@@ -22,5 +23,5 @@ galock() (
   ${zsb}.gitStatus
 )
 
-complete galock
+_${zsb}.nocompletion galock
 

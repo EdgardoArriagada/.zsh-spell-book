@@ -41,9 +41,9 @@ vnoremap Z "xy'>"xpO<esc>
 " You can trigger 'vap' 'vay' 'vad'
 vnoremap aa $<left>
 vnoremap ay $<left>y
-vnoremap ad $<left>"_d
-vnoremap as $<left>"_s
-vnoremap ac $<left>"_c
+vnoremap ad $<left>d
+vnoremap as $<left>s
+vnoremap ac $<left>c
 " 'ap' handled in nvimrc.vim because here it mess with registers
 
 "Search and replace matches for highlighted text
