@@ -15,6 +15,12 @@ func! GoLessDeeperIndent()
 
   let originalInent = indent('.')
 
+  if originalInent == 0
+    let lastLineUp = GetSameIndentLineUp()
+    execute "normal!".lastLineUp."G^"
+    return
+  endif
+
   while col('.') > 1
     let lastLineUp = GetLastMatchingIndentUp()
     execute "normal!".lastLineUp."G^"
