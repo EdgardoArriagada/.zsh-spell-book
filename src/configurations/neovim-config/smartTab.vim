@@ -44,7 +44,6 @@ endfunc
 
 func! SmartTab_Visual(direction)
   normal gv
-  " call SmartTab()
-  :call s:smartTab(a:direction)
+  :call SmartTab(a:direction)
 endfunc
 
