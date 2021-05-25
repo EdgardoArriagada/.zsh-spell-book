@@ -15,39 +15,14 @@ func! LookForIndentation(direction)
   " Go to beggin of line and add to jump list
   execute "normal!".line('.')."G^"
 
-  " Search for a non empty to begin with
-  while IsEmptyLine('.')
-    exec 'normal! '.a:direction.'^'
-  endwhile
+  :call JumpUntilNotEmptyLine(a:direction)
 
-  let l:originalValidFirstCol = col('.')
-
-  while s:borderNotReached(a:direction)
-    exec 'normal! '.a:direction.'^'
-
-    " [Step A] Don't use IsEmptyLine for better performance
-    if len(getline(".")) == 0
-      continue
-    endif
-
-    let l:currentFirstCol = col('.')
-
-    if l:originalValidFirstCol == l:currentFirstCol
-      " [Step B] Discard any false positive
-      " from Step A by applying regex function this time
-      if IsEmptyLine('.')
-        continue
-      endif
-
-      return
-    endif
-  endwhile
-endfunc
-
-func! s:borderNotReached(direction)
   if a:direction == 'j'
-    return line('.') < line('$')
-  else
-    return line('.') > 1
+    let sameIndent = GetSameIndentLineDown()
+  elseif a:direction == 'k'
+    let sameIndent = GetSameIndentLineUp()
   endif
+
+  execute "normal!".sameIndent."G^"
 endfunc
+

@@ -1,62 +1,50 @@
-onoremap <silent> <tab> :<c-u>call SmartTab()<cr>
-nnoremap <silent> <tab> :<c-u>call SmartTab()<cr>
-vnoremap <silent> <tab> :<c-u>call SmartTab_Visual()<cr>
+onoremap <silent> <tab> :<c-u>call SmartTab('j')<cr>
+nnoremap <silent> <tab> :<c-u>call SmartTab('j')<cr>
+vnoremap <silent> <tab> :<c-u>call SmartTab_Visual('j')<cr>
 
-func! SmartTab_Visual()
-  normal gv
-  call SmartTab()
-endfunc
-
-func! SmartTab()
-  let l:beforeCol = col('.')
+" Direction is either 'j' or 'k'
+func! SmartTab(direction)
+  let beforeCol = col('.')
+  let beforeLine = line('.')
+  normal! ^
 
   "If we were not at the beggining when pressing TAB
-  normal! ^
-  if col('.') != l:beforeCol
+  if col('.') != beforeCol
     return
   endif
 
   " Add to jump list
   execute "normal!".line('.')."G"
 
-  " Search for a non empty to begin with
-  while IsEmptyLine('.')
-    normal! j^
-  endwhile
+  :call JumpUntilNotEmptyLine(a:direction)
 
-  let l:fileBottom = line('$')
-  let l:originalValidFirstCol = col('.')
+  if a:direction == 'j'
+    :call s:goDown()
+  elseif a:direction == 'k'
+    :call s:goUp()
+  endif
 
-  while line('.') < l:fileBottom
-
-    normal! j^
-
-    " [Step A] Don't use IsEmptyLine for better performance
-    if len(getline(".")) == 0
-      continue
-    endif
-
-    let l:currentFirstCol = col('.')
-
-    if l:currentFirstCol > l:originalValidFirstCol
-      " [Step B] Discard any false positive
-      " from Step A by applying regex function this time
-      if IsEmptyLine('.')
-        continue
-      endif
-
-      return
-    elseif l:currentFirstCol < l:originalValidFirstCol
-      " [Step B] Discard any false positive
-      " from Step A by applying regex function this time
-      if IsEmptyLine('.')
-        continue
-      endif
-
-      normal! k^
-      return
-    elseif l:currentFirstCol == l:originalValidFirstCol
-      continue
-    endif
-  endwhile
+  if beforeLine == line('.')
+    execute "normal!".a:direction."^"
+  endif
 endfunc
+
+func! s:goDown()
+  let lastMatching = GetLastMatchingIndentDown()
+  if indent(lastMatching) < indent('.')
+    let lastMatching -= 1
+  endif
+  execute "normal!".lastMatching."G^"
+endfunc
+
+func! s:goUp()
+  let lastMatching = GetLastMatchingIndentUp()
+  execute "normal!".lastMatching."G^"
+endfunc
+
+func! SmartTab_Visual(direction)
+  normal gv
+  " call SmartTab()
+  :call s:smartTab(a:direction)
+endfunc
+
