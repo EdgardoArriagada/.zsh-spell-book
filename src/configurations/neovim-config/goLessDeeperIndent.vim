@@ -1,29 +1,50 @@
-onoremap <silent> <bs> :<c-u>call GoLessDeeperIndent()<cr>
-nnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent()<cr>
-vnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent_Visual()<cr>
+onoremap <silent> <bs> :<c-u>call GoLessDeeperIndent('k')<cr>
+nnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent('k')<cr>
+vnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent_Visual('k')<cr>
+
+onoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent('j')<cr>
+nnoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent('j')<cr>
+vnoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent_Visual('j')<cr>
 
 func! GoLessDeeperIndent_Visual()
   normal gv
   call GoLessDeeperIndent()
 endfunc
 
-func! GoLessDeeperIndent()
+func! s:getSameIndentLine(direction)
+  if a:direction == 'j'
+    return GetSameIndentLineDown()
+  elseif a:direction == 'k'
+    return GetSameIndentLineUp()
+  endif
+endfunc
+
+func! s:getLastMatchingIndent(direction)
+  if a:direction == 'j'
+    return GetLastMatchingIndentDown()
+  elseif a:direction == 'k'
+    return GetLastMatchingIndentUp()
+  endif
+endfunc
+
+
+func! GoLessDeeperIndent(direction)
   " Go to beggin of line and add to jump list
   execute "normal!".line('.')."G^"
 
-  :call JumpUntilNotEmptyLine('k')
+  :call JumpUntilNotEmptyLine(a:direction)
 
   let originalInent = indent('.')
 
   if originalInent == 0
-    let lastLineUp = GetSameIndentLineUp()
-    execute "normal!".lastLineUp."G^"
+    let lastLine = s:getSameIndentLine(a:direction)
+    execute "normal!".lastLine."G^"
     return
   endif
 
   while col('.') > 1
-    let lastLineUp = GetLastMatchingIndentUp()
-    execute "normal!".lastLineUp."G^"
+    let lastMatchinLine = s:getLastMatchingIndent(a:direction)
+    execute "normal!".lastMatchinLine."G^"
 
     if indent('.') < originalInent
       break

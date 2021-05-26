@@ -37,6 +37,7 @@ vnoremap ) i)
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
+" Duplicate selection
 vnoremap Z "xy'>"xpO<esc>
 " You can trigger 'vap' 'vay' 'vad'
 vnoremap aa $<left>

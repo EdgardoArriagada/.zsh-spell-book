@@ -7,7 +7,7 @@ xnoremap <expr> p 'pgv"'.v:register.'y`>'
 xnoremap <expr> P 'Pgv"'.v:register.'y`>'
 
 func! ZSB_ComboSelect()
-  call GoLessDeeperIndent()
+  call GoLessDeeperIndent('k')
   normal! V
   call LookForIndentation('j')
 endfunc
