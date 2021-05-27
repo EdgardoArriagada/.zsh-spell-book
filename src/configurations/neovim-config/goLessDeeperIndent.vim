@@ -2,9 +2,9 @@ onoremap <silent> <bs> :<c-u>call GoLessDeeperIndent('k')<cr>
 nnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent('k')<cr>
 vnoremap <silent> <bs> :<c-u>call GoLessDeeperIndent_Visual('k')<cr>
 
-onoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent('j')<cr>
-nnoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent('j')<cr>
-vnoremap <silent> <s-bs> :<c-u>call GoLessDeeperIndent_Visual('j')<cr>
+onoremap <silent> <enter> :<c-u>call GoLessDeeperIndent('j')<cr>
+nnoremap <silent> <enter> :<c-u>call GoLessDeeperIndent('j')<cr>
+vnoremap <silent> <enter> :<c-u>call GoLessDeeperIndent_Visual('j')<cr>
 
 func! GoLessDeeperIndent_Visual()
   normal gv
