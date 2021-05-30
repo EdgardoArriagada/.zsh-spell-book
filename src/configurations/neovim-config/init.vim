@@ -25,11 +25,14 @@ call Source('plugins')
 if exists('g:vscode')
   " Vscode only scripts
   call Source('vscode')
+  call Source('vscodeEasyMotion.conf')
+
 else
   " Neovim only scripts
   call Source('coc.conf')
   call Source('telescope.conf')
   call Source('theme.conf')
   call Source('nerdtree.conf')
+  call Source('easyMotion.conf')
 endif
 

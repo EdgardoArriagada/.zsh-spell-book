@@ -1,6 +1,10 @@
 call plug#begin('~/.config/nvim/plugged')
+
   Plug 'michaeljsmith/vim-indent-object'
-  if !exists('g:vscode')
+
+  if exists('g:vscode')
+    Plug 'asvetliakov/vim-easymotion'
+  else
     Plug 'ThePrimeagen/vim-be-good', { 'on': 'VimBeGood' }
     Plug 'fatih/vim-go', { 'tag': '*' }
     Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
@@ -16,6 +20,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'psliwka/vim-smoothie'
     Plug 'tpope/vim-surround'
     Plug 'tomtom/tcomment_vim'
+    Plug 'easymotion/vim-easymotion'
 
     " Looks
     Plug 'gruvbox-community/gruvbox'
