@@ -29,8 +29,8 @@ reactCreator() {
   mkdir --parents "$newComponentPath" &&
     sed "$replaceRegex" ${chosenTemplate}/TemplateComponent.tsx \
     > ${newComponentPath}/${newComponentName}.tsx &&
-    sed "$replaceRegex" ${chosenTemplate}/index.ts \
-    > ${newComponentPath}/index.ts
+    sed "$replaceRegex" ${chosenTemplate}/index.tsx \
+    > ${newComponentPath}/index.tsx
 
 
   if [[ "$?" == "0" ]]; then
