@@ -6,6 +6,12 @@
   "workbench.colorCustomizations": {
       "editorRuler.foreground": "#303030"
   },
+  "editor.tokenColorCustomizations": {"textMateRules": [{
+    "scope": "keyword.control.def.ruby",
+    "settings": {
+      "foreground": "#ff9c59"
+    }
+  }]},
   "editor.scrollOff": 8,
   "editor.lineNumbers": "relative",
   "editor.formatOnSave": true,
@@ -16,6 +22,7 @@
     "Before",
     "Bounding",
     "Closest",
+    "Debouncing",
     "Drag",
     "Elements",
     "LEGALTECH",
