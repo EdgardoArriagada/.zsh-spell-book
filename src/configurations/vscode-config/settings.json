@@ -9,7 +9,7 @@
   "editor.tokenColorCustomizations": {"textMateRules": [{
     "scope": "keyword.control.def.ruby",
     "settings": {
-      "foreground": "#ff9c59"
+      "foreground": "#CD9731"
     }
   }]},
   "editor.scrollOff": 8,
