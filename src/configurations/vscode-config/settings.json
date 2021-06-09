@@ -1059,6 +1059,6 @@
   ],
   "editor.smoothScrolling": true,
   "window.zoomLevel": 1,
-  "typescript.preferences.importModuleSpecifier": "relative"
+  "typescript.preferences.importModuleSpecifier": "non-relative"
 }
 
