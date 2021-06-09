@@ -141,6 +141,12 @@
           "command": "workbench.action.reopenClosedEditor"
         },
         {
+          "key": "r",
+          "name": "Reveal in side bar",
+          "type": "command",
+          "command": "workbench.files.action.showActiveFileInExplorer"
+        },
+        {
           "key": "y",
           "name": "Copy Buffer...",
           "type": "bindings",
