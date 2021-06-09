@@ -148,26 +148,9 @@
         },
         {
           "key": "y",
-          "name": "Copy Buffer...",
-          "type": "bindings",
-          "bindings": [
-            {
-              "key": "c",
-              "name": "Contents",
-              "type": "commands",
-              "commands": [
-                "editor.action.selectAll",
-                "editor.action.clipboardCopyAction",
-                "cancelSelection"
-              ]
-            },
-            {
-            "key": "p",
-            "name": "Relative Path",
-            "type": "command",
-            "command": "copyRelativeFilePath"
-            }
-          ]
+          "name": "Yank relative path",
+          "type": "command",
+          "command": "copyRelativeFilePath"
         }
       ]
     },
