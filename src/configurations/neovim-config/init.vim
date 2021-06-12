@@ -4,35 +4,29 @@ let &packpath=&runtimepath
 source ~/.vimrc
 
 " Source helper function
-let s:confPath = $HOME . '/.zsh-spell-book/src/configurations/neovim-config'
-let s:source = 'source ' . s:confPath . '/'
+let s:confPath = $HOME.'/.zsh-spell-book/src/configurations/neovim-config'
+let s:sourceFromPath = 'source '.s:confPath.'/'
 
-function! Source(fileName)
-   execute s:source . a:fileName . ".vim"
-endfunction
+func! Source(fileName)
+   exe s:sourceFromPath.a:fileName.".vim"
+endfunc
+
+func! SourceFolder(folderName)
+  for vimFile in split(glob(s:confPath.'/'.a:folderName.'/*.vim'), '\n')
+     exe 'source '.vimFile
+  endfor
+endfunc
 
 " Global scripts
-call Source('utils')
-call Source('powerSelection')
-call Source('goLessDeeperIndent')
-call Source('lookForIndention')
-call Source('smartTab')
-call Source('perfectlySelectString')
-call Source('getMatchingIndentLine')
 call Source('nvimrc')
 call Source('plugins')
+call SourceFolder('custom')
 
 if exists('g:vscode')
   " Vscode only scripts
-  call Source('vscode')
-  call Source('vscodeEasyMotion.conf')
-
+  call SourceFolder('vscode')
 else
   " Neovim only scripts
-  call Source('coc.conf')
-  call Source('telescope.conf')
-  call Source('theme.conf')
-  call Source('nerdtree.conf')
-  call Source('easyMotion.conf')
+  call SourceFolder('neovim')
 endif
 
