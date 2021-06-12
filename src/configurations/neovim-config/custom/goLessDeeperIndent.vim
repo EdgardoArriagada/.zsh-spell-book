@@ -6,9 +6,9 @@ onoremap <silent> <enter> :<c-u>call GoLessDeeperIndent('j')<cr>
 nnoremap <silent> <enter> :<c-u>call GoLessDeeperIndent('j')<cr>
 vnoremap <silent> <enter> :<c-u>call GoLessDeeperIndent_Visual('j')<cr>
 
-func! GoLessDeeperIndent_Visual()
+func! GoLessDeeperIndent_Visual(direction)
   normal gv
-  call GoLessDeeperIndent()
+  call GoLessDeeperIndent(a:direction)
 endfunc
 
 func! s:getSameIndentLine(direction)
