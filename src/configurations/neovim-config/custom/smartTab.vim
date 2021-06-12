@@ -34,7 +34,7 @@ func! SmartTab(direction)
 endfunc
 
 func! s:goDown()
-  let lastMatching = GetLastMatchingIndentDown()
+  let lastMatching = GetLastMatchingIndent('j')
   if indent(lastMatching) < indent('.')
     let lastMatching -= 1
   endif
@@ -42,7 +42,7 @@ func! s:goDown()
 endfunc
 
 func! s:goUp()
-  let lastMatching = GetLastMatchingIndentUp()
+  let lastMatching = GetLastMatchingIndent('k')
   execute "normal!".lastMatching."G^"
 endfunc
 

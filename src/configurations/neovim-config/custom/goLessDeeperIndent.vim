@@ -11,23 +11,6 @@ func! GoLessDeeperIndent_Visual(direction)
   call GoLessDeeperIndent(a:direction)
 endfunc
 
-func! s:getSameIndentLine(direction)
-  if a:direction == 'j'
-    return GetSameIndentLineDown()
-  elseif a:direction == 'k'
-    return GetSameIndentLineUp()
-  endif
-endfunc
-
-func! s:getLastMatchingIndent(direction)
-  if a:direction == 'j'
-    return GetLastMatchingIndentDown()
-  elseif a:direction == 'k'
-    return GetLastMatchingIndentUp()
-  endif
-endfunc
-
-
 func! GoLessDeeperIndent(direction)
   " Go to beggin of line and add to jump list
   execute "normal!".line('.')."G^"
@@ -37,13 +20,13 @@ func! GoLessDeeperIndent(direction)
   let originalInent = indent('.')
 
   if originalInent == 0
-    let lastLine = s:getSameIndentLine(a:direction)
+    let lastLine = GetSameIndentLine(a:direction)
     execute "normal!".lastLine."G^"
     return
   endif
 
   while col('.') > 1
-    let lastMatchinLine = s:getLastMatchingIndent(a:direction)
+    let lastMatchinLine = GetLastMatchingIndent(a:direction)
     execute "normal!".lastMatchinLine."G^"
 
     if indent('.') < originalInent

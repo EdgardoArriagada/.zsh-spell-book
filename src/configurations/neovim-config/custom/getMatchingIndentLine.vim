@@ -37,19 +37,18 @@ func! s:getLastMatchingIndentLine(inc, endOfFile)
   return lineMarker
 endfunc
 
-func! GetLastMatchingIndentDown()
-  return s:getLastMatchingIndentLine(+1, line('$'))
-endfunc!
+func! GetSameIndentLine(direction)
+  if a:direction == 'j'
+    return s:getSameIndentLine(+1, line('$'))
+  elseif a:direction == 'k'
+    return s:getSameIndentLine(-1, 1)
+  endif
+endfunc
 
-func! GetLastMatchingIndentUp()
-  return s:getLastMatchingIndentLine(-1, 1)
-endfunc!
-
-func! GetSameIndentLineDown()
-  return s:getSameIndentLine(+1, line('$'))
-endfunc!
-
-func! GetSameIndentLineUp()
-  return s:getSameIndentLine(-1, 1)
-endfunc!
-
+func! GetLastMatchingIndent(direction)
+  if a:direction == 'j'
+    return s:getLastMatchingIndentLine(+1, line('$'))
+  elseif a:direction == 'k'
+    return s:getLastMatchingIndentLine(-1, 1)
+  endif
+endfunc

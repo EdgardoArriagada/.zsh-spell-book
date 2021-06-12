@@ -17,11 +17,7 @@ func! LookForIndentation(direction)
 
   :call JumpUntilNotEmptyLine(a:direction)
 
-  if a:direction == 'j'
-    let sameIndent = GetSameIndentLineDown()
-  elseif a:direction == 'k'
-    let sameIndent = GetSameIndentLineUp()
-  endif
+  let sameIndent = GetSameIndentLine(a:direction)
 
   execute "normal!".sameIndent."G^"
 endfunc
