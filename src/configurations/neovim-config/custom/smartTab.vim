@@ -8,42 +8,17 @@ vnoremap <silent> <s-tab> :<c-u>call SmartTab_Visual('k')<cr>
 
 " Direction is either 'j' or 'k'
 func! SmartTab(direction)
-  let beforeCol = col('.')
   let beforeLine = line('.')
   normal! ^
-
-  "If we were not at the beggining when pressing TAB
-  if col('.') != beforeCol
-    return
-  endif
 
   " Add to jump list
   execute "normal!".line('.')."G"
 
-  :call JumpUntilNotEmptyLine(a:direction)
-
-  if a:direction == 'j'
-    :call s:goDown()
-  elseif a:direction == 'k'
-    :call s:goUp()
-  endif
+  execute "normal!".GetStopLine(a:direction)."G^"
 
   if beforeLine == line('.')
     execute "normal!".a:direction."^"
   endif
-endfunc
-
-func! s:goDown()
-  let lastMatching = GetLastMatchingIndent('j')
-  if indent(lastMatching) < indent('.')
-    let lastMatching -= 1
-  endif
-  execute "normal!".lastMatching."G^"
-endfunc
-
-func! s:goUp()
-  let lastMatching = GetLastMatchingIndent('k')
-  execute "normal!".lastMatching."G^"
 endfunc
 
 func! SmartTab_Visual(direction)

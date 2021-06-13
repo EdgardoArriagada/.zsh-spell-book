@@ -21,7 +21,7 @@ func! GetSameIndentLine(direction)
   endif
 endfunc
 
-func! GetLastMatchingIndent(inc, endOfFile)
+func! GetLastMatchingIndent(direction)
   let [inc, endOfFile] = s:getProps(a:direction)
 
   let lineMarker = line('.')
@@ -41,12 +41,12 @@ func! GetLastMatchingIndent(inc, endOfFile)
   return lineMarker
 endfunc
 
-func! GetSwitchLine(direction)
+func! GetStopLine(direction)
   let [inc, endOfFile] = s:getProps(a:direction)
 
   let lineMarker = line('.')
   let s:isStartEmpty = IsEmptyLine(lineMarker)
-  let originalIndent = indent('.')
+  let s:originalIndent = indent('.')
 
   func! s:didSwitch(line)
     if s:isStartEmpty == 1
@@ -58,6 +58,11 @@ func! GetSwitchLine(direction)
 
   while !s:didSwitch(lineMarker) && lineMarker != endOfFile
     let lineMarker += inc
+
+    if !IsEmptyLine(lineMarker) && indent(lineMarker) < s:originalIndent
+      let lineMarker -= inc
+      break
+    endif
   endwhile
 
   return lineMarker
@@ -71,3 +76,4 @@ func! s:getProps(direction)
     return [-1, 1]
   endif
 endfunc
+
