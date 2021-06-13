@@ -37,6 +37,8 @@ vnoremap ) i)
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
+" Usefull for shift values with paste
+vnoremap + "1p
 " Duplicate selection
 vnoremap Z "xy'>"xpO<esc>
 " You can trigger 'vap' 'vay' 'vad'
