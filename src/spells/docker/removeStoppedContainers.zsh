@@ -9,9 +9,8 @@ removeStoppedContainers() {
   ${zsb}.info "Removing all stopped Containers..."
 
   docker container rm $(echo "$stoppedContainers") && \
-    ${zsb}.success "All containers were removed." && \
-    return 0
+    ${zsb}.success "All containers were removed."
 }
 
-complete removeStoppedContainers
+_${zsb}.nocompletion removeStoppedContainers
 

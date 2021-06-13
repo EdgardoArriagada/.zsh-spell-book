@@ -2,16 +2,15 @@ stopRunningContainers() {
   local runningContainers=$(docker container ls -q)
 
   if [[ -z "$runningContainers" ]]; then
-    echo "${ZSB_INFO} There are no running containers."
+    ${zsb}.info "There are no running containers."
     return 0
   fi
 
-  echo "${ZSB_INFO} Stopping all running containers..."
+  ${zsb}.info "Stopping all running containers..."
 
   docker container stop $(echo "$runningContainers") && \
-    echo "${ZSB_SUCCESS} All containers did halt." && \
-    return 0
+    ${zsb}.success "All containers did halt."
 }
 
-complete stopRunningContainers
+_${zsb}.nocompletion stopRunningContainers
 

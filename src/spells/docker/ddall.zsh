@@ -5,4 +5,5 @@ ddall() {
     docker network prune --force
 }
 
-complete ddall
+_${zsb}.nocompletion ddall
+
