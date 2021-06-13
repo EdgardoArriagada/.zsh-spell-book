@@ -4,15 +4,15 @@ let &packpath=&runtimepath
 source ~/.vimrc
 
 " Source helper function
-let s:confPath = $HOME.'/.zsh-spell-book/src/configurations/neovim-config'
-let s:sourceFromPath = 'source '.s:confPath.'/'
+let s:dirname = $HOME.'/.zsh-spell-book/src/configurations/neovim-config/'
+let s:sourceInDir = 'source '.s:dirname
 
 func! Source(fileName)
-   exe s:sourceFromPath.a:fileName.".vim"
+   exe s:sourceInDir.a:fileName.".vim"
 endfunc
 
 func! SourceFolder(folderName)
-  for vimFile in split(glob(s:confPath.'/'.a:folderName.'/*.vim'), '\n')
+  for vimFile in split(glob(s:dirname.a:folderName.'/*.vim'), '\n')
      exe 'source '.vimFile
   endfor
 endfunc
@@ -23,10 +23,8 @@ call Source('plugins')
 call SourceFolder('custom')
 
 if exists('g:vscode')
-  " Vscode only scripts
   call SourceFolder('vscode')
 else
-  " Neovim only scripts
   call SourceFolder('neovim')
 endif
 
