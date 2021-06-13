@@ -37,8 +37,9 @@ vnoremap ) i)
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p
-" Usefull for shift values with paste
-vnoremap + "1p
+" Swapping: delete some text, then visual select other text, execute the maped
+" key and the swap is made
+vnoremap + <Esc>`.``gvP``P
 " Duplicate selection
 vnoremap Z "xy'>"xpO<esc>
 " You can trigger 'vap' 'vay' 'vad'
