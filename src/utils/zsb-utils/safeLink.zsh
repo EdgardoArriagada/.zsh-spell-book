@@ -1,5 +1,5 @@
 ${zsb}.safeLink() {
-  local localConfigFile=${ZSB_DIR}/src/configurations/${1}
+  local localConfigFile=${ZSB_DIR}/src/dotFiles/${1}
   local genericConfigFile=${2}
 
   if [[ "$(readlink -f ${genericConfigFile})" = "$localConfigFile" ]]; then

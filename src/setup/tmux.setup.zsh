@@ -1,2 +1,2 @@
-${zsb}.safeLink tmux-config/tmux.conf ~/.tmux.conf
+${zsb}.safeLink tmux/tmux.conf ~/.tmux.conf
 

@@ -1,2 +1,2 @@
-${zsb}.safeLink vim-config/.vimrc $HOME/.vimrc
+${zsb}.safeLink vim/.vimrc $HOME/.vimrc
 

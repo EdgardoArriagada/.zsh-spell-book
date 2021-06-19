@@ -1,2 +1,2 @@
-${zsb}.safeLink alacritty-config/alacritty.yml ~/.config/alacritty.yml
+${zsb}.safeLink alacritty/alacritty.yml ~/.config/alacritty.yml
 

@@ -3,7 +3,7 @@ if git --version >/dev/null 2>&1; then
 
   git config --global core.editor "vim"
   git config --global pager.branch false # print branch info instead of "less" it
-  git config --global --replace-all core.excludesfile ${ZSB_DIR}/src/configurations/git-config/global.gitignore
+  git config --global --replace-all core.excludesfile ${ZSB_DIR}/src/dotFiles/git/global.gitignore
 
   # Highlight changed words in git diff (dpkg -L git | grep diff-highlight)
   git config --global pager.log "perl /usr/share/doc/git/contrib/diff-highlight/diff-highlight | less"
