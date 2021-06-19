@@ -4,7 +4,7 @@ let &packpath=&runtimepath
 source ~/.vimrc
 
 " Source helper function
-let s:dirname = $HOME.'/.zsh-spell-book/src/configurations/neovim-config/'
+let s:dirname = $HOME.'/.zsh-spell-book/src/dotFiles/neovim/'
 let s:sourceInDir = 'source '.s:dirname
 
 func! Source(fileName)
