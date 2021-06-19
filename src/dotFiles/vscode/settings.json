@@ -977,13 +977,13 @@
           "command": "workbench.action.toggleEditorWidths"
         },
         {
-          "key": "m",
+          "key": "z",
           "name": "Maximize editor group",
           "type": "command",
           "command": "workbench.action.minimizeOtherEditors"
         },
         {
-          "key": "M",
+          "key": "Z",
           "name": "Maximize editor group and hide side bar",
           "type": "command",
           "command": "workbench.action.maximizeEditor"
@@ -995,7 +995,7 @@
           "command": "workbench.action.evenEditorWidths"
         },
         {
-          "key": "z",
+          "key": "m",
           "name": "Combine all editors",
           "type": "command",
           "command": "workbench.action.joinAllGroups"
