@@ -31,9 +31,9 @@ ZSB_SNAPSHOT_PATH="$PATH"
   __${zsb}.sourceFiles $spellPages
   __${zsb}.sourceFiles $automaticCallFiles
 
-  # Source temporal files (ignored by git)
-  local tempFiles=( ${ZSB_DIR}/src/temp/**/*.zsh )>/dev/null 2>&1
-  [[ -n "$tempFiles" ]] && __${zsb}.sourceFiles $tempFiles
+  # Temporal Spells
+  local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
+  [[ -n "$tempSpells" ]] && __${zsb}.sourceFiles $tempSpells
 }
 
 # Remove dynamic prefixed functions
