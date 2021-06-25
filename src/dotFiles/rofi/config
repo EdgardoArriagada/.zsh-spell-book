@@ -1,0 +1,3 @@
+rofi.theme: /usr/share/rofi/themes/purple.rasi
+rofi.kb-delete-entry: Control+c
+
