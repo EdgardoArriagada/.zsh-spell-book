@@ -23,7 +23,7 @@ _${zsb}.tm() {
   local -r tmuxList=( $(tmls) )
   if [[ ! -z "$TMUX" ]]; then # if inside tmux session
     local -r currentSession=( "$(tmux display-message -p '#S')" )
-    local -r actualList=${tmuxList:|currentSession}
+    local -r actualList=(${tmuxList:|currentSession})
     _describe 'command' actualList
     return
   fi
