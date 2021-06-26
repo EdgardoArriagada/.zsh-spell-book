@@ -5,7 +5,7 @@ set -o pipefail
 
 declare -r selection=$(print -l "${(@k)ZSB_CHARM_LINKS_DICTIONARY}" | rofi -show -dmenu -i -p "Open link")
 
-[[ -n "$selectio" ]] && \
+[[ -n "$selection" ]] && \
   xdg-open "${ZSB_CHARM_LINKS_DICTIONARY[$selection]}"
 
 exit 0
