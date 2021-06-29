@@ -11,10 +11,11 @@ for file in ${(z)files}; do
     dirs+="$file\n"
 done
 
-declare -r selection=$(echo "$dirs" | rofi -show -dmenu -i -p "Open")
+declare -r selection=$(echo "$dirs" | rofi -show -dmenu -no-custom -i -p "Open")
 
-[[ -n "$selection" ]] && \
-  code ${ZSB_CHARM_ROOT_WORKSPACE}/${selection}
+[[ -z "$selection" ]] && exit 0
+
+code ${ZSB_CHARM_ROOT_WORKSPACE}/${selection}
 
 exit 0
 

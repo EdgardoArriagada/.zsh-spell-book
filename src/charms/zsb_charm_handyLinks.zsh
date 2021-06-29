@@ -3,10 +3,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-declare -r selection=$(print -l "${(@k)ZSB_CHARM_LINKS_DICTIONARY}" | rofi -show -dmenu -i -p "Open link")
+declare -r selection=$(print -l "${(@k)ZSB_CHARM_LINKS_DICTIONARY}" | rofi -show -dmenu -no-custom -i -p "Open link")
 
-[[ -n "$selection" ]] && \
-  xdg-open "${ZSB_CHARM_LINKS_DICTIONARY[$selection]}"
+[[ -z "$selection" ]] && exit 0
+
+xdg-open "${ZSB_CHARM_LINKS_DICTIONARY[$selection]}"
 
 exit 0
 
