@@ -17,12 +17,30 @@ reactCreator() {
 
   local -r chosenTemplate=${TEMPLATES_PATH}/${templateName}
 
+  local -r templateTestFile=${chosenTemplate}/TemplateComponent.test.tsx
+  local -r resultTestFile=${newComponentPath}/${newComponentKebab}.test.tsx
+
+  local -r templateComponent=${chosenTemplate}/TemplateComponent.tsx
+  local -r resultComponent=${newComponentPath}/${newComponentKebab}.tsx
+
+  local -r templateIndexFile=${chosenTemplate}/index.tsx
+  local -r resultIndexFile=${newComponentPath}/index.tsx
+
+  local -r upperToUpper=s/TemplateComponent/${newComponentUpperCamelCase}/g
+  local -r kebabToKebab=s/template-component/${newComponentKebab}/g
+
   # Create components
-  mkdir --parents "$newComponentPath" &&
-    sed "s/TemplateComponent/${newComponentUpperCamelCase}/g" ${chosenTemplate}/TemplateComponent.tsx \
-    > ${newComponentPath}/${newComponentKebab}.tsx &&
-    sed "s/TemplateComponent/${newComponentKebab}/g" ${chosenTemplate}/index.tsx \
-    > ${newComponentPath}/index.tsx
+  mkdir --parents "$newComponentPath" && \
+
+    # Test File
+    sed "$upperToUpper" $templateTestFile > $resultTestFile && \
+    sed --in-place "$kebabToKebab" $resultTestFile && \
+
+    # Main Component
+    sed "$upperToUpper" $templateComponent > $resultComponent && \
+
+    # Index File
+    sed "$kebabToKebab" $templateIndexFile > $resultIndexFile
 
 
   if [[ "$?" == "0" ]]; then
