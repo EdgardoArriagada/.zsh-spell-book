@@ -9,8 +9,10 @@ ${zsb}.updateGroup() (
   ${this}.main() {
     ${this}.validateRepoList
 
-    ${this}.inputCredentials
+    ${this}.setCredentialsWithPrompt
+
     ${this}.manageEachRepo
+
     ${zsb}.success "Finished"
   }
 
@@ -18,7 +20,7 @@ ${zsb}.updateGroup() (
     [[ -z "$repoList" ]] && ${zsb}.throw "Invalid repolist."
   }
 
-  ${this}.inputCredentials() {
+  ${this}.setCredentialsWithPrompt() {
     ${zsb}.prompt "Enter Credentials:"
     read -s pass
   }
@@ -32,13 +34,7 @@ ${zsb}.updateGroup() (
 
       ${this}.setShellState
 
-      if ${this}.isRepoInCleanState; then
-        ${this}.printCleanHeader
-        ${this}.updateRepo
-      else
-        ${this}.printDirtyHeader
-        ${this}.manageManually
-      fi
+      ${this}.manageRepo
     done
   }
 
@@ -53,8 +49,22 @@ ${zsb}.updateGroup() (
     currentBranch="$(git branch --show-current)"
   }
 
+  ${this}.manageRepo() {
+    local continueUpdating=0
+    while [[ "$continueUpdating" == "0" ]]; do
+      if ${this}.isRepoInCleanState; then
+        ${this}.printCleanHeader
+        ${this}.updateRepo
+        return 0
+      fi
+      ${this}.printDirtyHeader
+      ${this}.playManageManuallyPrompt
+      continueUpdating=$?
+    done
+  }
+
   ${this}.isRepoInCleanState() {
-    local gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
+    local -r gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
     ${zsb}.userWorkingOnDefaultBranch && [[ -z "$gitStatusOutput" ]]
   }
 
@@ -67,26 +77,29 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.updateRepo() {
-    local withCredUrl="$(${this}.getWithCredUrl)"
+    local -r withCredUrl="$(${this}.getWithCredUrl)"
 
     ${zsb}.info "Pulling from ${currentBranch}"
     git pull "$withCredUrl" "$currentBranch"
   }
 
   ${this}.getWithCredUrl() {
-    local originUrl="$(git config --get remote.origin.url)"
-    local regexReplacer="s/@/:${pass}@/"
+    local -r originUrl="$(git config --get remote.origin.url)"
+    local -r regexReplacer="s/@/:${pass}@/"
     printf "$originUrl" | sed -E "$regexReplacer"
   }
 
-  ${this}.manageManually() {
-    ${zsb}.prompt "Enter $(hl n) to continue:"
+  ${this}.playManageManuallyPrompt() {
+    ${zsb}.prompt "$(hl '[r,n]')"
 
     while true; do
       read key
       case $key in
       [Nn]*)
-        # continue
+        # continue updating
+        return 1 ;;
+      [Rr]*)
+        # retry updating
         return 0 ;;
       esac
     done
