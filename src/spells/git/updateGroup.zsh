@@ -39,13 +39,13 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.validateRepo() {
-    [[ -d "$HOME/$currentRepo" ]] && return 0
+    [[ -d "${HOME}/${currentRepo}" ]] && return 0
 
     ${zsb}.throw "$(hl $currentRepo) does not exists, aborting.\nPlease check $(hl $repoFile)"
   }
 
   ${this}.setShellState() {
-    builtin cd $HOME/$currentRepo
+    builtin cd ${HOME}/${currentRepo}
     currentBranch="$(git branch --show-current)"
   }
 
