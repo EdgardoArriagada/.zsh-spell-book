@@ -19,6 +19,7 @@
   "editor.minimap.enabled": false,
   "editor.scrollbar.verticalScrollbarSize": 0,
   "cSpell.userWords": [
+    "Anidations",
     "Before",
     "Bounding",
     "Closest",
@@ -1049,6 +1050,9 @@
   "editor.smoothScrolling": true,
   "window.zoomLevel": 1,
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "tabnine.experimentalAutoImports": true
+  "tabnine.experimentalAutoImports": true,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  }
 }
 
