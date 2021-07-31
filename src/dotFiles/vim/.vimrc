@@ -34,6 +34,8 @@ vnoremap } i}
 vnoremap ( i(
 vnoremap ) i)
 
+vnoremap R loh
+
 nnoremap Y y$
 nnoremap S v$<left><left>
 nnoremap + A <esc>p

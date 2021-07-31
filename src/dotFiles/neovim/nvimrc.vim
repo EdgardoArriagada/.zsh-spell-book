@@ -6,6 +6,9 @@ vnoremap <expr> ap '$hpgv"'.v:register.'y`>'
 xnoremap <expr> p 'pgv"'.v:register.'y`>'
 xnoremap <expr> P 'Pgv"'.v:register.'y`>'
 
+nnoremap <expr> k (v:count > 5 ? "m'" . v:count : "") . 'k'
+nnoremap <expr> j (v:count > 5 ? "m'" . v:count : "") . 'j'
+
 func! ZSB_ComboSelect()
   call GoLessDeeperIndent('k')
   normal! V
