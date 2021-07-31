@@ -55,6 +55,24 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap J mzJ`z
+
+"Undo checkpoints
+inoremap , ,<c-g>u
+inoremap . .<c-g>u
+inoremap ! !<c-g>u
+inoremap [ [<c-g>u
+inoremap ] ]<c-g>u
+inoremap { {<c-g>u
+inoremap } }<c-g>u
+inoremap " "<c-g>u
+inoremap ' '<c-g>u
+inoremap < <<c-g>u
+inoremap > ><c-g>u
+inoremap <Space> <Space><c-g>u
+
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
 "Move highlighted text down 'Shift j'
