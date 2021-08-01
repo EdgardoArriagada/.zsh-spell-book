@@ -11,7 +11,7 @@ for file in ${(z)files}; do
     dirs+="$file\n"
 done
 
-declare -r selection=$(echo "$dirs" | rofi -show -dmenu -no-custom -i -p "Open")
+declare -r selection=$(echo "$dirs" | rofi ${(z)commonRofiProps} -i -p "Open")
 
 [[ -z "$selection" ]] && exit 0
 

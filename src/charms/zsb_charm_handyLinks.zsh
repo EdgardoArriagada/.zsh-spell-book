@@ -3,7 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-declare -r selection=$(print -l "${(@k)ZSB_CHARM_LINKS_DICTIONARY}" | rofi -show -dmenu -no-custom -sort -sorting-method 'fzf' -i -p "Open link")
+declare -r selection=$(print -l "${(@k)ZSB_CHARM_LINKS_DICTIONARY}" | rofi ${(z)commonRofiProps} -i -p "Open link")
 
 [[ -z "$selection" ]] && exit 0
 
