@@ -7,24 +7,24 @@ alias mata='sudo killall -9'
 
 alias escapeswap='setxkbmap -option caps:swapescape'
 alias keysbacktonormal='setxkbmap -option'
-alias vouembora='shutdown -h now'
+alias vouembora='ddall && shutdown -h now'
 alias ee="exit"
 
 
 morning() {
-  let attempts=0
+  local attempts=0
 
   # Unlock sudo password
-  sudo cat /dev/null 
+  sudo cat /dev/null
 
-  let start=`date +%s`
+  local -r start=`date +%s`
   while true; do
     sudo apt update && sudo apt dist-upgrade -y && break
     : $((attempts++))
     ${zsb}.info "Attempts: ${attempts}"
     sleep 2
   done
-  let end=`date +%s`
+  local -r end=`date +%s`
 
-  a "Morning completed in $((end-start)) seconds."
+  a "Morning completed in $((end - start)) seconds."
 }
