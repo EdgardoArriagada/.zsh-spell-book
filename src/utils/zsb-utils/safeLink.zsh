@@ -1,18 +1,23 @@
 ${zsb}.safeLink() {
-  local localConfigFile=${ZSB_DIR}/src/dotFiles/${1}
-  local genericConfigFile=${2}
+  local -r localFile=${ZSB_DIR}/src/dotFiles/${1}
+  local -r destinationFile=${2}
 
-  if [[ "$(readlink -f ${genericConfigFile})" = "$localConfigFile" ]]; then
-    echo "${ZSB_INFO} $(hl ${genericConfigFile}) setup is already done."
+  # Check if setup is already done
+  if [[ "$(readlink -f ${destinationFile})" = "$localFile" ]]; then
+    ${zsb}.info "$(hl ${destinationFile}) setup is already done."
     return 0
   fi
 
-  if [[ -f $genericConfigFile ]]; then
-    echo "${ZSB_ERROR} $(hl ${genericConfigFile}) is already busy. Please back up it manually before proceeding"
-    return 1
+  # Check if destination file is already busy
+  if [[ -f $destinationFile ]]; then
+    ${zsb}.throw "$(hl ${destinationFile}) is already busy. Please back up it manually before proceeding"
   fi
 
-  ln -s ${localConfigFile} ${genericConfigFile} && \
-    echo "${ZSB_SUCCESS} $(hl ${genericConfigFile}) file linked"
+  # Try to make destination parent dir if it does not exists
+  mkdir -p $(dirname $destinationFile)
+
+  # perform the symlink
+  ln -s ${localFile} ${destinationFile} && \
+    ${zsb}.success "$(hl ${destinationFile}) file linked"
 }
 

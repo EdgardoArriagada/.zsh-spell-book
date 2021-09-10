@@ -1,3 +1,3 @@
 ${zsb}.safeLink sxhkd/sxhkd.desktop ~/.config/autostart/sxhkd.desktop
 
-${zsb}.safeLink sxhkd/sxhkdrc ~/.sxhkdrc
+${zsb}.safeLink sxhkd/sxhkdrc ~/.config/sxhkd/sxhkdrc
