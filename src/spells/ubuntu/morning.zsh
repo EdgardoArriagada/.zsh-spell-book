@@ -1,20 +1,21 @@
 morning() {
-  let attempts=0
+  local attempts=0
 
   # Unlock sudo password
   sudo cat /dev/null
 
-  let start=`date +%s`
+  local -r start=`date +%s`
   while true; do
     sudo apt update && sudo apt dist-upgrade -y && break
     : $((attempts++))
     ${zsb}.info "Attempts: ${attempts}"
     sleep 2
   done
-  let end=`date +%s`
+  local -r end=`date +%s`
 
-  a "Morning completed in $((end-start)) seconds."
+  a "Morning completed in $((end - start)) seconds."
 }
 
 _${zsb}.nocompletion morning
+
 
