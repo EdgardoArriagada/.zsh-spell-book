@@ -17,5 +17,6 @@ ${zsb}.current() { echo -n "${ZSB_CURRENT}"; puts " $1" }
 
 ${zsb}.validate() {
   [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set $(hl "$1") first."
+  return 0
 }
 
