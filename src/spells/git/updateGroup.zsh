@@ -30,7 +30,7 @@ ${zsb}.updateGroup() (
       ${zsb}.fillWithToken '_'
 
       # Repo has to start with "~/"
-      currentRepo="${HOME}/${repo##*/}"
+      currentRepo="${HOME}/${repo#*/}"
       ${this}.validateRepo
 
       ${this}.setShellState
@@ -69,13 +69,13 @@ ${zsb}.updateGroup() (
     ${zsb}.userWorkingOnDefaultBranch && [[ -z "$gitStatusOutput" ]]
   }
 
-  ${this}.printCleanHeader() {
-    printf "[ $(hl $currentRepo) ($currentBranch) ]\n"
+  ${this}.printHeader() {
+    printf "[ $(hl ${currentRepo##*/}) ($currentBranch) ${1}]\n"
   }
 
-  ${this}.printDirtyHeader() {
-    printf "[ $(hl $currentRepo) ($currentBranch) ± ]\n"
-  }
+  ${this}.printCleanHeader() ${this}.printHeader
+
+  ${this}.printDirtyHeader() ${this}.printHeader "± "
 
   ${this}.updateRepo() {
     local -r withCredUrl="$(${this}.getWithCredUrl)"
