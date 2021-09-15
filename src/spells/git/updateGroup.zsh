@@ -1,7 +1,7 @@
 ${zsb}.updateGroup() (
   local this="$0"
   local repoFile="$1"
-  local pass
+  local inputPass
   local repoList=($(< ${repoFile}))
   local currentRepo
   local currentBranch
@@ -22,7 +22,7 @@ ${zsb}.updateGroup() (
 
   ${this}.setCredentialsWithPrompt() {
     ${zsb}.prompt "Enter Credentials:"
-    read -s pass
+    read -s inputPass
   }
 
   ${this}.manageEachRepo() {
@@ -86,7 +86,7 @@ ${zsb}.updateGroup() (
 
   ${this}.getWithCredUrl() {
     local -r originUrl="$(git config --get remote.origin.url)"
-    local -r regexReplacer="s/@/:${pass}@/"
+    local -r regexReplacer="s/@/:${inputPass}@/"
     printf "$originUrl" | sed -E "$regexReplacer"
   }
 
