@@ -29,7 +29,8 @@ ${zsb}.updateGroup() (
     for repo in "${repoList[@]}"; do
       ${zsb}.fillWithToken '_'
 
-      currentRepo="$repo"
+      # Repo has to start with "~/"
+      currentRepo="${HOME}/${repo##*/}"
       ${this}.validateRepo
 
       ${this}.setShellState
@@ -39,13 +40,13 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.validateRepo() {
-    [[ -d "${HOME}/${currentRepo}" ]] && return 0
+    [[ -d "$currentRepo" ]] && return 0
 
     ${zsb}.throw "$(hl $currentRepo) does not exists, aborting.\nPlease check $(hl $repoFile)"
   }
 
   ${this}.setShellState() {
-    builtin cd ${HOME}/${currentRepo}
+    builtin cd "$currentRepo"
     currentBranch="$(git branch --show-current)"
   }
 
