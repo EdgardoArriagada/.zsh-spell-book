@@ -1,21 +1,16 @@
 dice() (
   local this="$0"
-  local sides="$1"
-  local DEFAULT_SIDES=6
+  local sides="${1:=6}"
 
   ${this}.main() {
-    ${this}.setDefaultSides
-
-    if ! ${this}.areSidesValid; then
-      echo "${ZSB_ERROR} Invalid number of sides. $(it "{sides : sides ∈ Z and 2 ≤ sides ≤ ∞}")"
-      return 1
-    fi
+    ${this}.validateSides
 
     ${this}.rollTheDice
   }
 
-  ${this}.setDefaultSides() {
-    [[ -z "$sides" ]] && sides="$DEFAULT_SIDES"
+  ${this}.validateSides() {
+    ${this}.areSidesValid && return 0
+    ${zsb}.throw "Invalid number of sides. $(it "{sides : sides ∈ Z and 2 ≤ sides ≤ ∞}")"
   }
 
   ${this}.areSidesValid() {
@@ -29,7 +24,7 @@ dice() (
 
   ${this}.generateRandom() {
     # changing seed is mandatory as base seed doesn't change in a subshell
-    local randomNumber=$(head -1 /dev/urandom | od -N 1 | awk '{ print $2 }')
+    local randomNumber=$(head -1 /dev/urandom | od -An | awk 'FNR == 1 { print $2 }')
     echo $((randomNumber % ${sides} + 1))
   }
 
