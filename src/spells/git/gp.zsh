@@ -1,25 +1,19 @@
 gp() {
   {
-    declare -A args
-    args[--aware]=false
-    ${zsb}.switchTrueMatching "${args[@]}" "$@"
-    set -- $(${zsb}.clearFlags "${args[@]}" "$@")
+    local existingFlags=(--aware)
+    local args=("$@")
+    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
+    set -- $(${zsb}.clearFlags "args" "existingFlags")
   }
 
-  if [[ -z "$1" ]]; then
-    echo "${ZSB_ERROR} No branch have been provided"
-    return 1
-  fi
-
-  local INPUT_REMOTE_BRANCH="$1"
+  local inputRemoteBranch="${1:?'You must provede a branch'}"
   shift 1
 
-  if ${zsb}.isDefaultBranch "$INPUT_REMOTE_BRANCH" && ! "${args[--aware]}"; then
-    echo "${ZSB_ERROR} It's not safe to push to default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
-    return 1
+  if ${zsb}.isDefaultBranch "$INPUT_REMOTE_BRANCH" && [[ -z "${flags[--aware]}" ]]; then
+    ${zsb}.throw "It's not safe to push to default branch, use $(hl --aware) flag to do it anyway."
   fi
 
-  git push origin "$INPUT_REMOTE_BRANCH" "$@" && copythis " " -s
+  git push origin "$inputRemoteBranch" "$@"
 
   return 0
 }
