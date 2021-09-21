@@ -3,20 +3,17 @@
 
 repackage() {
   {
-    declare -A args
-    args[--aware]=false
-    args[--force]=false
-    ${zsb}.switchTrueMatching "${args[@]}" "$@"
+    local existingFlags=(--aware --force)
+    local args=("$@")
+    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
   }
 
-  if ${zsb}.userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
-    echo "${ZSB_ERROR} Can't repackage into default branch, use ${ZSB_SHL}--aware${ZSB_EHL} flag to do it anyway"
-    return 1
+  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "${flags[--aware]}" ]]; then
+    ${zsb}.throw "Can't repackage into default branch, use $(hl --aware) flag to do it anyway"
   fi
 
-  if ${zsb}.isLastCommitOnline && ! "${args[--force]}"; then
-    echo "${ZSB_ERROR} Can't repackage, HEAD commit has already been pushed online, use ${ZSB_SHL}--force${ZSB_EHL} flag to do it anyway"
-    return 1
+  if ${zsb}.isLastCommitOnline && [[ -z "${flags[--force]}" ]]; then
+    ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use $(hl --force) flag to do it anyway"
   fi
 
   git commit --amend --no-edit --gpg-sign && ${zsb}.gitStatus
