@@ -9,7 +9,7 @@ gp() {
   local inputRemoteBranch="${1:?'You must provede a branch'}"
   shift 1
 
-  if ${zsb}.isDefaultBranch "$INPUT_REMOTE_BRANCH" && [[ -z "${flags[--aware]}" ]]; then
+  if ${zsb}.isDefaultBranch "$inputRemoteBranch" && [[ -z "${flags[--aware]}" ]]; then
     ${zsb}.throw "It's not safe to push to default branch, use $(hl --aware) flag to do it anyway."
   fi
 
