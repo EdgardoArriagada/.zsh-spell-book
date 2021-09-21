@@ -3,15 +3,14 @@
 
 gc() {
   {
-    declare -A args
-    args[--aware]=false
-    ${zsb}.switchTrueMatching "${args[@]}" "$@"
-    set -- $(${zsb}.clearFlags "${args[@]}" "$@")
+    local existingFlags=(--aware)
+    local args=("$@")
+    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
+    set -- $(${zsb}.clearFlags "args" "existingFlags")
   }
 
-  if ${zsb}.userWorkingOnDefaultBranch && ! "${args[--aware]}"; then
-    echo "${ZSB_ERROR} Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
-    return 1
+  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "${flags[--aware]}" ]]; then
+    ${zsb}.throw "Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
   fi
 
   local commitSuccess=false
@@ -22,7 +21,7 @@ gc() {
   fi
 
   if ${zsb}.userWorkingOnDefaultBranch && "$commitSuccess"; then
-    echo "${ZSB_WARNING} Commit made into default branch, use $(hl "git reset HEAD~") to undo the entire previous commit"
+    ${zsb}.warning "Commit made into default branch, use $(hl "git reset HEAD~") to undo the entire previous commit"
   fi
 
   return 0

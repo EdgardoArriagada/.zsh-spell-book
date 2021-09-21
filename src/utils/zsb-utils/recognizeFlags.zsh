@@ -6,7 +6,7 @@
 #   set -- $(${zsb}.clearFlags "args" "existingFlags")
 # }
 #
-# if ${flags[--one]}; then ...
+# if [[ -n "${flags[--aware]}" ]]; then...
 
 
 ${zsb}.recognizeFlags() {
