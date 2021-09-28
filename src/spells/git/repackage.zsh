@@ -8,11 +8,11 @@ repackage() {
     local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
   }
 
-  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "${flags[--aware]}" ]]; then
+  if ${zsb}.userWorkingOnDefaultBranch && ! "${flags[--aware]}"; then
     ${zsb}.throw "Can't repackage into default branch, use $(hl --aware) flag to do it anyway"
   fi
 
-  if ${zsb}.isLastCommitOnline && [[ -z "${flags[--force]}" ]]; then
+  if ${zsb}.isLastCommitOnline && ! "${flags[--force]}"; then
     ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use $(hl --force) flag to do it anyway"
   fi
 

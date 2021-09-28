@@ -6,17 +6,22 @@
 #   set -- $(${zsb}.clearFlags "args" "existingFlags")
 # }
 #
-# if [[ -n "${flags[--one]}" ]]; then...
+# if "${flags[--one]}"; then...
 
 
 ${zsb}.recognizeFlags() {
   local args=(${(P)1})
   local flags=(${(P)2})
   local usedFlags=( ${flags:*args} )
+  local unusedFlags=( ${flags:|usedFlags} )
 
-  [[ -z "$usedFlags" ]] && return 0
+  local trueFlags=""
+  [[ -n "$usedFlags" ]] && trueFlags=$(print -r -- "${(zu)^usedFlags} true")
 
-  print -r -- "${(uz)^usedFlags} true"
+  local falseFlags=""
+  [[ -n "$unusedFlags" ]] && falseFlags=$(print -r -- "${(zu)^unusedFlags} false")
+
+  echo "${trueFlags} ${falseFlags}"
 }
 
 ${zsb}.clearFlags() {

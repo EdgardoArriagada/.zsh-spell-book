@@ -9,7 +9,7 @@ gc() {
     set -- $(${zsb}.clearFlags "args" "existingFlags")
   }
 
-  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "${flags[--aware]}" ]]; then
+  if ${zsb}.userWorkingOnDefaultBranch && ! "${flags[--aware]}"; then
     ${zsb}.throw "Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
   fi
 
