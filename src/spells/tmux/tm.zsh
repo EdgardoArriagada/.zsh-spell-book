@@ -33,3 +33,5 @@ _${zsb}.tm() {
 
 compdef _${zsb}.tm tm
 
+alias TM="toggleCapsLock && tm"
+
