@@ -2,17 +2,13 @@
 # but it will check if the commit has already been pushed online
 
 repackage() {
-  {
-    local existingFlags=(--aware --force)
-    local args=("$@")
-    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
-  }
+  zparseopts -D -E -F -- -aware=aware -force=force
 
-  if ${zsb}.userWorkingOnDefaultBranch && ! "${flags[--aware]}"; then
+  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
     ${zsb}.throw "Can't repackage into default branch, use $(hl --aware) flag to do it anyway"
   fi
 
-  if ${zsb}.isLastCommitOnline && ! "${flags[--force]}"; then
+  if ${zsb}.isLastCommitOnline && [[ -z "$force" ]]; then
     ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use $(hl --force) flag to do it anyway"
   fi
 

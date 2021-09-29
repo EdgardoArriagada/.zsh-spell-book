@@ -1,15 +1,10 @@
 gp() {
-  {
-    local existingFlags=(--aware)
-    local args=("$@")
-    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
-    set -- $(${zsb}.clearFlags "args" "existingFlags")
-  }
+  zparseopts -D -E -F -- -aware=aware
 
   local inputRemoteBranch="${1:?'You must provede a branch'}"
   shift 1
 
-  if ${zsb}.isDefaultBranch "$inputRemoteBranch" && ! "${flags[--aware]}"; then
+  if ${zsb}.isDefaultBranch "$inputRemoteBranch" && [[ -z "$aware" ]]; then
     ${zsb}.throw "It's not safe to push to default branch, use $(hl --aware) flag to do it anyway."
   fi
 

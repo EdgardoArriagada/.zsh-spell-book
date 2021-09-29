@@ -2,14 +2,9 @@
 # passing a message as string is not necessary, but a best practice (tested on ubuntu 18.04 with zsh)
 
 gc() {
-  {
-    local existingFlags=(--aware)
-    local args=("$@")
-    local -A flags=( ${(z)$(${zsb}.recognizeFlags "args" "existingFlags")} )
-    set -- $(${zsb}.clearFlags "args" "existingFlags")
-  }
+  zparseopts -D -E -F -- -aware=aware
 
-  if ${zsb}.userWorkingOnDefaultBranch && ! "${flags[--aware]}"; then
+  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
     ${zsb}.throw "Can't commit into default branch, use $(hl "--aware") flag to do it anyway"
   fi
 
