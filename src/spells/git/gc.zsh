@@ -1,6 +1,3 @@
-# commit changes when not on DEFAULT_BRANCH branch and asks for status after
-# passing a message as string is not necessary, but a best practice (tested on ubuntu 18.04 with zsh)
-
 gc() {
   zparseopts -D -E -F -- -aware=aware
 

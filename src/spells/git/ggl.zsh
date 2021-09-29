@@ -6,7 +6,7 @@ ggl() {
     ${zsb}.throw "You can't use this command to pull from different branches"
   fi
 
-  git pull origin "$inputBranch" && copythis " " -s
+  git pull origin "$inputBranch"
 }
 
 compdef "_${zsb}.nonRepeatedListC 'git branch --show-current'" ggl

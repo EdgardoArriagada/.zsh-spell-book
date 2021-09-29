@@ -4,11 +4,11 @@ gnameit() {
   local oldUrl="$(git config --get remote.origin.url)"
 
   if [[ -z "$userName" ]]; then
-    echo "${ZSB_ERROR} Username not set."; return 1
+    ${zsb}.throw "Username not set."
   fi
 
   if [[ -z "$oldUrl" ]]; then
-    echo "${ZSB_ERROR} Origin url not set."; return 1
+    ${zsb}.throw "Origin url not set."
   fi
 
   if ${zsb}.doesMatch "$oldUrl" "^http[s]:\/{2}.+@"; then

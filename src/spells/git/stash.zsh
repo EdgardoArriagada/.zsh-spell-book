@@ -1,5 +1,5 @@
 stash() {
-  if [[ ! -z "$1" ]]; then
+  if [[ -n "$1" ]]; then
     git stash push --include-untracked -m "${*}"
   else
     git stash push --include-untracked
