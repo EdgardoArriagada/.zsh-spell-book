@@ -6,12 +6,9 @@ reactCreator() {
   local -r newComponentKebab="$(basename $newComponentPath)"
   local -r newComponentUpperCamelCase="$(echo "$newComponentKebab" | sed -r 's/(^|-)([a-z])/\U\2/g')"
 
-  local -r inputFlags="$3"
-  local -r GROUP_FLAGS='o'
+  zparseopts -D -E -F -- o=overwrite || return 1
 
-  ! ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS" && return 1
-
-  if [[ -d "$newComponentPath" ]] && [[ "$inputFlags" != *'o'* ]] ; then
+  if [[ -d "$newComponentPath" ]] && [[ -z "$overwrite" ]] ; then
     ${zsb}.throw "Can't overwrite already existing component, use $(hl "-o") flag to do it anyway"
   fi
 
@@ -44,7 +41,7 @@ reactCreator() {
 
 
   if [[ "$?" == "0" ]]; then
-    echo "${ZSB_SUCCESS} New component -> ${newComponentPath}/$(hl "${newComponentKebab}.tsx")"
+    ${zsb}.success "New component -> ${newComponentPath}/$(hl "${newComponentKebab}.tsx")"
   fi
 }
 
