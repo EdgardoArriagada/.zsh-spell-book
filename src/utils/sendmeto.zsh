@@ -1,17 +1,18 @@
 sendmeto() (
   local this="$0"
-  local inputUrl="$1"
-  local inputFlags="$2"
-  local GROUP_FLAGS='cs'
+  local inputUrl
+  local stayInScreen
+  local copyToClipboard
 
   ${this}.main() {
-    ! ${this}.areFlagsValid && return $?
+    zparseopts -D -E -F -- s=stayInScreen c=copyToClipboard || return 1
+    inputUrl="${@[1]}"
 
     if ! ${this}.isInputUrlValid; then
-      ${this}.throwInvalidUrl; return $?
+      ${this}.throwInvalidUrl
     fi
 
-    if ${this}.inputFlagsContains "c"; then
+    if [[ -n "$copyToClipboard" ]]; then
       ${this}.copyInputUrlToClipboard;
     else
       ${this}.openInputUrlInBrowser
@@ -20,17 +21,12 @@ sendmeto() (
     ${this}.executeSideEffects
   }
 
-  ${this}.areFlagsValid() ${zsb}.areFlagsInGroup "$inputFlags" "$GROUP_FLAGS"
-
   ${this}.isInputUrlValid() {
     local URL_REGEX="^http[s]?:\/{2}"
     ${zsb}.doesMatch "$inputUrl" "$URL_REGEX"
   }
 
-  ${this}.throwInvalidUrl() {
-    echo "${ZSB_ERROR} You must specify a valid url"
-    return 1
-  }
+  ${this}.throwInvalidUrl() ${zsb}.throw "You must specify a valid url"
 
   ${this}.inputFlagsContains() [[ "$inputFlags" == *"$1"* ]]
 
@@ -46,7 +42,7 @@ sendmeto() (
   }
 
   ${this}.executeSideEffects() {
-    ! ${this}.inputFlagsContains "s" && close
+    [[ -z "$stayInScreen" ]] && close
   }
 
   ${this}.main "$@"
