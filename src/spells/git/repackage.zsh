@@ -2,7 +2,7 @@
 # but it will check if the commit has already been pushed online
 
 repackage() {
-  zparseopts -D -E -F -- -aware=aware -force=force
+  zparseopts -D -E -F -- -aware=aware -force=force || return 1
 
   if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
     ${zsb}.throw "Can't repackage into default branch, use $(hl --aware) flag to do it anyway"

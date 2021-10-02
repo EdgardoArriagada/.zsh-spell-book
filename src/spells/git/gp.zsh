@@ -1,5 +1,5 @@
 gp() {
-  zparseopts -D -E -F -- -aware=aware
+  zparseopts -D -E -F -- -aware=aware || return 1
 
   local inputRemoteBranch="${1:?'You must provede a branch'}"
   shift 1

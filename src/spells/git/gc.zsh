@@ -1,5 +1,5 @@
 gc() {
-  zparseopts -D -E -F -- -aware=aware
+  zparseopts -D -E -F -- -aware=aware || return 1
 
   if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
     ${zsb}.throw "Can't commit into default branch, use $(hl "--aware") flag to do it anyway"

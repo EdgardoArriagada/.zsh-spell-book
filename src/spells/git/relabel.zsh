@@ -2,7 +2,7 @@
 # but it will check if the commit has already been pushed online
 
 relabel() {
-  zparseopts -D -E -F -- -aware=aware -force=force
+  zparseopts -D -E -F -- -aware=aware -force=force || return 1
 
   [[ -z "$1" ]] && ${zsb}.throw "<relabel> command must contain a message."
 
