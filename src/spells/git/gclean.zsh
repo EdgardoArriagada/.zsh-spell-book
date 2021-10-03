@@ -6,12 +6,12 @@ gclean() {
   local untrackedFiles=( $(${zsb}.getGitFiles 'untracked') )
 
   if [[ -z "$untrackedFiles" ]]; then
-    ${zsb}.info "There are no untracked files."; return 0
+    ${zsb}.info "There are no untracked files/directories."; return 0
   fi
 
   local formattedFiles=$(print -rl -- "  ${(z)^untrackedFiles}")
 
-  ${zsb}.warning "All untracked files will be deleted."
+  ${zsb}.warning "All untracked files/directories will be deleted."
   echo " "
   echo "$(hl $formattedFiles)"
   echo " "

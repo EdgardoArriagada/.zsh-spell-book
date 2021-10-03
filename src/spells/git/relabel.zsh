@@ -1,6 +1,3 @@
-# the comand is simply a [git commit --amend --no-edit && git status ]
-# but it will check if the commit has already been pushed online
-
 relabel() {
   zparseopts -D -E -F -- -aware=aware -force=force || return 1
 
