@@ -5,6 +5,10 @@ ${zsb}.throw() {
 
 ${zsb}.success() { echo -n "${ZSB_SUCCESS}"; puts " $1" }
 
+${zsb}.fail() { echo -n "${ZSB_FAIL}"; puts " $1" }
+
+${zsb}.pass() { echo -n "${ZSB_PASS}"; puts " $1" }
+
 ${zsb}.warning() { echo -n "${ZSB_WARNING}"; puts " $1" }
 
 ${zsb}.info() { echo -n "${ZSB_INFO}"; puts " $1" }
