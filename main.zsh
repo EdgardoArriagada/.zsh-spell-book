@@ -23,17 +23,17 @@ ZSB_SNAPSHOT_PATH="$PATH"
   local automaticCallFiles=( ${ZSB_DIR}/src/automatic-calls/**/*.zsh )
 
   # Create a dynamic prefixed function
-  __${zsb}.sourceFiles() for file in $*; do source "$file"; done
+  ${zsb}.sourceFiles() for file in $*; do source "$file"; done
 
   # Source files in this specific order
-  __${zsb}.sourceFiles $utilFiles
-  __${zsb}.sourceFiles $configurationFiles
-  __${zsb}.sourceFiles $spellPages
-  __${zsb}.sourceFiles $automaticCallFiles
+  ${zsb}.sourceFiles $utilFiles
+  ${zsb}.sourceFiles $configurationFiles
+  ${zsb}.sourceFiles $spellPages
+  ${zsb}.sourceFiles $automaticCallFiles
 
   # Temporal Spells
   local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
-  [[ -n "$tempSpells" ]] && __${zsb}.sourceFiles $tempSpells
+  [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles $tempSpells
 }
 
 # Remove dynamic prefixed functions

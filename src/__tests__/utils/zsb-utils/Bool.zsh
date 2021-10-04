@@ -7,17 +7,22 @@ describe "Bool function"; () {
     ["bar"]=true
     [true]=true
 
-    [1]=false
     ['1']=false
     [""]=false
     [false]=false
   )
 
   for expected result in "${(@kv)testData}"; do
-    it="${result} for '${expected}'"; () {
+    it="should return '${result}' for '${expected}'"; () {
       [[ "$(Bool $expected)" = $result ]]
       expect $?
     }
   done
+
+  # Special case not recognize in array
+  it="should return 'false' for '1' as number"; () {
+    [[ "$(Bool 1)" = false ]]
+    expect $?
+  }
 }
 
