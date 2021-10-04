@@ -23,16 +23,13 @@ deleteNonDefaultBranches() (
   }
 
   ${this}.printPrompt() {
-    ${zsb}.warning "The following branches will be deleted:"
-    echo " "
-    echo "$(hl "$nonDefaultBranches")"
-    echo " "
-    ${zsb}.prompt "Do you really want to delete these branches? [Y/n]"
+    ${zsb}.fullPrompt \
+      "The following branches will be deleted:" \
+      "$nonDefaultBranches"
   }
 
   ${this}.playOptionsMenu() {
-    ${zsb}.confirmMenu && ${this}.performDeletion &&
-      ${zsb}.success "Non default branches deleted."
+    ${zsb}.confirmMenu && ${this}.performDeletion
   }
 
   ${this}.performDeletion() {

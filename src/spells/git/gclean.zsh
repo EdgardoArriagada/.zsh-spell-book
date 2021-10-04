@@ -11,11 +11,9 @@ gclean() {
 
   local formattedFiles=$(print -rl -- "  ${(z)^untrackedFiles}")
 
-  ${zsb}.warning "All untracked files/directories will be deleted."
-  echo " "
-  echo "$(hl $formattedFiles)"
-  echo " "
-  ${zsb}.prompt "Are you sure? [Y/n]"
+  ${zsb}.fullPrompt \
+    "All untracked files/directories will be deleted." \
+    "$formattedFiles"
 
   ${zsb}.confirmMenu && git clean -fd
 }

@@ -5,9 +5,9 @@ tmonly() {
 
   [[ -z "$otherSessions" ]] && ${zsb}.info "There are no other sessions." && return 0
 
-  ${zsb}.warning "You are about to kill the following sessions"
-  echo "$(hl "$otherSessions")"
-  ${zsb}.prompt "Are you sure? [Y/n]"
+  ${zsb}.fullPrompt \
+    "You are about to kill the following sessions" \
+    "$otherSessions"
 
   ${zsb}.confirmMenu && tmux kill-session -a
 }
