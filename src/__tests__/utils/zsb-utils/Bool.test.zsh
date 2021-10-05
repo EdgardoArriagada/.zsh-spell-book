@@ -14,14 +14,14 @@ describe "Bool function"; () (
 
   for input expected in "${(@kv)testData}"; do
     it="should return '${expected}' for '${input}'"; () {
-      [[ "$(Bool $input)" = $expected ]]
+      [[ "$(Bool $input)" == $expected ]]
       expect $?
     }
   done
 
   # Special case not recognize in array
   it="should return 'false' for '1' as number"; () {
-    [[ "$(Bool 1)" = false ]]
+    [[ "$(Bool 1)" == false ]]
     expect $?
   }
 )
