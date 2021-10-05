@@ -1,4 +1,4 @@
-describe "Bool function"; () {
+describe "Bool function"; () (
   local -A testData=(
     [0]=true
     ['0']=true
@@ -12,9 +12,9 @@ describe "Bool function"; () {
     [false]=false
   )
 
-  for expected result in "${(@kv)testData}"; do
-    it="should return '${result}' for '${expected}'"; () {
-      [[ "$(Bool $expected)" = $result ]]
+  for input expected in "${(@kv)testData}"; do
+    it="should return '${expected}' for '${input}'"; () {
+      [[ "$(Bool $input)" = $expected ]]
       expect $?
     }
   done
@@ -24,5 +24,5 @@ describe "Bool function"; () {
     [[ "$(Bool 1)" = false ]]
     expect $?
   }
-}
+)
 

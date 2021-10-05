@@ -1,18 +1,8 @@
-expect() {
-  if [[ "$1" = 0 ]]; then
-    ${zsb}.pass "$it"
-  else
-    failingTests+=("$(${zsb}.fail "$it")\n")
-  fi
-}
+expect() { (( $1 == 0 )) && ${zsb}.pass "$it" || ${zsb}.fail "$it" }
 
-describe() {echo "🌑 ${1}"}
+describe() {echo "\n🌑 ${1}"}
 
 runTests() (
-  failingTests=()
-
-  local testFiles=( ${ZSB_DIR}/src/__tests__/**/*.zsh )
+  local testFiles=( ${ZSB_DIR}/src/__tests__/**/*.test.zsh )
   ${zsb}.sourceFiles $testFiles
-
-  print "$failingTests"
 )
