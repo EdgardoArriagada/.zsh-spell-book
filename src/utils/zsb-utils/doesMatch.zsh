@@ -1,8 +1,5 @@
-${zsb}.doesMatch() {
-  local input="$1"
-  local regexString="$2"
-  echo -E - "$input" | grep -E -q "$regexString"
-}
+# 1=input, 2=regex
+${zsb}.doesMatch() [[ "$1" =~ "$2" ]]
 
 ${zsb}.isInteger() [[ "$1" = <-> ]]
 
