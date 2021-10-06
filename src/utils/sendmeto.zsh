@@ -8,7 +8,7 @@ sendmeto() (
     zparseopts -D -E -F -- s=stayInScreen c=copyToClipboard || return 1
     inputUrl="${@[1]}"
 
-    if ! ${this}.isInputUrlValid; then
+    if ! ${zsb}.isUrl "$inputUrl"; then
       ${this}.throwInvalidUrl
     fi
 
@@ -19,11 +19,6 @@ sendmeto() (
     fi
 
     ${this}.executeSideEffects
-  }
-
-  ${this}.isInputUrlValid() {
-    local URL_REGEX="^http[s]?:\/{2}"
-    ${zsb}.doesMatch "$inputUrl" "$URL_REGEX"
   }
 
   ${this}.throwInvalidUrl() ${zsb}.throw "You must specify a valid url"
