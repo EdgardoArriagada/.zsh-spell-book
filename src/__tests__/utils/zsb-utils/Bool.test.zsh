@@ -6,6 +6,7 @@ describe "Bool function"; () (
     [foo]=true
     ["bar"]=true
     [true]=true
+    [12.34]=true
 
     ['1']=false
     [""]=false

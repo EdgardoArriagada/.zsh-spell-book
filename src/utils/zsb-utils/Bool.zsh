@@ -1,13 +1,10 @@
 Bool() {
-  local input="$1"
+  [[ "$1" == "0" ]] && echo true && return
+  [[ -z "$1" ]] && echo false && return
 
-  if ${zsb}.isFloat "$input"; then
-    [[ "$1" = "0" ]] && echo true && return
-    echo false && return
-  fi
+  ${zsb}.isInteger "$1" && echo false && return
 
-  [[ -z "$input" ]] && echo false && return
-  [[ "$input" = "false" ]] && echo false && return
+  [[ "$1" = "false" ]] && echo false && return
 
   echo true
 }
