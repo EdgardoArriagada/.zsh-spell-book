@@ -10,6 +10,7 @@ alias keysbacktonormal='setxkbmap -option'
 alias vouembora='ddall; shutdown -h now'
 alias ee="exit"
 
-whoInPort() {sudo lsof -i ":${1}"}
+whoInPort() { printAndRun "sudo lsof -i \":${1}\"" }
+killInPort() { sudo kill -9 $(sudo lsof -t -i ":${1}") }
 
 
