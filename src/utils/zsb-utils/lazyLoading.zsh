@@ -11,17 +11,13 @@ ${zsb}.lazy_load() {
 
   {
     ${this}.main() {
-      ${this}.showLoadingMessage
+      ${zsb}.info "Lazy loading..."
 
       ${this}.unaliasInvolvedScripts "$@"
 
       ${this}.sourceScriptToLazyLoad
 
       ${this}.runOriginalCommandWithArgs
-    }
-
-    ${this}.showLoadingMessage() {
-      echo "${ZSB_INFO} Lazy loading..."
     }
 
     ${this}.unaliasInvolvedScripts() {
@@ -33,7 +29,7 @@ ${zsb}.lazy_load() {
     }
 
     ${this}.runOriginalCommandWithArgs() {
-      eval "$commandToRun $commandToRunArgs"
+      eval "${commandToRun} ${commandToRunArgs}"
     }
 
     ${this}.main "$@"
