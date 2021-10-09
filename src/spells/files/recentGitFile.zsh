@@ -1,7 +1,7 @@
 ${zsb}.recentGitFile() {
   local callback="$1"
   local inputFile="$2"
-  eval "$callback $inputFile"
+  eval "${callback} ${inputFile}"
 }
 
 _${zsb}.recentGitFile() {
@@ -16,4 +16,5 @@ compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
 alias vr="${zsb}.recentGitFile vims"
 alias cr="${zsb}.recentGitFile c"
 alias ccpr="${zsb}.recentGitFile ccp"
+alias tigr="${zsb}.recentGitFile tig"
 
