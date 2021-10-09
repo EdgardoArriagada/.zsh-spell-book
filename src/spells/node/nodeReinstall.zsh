@@ -16,7 +16,7 @@ ${zsb}.nodeReinstall() {
     ${zsb}.info "Installation cancelled"; return 0
   fi
 
-  # BUG: npm always tries to acess to zsb_lazy_load inside a bash function
+  # BUG: npm always tries to acess to ${zsb}.lazyLoad inside a bash function
   # eval is a workaround
   eval "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 }

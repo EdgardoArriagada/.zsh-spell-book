@@ -1,6 +1,6 @@
 # usefull link https://gist.github.com/QinMing/364774610afc0e06cc223b467abe83c0#file-zshrc-L15-L37
 # thanks to QinMing for the code!
-${zsb}.lazy_load() {
+${zsb}.lazyLoad() {
   local aliasesToRelease=("${(@s: :)${1}}") # space separated list
   local scriptToLazyLoad="$2"
   local commandToRun="$3"
@@ -14,11 +14,11 @@ ${zsb}.lazy_load() {
   eval "${commandToRun} ${commandToRunArgs}"
 }
 
-__${zsb}.prepare_lazy_load() {
+__${zsb}.prepareLazyLoad() {
   local -r script="$1"
   shift 1
 
   for cmd in "$@"; do
-    alias $cmd="${zsb}.lazy_load \"$*\" $script $cmd"
+    alias $cmd="${zsb}.lazyLoad \"$*\" $script $cmd"
   done
 }
