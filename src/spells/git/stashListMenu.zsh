@@ -5,7 +5,7 @@ ${zsb}.stashListMenu() {
   local -r callback=${1:?'You must provida a callback function'}
   local -r callbackArg="$2"
 
-  if [[ ! -z "$callbackArg" ]]; then
+  if [[ -n "$callbackArg" ]]; then
     "$callback" "$callbackArg"
     return 0
   fi

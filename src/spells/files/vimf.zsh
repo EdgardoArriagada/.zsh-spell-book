@@ -16,7 +16,7 @@ vf() (
     ${this}.openFileFound
   }
 
-  ${this}.existsLineNumber() [[ ! -z "$lineNumber" ]]
+  ${this}.existsLineNumber() [[ -n "$lineNumber" ]]
 
   ${this}.openFileInNumber() eval "nnvim +${lineNumber} ${fileInput}"
 

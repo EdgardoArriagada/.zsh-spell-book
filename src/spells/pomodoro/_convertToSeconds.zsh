@@ -51,7 +51,7 @@ ${zsb}.pomodoro.convertToSeconds() (
     local -r hours=$(echo "$reverseTime" | cut -d":" -f3 | rev)
 
     local hoursToSeconds=0
-    [[ ! -z "$hours" ]] && hoursToSeconds=$(($hours * 60 * 60))
+    [[ -n "$hours" ]] && hoursToSeconds=$(($hours * 60 * 60))
     local -r minutesToSeconds=$(($minutes * 60))
 
     totalSeconds=$(($hoursToSeconds + $minutesToSeconds + $seconds ))

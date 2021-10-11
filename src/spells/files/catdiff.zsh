@@ -16,17 +16,17 @@ catdiff() (
       return 0
     fi
 
-    if [[ ! -z "$file1Lacks" ]]; then
+    if [[ -n "$file1Lacks" ]]; then
       ${this}.printFileInfo "$file1"
       echo "$file1Lacks"
     fi
 
-    if [[ ! -z "$file1Lacks" ]] && [[ ! -z "$file2Lacks" ]]; then
+    if [[ -n "$file1Lacks" ]] && [[ -n "$file2Lacks" ]]; then
       ${zsb}.fillWithToken '_'
       echo " "
     fi
 
-    if [[ ! -z "$file2Lacks" ]]; then
+    if [[ -n "$file2Lacks" ]]; then
       ${this}.printFileInfo "$file2"
       echo "$file2Lacks"
     fi
