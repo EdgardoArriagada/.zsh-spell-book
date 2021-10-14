@@ -192,19 +192,19 @@ colors:
   vi_mode_cursor:
     text:   CellBackground
     cursor: CellForeground
-  # search:
-  #   matches:
-  #     foreground: '#000000'
-  #     background: '#ffffff'
-  #   focused_match:
-  #    foreground: CellBackground
-  #    background: CellForeground
-  #   bar:
-  #     background: ''
-  #     foreground: ''
-  # line_indicator:
-  #   foreground: None
-  #   background: None
+  search:
+    matches:
+      foreground: '#fbf1c7'
+      background: '#458588'
+    focused_match:
+     foreground: '#fbf1c7'
+     background: '#d3869b'
+    bar:
+      background: '#fbf1c7'
+      foreground: '#282828'
+  line_indicator:
+    foreground: None
+    background: None
   selection:
     text:       CellBackground
     background: CellForeground
