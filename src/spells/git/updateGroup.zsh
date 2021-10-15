@@ -33,8 +33,7 @@ ${zsb}.updateGroup() (
       currentRepo="${HOME}/${repo#*/}"
       ${this}.validateRepo
 
-      ${this}.setShellState
-
+      builtin cd "$currentRepo"
       ${this}.manageRepo
     done
   }
@@ -45,14 +44,14 @@ ${zsb}.updateGroup() (
     ${zsb}.throw "$(hl $currentRepo) does not exists, aborting.\nPlease check $(hl $repoFile)"
   }
 
-  ${this}.setShellState() {
-    builtin cd "$currentRepo"
-    currentBranch="$(git branch --show-current)"
-  }
+  ${this}.setCurrentBranch() currentBranch="$(git branch --show-current)"
 
   ${this}.manageRepo() {
+
     local continueUpdating=0
     while [[ "$continueUpdating" == "0" ]]; do
+      ${this}.setCurrentBranch
+
       if ${this}.isRepoInCleanState; then
         ${this}.printCleanHeader
         ${this}.updateRepo
