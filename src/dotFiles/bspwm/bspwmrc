@@ -10,7 +10,7 @@ bspc monitor -d I II III IV V VI VII VIII IX X
 nitrogen --restore &
 
 # Allow transparency
-picom -f &
+picom &
 
 bspc config border_width         2
 bspc config window_gap          12
