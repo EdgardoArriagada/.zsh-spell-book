@@ -13,8 +13,16 @@ super + r
   zsb_charm_remaining_pomodoro
 
 super + l
-  zsb_charm_handyLinks.zsh
+  zsb_charm_handyLinks
 
+super + u
+  zsb_charm_pass
+
+super + [
+  zsb_charm_spanish
+
+alt + shift + p
+  zsb_charm_rootWorkspace
 
 # program launcher
 super + @space
