@@ -21,6 +21,10 @@ super + u
 super + [
   zsb_charm_spanish
 
+super + z
+  sleep 0.6; xset dpms force standby; slock
+
+
 alt + shift + p
   zsb_charm_rootWorkspace
 
