@@ -1,6 +1,10 @@
 createTsReact() {
-  local -r projectName=${1:?'You must provide a projectName'}
-  npx create-react-app "$projectName" --template typescript && \
+  local -r args="${@:?'You must provide a project name'}"
+  local -r projectName="$(kebab-case "$args")"
+
+  [[ -d $projectName ]] && ${zsb}.throw "$(hl "$1") is already a dir."
+
+  eval "npx create-react-app ${projectName} --template typescript" && \
     yarn add -D prettier && \
     prettierInit && \
     alert -i 'face-cool' "Happy Hacking" && \
