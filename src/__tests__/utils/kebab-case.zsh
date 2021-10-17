@@ -3,6 +3,7 @@ describe "kebab-case function"; () (
     ["space separated case"]="space-separated-case"
     ['pascalCase']="pascal-case"
     ['kebab-case']="kebab-case"
+    ['snake_case']="snake-case"
     ['Capital Letters']="capital-letters"
     ['UpperCamelCase']="upper-camel-case"
     ['multiple  spaces   separated ']="multiple-spaces-separated"
@@ -10,7 +11,7 @@ describe "kebab-case function"; () (
 
   for input expected in "${(@kv)testData}"; do
     it="should return '${expected}' for '${input}'"; () {
-      [[ "$(kebab-case $input)" == $expected ]]
+      [[ "$(kebab-case $input)" == "$expected" ]]
       expect $?
     }
   done
