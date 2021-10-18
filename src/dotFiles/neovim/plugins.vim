@@ -11,6 +11,9 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'mileszs/ack.vim'
     Plug 'tpope/vim-fugitive'
 
+    " WhichKey
+    Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+
     " Extra tooling
     Plug 'vim-airline/vim-airline'
     Plug 'airblade/vim-gitgutter'

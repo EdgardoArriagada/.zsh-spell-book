@@ -1,7 +1,8 @@
 "Set this file as local options so it override any plugin
 filetype plugin indent on
 
-let mapleader=" "
+let g:mapleader = "\<Space>"
+let g:maplocaleader = '~'
 
 set tabstop=2 softtabstop=2 "Amount of spaces when pressing tab
 set shiftwidth=2 "when indenting with '>', use 2 spaces width
