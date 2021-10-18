@@ -76,6 +76,9 @@ inoremap < <<c-g>u
 inoremap > ><c-g>u
 inoremap <Space> <Space><c-g>u
 
+"Quit
+nnoremap <C-q> :q
+
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
 "Move highlighted text down 'Shift j'
