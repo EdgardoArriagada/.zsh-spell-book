@@ -8,9 +8,10 @@ set tabstop=2 softtabstop=2 "Amount of spaces when pressing tab
 set shiftwidth=2 "when indenting with '>', use 2 spaces width
 set expandtab "On pressing tab, insert 2 spaces
 set smartindent
+set nowrap
 set relativenumber "Relative numbers to current cursor
 set number "Show line numbers
-set hlsearch "Enable search highlighting.
+set nohlsearch
 set incsearch "Highlight as you search (use :noh to clear)
 set scrolloff=8 "Start scolling x lines before hitting top/bottom
 set colorcolumn=80,120
