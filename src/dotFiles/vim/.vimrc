@@ -80,6 +80,11 @@ inoremap <Space> <Space><c-g>u
 "Quit
 nnoremap <C-q> :q
 
+"Save
+noremap <silent> <C-S> :update<CR>
+vnoremap <silent> <C-S> <C-C>:update<CR>
+inoremap <silent> <C-S> <C-O>:update<CR>
+
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
 "Move highlighted text down 'Shift j'
