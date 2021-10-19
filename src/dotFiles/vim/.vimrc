@@ -82,8 +82,8 @@ nnoremap <C-q> :q
 
 "Save
 noremap <silent> <C-S> :update<CR>
-vnoremap <silent> <C-S> <C-C>:update<CR>
-inoremap <silent> <C-S> <C-O>:update<CR>
+vnoremap <silent> <C-S> <esc>:update<CR>
+inoremap <silent> <C-S> <esc>:update<CR>
 
 "Search and replace matches for highlighted text
 vnoremap <C-r> "hy:.,$s/<C-r>h//gc<left><left><left>
