@@ -1,0 +1,4 @@
+#!/bin/sh
+
+local wallpaper=$(ls ~/temp/wallpaper/ | awk 'FNR == 1')
+xwallpaper --center ~/temp/wallpaper/${wallpaper}
