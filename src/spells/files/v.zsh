@@ -15,9 +15,9 @@ v() {
     |*.bmp \
     |*.heif \
     |*.jpeg \
-    |*.svg) xdg-open "$file" ;;
+    |*.svg) sxiv "$file" ;;
 
-    *) eval "nnvim ${file}" ;;
+    *) eval "nnvim ${file}" && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
 }
 
