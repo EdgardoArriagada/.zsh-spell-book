@@ -15,7 +15,7 @@ v() {
     |*.bmp \
     |*.heif \
     |*.jpeg \
-    |*.svg) sxiv "$file" ;;
+    |*.svg) sxiv -f "$file" ;;
 
     *) eval "nnvim ${file}" && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
