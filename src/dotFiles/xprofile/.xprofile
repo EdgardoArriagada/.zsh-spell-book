@@ -1,4 +1,8 @@
 #!/bin/sh
 
+# Persistent wallpaper (see setWallpaper spell)
 local wallpaper=$(ls ~/temp/wallpaper/ | awk 'FNR == 1')
-xwallpaper --center ~/temp/wallpaper/${wallpaper}
+xwallpaper --center ~/temp/wallpaper/${wallpaper} &
+
+# Google for {my_country} latitude longitude
+redshift -l 35.6:71.5 -t 5700:3600 -g 0.8 -m randr -v &
