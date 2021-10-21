@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Persistent wallpaper (see setWallpaper spell)
-local wallpaper=$(ls ~/temp/wallpaper/ | awk 'FNR == 1')
+local wallpaper=$(ls ~/temp/wallpaper/ | head -1)
 xwallpaper --center ~/temp/wallpaper/${wallpaper} &
 
 redshift -P randr -v &

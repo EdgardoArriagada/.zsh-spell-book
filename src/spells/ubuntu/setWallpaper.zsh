@@ -4,11 +4,11 @@ setWallpaper() {
 
   local chosenWallpaper=$(builtin cd ~/Wallpapers && ls | sxiv -ftio | awk 'FNR == 1')
 
-  [[ -z "$chosenWallpaper" ]] && return 1
+  [[ -z "$chosenWallpaper" ]] && ${zsb}.info "Cancelled." && return 1
   xwallpaper --center ~/Wallpapers/${chosenWallpaper}
 
-  # Persistence after reboot
-  rm -rf ~/temp/wallpaper
+  # Persistence after reboot (see .xprofile)
+  find ~/temp/wallpaper -lname "${HOME}/Wallpapers/*" -delete
   mkdir -p ~/temp/wallpaper
-  cp ~/Wallpapers/${chosenWallpaper} ~/temp/wallpaper
+  ln -s ~/Wallpapers/${chosenWallpaper} ~/temp/wallpaper/${chosenWallpaper}
 }
