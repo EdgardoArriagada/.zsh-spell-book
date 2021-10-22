@@ -19,7 +19,7 @@ ${zsb}.notebook() {
 
 alias cdpage="${zsb}.notebook.validateEnv && cds ${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}"
 alias cdnotebook="${zsb}.validate 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
-alias page="${zsb}.notebook nnvim"
+alias page="(cdnotebook && ${zsb}.notebook nnvim)"
 alias cpage="${zsb}.notebook batcat"
 alias ccppage="${zsb}.notebook ccp"
 
