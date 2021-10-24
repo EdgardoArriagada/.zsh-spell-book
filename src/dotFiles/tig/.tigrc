@@ -1,5 +1,6 @@
 
-bind generic y !@sh -c "printf %(commit) | xclip -selection c"
+# setsid "prevents" clipboard from beign cleared after tig exits
+bind generic y !@sh -c "printf %(commit) | setsid xclip -selection c"
 bind main S :view-stash
 
 # tig settings (https://github.com/ninjabreakbot/tig-gruvbox/blob/main/tigrc) <3
