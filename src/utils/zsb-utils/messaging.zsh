@@ -30,6 +30,11 @@ ${zsb}.fullPrompt() {
   ${zsb}.prompt "Are you sure? [Y/n]"
 }
 
+${zsb}.confirmPrompt() {
+  ${zsb}.prompt "Are you sure? [Y/n]"
+  ${zsb}.confirmMenu
+}
+
 ${zsb}.validate() {
   [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set $(hl "$1") first."
   return 0
