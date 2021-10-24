@@ -59,6 +59,7 @@ color help-group                    166         default
 color help-action                   166         default
 
 # Diff view colors
+set diff-highlight = true
 color "commit "                     default     default
 color "Refs: "                      default     default
 color "Author: "                    default     default
@@ -72,9 +73,9 @@ color "--- "                        167         default
 color diff-index                    default     default
 color diff-stat                     223         default
 color diff-add                      142         default
-color diff-add-highlight            106         default
+color diff-add-highlight            148         22
 color diff-del                      167         default
-color diff-del-highlight            223         default
+color diff-del-highlight            196         88
 color diff-header                   132         default
 color diff-chunk                    109         default
 color "diff-tree "                  214         default
