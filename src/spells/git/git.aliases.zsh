@@ -1,5 +1,4 @@
 alias gswd='git checkout develop'
-alias gswm='git rev-parse --verify master >/dev/null 2>&1 && git checkout master || git checkout main'
 alias gs='${zsb}.gitStatus'
 
 alias pop='git stash pop'
@@ -12,7 +11,6 @@ alias gf='git fetch'
 alias gsh='git show'
 
 alias GSWD='toggleCapsLock && gswd'
-alias GSWM='toggleCapsLock && gswm'
 alias GS='toggleCapsLock && gs'
 alias POP='toggleCapsLock && pop'
 alias SIGN='toggleCapsLock && sign'
