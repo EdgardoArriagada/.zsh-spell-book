@@ -1,5 +1,5 @@
 alias gswd='git checkout develop'
-alias gswm='git checkout master'
+alias gswm='git rev-parse --verify master >/dev/null 2>&1 && git checkout master || git checkout main'
 alias gs='${zsb}.gitStatus'
 
 alias pop='git stash pop'
