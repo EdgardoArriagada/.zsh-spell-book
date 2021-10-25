@@ -11,5 +11,5 @@ setWallpaper() {
   # Persistence after reboot (see .xprofile)
   find ~/temp/wallpaper -lname "${HOME}/Wallpapers/*" -delete
   mkdir -p ~/temp/wallpaper
-  ln -s ~/Wallpapers/${chosenWallpaper} ~/temp/wallpaper/${chosenWallpaper}
+  ln -s ~/Wallpapers/${chosenWallpaper} ~/temp/wallpaper/
 }
