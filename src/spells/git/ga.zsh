@@ -3,47 +3,47 @@ ga() (
   local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
   local gitFileType
   local filesToAdd=( )
-  local gitAddFlag
 
   ${this}.main() {
     case "$firstArg" in
-      '.')
-        ${this}.addFilesWithDotArg
-        return 0
-        ;;
-      'new')
-        shift 1 # remove 'new' flag
-        ${this}.setGitFileType 'untracked'
-        ${this}.setFilesToAdd "$@"
-        ;;
-      'fast')
-        shift 1 # remove 'fast' flag
-        ${this}.setGitFileType 'unstaged'
-        ${this}.setFilesToAdd "$@"
-        ;;
-      *)
-        ${this}.setGitFileType 'unstaged'
-        ${this}.setFilesToAdd "$@"
-        ${this}.setGitAddFlag '-p'
-        ;;
+      '.') ${this}.addFilesWithDotArg; return 0 ;;
+      'new') ${this}.addFilesWithNewArg "$@" ;;
+      'fast') ${this}.addFilesWithFastArg "$@" ;;
+      *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
-
-    if ! ${this}.thereAreFilesToAdd; then
-      ${this}.informNoChanges; return $?
-    fi
-
-    ${this}.addFiles
   }
 
   ${this}.addFilesWithDotArg() git add .
 
+  ${this}.addFilesWithNewArg() {
+    shift 1 # remove 'new' flag
+    ${this}.setGitFileType 'untracked'
+    ${this}.setFilesToAdd "$@"
+    ${this}.addFiles
+  }
+
+  ${this}.addFilesWithFastArg() {
+    shift 1 # remove 'fast' flag
+    ${this}.setGitFileType 'unstaged'
+    ${this}.setFilesToAdd "$@"
+    ${this}.addFiles
+  }
+
+  ${this}.addFilesWithDefaulBehavior() {
+    ${this}.setGitFileType 'unstaged'
+    ${this}.setFilesToAdd "$@"
+    ${this}.addFiles '-p'
+  }
+
   ${this}.setGitFileType() gitFileType="$1"
 
   ${this}.addFiles() {
-    if [[ -z "$gitAddFlag" ]]; then
-      git add "${filesToAdd[@]}"
-      return $?
-    fi
+    local gitAddFlag="$1"
+
+    ${this}.validateFilesToAdd
+
+    [[ -z "$gitAddFlag" ]] &&
+      git add "${filesToAdd[@]}" && return $?
 
     git add "$gitAddFlag" "${filesToAdd[@]}"
   }
@@ -56,13 +56,9 @@ ga() (
     fi
   }
 
-  ${this}.setGitAddFlag() gitAddFlag="$1"
-
-  ${this}.thereAreFilesToAdd() [[ "${#filesToAdd[@]}" -gt 0 ]]
-
-  ${this}.informNoChanges() {
-    echo "${ZSB_INFO} There are no $(hl "$gitFileType") files to add."
-    return 0
+  ${this}.validateFilesToAdd() {
+    [[ -n "$filesToAdd" ]] && return 0
+    ${zsb}.cancel "There are no $(hl "$gitFileType") files to add."
   }
 
   ${this}.main "$@"
