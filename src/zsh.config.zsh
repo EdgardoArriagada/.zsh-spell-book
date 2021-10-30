@@ -9,6 +9,9 @@ autoload throw catch
 # Partial tab completion color
 zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==34=34}:${(s.:.)LS_COLORS}")';
 
+# Allow vertical completion hack (see formatComp)
+zstyle ':completion:*' list-grouped false
+
 # Use the vi navigation keys in menu completion
 bindkey -M menuselect 'h' vi-backward-char
 bindkey -M menuselect 'k' vi-up-line-or-history
