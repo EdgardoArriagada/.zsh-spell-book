@@ -50,12 +50,12 @@ ga() (
       filesToAdd=( "$@" )
     fi
 
-    ${this}.validateFilesToAdd
+    ${this}.validateFilesToAdd "$gitFileType"
   }
 
   ${this}.validateFilesToAdd() {
-    [[ -n "$filesToAdd" ]] && return 0
-    ${zsb}.cancel "There are no $(hl "$gitFileType") files to add."
+    [[ -z "$filesToAdd" ]] &&
+      ${zsb}.cancel "There are no $(hl $1) files to add."
   }
 
   ${this}.main "$@"
