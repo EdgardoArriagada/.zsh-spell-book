@@ -47,7 +47,7 @@ _${zsb}.gitUnrepeat() {
   local completionList=( $(${zsb}.getGitFiles $1) )
 
   local newCompletion=( ${completionList:|usedCompletion} )
-  local formattedComp=( $(${zsb}.formatComp "newCompletion") )
-  _describe 'command' formattedComp
+
+  _${zsb}.verticalComp "newCompletion"
 }
 

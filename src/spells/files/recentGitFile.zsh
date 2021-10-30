@@ -8,9 +8,7 @@ _${zsb}.recentGitFile() {
   [[ "$CURRENT" -gt "3" ]] && return 0
 
   local completionList=( $(${zsb}.getGitFiles) )
-
-  local formattedComp=( $(${zsb}.formatComp "completionList") )
-  _describe 'command' formattedComp
+  _${zsb}.verticalComp "completionList"
 }
 
 compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
