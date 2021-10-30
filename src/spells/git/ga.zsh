@@ -6,7 +6,7 @@ ga() (
 
   ${this}.main() {
     case "$firstArg" in
-      '.') ${this}.addFilesWithDotArg; return 0 ;;
+      '.') ${this}.addFilesWithDotArg ;;
       'new') ${this}.addFilesWithNewArg "$@" ;;
       'fast') ${this}.addFilesWithFastArg "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
