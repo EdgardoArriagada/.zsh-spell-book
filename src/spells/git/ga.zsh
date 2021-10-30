@@ -31,16 +31,6 @@ ga() (
     ${this}.addFiles '-p'
   }
 
-  ${this}.setGitFileType() gitFileType="$1"
-
-  ${this}.addFiles() {
-    if [[ -n "$1" ]]; then
-      git add "$@" "${filesToAdd[@]}"; return $?
-    fi
-
-    git add "${filesToAdd[@]}"
-  }
-
   ${this}.setFilesToAdd() {
     local gitFileType="$1"; shift 1
 
@@ -56,6 +46,14 @@ ga() (
   ${this}.validateFilesToAdd() {
     [[ -z "$filesToAdd" ]] &&
       ${zsb}.cancel "There are no $(hl $1) files to add."
+  }
+
+  ${this}.addFiles() {
+    if [[ -n "$1" ]]; then
+      git add "$@" "${filesToAdd[@]}"; return $?
+    fi
+
+    git add "${filesToAdd[@]}"
   }
 
   ${this}.main "$@"
