@@ -28,7 +28,7 @@ ${zsb}.getGitFiles() (
   }
 
   ${this}.getgitflesfromregex() {
-    ${this}.gitShortStatus | grep -E "$1" | ${this}.removeGitTokens
+    ${this}.gitShortStatus | rg "$1" | ${this}.removeGitTokens
   }
 
   # '--short' is better than '--porcelain' because
@@ -47,6 +47,7 @@ _${zsb}.gitUnrepeat() {
   local completionList=( $(${zsb}.getGitFiles $1) )
 
   local newCompletion=( ${completionList:|usedCompletion} )
-  _describe 'command' newCompletion
+  local formattedComp=( $(${zsb}.formatComp "newCompletion") )
+  _describe 'command' formattedComp
 }
 

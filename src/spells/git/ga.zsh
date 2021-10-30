@@ -97,7 +97,8 @@ _${zsb}.ga() {
   fi
 
   local newCompletion=( ${completionList:|usedCompletion} )
-  _describe 'command' newCompletion
+  local formattedComp=( $(${zsb}.formatComp "newCompletion") )
+  _describe 'command' formattedComp
 }
 
 compdef _${zsb}.ga ga
