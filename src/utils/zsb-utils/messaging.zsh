@@ -3,6 +3,11 @@ ${zsb}.throw() {
   throw Error
 }
 
+${zsb}.cancel() {
+  echo -n "${ZSB_CANCEL}"; puts " $1"
+  throw Error
+}
+
 ${zsb}.success() { echo -n "${ZSB_SUCCESS}"; puts " $1" }
 
 ${zsb}.fail() { echo -n "${ZSB_FAIL}"; puts " $1" }
