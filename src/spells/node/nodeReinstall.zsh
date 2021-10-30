@@ -12,9 +12,8 @@ ${zsb}.nodeReinstall() {
     rm -rf node_modules && ${zsb}.info "$(hl 'node_modules') deleted"
   fi
 
-  if [[ -n "$skipInstall" ]]; then
-    ${zsb}.info "Installation cancelled"; return 0
-  fi
+  [[ -n "$skipInstall" ]] &&
+    ${zsb}.cancel "Installation cancelled"
 
   # BUG: npm always tries to acess to ${zsb}.lazyLoad inside a bash function
   # eval is a workaround

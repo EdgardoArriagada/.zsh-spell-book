@@ -1,13 +1,10 @@
 gclean() {
-  if [[ -n "$1" ]]; then
-    git clean -fd "$@"; return $?
-  fi
+  [[ -n "$1" ]] && git clean -fd "$@" && return $?
 
   local untrackedFiles=( $(${zsb}.getGitFiles 'untracked') )
 
-  if [[ -z "$untrackedFiles" ]]; then
-    ${zsb}.info "There are no untracked files/directories."; return 0
-  fi
+  [[ -z "$untrackedFiles" ]] &&
+    ${zsb}.cancel "There are no untracked files/directories."
 
   local formattedFiles=$(print -rl -- "  ${(z)^untrackedFiles}")
 

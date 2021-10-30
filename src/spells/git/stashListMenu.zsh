@@ -1,6 +1,6 @@
 ${zsb}.stashListMenu() {
   local -r stashList="$(git stash list)"
-  [[ -z "$stashList" ]] && ${zsb}.info "Stash list is empty." && return 0
+  [[ -z "$stashList" ]] && ${zsb}.cancel "Stash list is empty."
 
   local -r callback=${1:?'You must provida a callback function'}
   local -r callbackArg="$2"

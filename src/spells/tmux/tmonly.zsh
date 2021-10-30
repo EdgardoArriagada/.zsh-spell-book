@@ -3,7 +3,7 @@ tmonly() {
   local -r currentSession=( "$(tmux display-message -p '#S')" )
   local -r otherSessions=${tmuxList:|currentSession}
 
-  [[ -z "$otherSessions" ]] && ${zsb}.info "There are no other sessions." && return 0
+  [[ -z "$otherSessions" ]] && ${zsb}.cancel "There are no other sessions."
 
   ${zsb}.fullPrompt \
     "You are about to kill the following sessions" \

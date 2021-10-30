@@ -9,10 +9,8 @@ deleteNonDefaultBranches() (
 
     ${this}.setNonDefaultBranches
 
-    if [[ -z "$nonDefaultBranches" ]]; then
-      ${zsb}.info "There are no non default branches to delete."
-      return 0
-    fi
+    [[ -z "$nonDefaultBranches" ]]
+      ${zsb}.cancel "There are no non default branches to delete."
 
     ${this}.printPrompt
     ${this}.playOptionsMenu

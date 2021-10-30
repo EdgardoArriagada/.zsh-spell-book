@@ -3,15 +3,12 @@ ${zsb}.safeLink() {
   local -r destinationFile=${2}
 
   # Check if setup is already done
-  if [[ "$(readlink -f ${destinationFile})" = "$localFile" ]]; then
-    ${zsb}.info "$(hl ${destinationFile}) setup is already done."
-    return 0
-  fi
+  [[ "$(readlink -f ${destinationFile})" = "$localFile" ]] &&
+    ${zsb}.cancel "$(hl ${destinationFile}) setup is already done."
 
   # Check if destination file is already busy
-  if [[ -f $destinationFile ]]; then
+  [[ -f $destinationFile ]] &&
     ${zsb}.throw "$(hl ${destinationFile}) is already busy. Please back up it manually before proceeding"
-  fi
 
   # Try to make destination parent dir if it does not exists
   mkdir -p $(dirname $destinationFile)
