@@ -1,7 +1,6 @@
 ga() (
   local this="$0"
   local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
-  local gitFileType
   local filesToAdd=( )
 
   ${this}.main() {
@@ -17,43 +16,41 @@ ga() (
 
   ${this}.addFilesWithNewArg() {
     shift 1 # remove 'new' flag
-    ${this}.setGitFileType 'untracked'
-    ${this}.setFilesToAdd "$@"
+    ${this}.setFilesToAdd 'untracked' "$@"
     ${this}.addFiles
   }
 
   ${this}.addFilesWithFastArg() {
     shift 1 # remove 'fast' flag
-    ${this}.setGitFileType 'unstaged'
-    ${this}.setFilesToAdd "$@"
+    ${this}.setFilesToAdd 'unstaged' "$@"
     ${this}.addFiles
   }
 
   ${this}.addFilesWithDefaulBehavior() {
-    ${this}.setGitFileType 'unstaged'
-    ${this}.setFilesToAdd "$@"
+    ${this}.setFilesToAdd 'unstaged' "$@"
     ${this}.addFiles '-p'
   }
 
   ${this}.setGitFileType() gitFileType="$1"
 
   ${this}.addFiles() {
-    local gitAddFlag="$1"
+    if [[ -n "$1" ]]; then
+      git add "$@" "${filesToAdd[@]}"; return $?
+    fi
 
-    ${this}.validateFilesToAdd
-
-    [[ -z "$gitAddFlag" ]] &&
-      git add "${filesToAdd[@]}" && return $?
-
-    git add "$gitAddFlag" "${filesToAdd[@]}"
+    git add "${filesToAdd[@]}"
   }
 
   ${this}.setFilesToAdd() {
-    if [[ "$#"  = "0" ]]; then
+    local gitFileType="$1"; shift 1
+
+    if [[ "$#" = "0" ]]; then
       filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
     else
       filesToAdd=( "$@" )
     fi
+
+    ${this}.validateFilesToAdd
   }
 
   ${this}.validateFilesToAdd() {
