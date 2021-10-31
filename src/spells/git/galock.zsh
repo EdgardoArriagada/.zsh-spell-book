@@ -1,13 +1,6 @@
 galock() (
-  local lockFiles=(
-    package-lock.json
-    Gemfile.lock
-    yarn.lock
-    Cargo.lock
-  )
-
   local redGitFiles=( $(${zsb}.getGitFiles 'red-safe') )
-  local lockFilesToAdd=( ${lockFiles:*redGitFiles} )
+  local lockFilesToAdd=( ${ZSB_GIT_LOCK_FILES:*redGitFiles} )
 
   [[ -z "$lockFilesToAdd" ]] && return 0
 
