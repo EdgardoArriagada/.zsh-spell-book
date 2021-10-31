@@ -1,34 +1,34 @@
 ga() (
   local this="$0"
-  local firstArg="$1" # 'fast' | 'new' | 'unm' | '.' | @unstagedFile | @untrackedFile
+  local firstArg="$1" # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
   local filesToAdd=( )
 
   ${this}.main() {
     case "$firstArg" in
-      '.') ${this}.addFilesWithDotArg ;;
-      'new') ${this}.addFilesWithNewArg "$@" ;;
-      'fast') ${this}.addFilesWithFastArg "$@" ;;
-      'unm') ${this}.addFilesWithUnmergedArg "$@" ;;
+      '.') ${this}.addFilesWithDotFlag ;;
+      'new') ${this}.addFilesWithNewFlag "$@" ;;
+      'fast') ${this}.addFilesWithFastFlag "$@" ;;
+      'unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
   }
 
-  ${this}.addFilesWithDotArg() git add .
+  ${this}.addFilesWithDotFlag() git add .
 
-  ${this}.addFilesWithNewArg() {
+  ${this}.addFilesWithNewFlag() {
     shift 1 # remove 'new' flag
     ${this}.setFilesToAdd 'untracked' "$@"
     ${this}.addFiles
   }
 
-  ${this}.addFilesWithFastArg() {
+  ${this}.addFilesWithFastFlag() {
     shift 1 # remove 'fast' flag
     ${this}.setFilesToAdd 'unstaged' "$@"
     ${this}.addFiles
   }
 
-  ${this}.addFilesWithUnmergedArg() {
-    shift 1 # remove 'fast' flag
+  ${this}.addFilesWithUnmergedFlag() {
+    shift 1 # remove 'unmerged' flag
     ${this}.setFilesToAdd 'unmerged' "$@"
     ${this}.addFiles
   }
@@ -78,7 +78,7 @@ _${zsb}.ga() {
       completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
     'fast')
       completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
-    'unm')
+    'unmerged')
       completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
     '.')
       return 0 ;;
@@ -89,12 +89,9 @@ _${zsb}.ga() {
   # if we are completing the first item
   if [[ "$CURRENT" = "2" ]]; then
     case "$currentCompletion" in
-      n*) # matches 'new'
-        completionList+=( 'new' ) ;;
-      f*) # matches 'fast'
-        completionList+=( 'fast' ) ;;
-      u*) # matches 'unm'
-        completionList+=( 'unm' ) ;;
+      n*) completionList+=( 'new' ) ;;
+      f*) completionList+=( 'fast' ) ;;
+      u*) completionList+=( 'unmerged' ) ;;
     esac
   fi
 
