@@ -1,14 +1,14 @@
 ga() (
   local this="$0"
-  local firstArg="$1" # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
+  local firstArg="$1" # '-fast' | '-new' | '-unmerged' | '.' | @unstagedFile | @untrackedFile
   local filesToAdd=( )
 
   ${this}.main() {
     case "$firstArg" in
       '.') ${this}.addFilesWithDotFlag ;;
-      'new') ${this}.addFilesWithNewFlag "$@" ;;
-      'fast') ${this}.addFilesWithFastFlag "$@" ;;
-      'unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
+      '-new') ${this}.addFilesWithNewFlag "$@" ;;
+      '-fast') ${this}.addFilesWithFastFlag "$@" ;;
+      '-unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
   }
@@ -16,19 +16,19 @@ ga() (
   ${this}.addFilesWithDotFlag() git add .
 
   ${this}.addFilesWithNewFlag() {
-    shift 1 # remove 'new' flag
+    shift 1 # remove '-new' flag
     ${this}.setFilesToAdd 'untracked' "$@"
     ${this}.addFiles
   }
 
   ${this}.addFilesWithFastFlag() {
-    shift 1 # remove 'fast' flag
+    shift 1 # remove '-fast' flag
     ${this}.setFilesToAdd 'unstaged' "$@"
     ${this}.addFiles
   }
 
   ${this}.addFilesWithUnmergedFlag() {
-    shift 1 # remove 'unmerged' flag
+    shift 1 # remove '-unmerged' flag
     ${this}.setFilesToAdd 'unmerged' "$@"
     ${this}.addFiles
   }
@@ -74,11 +74,11 @@ _${zsb}.ga() {
   local completionList=( )
 
   case "$firstItemUsed" in
-    'new')
+    '-new')
       completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
-    'fast')
+    '-fast')
       completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
-    'unmerged')
+    '-unmerged')
       completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
     '.')
       return 0 ;;
@@ -89,10 +89,13 @@ _${zsb}.ga() {
   # if we are completing the first item
   if [[ "$CURRENT" = "2" ]]; then
     case "$currentCompletion" in
-      n*) completionList+=( 'new' ) ;;
-      f*) completionList+=( 'fast' ) ;;
-      u*) completionList+=( 'unmerged' ) ;;
+      -*) completionList+=(
+          "-new:Add 'untracked' files"
+          "-fast:Add 'unstaged' files skipping '-p' flag"
+          "-unmerged:Add 'unmerged' files"
+        ) ;;
     esac
+    _describe 'command' completionList; return 0
   fi
 
   local newCompletion=( ${completionList:|usedCompletion} )
