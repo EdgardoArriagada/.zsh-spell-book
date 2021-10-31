@@ -7,5 +7,5 @@ gd() {
   git diff "$@" && ${zsb}.gitStatus
 }
 
-compdef "_${zsb}.gitUnrepeat 'unstaged'" gd
+compdef "_${zsb}.gitUnrepeat 'red-with-diff'" gd
 

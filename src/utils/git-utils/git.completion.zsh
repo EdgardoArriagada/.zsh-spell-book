@@ -17,11 +17,15 @@ ${zsb}.getGitFiles() (
       'staged'|'green')
         ${this}.getgitflesfromregex '^[MARCD]' ;;
       'unstaged')
-        ${this}.getgitflesfromregex '(^ [MARCD])|(^[MARCD]{2})' ;;
+        ${this}.getgitflesfromregex '^.[MARCD]' ;;
       'untracked')
         ${this}.getgitflesfromregex '^\?{2}' ;;
+      'red-safe')
+        ${this}.getgitflesfromregex '^.[MARCD\?]' ;;
       'red')
-        ${this}.getgitflesfromregex '(^ [MARCD\?])|(^[MARCD\?]{2})' ;;
+        ${this}.getgitflesfromregex '^.[MARCUD\?]' ;;
+      'red-with-diff')
+        ${this}.getgitflesfromregex '^.[MARCUD]' ;;
       'unmerged')
         ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
       *)

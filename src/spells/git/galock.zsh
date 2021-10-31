@@ -6,7 +6,7 @@ galock() (
     Cargo.lock
   )
 
-  local redGitFiles=( $(${zsb}.getGitFiles 'red') )
+  local redGitFiles=( $(${zsb}.getGitFiles 'red-safe') )
   local lockFilesToAdd=( ${lockFiles:*redGitFiles} )
 
   if [[ -z "$lockFilesToAdd" ]]; then
