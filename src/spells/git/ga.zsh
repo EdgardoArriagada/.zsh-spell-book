@@ -89,11 +89,10 @@ _${zsb}.ga() {
   # if we are completing the first item
   if [[ "$CURRENT" = "2" ]]; then
     case "$currentCompletion" in
-      n*) completionList=('new') ;;
-      f*) completionList=('fast') ;;
-      u*) completionList=('unmerged') ;;
+      n*) completionList+=('new') ;;
+      f*) completionList+=('fast') ;;
+      u*) completionList+=('unmerged') ;;
     esac
-    _describe 'command' completionList; return 0
   fi
 
   local newCompletion=( ${completionList:|usedCompletion} )
