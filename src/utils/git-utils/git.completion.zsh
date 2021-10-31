@@ -1,5 +1,5 @@
 ${zsb}.gitBranches() {
-  ! ${zsb}.isGitRepo && return 0
+  ${zsb}.isGitRepo || return 0
   case "$1" in
     'current')
       git branch --show-current ;;
@@ -12,7 +12,7 @@ ${zsb}.getGitFiles() (
   local this="$0"
 
   ${this}.main() {
-    ! ${zsb}.isGitRepo && return 0
+    ${zsb}.isGitRepo || return 0
     case "$1" in
       'staged'|'green')
         ${this}.getgitflesfromregex '^[MARCD]' ;;
