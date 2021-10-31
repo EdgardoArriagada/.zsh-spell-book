@@ -9,11 +9,10 @@ galock() (
   local redGitFiles=( $(${zsb}.getGitFiles 'red-safe') )
   local lockFilesToAdd=( ${lockFiles:*redGitFiles} )
 
-  [[ -z "$lockFilesToAdd" ]] &&
-    ${zsb}.cancel "No $(hl "*.lock") files have been added."
+  [[ -z "$lockFilesToAdd" ]] && return 0
 
-  git add "${(z)lockFilesToAdd}"
-  ${zsb}.gitStatus
+  git add "${(z)lockFilesToAdd}" &&
+    ${zsb}.info "$(hl "${lockFilesToAdd[@]}") added."
 )
 
 _${zsb}.nocompletion galock

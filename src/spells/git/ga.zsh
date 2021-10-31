@@ -34,6 +34,7 @@ ga() (
   }
 
   ${this}.addFilesWithDefaulBehavior() {
+    (( $# = 0 )) && galock
     ${this}.setFilesToAdd 'unstaged' "$@"
     ${this}.addFiles '-p'
   }
@@ -41,7 +42,7 @@ ga() (
   ${this}.setFilesToAdd() {
     local gitFileType="$1"; shift 1
 
-    if [[ "$#" = "0" ]]; then
+    if (( $# = 0 )); then
       filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
     else
       filesToAdd=( "$@" )
