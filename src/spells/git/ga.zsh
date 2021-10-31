@@ -1,6 +1,6 @@
 ga() (
   local this="$0"
-  local firstArg="$1" # 'fast' | 'new' | '.' | @unstagedFile | @untrackedFile
+  local firstArg="$1" # 'fast' | 'new' | 'unm' | '.' | @unstagedFile | @untrackedFile
   local filesToAdd=( )
 
   ${this}.main() {
@@ -8,6 +8,7 @@ ga() (
       '.') ${this}.addFilesWithDotArg ;;
       'new') ${this}.addFilesWithNewArg "$@" ;;
       'fast') ${this}.addFilesWithFastArg "$@" ;;
+      'unm') ${this}.addFilesWithUnmergedArg "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
   }
@@ -23,6 +24,12 @@ ga() (
   ${this}.addFilesWithFastArg() {
     shift 1 # remove 'fast' flag
     ${this}.setFilesToAdd 'unstaged' "$@"
+    ${this}.addFiles
+  }
+
+  ${this}.addFilesWithUnmergedArg() {
+    shift 1 # remove 'fast' flag
+    ${this}.setFilesToAdd 'unmerged' "$@"
     ${this}.addFiles
   }
 
@@ -71,6 +78,8 @@ _${zsb}.ga() {
       completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
     'fast')
       completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
+    'unm')
+      completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
     '.')
       return 0 ;;
     *)
@@ -84,6 +93,8 @@ _${zsb}.ga() {
         completionList+=( 'new' ) ;;
       f*) # matches 'fast'
         completionList+=( 'fast' ) ;;
+      u*) # matches 'unm'
+        completionList+=( 'unm' ) ;;
     esac
   fi
 

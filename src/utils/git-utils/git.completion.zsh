@@ -19,9 +19,11 @@ ${zsb}.getGitFiles() (
       'unstaged')
         ${this}.getgitflesfromregex '(^ [MARCD])|(^[MARCD]{2})' ;;
       'untracked')
-        ${this}.getgitflesfromregex '(^ \?)|(^\?{2})' ;;
+        ${this}.getgitflesfromregex '^\?{2}' ;;
       'red')
         ${this}.getgitflesfromregex '(^ [MARCD\?])|(^[MARCD\?]{2})' ;;
+      'unmerged')
+        ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
       *)
         ${this}.gitShortStatus | ${this}.removeGitTokens ;;
     esac
