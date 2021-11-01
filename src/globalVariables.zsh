@@ -44,4 +44,5 @@ ZSB_GIT_DEFAULT_BRANCHES="(master|develop|devel|dev|main)"
 ZSB_GIT_AWARE="'--aware:Proceed even if affecting a default branch'"
 ZSB_GIT_FORCE="'--force:Proceed even in commit have already been pushed online'"
 ZSB_GIT_LOCK_FILES=( package-lock.json Gemfile.lock yarn.lock Cargo.lock )
+ZSB_GIT_PACKAGE_FILES=( package.json Gemfile Cargo.toml )
 

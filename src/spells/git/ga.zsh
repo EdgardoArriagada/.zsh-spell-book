@@ -18,12 +18,14 @@ ga() (
   ${this}.addFilesWithNewFlag() {
     shift 1 # remove 'new' flag
     ${this}.setFilesToAdd 'untracked' "$@"
+    [[ "$#" -gt "0" ]] && ${this}.areAddingPackageFiles && galock
     ${this}.addFiles
   }
 
   ${this}.addFilesWithFastFlag() {
     shift 1 # remove 'fast' flag
     ${this}.setFilesToAdd 'unstaged' "$@"
+    [[ "$#" -gt "0" ]] && ${this}.areAddingPackageFiles && galock
     ${this}.addFiles
   }
 
@@ -34,10 +36,12 @@ ga() (
   }
 
   ${this}.addFilesWithDefaulBehavior() {
-    [[ "$#" = "0" ]] && galock
     ${this}.setFilesToAdd 'unstaged' "$@"
+    [[ "$#" = "0" ]] || ${this}.areAddingPackageFiles && galock
     ${this}.addFiles '-p'
   }
+
+  ${this}.areAddingPackageFiles() [[ -n ${ZSB_GIT_PACKAGE_FILES:*filesToAdd} ]]
 
   ${this}.setFilesToAdd() {
     local gitFileType="$1"; shift 1
