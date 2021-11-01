@@ -9,7 +9,7 @@ deleteNonDefaultBranches() (
 
     ${this}.setNonDefaultBranches
 
-    [[ -z "$nonDefaultBranches" ]]
+    [[ -z "$nonDefaultBranches" ]] &&
       ${zsb}.cancel "There are no non default branches to delete."
 
     ${this}.printPrompt
