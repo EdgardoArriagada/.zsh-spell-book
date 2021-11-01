@@ -25,7 +25,7 @@ ga() (
   ${this}.addFilesWithFastFlag() {
     shift 1 # remove 'fast' flag
     ${this}.setFilesToAdd 'unstaged' "$@"
-    [[ "$#" -gt "0" ]] && ${this}.areAddingPackageFiles && galock
+    ${this}.areAddingPackageFiles && galock
     ${this}.addFiles
   }
 
@@ -37,7 +37,7 @@ ga() (
 
   ${this}.addFilesWithDefaulBehavior() {
     ${this}.setFilesToAdd 'unstaged' "$@"
-    [[ "$#" = "0" ]] || ${this}.areAddingPackageFiles && galock
+    ${this}.areAddingPackageFiles && galock
     ${this}.addFiles '-p'
   }
 
