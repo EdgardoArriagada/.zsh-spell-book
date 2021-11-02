@@ -6,8 +6,7 @@ ${zsb}.stashListMenu() {
   local -r callbackArg="$2"
 
   if [[ -n "$callbackArg" ]]; then
-    "$callback" "$callbackArg"
-    return 0
+    "$callback" "$callbackArg"; return $?
   fi
 
   gsl

@@ -9,8 +9,6 @@ gp() {
   fi
 
   git push origin "$inputRemoteBranch" "$@"
-
-  return 0
 }
 
 

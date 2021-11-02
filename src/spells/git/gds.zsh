@@ -1,7 +1,6 @@
 gds() {
   if [[ -z "$1" ]]; then
-    git diff --staged && ${zsb}.gitStatus
-    return 0
+    git diff --staged && ${zsb}.gitStatus; return $?
   fi
 
   git diff --staged "$@" && ${zsb}.gitStatus

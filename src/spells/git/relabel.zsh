@@ -13,8 +13,6 @@ relabel() {
 
   git commit --amend --gpg-sign --message "$*" && ${zsb}.gitStatus &&
     ${zsb}.warning "Files already added to git may have been commited, use $(hl "git reset HEAD~") to undo the entire previous commit."
-
-  return 0
 }
 
 compdef "_${zsb}.nonRepeatedListD ${ZSB_GIT_AWARE} ${ZSB_GIT_FORCE}" relabel

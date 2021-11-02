@@ -79,16 +79,11 @@ _${zsb}.ga() {
   local completionList=( )
 
   case "$firstItemUsed" in
-    'new')
-      completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
-    'fast')
-      completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
-    'unmerged')
-      completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
-    '.')
-      return 0 ;;
-    *)
-      completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
+    'new') completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
+    'fast') completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
+    'unmerged') completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
+    '.') return 0 ;;
+    *) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
   esac
 
   # if we are completing the first item
