@@ -17,4 +17,5 @@ alias vr="${zsb}.recentGitFile vims"
 alias cr="${zsb}.recentGitFile c"
 alias ccpr="${zsb}.recentGitFile ccp"
 alias tigr="${zsb}.recentGitFile tig"
+alias rmr="${zsb}.recentGitFile 'rm -rf'"
 
