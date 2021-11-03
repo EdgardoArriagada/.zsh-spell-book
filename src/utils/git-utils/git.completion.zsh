@@ -9,20 +9,6 @@ ${zsb}.gitBranches() {
 ${zsb}.getGitFiles() (
   local this="$0"
 
-  ${this}.main() {
-    ${zsb}.isGitRepo || return 0
-    case "$1" in
-      'staged'|'green') ${this}.getgitflesfromregex '^[MARCD]' ;;
-      'unstaged') ${this}.getgitflesfromregex '^.[MARCD]' ;;
-      'untracked') ${this}.getgitflesfromregex '^\?{2}' ;;
-      'red-safe') ${this}.getgitflesfromregex '^.[MARCD\?]' ;;
-      'red') ${this}.getgitflesfromregex '^.[MARCUD\?]' ;;
-      'red-with-diff') ${this}.getgitflesfromregex '^.[MARCUD]' ;;
-      'unmerged') ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
-      *) ${this}.gitShortStatus | ${this}.removeGitTokens ;;
-    esac
-  }
-
   ${this}.getgitflesfromregex() {
     ${this}.gitShortStatus | rg "$1" | ${this}.removeGitTokens
   }
@@ -30,11 +16,20 @@ ${zsb}.getGitFiles() (
   # '--short' is better than '--porcelain' because
   # it keeps the paths of the git files relative
   # to current working folder
-  ${this}.gitShortStatus() git status --short
+  ${this}.gitShortStatus() git status --short 2>/dev/null
 
   ${this}.removeGitTokens() sd '^...' '$1'
 
-  ${this}.main "$@"
+  case "$1" in
+    'staged'|'green') ${this}.getgitflesfromregex '^[MARCD]' ;;
+    'unstaged') ${this}.getgitflesfromregex '^.[MARCD]' ;;
+    'untracked') ${this}.getgitflesfromregex '^\?{2}' ;;
+    'red-safe') ${this}.getgitflesfromregex '^.[MARCD\?]' ;;
+    'red') ${this}.getgitflesfromregex '^.[MARCUD\?]' ;;
+    'red-with-diff') ${this}.getgitflesfromregex '^.[MARCUD]' ;;
+    'unmerged') ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
+    *) ${this}.gitShortStatus | ${this}.removeGitTokens ;;
+  esac
 )
 
 _${zsb}.gitUnrepeat() {
