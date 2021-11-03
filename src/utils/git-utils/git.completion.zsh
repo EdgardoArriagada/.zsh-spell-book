@@ -1,10 +1,8 @@
 ${zsb}.gitBranches() {
   ${zsb}.isGitRepo || return 0
   case "$1" in
-    'current')
-      git branch --show-current ;;
-    *)
-      git branch | sed 's/^\*//' ;;
+    'current') git branch --show-current ;;
+    *) git branch | sd '^\*' '$1' ;;
   esac
 }
 
@@ -14,22 +12,14 @@ ${zsb}.getGitFiles() (
   ${this}.main() {
     ${zsb}.isGitRepo || return 0
     case "$1" in
-      'staged'|'green')
-        ${this}.getgitflesfromregex '^[MARCD]' ;;
-      'unstaged')
-        ${this}.getgitflesfromregex '^.[MARCD]' ;;
-      'untracked')
-        ${this}.getgitflesfromregex '^\?{2}' ;;
-      'red-safe')
-        ${this}.getgitflesfromregex '^.[MARCD\?]' ;;
-      'red')
-        ${this}.getgitflesfromregex '^.[MARCUD\?]' ;;
-      'red-with-diff')
-        ${this}.getgitflesfromregex '^.[MARCUD]' ;;
-      'unmerged')
-        ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
-      *)
-        ${this}.gitShortStatus | ${this}.removeGitTokens ;;
+      'staged'|'green') ${this}.getgitflesfromregex '^[MARCD]' ;;
+      'unstaged') ${this}.getgitflesfromregex '^.[MARCD]' ;;
+      'untracked') ${this}.getgitflesfromregex '^\?{2}' ;;
+      'red-safe') ${this}.getgitflesfromregex '^.[MARCD\?]' ;;
+      'red') ${this}.getgitflesfromregex '^.[MARCUD\?]' ;;
+      'red-with-diff') ${this}.getgitflesfromregex '^.[MARCUD]' ;;
+      'unmerged') ${this}.getgitflesfromregex '(^U)|(^.U)' ;;
+      *) ${this}.gitShortStatus | ${this}.removeGitTokens ;;
     esac
   }
 
@@ -42,7 +32,7 @@ ${zsb}.getGitFiles() (
   # to current working folder
   ${this}.gitShortStatus() git status --short
 
-  ${this}.removeGitTokens() sed 's/^...//'
+  ${this}.removeGitTokens() sd '^...' '$1'
 
   ${this}.main "$@"
 )
