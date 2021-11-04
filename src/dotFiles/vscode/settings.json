@@ -1053,6 +1053,7 @@
   "tabnine.experimentalAutoImports": true,
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook"
-  }
+  },
+  "editor.inlineSuggest.enabled": true
 }
 
