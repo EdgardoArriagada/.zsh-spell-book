@@ -15,4 +15,5 @@ alias ccpr="${zsb}.recentGitFile ccp"
 alias tigr="${zsb}.recentGitFile tig"
 alias rmr="${zsb}.recentGitFile 'rm -rf'"
 alias mvr="${zsb}.recentGitFile mv"
+alias lr="${zsb}.recentGitFile l"
 
