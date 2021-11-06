@@ -24,9 +24,12 @@ super + p
 super + z
   sleep 0.6; xset dpms force standby; slock
 
-
 alt + shift + p
   zsb_charm_rootWorkspace
+
+# Volume control
+XF86Audio{Mute,RaiseVolume,LowerVolume}
+  amixer -D pulse sset Master {toggle,5%+,5%-}
 
 # program launcher
 super + @space
