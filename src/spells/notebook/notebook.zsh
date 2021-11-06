@@ -1,25 +1,27 @@
-${zsb}.notebook.validateEnv() {
+${zsb}.page.validateEnv() {
   ${zsb}.validate "ZSB_NOTEBOOK_DIR"
   ${zsb}.validate "ZSB_NOTEBOOK_CHAPTER"
-  ${zsb}.validate "ZSB_NOTEBOOK_PAGE"
 }
 
-${zsb}.notebook() {
-  local -r callback=${1:?'You must provide a callback'}
+${zsb}.page.getCurrentPage() {
 
-  ${zsb}.notebook.validateEnv
 
-  local -r currentPage="${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}/${ZSB_NOTEBOOK_PAGE}"
+  local year=$(date +%Y)
+  local month=$(date +%b)
+  local page=$(date +%b-%d-%Y.md)
 
-  # Create parent folder
+  local currentPage="${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}/${year}/${month}/${page}"
   mkdir -p $(dirname $currentPage)
 
-  eval "${callback} ${currentPage}"
+  print $currentPage
 }
 
-alias cdpage="${zsb}.notebook.validateEnv && cds ${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}"
+${zsb}.page() {${zsb}.page.validateEnv && eval "$@ $(${zsb}.page.getCurrentPage)"}
+
+cdpage() {${zsb}.page.validateEnv && cds $(dirname $(${zsb}.page.getCurrentPage))}
+
 alias cdnotebook="${zsb}.validate 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
-alias page="(cdnotebook && ${zsb}.notebook nnvim)"
-alias cpage="${zsb}.notebook batcat"
-alias ccppage="${zsb}.notebook ccp"
+alias page="(cdpage && ${zsb}.page nnvim)"
+alias cpage="${zsb}.page batcat"
+alias ccppage="${zsb}.page ccp"
 
