@@ -32,11 +32,14 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'rust-lang/rust.vim' , { 'for': 'rust' }
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'peitalin/vim-jsx-typescript' , { 'for': 'typescript' }
+    Plug 'lanks/vim-tsx'
 
     " telescope fuzzy finder
     Plug 'nvim-lua/popup.nvim'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
+
+    let g:coc_global_extensions = ['coc-json', 'coc-tsserver', 'coc-emmet', 'coc-tslint', 'coc-prettier']
   endif
 call plug#end()
 
