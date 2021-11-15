@@ -7,7 +7,7 @@ if git --version >/dev/null 2>&1; then
   git config --global pager.branch false # print branch info instead of "less" it
   git config --global pager.diff 'delta | less'
   git config --global pager.log 'delta | less'
-  git config --global pager.reflog 'delta | less'
+  git config --global pager.reflog 'delta'
   git config --global pager.show 'delta | less'
 
   git config --global interactive.diffFilter 'delta --color-only'
