@@ -16,9 +16,9 @@ createPr() {
   local formattedBranch=$(${zsb}.formatBranch $(git branch --show-current))
   local defaultBranch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 
-  gh pr create
-    --draft
-    --title "$formattedBranch"
-    --body 'WIP'
+  gh pr create \
+    --draft \
+    --title "$formattedBranch" \
+    --body 'WIP' \
     --base $defaultBranch
 }
