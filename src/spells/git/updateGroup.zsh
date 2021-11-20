@@ -1,15 +1,12 @@
 ${zsb}.updateGroup() (
   local this="$0"
   local repoFile="$1"
-  local inputPass
   local repoList=($(< ${repoFile}))
   local currentRepo
   local currentBranch
 
   ${this}.main() {
     ${this}.validateRepoList
-
-    ${this}.setCredentialsWithPrompt
 
     ${this}.manageEachRepo
 
@@ -18,11 +15,6 @@ ${zsb}.updateGroup() (
 
   ${this}.validateRepoList() {
     [[ -z "$repoList" ]] && ${zsb}.throw "Invalid repolist."
-  }
-
-  ${this}.setCredentialsWithPrompt() {
-    ${zsb}.prompt "Enter Credentials:"
-    read -s inputPass
   }
 
   ${this}.manageEachRepo() {
@@ -77,16 +69,8 @@ ${zsb}.updateGroup() (
   ${this}.printDirtyHeader() ${this}.printHeader "± "
 
   ${this}.updateRepo() {
-    local -r withCredUrl="$(${this}.getWithCredUrl)"
-
     ${zsb}.info "Pulling from ${currentBranch}"
-    git pull "$withCredUrl" "$currentBranch"
-  }
-
-  ${this}.getWithCredUrl() {
-    local -r originUrl="$(git config --get remote.origin.url)"
-    local -r regexReplacer="s/@/:${inputPass}@/"
-    printf "$originUrl" | sed -E "$regexReplacer"
+    git pull origin "$currentBranch"
   }
 
   ${this}.playManageManuallyPrompt() {
