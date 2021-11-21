@@ -13,6 +13,8 @@ ${zsb}.formatBranch() {
 }
 
 createPr() {
+  ${zsb}.confirmMenu.withPrompt
+
   local formattedBranch=$(${zsb}.formatBranch $(git branch --show-current))
   local defaultBranch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 
@@ -22,3 +24,6 @@ createPr() {
     --body 'WIP' \
     --base $defaultBranch
 }
+
+alias gprcreate='createPr'
+alias GPRCREATE='toggleCapsLock && gprcreate'
