@@ -13,7 +13,7 @@ deleteNonDefaultBranches() (
       ${zsb}.cancel "There are no non default branches to delete."
 
     ${this}.printPrompt
-    ${this}.playOptionsMenu
+    ${this}.performDeletion
   }
 
   ${this}.setNonDefaultBranches() {
@@ -21,13 +21,9 @@ deleteNonDefaultBranches() (
   }
 
   ${this}.printPrompt() {
-    ${zsb}.fullPrompt \
+    ${zsb}.confirmMenu.withItems \
       "The following branches will be deleted:" \
       "$nonDefaultBranches"
-  }
-
-  ${this}.playOptionsMenu() {
-    ${zsb}.confirmMenu && ${this}.performDeletion
   }
 
   ${this}.performDeletion() {

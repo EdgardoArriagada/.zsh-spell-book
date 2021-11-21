@@ -24,22 +24,6 @@ ${zsb}.expected() { echo -n "${ZSB_EXPECTED}"; puts " $1" }
 
 ${zsb}.current() { echo -n "${ZSB_CURRENT}"; puts " $1" }
 
-${zsb}.fullPrompt() {
-  local inputWarning="$1"
-  local inputItems="$2"
-
-  ${zsb}.warning "$inputWarning"
-  echo " "
-  [[ -n "$inputItems" ]] && echo "$(hl ${inputItems})"
-  echo " "
-  ${zsb}.prompt "Are you sure? [Y/n]"
-}
-
-${zsb}.confirmPrompt() {
-  ${zsb}.prompt "Are you sure? [Y/n]"
-  ${zsb}.confirmMenu
-}
-
 ${zsb}.validate() {
   [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set $(hl "$1") first."
   return 0

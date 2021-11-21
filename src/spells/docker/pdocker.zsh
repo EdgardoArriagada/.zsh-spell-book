@@ -1,7 +1,7 @@
 pdocker() {
   docker --version >/dev/null 2>&1 && ${zsb}.throw "Docker is already installed."
 
-  ${zsb}.confirmPrompt && curl -sSL https://get.docker.com/ | sh
+  ${zsb}.confirmMenu.withPrompt && curl -sSL https://get.docker.com/ | sh
 
   # To be able to run docker without sudo
   sudo groupadd docker

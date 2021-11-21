@@ -8,11 +8,11 @@ gclean() {
 
   local formattedFiles=$(print -rl -- "  ${(z)^untrackedFiles}")
 
-  ${zsb}.fullPrompt \
+  ${zsb}.confirmMenu.withItems \
     "All untracked files/directories will be deleted." \
     "$formattedFiles"
 
-  ${zsb}.confirmMenu && git clean -fd
+  git clean -fd
 }
 
 compdef "_${zsb}.gitUnrepeat 'untracked'" gclean

@@ -5,11 +5,11 @@ tmonly() {
 
   [[ -z "$otherSessions" ]] && ${zsb}.cancel "There are no other sessions."
 
-  ${zsb}.fullPrompt \
+  ${zsb}.confirmMenu.withItems \
     "You are about to kill the following sessions" \
     "$otherSessions"
 
-  ${zsb}.confirmMenu && tmux kill-session -a
+  tmux kill-session -a
 }
 
 _${zsb}.nocompletion tmonly
