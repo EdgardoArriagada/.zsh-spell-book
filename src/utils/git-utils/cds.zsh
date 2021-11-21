@@ -1,6 +1,6 @@
 cds() {
   echo " "
-  builtin cd $1 && ls
+  builtin cd $1 && lsd
 
   if ${zsb}.isGitRepo; then
     ${zsb}.fillWithToken '_'
