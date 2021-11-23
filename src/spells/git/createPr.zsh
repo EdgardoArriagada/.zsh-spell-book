@@ -23,6 +23,8 @@ createPr() {
     --title "$formattedBranch" \
     --body 'WIP' \
     --base $defaultBranch
+
+  gh pr view --web
 }
 
 alias gprcreate='createPr'
