@@ -136,7 +136,7 @@
           "command": "workbench.action.files.newUntitledFile"
         },
         {
-          "key": "u",
+          "key": "t",
           "name": "Reopen closed editor",
           "type": "command",
           "command": "workbench.action.reopenClosedEditor"
