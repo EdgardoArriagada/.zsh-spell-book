@@ -6,8 +6,13 @@
 
 export NVM_DIR="$HOME/.nvm"
 
-if [[ -s "$NVM_DIR/nvm.sh" ]] && [[ -s "$NVM_DIR/bash_completion" ]]; then
-  __${zsb}.prepareLazyLoad "$NVM_DIR/nvm.sh" \
+if [[ -d "$NVM_DIR" ]]; then
+  local nvmScriptPath
+  (( $ZSB_MACOS )) && \
+    nvmScriptPath="$(brew --prefix nvm)/nvm.sh" || \
+    nvmScriptPath="$NVM_DIR/nvm.sh"
+
+  __${zsb}.prepareLazyLoad "$nvmScriptPath" \
     nvm yarn node npm vue npx tsc depcheck expo nest markdown-pdf
 fi
 
