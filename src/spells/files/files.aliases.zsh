@@ -1,3 +1,4 @@
+(( $ZSB_MACOS )) && alias batcat='bat'
 alias c='batcat --paging=never'
 alias le='batcat --paging=always'
 alias ls='lsd'
