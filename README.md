@@ -20,6 +20,23 @@ Like this:
  source ~/.zsh-spell-book/main.zsh
 ```
 
+### Configuring
+
+1.- You should copy `.env.example` to `.env` at the root of this repository
+2.- You should go to `~/.zsh-spell-book/src/setup` and source files according to your os
+
+then, in ~/temp/.zshenv paste the following depending on your OS
+
+```zsh
+# Linux
+CONFIG=$HOME/.config
+
+# MacOS
+ZSB_MACOS=1
+CONFIG=$HOME/Library/Application\ Support
+```
+
+
 ### Usage
 
 - Explore the _src/spells_ folder to see a list of aliases and function available, or use that folder as a template to build your custom aliases and functions
