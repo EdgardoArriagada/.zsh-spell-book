@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+
+(( $ZSB_MACOS )) && open $@ || xdg-open $@
+
+exit 0
