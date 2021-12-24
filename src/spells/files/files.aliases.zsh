@@ -1,8 +1,7 @@
-(( $ZSB_MACOS )) && alias batcat='bat'
-alias c='batcat --paging=never'
-alias le='batcat --paging=always'
+alias c='zsb_cat --paging=never'
+alias le='zsb_cat --paging=always'
 alias ls='lsd'
 alias removeSpanishChars='iconv -f utf8 -t ascii//TRANSLIT'
 alias catenv='ls -a | rg env | xargs cat'
-alias batcatenv='ls -a | rg env | xargs batcat'
+alias batenv='ls -a | rg env | xargs zsb_cat'
 

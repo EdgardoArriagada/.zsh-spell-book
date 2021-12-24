@@ -22,6 +22,6 @@ cdpage() {${zsb}.page.validateEnv && cds $(dirname $(${zsb}.page.getCurrentPage)
 
 alias cdnotebook="${zsb}.validate 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
 alias page="(cdpage && ${zsb}.page nnvim)"
-alias cpage="${zsb}.page batcat"
+alias cpage="${zsb}.page zsb_cat"
 alias ccppage="${zsb}.page ccp"
 

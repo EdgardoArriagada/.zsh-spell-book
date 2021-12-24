@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o nounset
+set -o pipefail
+
+(( $ZSB_MACOS )) && bat $@ || ${zsb}.cat $@
+
+exit 0

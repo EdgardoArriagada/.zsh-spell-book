@@ -32,11 +32,11 @@ ${zsb}.pomodoro.lastWorkingDay() {
 }
 
 
-cpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) batcat
+cpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) zsb_cat
 vpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) nvim
 
-cypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") batcat
+cypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") zsb_cat
 vypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") nvim
 
-cwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.pomodoro.lastWorkingDay)") batcat
+cwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.pomodoro.lastWorkingDay)") zsb_cat
 vwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "$(${zsb}.pomodoro.lastWorkingDay)") nvim

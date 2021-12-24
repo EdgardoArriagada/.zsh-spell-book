@@ -6,7 +6,7 @@ semi: false
 singleQuote: true
 " > ${prettierFile} && \
   ${zsb}.success "$(hl ${prettierFile}) initialized" && \
-  batcat ${prettierFile}
+  zsb_cat ${prettierFile}
 }
 
 _${zsb}.nocompletion prettierInit
