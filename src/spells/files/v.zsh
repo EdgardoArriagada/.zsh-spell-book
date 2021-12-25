@@ -2,7 +2,7 @@ v() {
   local -r file="$1"
 
   case "$file" in
-    *.xlsx|*.csv|*.odt) libreoffice --calc "$file" ;;
+    *.xlsx|*.csv|*.odt) (( $ZSB_MACOS )) || libreoffice --calc "$file" ;;
 
     *.pdf \
     |*.jpg \
@@ -15,7 +15,7 @@ v() {
     |*.bmp \
     |*.heif \
     |*.jpeg \
-    |*.svg) sxiv -f "$file" ;;
+    |*.svg) (( $ZSB_MACOS )) && open "$file" || sxiv -f "$file" ;;
 
     *) eval "nnvim ${file}" && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
