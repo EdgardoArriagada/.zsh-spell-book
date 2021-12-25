@@ -3,7 +3,7 @@ ${zsb}.safeLink() {
   local -r destinationFile=${2}
 
   # Check if setup is already done
-  [[ "$(readlink -f ${destinationFile})" = "$localFile" ]] &&
+  [[ "$(readlink ${destinationFile})" = "$localFile" ]] &&
     ${zsb}.cancel "$(hl ${destinationFile}) setup is already done."
 
   # Check if destination file is already busy
