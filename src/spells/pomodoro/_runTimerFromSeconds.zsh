@@ -58,7 +58,7 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
 
   ${this}.playNotifSound() {
     local soundFile=${ZSB_DIR}/src/media/sounds/xylofon.wav
-    [[ -f $soundFile ]] && ${zsb}.play $soundFile
+    [[ -f $soundFile ]] && zsb_play $soundFile
   }
 
   ${this}.printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(${this}.getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
