@@ -1,6 +1,6 @@
 
 # setsid "prevents" clipboard from beign cleared after tig exits
-bind generic y !@sh -c "printf %(commit) | setsid xclip -selection c"
+bind generic y !@sh -c "[[ \"$(uname -s)\" = \"Darwin\" ]] && printf %(commit) | pbcopy || printf %(commit) | setsid xclip -selection c"
 bind main S :view-stash
 
 # tig settings (https://github.com/ninjabreakbot/tig-gruvbox/blob/main/tigrc) <3
