@@ -101,11 +101,4 @@ qa() (
     echo "${badAnswers[$index]}" >> $resultFile
     echo " " >> $resultFile
   done
-
-  hr
-
-  ${zsb}.info "Results in $(hl $resultFile)"
-
-  ${zsb}.prompt "Do you want preview it? $(hl "[Y/n]")"
-  ${zsb}.confirmMenu.continued && zsb_cat $resultFile
 )
