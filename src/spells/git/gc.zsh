@@ -9,7 +9,7 @@ gc() {
   fi
 
   # activate node for husky evals
-  eval 'nvm --version'
+  ([[ -f .huskyrc ]] || [[ -d .husky ]]) && eval 'nvm --version'
 
   if [[ -z "$1" ]]; then
     git commit --gpg-sign
