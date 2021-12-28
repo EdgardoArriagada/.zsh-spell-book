@@ -26,14 +26,14 @@ qa() (
   local positions=($(seq 1 ${numQuestions}))
   positions=( $(shuf -e "${positions[@]}") )
 
+  local currentPosition
   integer i=0
   for item in $fileLines; do
-    local currentPosition="${positions[$i]}"
-
     if [[ "$item" = "$Q" ]]; then
       state="$Q"
       justSwitched=true
       (( i++ ))
+      currentPosition="${positions[$i]}"
       continue
     fi
 
@@ -69,10 +69,14 @@ qa() (
   local indexes=()
 
   for i in {$numQuestions..1}; do
+    printf "\n"
     printf "${questions[$i]}\n"
+    printf "\n"
     ${zsb}.prompt "Press any key to continue"
     read -k1 -s
+    printf "\n"
     printf "${answers[$i]}\n"
+    printf "\n"
     ${zsb}.prompt "Was your answer correct? $(hl "[Y/n]")"
     while true; do
       read yn
