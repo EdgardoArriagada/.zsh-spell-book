@@ -10,6 +10,18 @@ ${zsb}.confirmMenu() {
   done
 }
 
+${zsb}.confirmMenu.continued() {
+  while true; do
+    read yn
+
+    case $yn in
+      [Yy]*) return 0 ;;
+      [Nn]*) return 1 ;;
+      *) ${zsb}.prompt "Please answer yes or no" ;;
+    esac
+  done
+}
+
 ${zsb}.confirmMenu.withItems() {
   local inputWarning="$1"
   local inputItems="$2"
