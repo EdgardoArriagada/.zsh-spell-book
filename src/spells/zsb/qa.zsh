@@ -68,7 +68,8 @@ qa() (
   local -A badAnswers
   local indexes=()
 
-  for i in {$numQuestions..1}; do
+  for i in {1..$numQuestions}; do
+    printf "[${i} / ${numQuestions}]"
     printf "\n"
     printf "${questions[$i]}\n"
     printf "\n"
@@ -93,7 +94,7 @@ qa() (
     done
   done
 
-  for i in {$#badQuestions..1}; do
+  for i in {1..$#badQuestions}; do
     local index=${indexes[$i]}
     echo "$Q" >> $resultFile
     echo "${badQuestions[$index]}" >> $resultFile
