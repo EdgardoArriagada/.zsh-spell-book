@@ -17,12 +17,23 @@ qa() (
   local A='A--'
   local justSwitched=false
 
-  integer position
+  integer numQuestions=0
+  # Count Questions
   for item in $fileLines; do
+    [[ "$item" = "$Q" ]] && (( numQuestions++ ))
+  done
+
+  local positions=($(seq 1 ${numQuestions}))
+  positions=( $(shuf -e "${positions[@]}") )
+
+  integer i=0
+  for item in $fileLines; do
+    local currentPosition="${positions[$i]}"
+
     if [[ "$item" = "$Q" ]]; then
       state="$Q"
       justSwitched=true
-      (( position++ ))
+      (( i++ ))
       continue
     fi
 
@@ -35,20 +46,20 @@ qa() (
     if [[ "$state" = "$Q" ]]; then
       if "$justSwitched"; then
         justSwitched=false
-        questions[$position]="${item}"
+        questions[$currentPosition]="${item}"
         continue
       fi
-      questions[$position]="${questions[$position]}\n${item}"
+      questions[$currentPosition]="${questions[$currentPosition]}\n${item}"
       continue
     fi
 
     if [[ "$state" = "$A" ]]; then
       if "$justSwitched"; then
         justSwitched=false
-        answers[$position]="${item}"
+        answers[$currentPosition]="${item}"
         continue
       fi
-      answers[$position]="${answers[$position]}\n${item}"
+      answers[$currentPosition]="${answers[$currentPosition]}\n${item}"
       continue
     fi
   done
@@ -57,9 +68,9 @@ qa() (
   local -A badAnswers
   local indexes=()
 
-  for i in {$position..1}; do
+  for i in {$numQuestions..1}; do
     printf "${questions[$i]}\n"
-    ${zsb}.prompt "press any key to continue"
+    ${zsb}.prompt "Press any key to continue"
     read -k1 -s
     printf "${answers[$i]}\n"
     ${zsb}.prompt "Was your answer correct? $(hl "[Y/n]")"
