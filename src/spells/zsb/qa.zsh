@@ -73,8 +73,8 @@ qa() (
     fi
   done
 
-  local -A badQuestions
-  local -A badAnswers
+  local -A failedQuestions
+  local -A failedAnswers
   local indexes=()
 
   for i in {1..$numQuestions}; do
@@ -94,8 +94,8 @@ qa() (
       case $yn in
         [Yy]*) break ;;
         [Nn]*)
-          badQuestions[$i]="${questions[$i]}"
-          badAnswers[$i]="${answers[$i]}"
+          failedQuestions[$i]="${questions[$i]}"
+          failedAnswers[$i]="${answers[$i]}"
           indexes+=( $i )
           break ;;
         *) ${zsb}.prompt "Please answer yes or no" ;;
@@ -103,19 +103,17 @@ qa() (
     done
   done
 
-  if [[ "$#badQuestions" = "0" ]]; then
-    ${zsb}.success "You answered all the questions correctly!."
-    return 0
-  fi
+  [[ "$#failedQuestions" = "0" ]] &&
+    ${zsb}.success "You answered all the Questionary correctly!" && return 0
 
-  for i in {1..$#badQuestions}; do
+  for i in {1..$#failedQuestions}; do
     local index=${indexes[$i]}
     echo "$Q" >> $resultFile
-    echo "${badQuestions[$index]}" >> $resultFile
+    echo "${failedQuestions[$index]}" >> $resultFile
     echo "$A" >> $resultFile
-    echo "${badAnswers[$index]}" >> $resultFile
+    echo "${failedAnswers[$index]}" >> $resultFile
     echo " " >> $resultFile
   done
 
-  ${zsb}.info "$(hl "./${resultFile}") generated with $(hl "$#badQuestions") failing question(s)"
+  ${zsb}.info "$(hl "./${resultFile}") generated with $(hl "$#failedQuestions") failing question(s)"
 )
