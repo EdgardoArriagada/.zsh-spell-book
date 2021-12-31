@@ -103,6 +103,11 @@ qa() (
     done
   done
 
+  if [[ "$#badQuestions" = "0" ]]; then
+    ${zsb}.success "You answered all the questions correctly!."
+    return 0
+  fi
+
   for i in {1..$#badQuestions}; do
     local index=${indexes[$i]}
     echo "$Q" >> $resultFile
@@ -111,4 +116,6 @@ qa() (
     echo "${badAnswers[$index]}" >> $resultFile
     echo " " >> $resultFile
   done
+
+  ${zsb}.info "$(hl "./${resultFile}") generated with $(hl "$#badQuestions") failing question(s)"
 )
