@@ -1,17 +1,7 @@
-cdg() {
-  if [[ -n "$1" ]]; then
-    eval "cd ${1}"
-    return $?
-  fi
-
-  local choosenDir=$(fd -t d | fzf)
-  [[ -z "$choosenDir" ]] && return 0
-  eval "cd ${choosenDir}"
-}
+cdg() eval "cd ${1}"
 
 _${zsb}.cdg() {
   local newCompletion=( $(fd -t d) )
-
   _describe 'command' newCompletion
 }
 

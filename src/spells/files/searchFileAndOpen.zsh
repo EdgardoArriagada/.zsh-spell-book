@@ -1,14 +1,10 @@
 ${zsb}.searchFileAndOpen() {
-  [[ -n "$2" ]] && eval "${@}" && return $?
-
-  local choosenDir=$(fd -t f | fzf)
-  [[ -z "$choosenDir" ]] && return 0
-  eval "${1} ${choosenDir}"
+  [[ -z "$2" ]] && ${zsb}.throw "You have to pass an argument"
+  eval "${@}" && return $?
 }
 
 _${zsb}.searchFileAndOpen() {
   local newCompletion=( $(fd -t f) )
-
   _describe 'command' newCompletion
 }
 

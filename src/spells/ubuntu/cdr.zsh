@@ -1,17 +1,7 @@
-cdr() {
-  if [[ -n "$1" ]]; then
-    eval "cd ${1}"
-    return $?
-  fi
-
-  local choosenDir=$(dirs -p | fzf)
-  [[ -z "$choosenDir" ]] && return 0
-  eval "cd ${choosenDir}"
-}
+cdr() eval "cd ${1}"
 
 _${zsb}.cdr() {
   local newCompletion=( $(dirs -p) )
-
   _describe 'command' newCompletion
 }
 
