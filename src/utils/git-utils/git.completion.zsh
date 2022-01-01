@@ -39,6 +39,6 @@ _${zsb}.gitUnrepeat() {
 
   local newCompletion=( ${completionList:|usedCompletion} )
 
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 

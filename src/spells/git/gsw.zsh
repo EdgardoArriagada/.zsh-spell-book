@@ -9,7 +9,7 @@ _${zsb}.gsw() {
   local currentBranch=( $(${zsb}.gitBranches 'current') )
 
   local newCompletion=( ${localBranhces:|currentBranch} )
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.gsw gsw

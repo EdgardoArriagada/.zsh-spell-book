@@ -12,7 +12,7 @@ cdg() {
 _${zsb}.cdg() {
   local newCompletion=( $(fd -t d) )
 
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.cdg cdg

@@ -9,7 +9,7 @@ ${zsb}.searchFileAndOpen() {
 _${zsb}.searchFileAndOpen() {
   local newCompletion=( $(fd -t f) )
 
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.searchFileAndOpen ${zsb}.searchFileAndOpen

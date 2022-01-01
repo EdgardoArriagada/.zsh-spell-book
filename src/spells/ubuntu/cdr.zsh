@@ -12,7 +12,7 @@ cdr() {
 _${zsb}.cdr() {
   local newCompletion=( $(dirs -p) )
 
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.cdr cdr

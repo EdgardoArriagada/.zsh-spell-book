@@ -97,7 +97,7 @@ _${zsb}.ga() {
 
   local newCompletion=( ${completionList:|usedCompletion} )
 
-  _${zsb}.verticalComp "newCompletion"
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.ga ga
