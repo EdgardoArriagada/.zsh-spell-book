@@ -54,6 +54,9 @@ vnoremap as $<left>s
 vnoremap ac $<left>c
 " 'ap' handled in nvimrc.vim because here it mess with registers
 
+" go an trim visual selection
+vnoremap gt :s/\s\+/ /g<CR>
+
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
