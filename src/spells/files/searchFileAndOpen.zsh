@@ -1,6 +1,11 @@
 ${zsb}.searchFileAndOpen() {
-  [[ -z "$2" ]] && ${zsb}.throw "You have to pass an argument"
-  eval "${@}" && return $?
+  [[ -n "$2" ]] && eval "${@}" && return $?
+
+  local choosenFile=$(fd -t f | fzf)
+
+  [[ -z "$choosenFile" ]] && return 0
+
+  print -z "${1}g ${choosenFile}"
 }
 
 _${zsb}.searchFileAndOpen() {
