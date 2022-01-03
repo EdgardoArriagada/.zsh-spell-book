@@ -1,4 +1,4 @@
-${zsb}.searchFileAndOpen() {
+${zsb}.searchFileAndExecute() {
   [[ -n "$2" ]] && eval "${@}" && return $?
 
   local choosenFile=$(fd -t f | fzf)
@@ -8,12 +8,12 @@ ${zsb}.searchFileAndOpen() {
   print -z "${1}g ${choosenFile}"
 }
 
-_${zsb}.searchFileAndOpen() {
+_${zsb}.searchFileAndExecute() {
   local newCompletion=( $(fd -t f) )
   _describe 'command' newCompletion
 }
 
-compdef _${zsb}.searchFileAndOpen ${zsb}.searchFileAndOpen
+compdef _${zsb}.searchFileAndExecute ${zsb}.searchFileAndExecute
 
-alias cg="${zsb}.searchFileAndOpen c"
-alias vg="${zsb}.searchFileAndOpen v"
+alias cg="${zsb}.searchFileAndExecute c"
+alias vg="${zsb}.searchFileAndExecute v"
