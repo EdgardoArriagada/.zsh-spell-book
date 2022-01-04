@@ -22,18 +22,22 @@ _${zsb}.searchFileAndExecute() {
 compdef _${zsb}.searchFileAndExecute ${zsb}.searchFileAndExecute
 
 vg_dataGetter='fd -t f'
-vg() { ${zsb}.searchFileAndExecute "$0" v "$vg_dataGetter" "$@" }
+vg_command='v'
+vg() ${zsb}.searchFileAndExecute "$0" "$vg_command" "$vg_dataGetter" "$@"
 compdef "_${zsb}.searchFileAndExecute '${vg_dataGetter}'" vg
 
 cg_dataGetter='fd -t f'
-cg() { ${zsb}.searchFileAndExecute "$0" c "$cg_dataGetter" "$@" }
+cg_command='c'
+cg() ${zsb}.searchFileAndExecute "$0" "$cg_command" "$cg_dataGetter" "$@"
 compdef "_${zsb}.searchFileAndExecute '${cg_dataGetter}'" cg
 
 cdg_dataGetter='fd -t d'
-cdg() { ${zsb}.searchFileAndExecute "$0" cd "$cdg_dataGetter" "$@" }
+cdg_command='cd'
+cdg() ${zsb}.searchFileAndExecute "$0" "$cdg_command" "$cdg_dataGetter" "$@"
 compdef "_${zsb}.searchFileAndExecute '${cdg_dataGetter}'" cdg
 
 cdd_dataGetter='dirs -p'
-cdd() { ${zsb}.searchFileAndExecute "$0" cd "$cdd_dataGetter" "$@" }
+cdd_command='cd'
+cdd() ${zsb}.searchFileAndExecute "$0" "$cdd_command" "$cdd_dataGetter" "$@"
 compdef "_${zsb}.searchFileAndExecute '${cdd_dataGetter}'" cdd
 
