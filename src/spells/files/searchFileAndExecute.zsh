@@ -22,9 +22,14 @@ _${zsb}.searchFileAndExecute() {
 compdef _${zsb}.searchFileAndExecute ${zsb}.searchFileAndExecute
 
 vg_dataGetter='fd -t f'
-vg() { ${zsb}.searchFileAndExecute "$0" v $vg_dataGetter "$@" }
-compdef "_${zsb}.searchFileAndExecute ${vg_dataGetter}" vg
+vg() { ${zsb}.searchFileAndExecute "$0" v "$vg_dataGetter" "$@" }
+compdef "_${zsb}.searchFileAndExecute '${vg_dataGetter}'" vg
 
 cg_dataGetter='fd -t f'
-cg() { ${zsb}.searchFileAndExecute "$0" c $cg_dataGetter "$@" }
-compdef "_${zsb}.searchFileAndExecute ${cg_dataGetter}" cg
+cg() { ${zsb}.searchFileAndExecute "$0" c "$cg_dataGetter" "$@" }
+compdef "_${zsb}.searchFileAndExecute '${cg_dataGetter}'" cg
+
+cdg_dataGetter='fd -t d'
+cdg() { ${zsb}.searchFileAndExecute "$0" cd "$cdg_dataGetter" "$@" }
+compdef "_${zsb}.searchFileAndExecute '${cdg_dataGetter}'" cdg
+
