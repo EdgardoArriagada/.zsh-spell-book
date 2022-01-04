@@ -1,19 +1,30 @@
 ${zsb}.searchFileAndExecute() {
-  [[ -n "$2" ]] && eval "${@}" && return $?
+  local inputAlias="$1"
+  local inputCommand="$2"
+  local dataGetter="$3"
+  shift 3
 
-  local choosenFile=$(fd -t f | fzf)
+  if [[ -n "$@" ]]; then
+    eval "${inputCommand} ${@}"; return $?
+  fi
 
+  local choosenFile=$(eval "$dataGetter" | fzf)
   [[ -z "$choosenFile" ]] && return 0
 
-  print -z "${1}g ${choosenFile}"
+  print -z "${inputAlias} ${choosenFile}"
 }
 
 _${zsb}.searchFileAndExecute() {
-  local newCompletion=( $(fd -t f) )
+  local newCompletion=( $(eval "$1") )
   _describe 'command' newCompletion
 }
 
 compdef _${zsb}.searchFileAndExecute ${zsb}.searchFileAndExecute
 
-alias cg="${zsb}.searchFileAndExecute c"
-alias vg="${zsb}.searchFileAndExecute v"
+vg_dataGetter='fd -t f'
+vg() { ${zsb}.searchFileAndExecute "$0" v $vg_dataGetter "$@" }
+compdef "_${zsb}.searchFileAndExecute ${vg_dataGetter}" vg
+
+cg_dataGetter='fd -t f'
+cg() { ${zsb}.searchFileAndExecute "$0" c $cg_dataGetter "$@" }
+compdef "_${zsb}.searchFileAndExecute ${cg_dataGetter}" cg
