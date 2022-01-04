@@ -33,3 +33,7 @@ cdg_dataGetter='fd -t d'
 cdg() { ${zsb}.searchFileAndExecute "$0" cd "$cdg_dataGetter" "$@" }
 compdef "_${zsb}.searchFileAndExecute '${cdg_dataGetter}'" cdg
 
+cdd_dataGetter='dirs -p'
+cdd() { ${zsb}.searchFileAndExecute "$0" cd "$cdd_dataGetter" "$@" }
+compdef "_${zsb}.searchFileAndExecute '${cdd_dataGetter}'" cdd
+
