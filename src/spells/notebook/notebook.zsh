@@ -4,8 +4,6 @@ ${zsb}.page.validateEnv() {
 }
 
 ${zsb}.page.getCurrentPage() {
-
-
   local year=$(date +%Y)
   local month=$(date +%b)
   local page=$(date +%b-%d-%Y.md)
