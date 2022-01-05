@@ -4,5 +4,5 @@ dale() {
     return 1
   fi
 
-  code . && close
+  code . && (( $ZSB_MACOS )) || close
 }
