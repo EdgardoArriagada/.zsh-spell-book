@@ -1,6 +1,6 @@
 __${zsb}.sourceFiles() {
   for file in $*; do
-    ${zsb}.fillWithToken '_'
+    hr
     ${zsb}.info "sourcing $(hl ${file##*/})"
     source "$file"
   done

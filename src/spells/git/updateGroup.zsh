@@ -19,7 +19,7 @@ ${zsb}.updateGroup() (
 
   ${this}.manageEachRepo() {
     for repo in "${repoList[@]}"; do
-      ${zsb}.fillWithToken '_'
+      hr
 
       # Repo has to start with "~/"
       currentRepo="${HOME}/${repo#*/}"

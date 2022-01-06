@@ -1,4 +1,4 @@
 hr() {
   local token=${1:='_'}
-  ${zsb}.fillWithToken "$token"
+  printf %"$COLUMNS"s | tr " " "$token"
 }

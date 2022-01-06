@@ -22,7 +22,7 @@ catdiff() (
     fi
 
     if [[ -n "$file1Lacks" ]] && [[ -n "$file2Lacks" ]]; then
-      ${zsb}.fillWithToken '_'
+      hr
       echo " "
     fi
 

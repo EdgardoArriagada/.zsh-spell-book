@@ -3,7 +3,7 @@ cds() {
   cd $1
 
   if ${zsb}.isGitRepo; then
-    ${zsb}.fillWithToken '_'
+    hr
     ${zsb}.gitStatus
     return 0
   fi
