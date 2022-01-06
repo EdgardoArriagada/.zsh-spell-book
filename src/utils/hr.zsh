@@ -1,1 +1,4 @@
-hr() ${zsb}.fillWithToken '_'
+hr() {
+  local token=${1:='_'}
+  ${zsb}.fillWithToken "$token"
+}
