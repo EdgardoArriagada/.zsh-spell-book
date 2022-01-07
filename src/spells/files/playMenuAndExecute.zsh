@@ -56,3 +56,21 @@ cdd_command='cd'
 cdd() ${zsb}.playMenuAndExecute "$0" "$cdd_command" "$cdd_dataGetter" "$@"
 compdef "_${zsb}.playMenuAndExecute '${cdd_dataGetter}'" cdd
 
+cdp_dataGetter='fd'
+cdp_command='cd'
+cdp() {
+  if [[ -z "$1" ]]; then
+    ${zsb}.playMenuAndExecute "$0" "$cdp_command" "$cdp_dataGetter" "$@"
+    return 0
+  fi
+
+  if [[ -d "$1" ]]; then
+    eval "cd ${1}"; return 0
+  fi
+
+  if [[ -f "$1" ]]; then
+    eval "cd $(dirname ${1})"; return 0
+  fi
+}
+compdef "_${zsb}.playMenuAndExecute '${cdp_dataGetter}'" cdp
+
