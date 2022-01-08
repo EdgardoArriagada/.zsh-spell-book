@@ -4,7 +4,8 @@ printColours() (
     (( cols++ ))
     local endLine=''
     if (( cols % 10 == 0 )); then endLine="\n"; fi
-    printf "\x1b[38;5;${i}m████\x1b[0m►${i}${endLine} "
+    local spaces=$(printf %$((3 - ${#i}))s)
+    printf " \x1b[38;5;${i}m████\x1b[0m►${i}${spaces}${endLine}"
   done
 )
 
