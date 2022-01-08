@@ -78,18 +78,14 @@ qa() (
   local indexes=()
 
   for i in {1..$numQuestions}; do
-    local progressCounter="[${i} / ${numQuestions}]"
-    hr -
-    printCentered "Question ${progressCounter}"
-    hr -
+    color 246 $(hr ·)
+    printCentered "[${i} / ${numQuestions}]"
+    print " "
     printf "${questions[$i]}\n"
-    hr -
-    ${zsb}.prompt "Press any key to continue"; read -k1 -s
-    hr -
-    printCentered "Answer ${progressCounter}"
-    hr -
-    printf "\n${answers[$i]}\n"
-    hr -
+    read -k1 -s
+    color 76 $(hr ·)
+    printf "${answers[$i]}\n"
+    color 76 $(hr ·)
     ${zsb}.prompt "Was your answer correct? $(hl "[Y/n]")"
     while true; do
       read yn
