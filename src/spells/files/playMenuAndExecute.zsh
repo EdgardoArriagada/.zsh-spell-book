@@ -4,11 +4,11 @@ ${zsb}.playMenuAndExecute() {
   local dataGetter="$3"
   shift 3
 
-  if [[ -n "$@" ]]; then
+  if [[ -a "$1" ]]; then
     eval "${inputCommand} ${@}"; return $?
   fi
 
-  local choosenFile=$(eval "$dataGetter" | fzf)
+  local choosenFile=$(eval "$dataGetter" | fzf --query "$1")
   [[ -z "$choosenFile" ]] && return 0
 
   print -z "${inputAlias} ${choosenFile}"
@@ -59,7 +59,7 @@ compdef "_${zsb}.playMenuAndExecute '${cdd_dataGetter}'" cdd
 cdp_dataGetter='fd'
 cdp_command='cd'
 cdp() {
-  if [[ -z "$1" ]]; then
+  if ! [[ -a "$1" ]]; then
     ${zsb}.playMenuAndExecute "$0" "$cdp_command" "$cdp_dataGetter" "$@"
     return 0
   fi
