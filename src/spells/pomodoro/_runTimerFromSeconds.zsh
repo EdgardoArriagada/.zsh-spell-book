@@ -61,7 +61,10 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     [[ -f $soundFile ]] && zsb_play $soundFile
   }
 
-  ${this}.printEndOfTimeMsg() echo "\r${ZSB_INFO} The timer for $(hl "$(${this}.getCustomTimeMessage)") was up at $(hl $(date +%H:%M:%S))"
+  ${this}.printEndOfTimeMsg() {
+    print "\r"
+    ${zsb}.info "The timer for `hl "$(${this}.getCustomTimeMessage)"` was up at `hl $(date +%H:%M:%S)`"
+  }
 
   ${this}.main "$@"
 )

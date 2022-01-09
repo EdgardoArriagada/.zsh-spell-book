@@ -1,6 +1,6 @@
 dailycode() {
   if [[ -z "$1" ]]; then
-    echo "${ZSB_PROMPT} Enter the new repository's name:"
+    ${zsb}.prompt "Enter the new repository's name:"
     read problemName
   else
     problemName="$1"

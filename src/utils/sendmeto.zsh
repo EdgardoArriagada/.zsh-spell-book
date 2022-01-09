@@ -26,7 +26,7 @@ sendmeto() (
   ${this}.inputFlagsContains() [[ "$inputFlags" == *"$1"* ]]
 
   ${this}.copyInputUrlToClipboard() {
-    ${this}.copyUrl && echo "${ZSB_SUCCESS} $(hl "$inputUrl") copied"
+    ${this}.copyUrl && ${zsb}.success "$(hl "$inputUrl") copied"
     return 0
   }
 

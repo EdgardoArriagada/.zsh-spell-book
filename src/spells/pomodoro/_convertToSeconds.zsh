@@ -39,7 +39,7 @@ ${zsb}.pomodoro.convertToSeconds() (
       [sS])
         totalSeconds="$timeValue" ;;
       *)
-        echo "${ZSB_ERROR} Unhandled error" ;;
+        ${zsb}.throw "Unhandled error" ;;
     esac
   }
 

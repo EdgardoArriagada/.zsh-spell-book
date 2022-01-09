@@ -31,22 +31,22 @@ tmkill() (
   }
 
   ${this}.printPrompt() {
-    echo "${ZSB_WARNING} The following tmux sessions will be deleted:"
+    ${zsb}.warning "The following tmux sessions will be deleted:"
     echo " "
     echo "$(hl "$activeTmuxSessions")"
     echo " "
-    echo "${ZSB_PROMPT} Do you really want to delete these sessions? [Y/n]."
+    ${zsb}.prompt "Do you really want to delete these sessions? [Y/n]."
   }
 
   ${this}.killTmuxServerOnConfirm() {
     ${zsb}.confirmMenu && ${this}.killTmuxServer &&
-      echo "${ZSB_SUCCESS} All tmux sessions have been deleted."
+      ${zsb}.success "All tmux sessions have been deleted."
   }
 
   ${this}.killTmuxServer() tmux kill-server
 
   ${this}.throwNoTmuxSessions() {
-    echo "${ZSB_INFO} There are no active tmux sessions."
+    ${zsb}.info "There are no active tmux sessions."
     return 0
   }
 

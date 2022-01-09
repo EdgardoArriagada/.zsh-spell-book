@@ -1,3 +1,3 @@
-# echo "${ZSB_WARNING} Select pinentry-curses"
+# ${zsb}.warning "Select pinentry-curses"
 # sudo update-alternatives --config pinentry
 

@@ -16,14 +16,14 @@ sqlineOf() (
       'CREATE_TABLE')
         ${this}.lineOfMatch "CREATE TABLE \`${tableName}\`" ;;
       *)
-        echo "${ZSB_ERROR} Unhanlded action." ;;
+        ${zsb}.throw "Unhanlded action." ;;
     esac
   }
 
   ${this}.areArgsValid() [[ "$#" -gt 2 ]]
 
   ${this}.throwInvalidArgs() {
-    echo "${ZSB_ERROR} You must probide an action, table name and a file name."
+    ${zsb}.throw "You must probide an action, table name and a file name."
     return 1
   }
 

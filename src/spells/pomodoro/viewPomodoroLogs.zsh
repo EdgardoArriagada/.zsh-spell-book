@@ -11,7 +11,7 @@ ${zsb}.pomodoro.viewPomodoroLogs() {
   local fullFilePath=${logFolder}/${fileName}
 
   if [[ ! -f $fullFilePath ]]; then
-    echo "${ZSB_INFO} Pomodoro not found"
+    ${zsb}.info "Pomodoro not found"
     return 0
   fi
 

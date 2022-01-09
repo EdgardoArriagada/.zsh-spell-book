@@ -23,7 +23,7 @@ pomodoro() (
 
     ${this}.beginPomodoro
 
-    echo "${ZSB_SUCCESS} Pomodoro started."
+    ${zsb}.success "Pomodoro started."
     return 0
   }
 
