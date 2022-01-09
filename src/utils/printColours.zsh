@@ -11,7 +11,7 @@ printColours() (
       (( cols++ ))
       local endLine=''
       if (( cols % 10 == 0 )); then endLine="\n"; fi
-      printf " \x1b[38;5;${i}m████\x1b[0m►${i}${spaces}${endLine}"
+      printf " \e[38;5;${i}m████\033[0m►${i}${spaces}${endLine}"
     done
   }
 
