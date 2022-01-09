@@ -4,7 +4,6 @@ alias upgradea='sudo apt dist-upgrade -y'
 alias remueve='sudo apt purge'
 alias autoremueve='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
 alias mata='sudo killall -9'
-(( $ZSB_MACOS )) || alias fd="fdfind"
 
 alias escapeswap='setxkbmap -option caps:swapescape'
 alias keysbacktonormal='setxkbmap -option'
