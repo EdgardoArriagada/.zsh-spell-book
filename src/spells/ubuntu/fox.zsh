@@ -15,7 +15,7 @@ fox() (
       3)
         ${this}.showRangeLinesOfInput ;;
       *)
-        echo "${ZSB_ERROR} Povide a file name with: a line number to copy, two numbers as a range or simply nothing."
+        ${zsb}.throw "Povide a file name with: a line number to copy, two numbers as a range or simply nothing."
     esac
   }
 
@@ -46,7 +46,5 @@ fox() (
   ${this}.main "$@"
 )
 
-ccp() {
-  fox ${*} | clipcopy
-}
+ccp() { fox ${*} | clipcopy }
 

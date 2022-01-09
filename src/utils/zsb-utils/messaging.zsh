@@ -1,31 +1,33 @@
+${zsb}.message() print "`color 7 zsb` `color ${1} ${2}`: ${@:3}"
+
 ${zsb}.throw() {
-  echo -n "${ZSB_ERROR}"; puts " $1"
+  ${zsb}.message $ZSB_RED 'ERROR' "$@"
   throw Error
 }
 
 ${zsb}.cancel() {
-  echo -n "${ZSB_CANCEL}"; puts " $1"
+  ${zsb}.message $ZSB_CYAN 'CANCEL' "$@"
   throw Error
 }
 
-${zsb}.success() { echo -n "${ZSB_SUCCESS}"; puts " $1" }
+${zsb}.success() ${zsb}.message $ZSB_GREEN 'SUCCESS' "$@"
 
-${zsb}.fail() { echo -n "${ZSB_FAIL}"; puts " $1" }
+${zsb}.fail() ${zsb}.message $ZSB_RED 'FAIL' "$@"
 
-${zsb}.pass() { echo -n "${ZSB_PASS}"; puts " $1" }
+${zsb}.pass() ${zsb}.message $ZSB_GREEN 'PASS' "$@"
 
-${zsb}.warning() { echo -n "${ZSB_WARNING}"; puts " $1" }
+${zsb}.warning() ${zsb}.message $ZSB_YELLOW 'WARNING' "$@"
 
-${zsb}.info() { echo -n "${ZSB_INFO}"; puts " $1" }
+${zsb}.info() ${zsb}.message $ZSB_BLUE 'INFO' "$@"
 
-${zsb}.prompt() { echo -n "${ZSB_PROMPT}"; puts " $1" }
+${zsb}.prompt() ${zsb}.message $ZSB_PURPLE 'PROMPT' "$@"
 
-${zsb}.expected() { echo -n "${ZSB_EXPECTED}"; puts " $1" }
+${zsb}.expected() ${zsb}.message $ZSB_GREEN '+ Expected' "$@"
 
-${zsb}.current() { echo -n "${ZSB_CURRENT}"; puts " $1" }
+${zsb}.current() ${zsb}.message $ZSB_RED '- Current' "$@"
 
 ${zsb}.validate() {
-  [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set $(hl "$1") first."
+  [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set `hl ${1}` first."
   return 0
 }
 
