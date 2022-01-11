@@ -1,7 +1,7 @@
 qa() (
   local file=${1:?'You must provide a file'}
 
-  ${zsb}.doesMatch "$file" "\.txt$" || ${zsb}.throw "File has to be a $(hl ".txt")"
+  ${zsb}.doesMatch "$file" "\.qa$" || ${zsb}.throw "File has to be a $(hl ".qa")"
 
   local newFileName=$(echo "$file" | cut -d'.' -f'1' | tr -d -c a-zA-Z )
 
@@ -9,7 +9,7 @@ qa() (
   [[ -z "fileVersion" ]] && fileVersion=0
   (( fileVersion++ ))
 
-  local resultFile="${newFileName}_${fileVersion}.txt"
+  local resultFile="${newFileName}_${fileVersion}.qa"
 
   if [[ -f $resultFile ]]; then
     ${zsb}.prompt "Do you want to delete $(hl $resultFile)? [Y/n]"
