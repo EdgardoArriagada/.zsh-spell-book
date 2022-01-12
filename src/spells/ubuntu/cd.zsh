@@ -2,6 +2,7 @@ cd() {
   builtin cd $1 && ls
 
   [[ -f .nvmrc ]] && eval 'nvm use'
+  return 0
 }
 
 alias CD='toggleCapsLock && cd'
