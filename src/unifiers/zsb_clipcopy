@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+
+if (( $ZSB_MACOS )); then
+ print "$@" | pbcopy
+else
+ print "$@" | xclip -selection clipboard
+fi
+
+exit 0
