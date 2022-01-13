@@ -1,29 +1,14 @@
-${zsb}.formatBranch() {
-
-  # [Sign/Data] text-data
-  local signData=$(echo $1 | cut -d_ -f1)
-  local textData=${1#*_}
-
-  local branchType=$(echo $signData | cut -d/ -f1)
-  local branchTicket=${signData#*/}
-
-  local formattedText=$(echo $textData | tr '-' ' ' | sed 's/\w/\u&/')
-
-  echo "[ ${(C)branchType} ${branchTicket} ] ${formattedText}"
-}
+# ${zsb}.ghpr_my-repo-folder() printf "--title -WIP --base main"
 
 createPr() {
+  local currDir=${PWD##*/}
+  local propsGetter="${zsb}.ghpr_${currDir}"
+  ! type "$propsGetter" > /dev/null && ${zsb}.throw "there is not a props getter for `hl ${currDir}`"
+
   ${zsb}.confirmMenu.withPrompt
 
-  local formattedBranch=$(${zsb}.formatBranch $(git branch --show-current))
-  local defaultBranch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-
-  gh pr create \
-    --draft \
-    --title "$formattedBranch" \
-    --body 'WIP' \
-    --base $defaultBranch
-
+  local prProps=`${propsGetter}`
+  gh pr create --draft ${(z)prProps}
   gh pr view --web
 }
 
