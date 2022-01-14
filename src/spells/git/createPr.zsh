@@ -1,11 +1,12 @@
 # ghpr.my-repo-folder() printf "--title 'Pr title' --body 'some body to love'"
 
+createPr_defaultProps="--title WIP --body WIP"
+
 createPr() {
   zparseopts -D -E -F -- -aware=aware || return 1
 
   local currDir=${PWD##*/}
   local propsGetter="ghpr.${currDir}"
-  ! type "$propsGetter" > /dev/null && ${zsb}.throw "there is not a props getter for `hl ${currDir}`"
 
   local parentBranch=`gitParentBranch`
   [[ -z "$parentBranch" ]] && ${zsb}.cancel "There is not a parentBranch."
@@ -17,7 +18,13 @@ createPr() {
   ${zsb}.warning "Pull request to `hl ${parentBranch}` from `hl $(git branch --show-current)`"
   ${zsb}.confirmMenu.withPrompt
 
-  local restOfProps=`${propsGetter}`
+  local restOfProps
+  if type "$propsGetter" > /dev/null; then
+    restOfProps=`${propsGetter}`
+  else
+    restOfProps="$createPr_defaultProps"
+  fi
+
   gh pr create --draft --base "$parentBranch" ${(z)restOfProps}
   gh pr view --web
 }
