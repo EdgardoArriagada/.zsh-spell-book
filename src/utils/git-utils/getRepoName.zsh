@@ -3,9 +3,14 @@ getRepoName() {
   [[ -z "$pathToDotGit" ]] && return 0
 
   if [[ "$pathToDotGit" = ".git" ]]; then
-    printf ${PWD##*/}
-  else
-    local parentRootDir=`dirname ${pathToDotGit}`
-    printf ${parentRootDir##*/}
+    printf ${PWD##*/}; return $?
   fi
+
+  local tail=${pathToDotGit##*/}
+  if [[ "$tail" != ".git" ]]; then
+    printf "$tail"; return $?
+  fi
+
+  local parentRootDir=`dirname ${pathToDotGit}`
+  printf ${parentRootDir##*/}
 }
