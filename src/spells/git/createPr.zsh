@@ -3,6 +3,7 @@
 createPr_defaultProps="--title WIP --body WIP"
 
 createPr() {
+  ${zsb}.validateGitRepo
   zparseopts -D -E -F -- -aware=aware || return 1
 
   local parentBranch=`gitParentBranch`

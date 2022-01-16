@@ -3,7 +3,7 @@ deleteNonDefaultBranches() (
   local nonDefaultBranches
 
   ${this}.main() {
-    ${zsb}.isGitRepo || ${zsb}.throw "You must run this command inside a git project."
+    ${zsb}.validateGitRepo
 
     ${zsb}.userWorkingOnDefaultBranch || ${zsb}.throw "You must run this command from a default branch"
 
