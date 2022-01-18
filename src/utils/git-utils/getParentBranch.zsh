@@ -1,4 +1,4 @@
-gitParentBranch() {
+getParentBranch() {
   git show-branch \
     | sed "s/].*//" \
     | grep "\*" \

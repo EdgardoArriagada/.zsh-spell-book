@@ -6,7 +6,7 @@ createPr() {
   ${zsb}.validateGitRepo
   zparseopts -D -E -F -- -aware=aware || return 1
 
-  local parentBranch=`gitParentBranch`
+  local parentBranch=`getParentBranch`
   [[ -z "$parentBranch" ]] && ${zsb}.cancel "There is not a parent branch."
 
   if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
