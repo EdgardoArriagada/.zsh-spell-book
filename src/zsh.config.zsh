@@ -31,3 +31,8 @@ ZSH_HIGHLIGHT_STYLES[path]='fg=blue'
 # Misc
 ZSH_HIGHLIGHT_STYLES[comment]='fg=cyan'
 
+prompt_context() {
+  local emojis=(⚡️ 🔥 💀 👑 😎 🦄 🌈 🚀 💡 🎉 🌙 🍟 🍔 🌎 ⛄ 🌞 🪐 🔱 🎩 🛸 🎬 🏹 🧜)
+  local RAND_EMOJI_N=$(( $RANDOM % ${#emojis[@]} + 1))
+  prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
+}
