@@ -52,8 +52,8 @@ zle -N append-last-word
 
 bindkey -M vicmd . append-last-word
 bindkey -M viins '^a' beginning-of-line
-bindkey -M viins '^p' up-history
-bindkey -M viins '^n' down-history
+bindkey -M viins '^p' up-line-or-search
+bindkey -M viins '^n' down-line-or-search
 bindkey -M viins '^e' end-of-line
 bindkey -M viins '^[d' kill-word
 bindkey -M viins '^w' backward-kill-word
