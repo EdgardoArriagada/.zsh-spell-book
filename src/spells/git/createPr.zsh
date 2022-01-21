@@ -4,12 +4,9 @@ createPr_defaultProps="--title WIP --body WIP"
 
 createPr() {
   ${zsb}.validateGitRepo
-  zparseopts -D -E -F -- -aware=aware || return 1
+  local parentBranch=${1:?'You must specific base branch'}
 
-  local parentBranch=`getParentBranch`
-  [[ -z "$parentBranch" ]] && ${zsb}.cancel "There is not a parent branch."
-
-  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
+  if ${zsb}.userWorkingOnDefaultBranch; then
     ${zsb}.throw "Can't create a pull request on a default branch, use `hl --aware` flag to do it anyway"
   fi
 
@@ -28,4 +25,4 @@ createPr() {
   gh pr view --web
 }
 
-compdef "_${zsb}.nonRepeatedList --aware" createPr
+compdef _git createPr=git-branch
