@@ -57,6 +57,7 @@ bindkey -M viins '^n' history-search-forward
 bindkey -M viins '^e' end-of-line
 bindkey -M viins '^[d' kill-word
 bindkey -M viins '^w' backward-kill-word
+bindkey -M viins '^r' history-incremental-pattern-search-backward
 
 prompt_context() {
   local emojis=(⚡️ 🔥 💀 👑 😎 🦄 🌈 🚀 💡 🎉 🌙 🍟 🍔 🌎 ⛄ 🌞 🪐 🔱 🎩 🛸 🎬 🏹 🧜)
