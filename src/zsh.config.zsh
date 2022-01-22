@@ -50,7 +50,8 @@ preexec() { echo -ne "$ZSB_CURSOR_DEFAULT"; } # Use beam shape cursor for each n
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
-bindkey -M vicmd . append-last-word
+# for more, run "zle -al"
+bindkey -M vicmd '.' append-last-word
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^p' history-search-backward
 bindkey -M viins '^n' history-search-forward
