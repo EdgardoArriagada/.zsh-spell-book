@@ -60,9 +60,8 @@ bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 
-
 prompt_context() {
-  local emojis=(⚡️ 🔥 💀 👑 😎 🦄 🌈 🚀 💡 🎉 🌙 🍟 🍔 🌎 ⛄ 🌞 🪐 🔱 🎩 🛸 🎬 🏹 🧜)
+  local emojis=(⚡️ 🔥 💀 🦄 🌈 🚀 🌙 🌎 🌞 🪐)
   local RAND_EMOJI_N=$(( $RANDOM % ${#emojis[@]} + 1))
   prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
 }
