@@ -58,6 +58,8 @@ bindkey -M viins '^e' end-of-line
 bindkey -M viins '^[d' kill-word
 bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
+bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
+
 
 prompt_context() {
   local emojis=(⚡️ 🔥 💀 👑 😎 🦄 🌈 🚀 💡 🎉 🌙 🍟 🍔 🌎 ⛄ 🌞 🪐 🔱 🎩 🛸 🎬 🏹 🧜)
