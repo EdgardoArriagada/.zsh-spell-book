@@ -32,7 +32,6 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'rust-lang/rust.vim' , { 'for': 'rust' }
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'peitalin/vim-jsx-typescript' , { 'for': 'typescript' }
-    Plug 'lanks/vim-tsx'
 
     " telescope fuzzy finder
     Plug 'nvim-lua/popup.nvim'
