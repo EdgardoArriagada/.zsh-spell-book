@@ -1,0 +1,9 @@
+source ~/.vimrc
+
+set clipboard=unnamedplus "Share system clipboard (require xdotool)
+
+" Paste many times over selected text
+" withoud yanking it
+xnoremap p "0p
+xnoremap P "0P
+vnoremap ap $h"0p
