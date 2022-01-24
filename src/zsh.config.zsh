@@ -63,7 +63,7 @@ bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after en
 bindkey -M viins '^q' push-line
 
 prompt_context() {
-  local emojis=(⚡️ 🔥 💀 🦄 🌈 🚀 🌙 🌎 🌞 🪐)
+  local emojis=( '⚡️' '🔥' '💀' '🦄' '🌈' '🚀' '🌙' '🌎' '🌞' '🪐' )
   local RAND_EMOJI_N=$(( $RANDOM % ${#emojis[@]} + 1))
   prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
 }
