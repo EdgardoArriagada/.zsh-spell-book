@@ -14,6 +14,8 @@ filetype plugin indent on
 let g:mapleader = "\<Space>"
 let g:maplocaleader = '~'
 
+map <leader>b <Action>(ToggleLineBreakpoint)
+
 set tabstop=2 softtabstop=2 "Amount of spaces when pressing tab
 set shiftwidth=2 "when indenting with '>', use 2 spaces width
 set expandtab "On pressing tab, insert 2 spaces
