@@ -1,4 +1,5 @@
 source ~/.vimrc
+set textobj-indent
 
 set clipboard=unnamedplus "Share system clipboard (require xdotool)
 
