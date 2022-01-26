@@ -47,6 +47,12 @@ vnoremap } i}
 vnoremap ( i(
 vnoremap ) i)
 
+# Object indent
+vmap q aI
+onoremap <bs> vaI
+nmap <BS> vaIo^<ESC>
+nmap <ENTER> vaI<ESC>
+
 vnoremap R loh
 
 nnoremap Y y$
