@@ -1,13 +1,10 @@
 ggl() {
-  local -r inputBranch=${1:?'You must provide a branch to pull from.'}
-  local -r currentBranch=$(${zsb}.gitBranches 'current')
+  local currentBranch=`git_current_branch`
 
-  if [[ "$currentBranch" != "$inputBranch" ]]; then
-    ${zsb}.throw "You can't use this command to pull from different branches"
-  fi
+  ${zsb}.info "Pulling from `hl ${currentBranch}`"
 
-  git pull origin "$inputBranch"
+  git pull origin "$currentBranch"
 }
 
-compdef "_${zsb}.nonRepeatedListC 'git branch --show-current'" ggl
+_${zsb}.nocompletion ggl
 

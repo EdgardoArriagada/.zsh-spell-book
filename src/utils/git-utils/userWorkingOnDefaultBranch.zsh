@@ -1,4 +1,2 @@
-${zsb}.userWorkingOnDefaultBranch() {
-  local WORKING_BRANCH=$(git symbolic-ref --short HEAD)
-  ${zsb}.isDefaultBranch "$WORKING_BRANCH"
-}
+${zsb}.userWorkingOnDefaultBranch() ${zsb}.isDefaultBranch `git_current_branch`
+
