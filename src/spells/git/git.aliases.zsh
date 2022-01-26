@@ -9,7 +9,7 @@ alias gsp='git status --porcelain=v2'
 alias gst='git status'
 alias gf='git fetch'
 alias gsh='git show'
-alias gpr='gh pr view --web'
+alias prv='gh pr view --web'
 
 alias GSWD='toggleCapsLock && gswd'
 alias GS='toggleCapsLock && gs'
@@ -20,7 +20,7 @@ alias GSP='toggleCapsLock && gsp'
 alias GST='toggleCapsLock && gst'
 alias GF='toggleCapsLock && gf'
 alias GSH='toggleCapsLock && gsh'
-alias GPR='toggleCapsLock && gpr'
+alias GPV='toggleCapsLock && prv'
 
 # this aliases reveice args, so toggleCapsLocks makes no sense
 alias gswa='git switch'
