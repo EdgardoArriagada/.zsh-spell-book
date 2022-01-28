@@ -1,5 +1,5 @@
 hr() {
-  local token=${1:='·'}
+  local token=${1:='═'}
   printf %"$COLUMNS"s | tr " " "$token"
 }
 
