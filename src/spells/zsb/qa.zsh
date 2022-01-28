@@ -78,14 +78,14 @@ qa() (
   local indexes=()
 
   for i in {1..$numQuestions}; do
-    color 246 $(hr ·)
+    color 246 `hr`
     printCentered "[${i} / ${numQuestions}]"
     print " "
     printf "${questions[$i]}\n"
     read -k1 -s
-    color 76 $(hr ·)
+    color 76 `hr`
     printf "${answers[$i]}\n"
-    color 76 $(hr ·)
+    color 76 `hr`
     ${zsb}.prompt "Was your answer correct? $(hl "[Y/n]")"
     while true; do
       read yn
