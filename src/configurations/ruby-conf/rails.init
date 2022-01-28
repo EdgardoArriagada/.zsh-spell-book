@@ -1,3 +1,0 @@
-# lazy load the following (if not loaded yet)
-nvm --version >/dev/null 2>&1
-rbenv -v >/dev/null 2>&1
