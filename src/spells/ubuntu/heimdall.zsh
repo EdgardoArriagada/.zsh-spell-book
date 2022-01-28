@@ -14,13 +14,16 @@ heimdall() {
   fi
 
   local response=`source ~/heimdall/${arg}.zsh`
-  hr >&2
 
-  if jq -e . >/dev/null 2>&1 <<<"$response"; then
-    jq <<<"$response"
-  else
-    print "$response"
+  # avoid printing hr output when redirecting to a file
+  hr1 >&2
+
+  # if not a valid json
+  if ! jq -e . >/dev/null 2>&1 <<<"$response"; then
+    print "$response"; return 1
   fi
+
+  jq <<<"$response"
 }
 
 .heimdall.chooseRequest() {
