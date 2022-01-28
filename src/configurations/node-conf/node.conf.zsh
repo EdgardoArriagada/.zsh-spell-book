@@ -6,13 +6,18 @@
 
 export NVM_DIR="$HOME/.nvm"
 
+${zsb}.lazyNvm() {
+  (( $ZSB_MACOS )) && \
+    source "$(brew --prefix nvm)/nvm.sh" || \
+    source "$NVM_DIR/nvm.sh"
+
+  ${zsb}.removeNodeVersionCacheDecorator nvm
+}
+
 if [[ -d "$NVM_DIR" ]]; then
   local nvmScriptPath
-  (( $ZSB_MACOS )) && \
-    nvmScriptPath="$(brew --prefix nvm)/nvm.sh" || \
-    nvmScriptPath="$NVM_DIR/nvm.sh"
 
-  __${zsb}.prepareLazyLoad "$nvmScriptPath" \
+  __${zsb}.prepareLazyLoad "${zsb}.lazyNvm" \
     nvm yarn node npm vue npx tsc depcheck expo nest markdown-pdf
 fi
 

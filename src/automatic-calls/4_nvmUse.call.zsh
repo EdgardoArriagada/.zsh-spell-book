@@ -1,1 +1,1 @@
-  [[ -f .nvmrc ]] && eval 'nvm use'
+[[ -f .nvmrc ]] && ${zsb}.useCachedNodeVersion

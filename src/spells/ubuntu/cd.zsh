@@ -1,7 +1,7 @@
 cd() {
   builtin cd $1 && ls
 
-  [[ -f .nvmrc ]] && eval 'nvm use'
+  [[ -f .nvmrc ]] && ${zsb}.useCachedNodeVersion
   return 0
 }
 

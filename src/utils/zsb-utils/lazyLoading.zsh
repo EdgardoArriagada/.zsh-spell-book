@@ -10,7 +10,7 @@ ${zsb}.lazyLoad() {
   ${zsb}.info "Lazy loading..."
 
   unalias "${aliasesToRelease[@]}"
-  source "$scriptToLazyLoad"
+  ${scriptToLazyLoad}
   eval "${commandToRun} ${commandToRunArgs}"
 }
 
