@@ -6,5 +6,7 @@ gds() {
   git diff --staged "$@" && ${zsb}.gitStatus
 }
 
+hisIgnore gds
+
 compdef "_${zsb}.gitUnrepeat 'staged'" gds
 

@@ -6,5 +6,7 @@ gd() {
   git diff "$@" && ${zsb}.gitStatus
 }
 
+hisIgnore gd
+
 compdef "_${zsb}.gitUnrepeat 'red-with-diff'" gd
 

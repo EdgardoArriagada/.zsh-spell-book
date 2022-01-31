@@ -28,6 +28,8 @@ _${zsb}.tm() {
   _describe 'command' tmuxList
 }
 
+hisIgnore tm
+
 compdef _${zsb}.tm tm
 
 alias TM="toggleCapsLock && tm"

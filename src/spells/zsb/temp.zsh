@@ -5,7 +5,7 @@ ${zsb}.temp() {
   local -r callback=${1:?'You must provide a callback function.'}
   local -r tempDir=${ZSB_DIR}/src/temp
 
-  [[ ! -d ${tempDir} ]] && mkdir ${tempDir}
+  mkdir -p ${tempDir}
 
   eval "${callback} ${tempDir}"
 }
@@ -15,3 +15,4 @@ _${zsb}.nocompletion modifyTemp
 alias cdtemp="${zsb}.temp cds"
 alias vtemp="${zsb}.temp nnvim"
 
+hisIgnore cdtemp vtemp

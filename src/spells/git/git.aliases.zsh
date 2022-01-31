@@ -6,6 +6,8 @@ alias sign='git commit --amend --no-edit --gpg-sign && ${zsb}.gitStatus'
 alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit --branches"
 alias gsp='git status --porcelain=v2'
 
+hisIgnore gs pop
+
 alias gst='git status'
 alias gf='git fetch'
 alias gsh='git show'
