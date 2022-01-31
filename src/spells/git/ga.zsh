@@ -100,5 +100,7 @@ _${zsb}.ga() {
   _describe 'command' newCompletion
 }
 
+hisIgnore ga
+
 compdef _${zsb}.ga ga
 

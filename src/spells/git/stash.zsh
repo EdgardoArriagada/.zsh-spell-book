@@ -10,5 +10,7 @@ stash() {
 
 alias STASH='toggleCapsLock && stash'
 
+hisIgnore stash
+
 _${zsb}.nocompletion stash
 

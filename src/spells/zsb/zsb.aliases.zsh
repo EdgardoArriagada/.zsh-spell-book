@@ -5,3 +5,10 @@ alias his="nnvim ~/.zsh_history"
 alias hrc="nnvim ~/.zshrc"
 alias env="nnvim ${ZSB_ZSHENV}"
 
+hisIgnore cdzsb
+hisIgnore vzsb
+hisIgnore his
+hisIgnore hrc
+hisIgnore env
+
+

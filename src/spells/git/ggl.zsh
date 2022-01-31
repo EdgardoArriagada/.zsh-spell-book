@@ -6,5 +6,7 @@ ggl() {
   git pull origin "$currentBranch"
 }
 
+hisIgnore ggl
+
 _${zsb}.nocompletion ggl
 
