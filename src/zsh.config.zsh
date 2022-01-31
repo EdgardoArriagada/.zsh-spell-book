@@ -67,3 +67,10 @@ prompt_context() {
   local RAND_EMOJI_N=$(( $RANDOM % ${#emojis[@]} + 1))
   prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
 }
+
+declare ZSB_HISTORY_IGNORE=(ls)
+
+hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
+
+# the following line should be applied as an automatic call
+# export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})"
