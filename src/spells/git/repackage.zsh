@@ -12,4 +12,6 @@ repackage() {
   git commit --amend --no-edit --gpg-sign && ${zsb}.gitStatus
 }
 
+hisIgnore repackage
+
 compdef "_${zsb}.nonRepeatedListD ${ZSB_GIT_AWARE} ${ZSB_GIT_FORCE}" repackage
