@@ -1,0 +1,1 @@
+export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})"
