@@ -33,5 +33,7 @@ deleteNonDefaultBranches() (
   ${this}.main "$@"
 )
 
+hisIgnore deleteNonDefaultBranches
+
 _${zsb}.nocompletion deleteNonDefaultBranches
 

@@ -6,6 +6,8 @@ gswm() {
   git switch main
 }
 
+hisIgnore gswm
+
 _${zsb}.nocompletion gswm
 
 alias GSWM='toggleCapsLock && gswm'

@@ -23,3 +23,4 @@ alias page="(cdpage && ${zsb}.page nnvim)"
 alias cpage="${zsb}.page zsb_cat"
 alias ccppage="${zsb}.page ccp"
 
+hisIgnore cdpage cdnotebook page cpage ccppage
