@@ -68,7 +68,7 @@ prompt_context() {
   prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
 }
 
-declare ZSB_HISTORY_IGNORE=(ls l)
+declare ZSB_HISTORY_IGNORE=(ls l neofetch)
 
 hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
 
