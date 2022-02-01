@@ -29,11 +29,12 @@ ZSB_SNAPSHOT_PATH="$PATH"
   ${zsb}.sourceFiles $utilFiles
   ${zsb}.sourceFiles $configurationFiles
   ${zsb}.sourceFiles $spellPages
-  ${zsb}.sourceFiles $automaticCallFiles
 
   # Temporal Spells
   local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
   [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles $tempSpells
+
+  ${zsb}.sourceFiles $automaticCallFiles
 }
 
 # Remove dynamic prefixed functions
