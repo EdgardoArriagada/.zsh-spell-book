@@ -18,6 +18,8 @@ ${zsb}.nodeReinstall() {
   # BUG: npm always tries to acess to ${zsb}.lazyLoad inside a bash function
   # eval is a workaround
   eval "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
+
+  alert "DONE: '${packageManager} install'"
 }
 
 compdef "_${zsb}.nonRepeatedListD '-l:Keep lock files' '-n:Keep node modules' '-i:Skip installation'" ${zsb}.nodeReinstall
