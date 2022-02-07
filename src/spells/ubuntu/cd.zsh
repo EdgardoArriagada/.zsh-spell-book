@@ -5,6 +5,8 @@ cd() {
   return 0
 }
 
+hisIgnore cd
+
 alias CD='toggleCapsLock && cd'
 
 alias dc='cd'
