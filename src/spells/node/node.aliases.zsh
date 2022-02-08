@@ -3,4 +3,5 @@ alias nn="nvm --version"
 alias npkill="npx npkill"
 alias pyarn="npm install --global yarn"
 alias pnest="npm install --global @nestjs/cli"
-
+alias npmi="printAndRun 'npm install'; alert DONE 'npm install'"
+alias yarni="printAndRun 'yarn install'; alert DONE 'npm install'"
