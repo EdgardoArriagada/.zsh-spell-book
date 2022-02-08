@@ -1,4 +1,4 @@
-github.getNormalUrlFromSshUrl() {
+.github.getNormalUrlFromSshUrl() {
   local input="${1:4}"
   local formattedInput=`printf "$input" | sed 's/:/\//g' | sed 's/\.git$//g'`
   printf "https://${formattedInput}"
@@ -9,7 +9,7 @@ github() {
 
   ${zsb}.isUrl "$remoteUrl" && zsb_open "$remoteUrl" && return $?
 
-  zsb_open `${0}.getNormalUrlFromSshUrl "$remoteUrl"`
+  zsb_open `.${0}.getNormalUrlFromSshUrl "$remoteUrl"`
 }
 
 hisIgnore github
