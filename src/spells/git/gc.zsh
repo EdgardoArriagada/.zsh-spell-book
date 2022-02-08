@@ -1,5 +1,5 @@
 gc() {
-  zparseopts -D -E -F -- -aware=aware || return 1
+  zparseopts -D -E -F -- -aware=aware -no-verify=noVerify || return 1
 
   ${zsb}.userWorkingOnDefaultBranch
   local isUserInDefaultBranch="$(Bool $?)"
@@ -12,9 +12,9 @@ gc() {
   ([[ -f .huskyrc ]] || [[ -d .husky ]]) && eval 'nvm --version'
 
   if [[ -z "$1" ]]; then
-    git commit --gpg-sign || return 1
+    git commit --gpg-sign ${noVerify} || return 1
   else
-    git commit --gpg-sign -m "$*" || return 1
+    git commit --gpg-sign -m "$*" ${noVerify} || return 1
   fi
 
   ${zsb}.gitStatus
@@ -24,5 +24,12 @@ gc() {
   fi
 }
 
-compdef "_${zsb}.nonRepeatedList --aware" gc
+_${zsb}.gc() {
+  local noVerify
+
+  ([[ -f .huskyrc ]] || [[ -d .husky ]]) && noVerify='--no-verify:Skip husky verifications'
+  _${zsb}.nonRepeatedListD "$ZSB_GIT_AWARE" "$noVerify"
+}
+
+compdef _${zsb}.gc gc
 
