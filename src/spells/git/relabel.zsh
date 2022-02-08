@@ -15,4 +15,4 @@ relabel() {
     ${zsb}.warning "Files already added to git may have been commited, use $(hl "git reset HEAD~") to undo the entire previous commit."
 }
 
-compdef "_${zsb}.nonRepeatedListD ${ZSB_GIT_AWARE} ${ZSB_GIT_FORCE}" relabel
+compdef "_${zsb}.nonRepeatedListD '${ZSB_GIT_AWARE}' '${ZSB_GIT_FORCE}'" relabel

@@ -14,4 +14,4 @@ repackage() {
 
 hisIgnore repackage
 
-compdef "_${zsb}.nonRepeatedListD ${ZSB_GIT_AWARE} ${ZSB_GIT_FORCE}" repackage
+compdef "_${zsb}.nonRepeatedListD '${ZSB_GIT_AWARE}' '${ZSB_GIT_FORCE}'" repackage
