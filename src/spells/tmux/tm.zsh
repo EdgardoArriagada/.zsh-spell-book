@@ -10,8 +10,7 @@ tm() {
     ${zsb}.throw "You did not move."
 
   # Create session if it doesn't exists
-  ! tmux has-session -t "$targetSession" 2>/dev/null && \
-    tmux new -d -s "$targetSession"
+  tmux new -d -s "$targetSession" 2>/dev/null
 
   tmux switch-client -t "$targetSession"
 }
