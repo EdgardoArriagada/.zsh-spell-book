@@ -13,6 +13,8 @@ alias gf='git fetch'
 alias gsh='git show'
 alias prv='gh pr view --web'
 
+hisIgnore gsw gf gsh prv
+
 alias GSWD='toggleCapsLock && gswd'
 alias GS='toggleCapsLock && gs'
 alias POP='toggleCapsLock && pop'
