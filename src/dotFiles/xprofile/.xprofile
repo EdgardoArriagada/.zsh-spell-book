@@ -5,3 +5,6 @@ local wallpaper=$(ls ~/temp/wallpaper/ | head -1)
 xwallpaper --center ~/temp/wallpaper/${wallpaper} &
 
 redshift -P randr -v &
+
+# switch caps by ctrl
+setxkbmap -option ctrl:swapcaps
