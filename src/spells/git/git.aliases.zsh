@@ -12,8 +12,9 @@ alias gst='git status'
 alias gf='git fetch'
 alias gsh='git show'
 alias prv='gh pr view --web'
+alias vpr='prv'
 
-hisIgnore gsw gf gsh prv
+hisIgnore gsw gf gsh prv vpr
 
 alias GSWD='toggleCapsLock && gswd'
 alias GS='toggleCapsLock && gs'
