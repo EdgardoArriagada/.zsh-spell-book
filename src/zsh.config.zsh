@@ -50,6 +50,10 @@ preexec() { echo -ne "$ZSB_CURSOR_DEFAULT"; } # Use beam shape cursor for each n
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
+# solves a bug for when you enter in visual mode empty and can't escape
+function escape-from-zero-visual { ((CURSOR == 0)) && zle vi-insert; }
+zle -N escape-from-zero-visual
+
 # for more, run "zle -al"
 bindkey -M vicmd '.' append-last-word
 bindkey -M viins '^a' beginning-of-line
@@ -61,6 +65,9 @@ bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 bindkey -M viins '^q' push-line
+bindkey -M visual 'i' escape-from-zero-visual
+bindkey -M visual 'a' escape-from-zero-visual
+bindkey -M visual 'o' escape-from-zero-visual
 
 prompt_context() {
   local emojis=( '⚡️' '🔥' '💀' '🦄' '🌈' '🚀' '🌙' '🌎' '🌞' )
