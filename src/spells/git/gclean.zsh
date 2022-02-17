@@ -12,7 +12,7 @@ gclean() {
     "All untracked files/directories will be deleted." \
     "$formattedFiles"
 
-  git clean -fd
+  git clean -fd && ${zsb}.gitStatus
 }
 
 compdef "_${zsb}.gitUnrepeat 'untracked'" gclean
