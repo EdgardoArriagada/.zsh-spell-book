@@ -69,10 +69,8 @@ bindkey -M viins '^q' push-line
 
 bindkey -M visual 'i' escape-from-zero-visual
 bindkey -M visual 'a' escape-from-zero-visual
-bindkey -M visual 'o' escape-from-zero-visual
 bindkey -M visual 'I' escape-from-zero-visual
 bindkey -M visual 'A' escape-from-zero-visual
-bindkey -M visual 'O' escape-from-zero-visual
 
 prompt_context() {
   local emojis=( '⚡️' '🔥' '💀' '🦄' '🌈' '🚀' '🌙' '🌎' '🌞' )
