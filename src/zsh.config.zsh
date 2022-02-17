@@ -54,7 +54,7 @@ zle -N append-last-word
 function escape-from-zero-visual { ((CURSOR == 0)) && zle vi-insert; }
 zle -N escape-from-zero-visual
 
-# for more, run "zle -al"
+# for more, run "zle -al" and/or "bindkey -l"
 bindkey -M vicmd '.' append-last-word
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^p' history-search-backward
