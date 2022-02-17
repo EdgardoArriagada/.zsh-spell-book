@@ -56,6 +56,7 @@ zle -N escape-from-zero-visual
 
 # for more, run "zle -al" and/or "bindkey -l"
 bindkey -M vicmd '.' append-last-word
+
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^p' history-search-backward
 bindkey -M viins '^n' history-search-forward
@@ -65,9 +66,13 @@ bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 bindkey -M viins '^q' push-line
+
 bindkey -M visual 'i' escape-from-zero-visual
 bindkey -M visual 'a' escape-from-zero-visual
 bindkey -M visual 'o' escape-from-zero-visual
+bindkey -M visual 'I' escape-from-zero-visual
+bindkey -M visual 'A' escape-from-zero-visual
+bindkey -M visual 'O' escape-from-zero-visual
 
 prompt_context() {
   local emojis=( '⚡️' '🔥' '💀' '🦄' '🌈' '🚀' '🌙' '🌎' '🌞' )
