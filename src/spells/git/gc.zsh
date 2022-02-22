@@ -8,8 +8,7 @@ gc() {
     ${zsb}.throw "Can't commit into default branch, use `hl --aware` flag to do it anyway"
   fi
 
-  # activate node for husky evals
-  ([[ -f .huskyrc ]] || [[ -d .husky ]]) && eval 'nvm --version'
+  [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
 
   if [[ -z "$1" ]]; then
     git commit --gpg-sign ${noVerify} || return 1
@@ -26,8 +25,8 @@ gc() {
 
 _${zsb}.gc() {
   local noVerify
+  ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
 
-  ([[ -f .huskyrc ]] || [[ -d .husky ]]) && noVerify='--no-verify:Skip husky verifications'
   _${zsb}.nonRepeatedListD "$ZSB_GIT_AWARE" "$noVerify"
 }
 
