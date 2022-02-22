@@ -5,7 +5,7 @@ repackage() {
     ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
   fi
 
-  if ${zsb}.isLastCommitOnline && ! [[ -z "$force" ]]; then
+  if ${zsb}.isLastCommitOnline && [[ -n "$force" ]]; then
     ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use `hl --force` flag to do it anyway."
   fi
 
