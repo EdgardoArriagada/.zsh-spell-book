@@ -1,13 +1,19 @@
+.repackage.validateNonDefaultBranch() {
+  ${zsb}.userWorkingOnDefaultBranch &&
+    ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
+}
+
+.repackage.validateCommitOffline() {
+  ${zsb}.isLastCommitOnline &&
+    ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use `hl --force` flag to do it anyway."
+}
+
 repackage() {
   zparseopts -D -E -F -- -aware=aware -force=force -no-verify=noVerify || return 1
 
-  if ${zsb}.userWorkingOnDefaultBranch && [[ -z "$aware" ]]; then
-    ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
-  fi
+  [[ -z "$aware" ]] && .${0}.validateNonDefaultBranch
 
-  if ${zsb}.isLastCommitOnline && [[ -n "$force" ]]; then
-    ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use `hl --force` flag to do it anyway."
-  fi
+  [[ -n "$force" ]] && .${0}.validateCommitOffline
 
   [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
 
