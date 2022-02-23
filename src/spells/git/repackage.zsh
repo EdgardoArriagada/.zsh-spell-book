@@ -13,7 +13,7 @@ repackage() {
 
   [[ -z "$aware" ]] && .${0}.validateNonDefaultBranch
 
-  [[ -n "$force" ]] && .${0}.validateCommitOffline
+  [[ -z "$force" ]] && .${0}.validateCommitOffline
 
   [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
 
