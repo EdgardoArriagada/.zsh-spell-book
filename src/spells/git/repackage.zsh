@@ -1,19 +1,20 @@
-.repackage.validateNonDefaultBranch() {
-  ${zsb}.userWorkingOnDefaultBranch &&
-    ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
-}
-
-.repackage.validateCommitOffline() {
-  ${zsb}.isLastCommitOnline &&
-    ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use `hl --force` flag to do it anyway."
-}
-
-repackage() {
+repackage() (
   zparseopts -D -E -F -- -aware=aware -force=force -no-verify=noVerify || return 1
+  local this="$0"
 
-  [[ -z "$aware" ]] && .${0}.validateNonDefaultBranch
+  ${this}.validateNonDefaultBranch() {
+    ${zsb}.userWorkingOnDefaultBranch &&
+      ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
+  }
 
-  [[ -z "$force" ]] && .${0}.validateCommitOffline
+  ${this}.validateCommitOffline() {
+    ${zsb}.isLastCommitOnline &&
+      ${zsb}.throw "Can't repackage, HEAD commit has already been pushed online, use `hl --force` flag to do it anyway."
+  }
+
+  [[ -z "$aware" ]] && ${this}.validateNonDefaultBranch
+
+  [[ -z "$force" ]] && ${this}.validateCommitOffline
 
   [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
 
@@ -23,7 +24,7 @@ repackage() {
   else
     git commit --amend --gpg-sign ${noVerify} && ${zsb}.gitStatus
   fi
-}
+)
 
 hisIgnore repackage
 
