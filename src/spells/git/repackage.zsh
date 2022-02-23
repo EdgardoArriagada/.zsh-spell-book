@@ -23,11 +23,11 @@ repackage() (
   [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
 
   if [[ -n "$1" ]]; then
-    git commit --amend --gpg-sign --message "$*" ${noVerify} &&
+    amend --message "$*" ${noVerify} &&
       ${zsb}.gitStatus &&
       ${this}.warnUnintendedAddedFiles
   else
-    git commit --amend --gpg-sign --no-edit ${noVerify} &&
+    amend --no-edit ${noVerify} &&
       ${zsb}.gitStatus
   fi
 )
