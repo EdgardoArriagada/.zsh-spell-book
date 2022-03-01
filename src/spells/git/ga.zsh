@@ -100,7 +100,7 @@ _${zsb}.ga() {
   _describe 'command' newCompletion
 }
 
-hisIgnore ga
+hisIgnore ga 'ga .'
 
 compdef _${zsb}.ga ga
 

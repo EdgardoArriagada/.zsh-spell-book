@@ -3,5 +3,7 @@ gco() {
   git checkout "$@" && ${zsb}.gitStatus
 }
 
+hisIgnore gco 'gco .'
+
 compdef "_${zsb}.gitUnrepeat 'unstaged'" gco
 
