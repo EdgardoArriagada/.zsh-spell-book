@@ -4,7 +4,7 @@ createPr_defaultProps="--title WIP --body WIP"
 
 createPr() {
   ${zsb}.validateGitRepo
-  local parentBranch=${1:?'You must specific base branch'}
+  local parentBranch=${1:="$(parentBranch)"}
 
   if ${zsb}.userWorkingOnDefaultBranch; then
     ${zsb}.throw "Can't create a pull request on a default branch, use `hl --aware` flag to do it anyway"
