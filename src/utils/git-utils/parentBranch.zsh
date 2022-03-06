@@ -1,9 +1,11 @@
 parentBranch () {
   git log --first-parent --pretty='%D' \
+    | awk '(NR>1)' \
     | grep 'origin\/' \
     | sed 's/$/,/g' \
-    | sed 's/^tag: .*,//g' \
-    | head -2 \
-    | tail -1 \
-    | sed 's/,.*//g' | sed 's/origin\///g'
+    | perl -pe 's|tag: .+?,||g' \
+    | head -1 \
+    | sed 's/,.*//g' \
+    | sed 's/origin\///g' \
+    | xargs
 }
