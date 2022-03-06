@@ -1,6 +1,6 @@
 parentBranch () {
   git log --first-parent --pretty='%D' \
-    | awk '(NR>1)' \
+    | tail -n +2 \
     | rg 'origin/' \
     | sd '$' ',' \
     | sd 'tag: .+?,' '' \
