@@ -10,6 +10,8 @@ createPr() {
     ${zsb}.throw "Can't create a pull request on a default branch, use `hl --aware` flag to do it anyway"
   fi
 
+  [[ -z "$parentBranch" ]] && ${zsb}.throw "Couldn't retrieve parent branch info. Pass it manually"
+
   ${zsb}.warning "Pull request to `hl ${parentBranch}` from `hl $(git branch --show-current)`"
   ${zsb}.confirmMenu.withPrompt
 
