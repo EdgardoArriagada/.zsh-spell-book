@@ -33,6 +33,18 @@ vgh() ${zsb}.playMenuAndExecute "$0" "$__vgh_command" "$__vgh_dataGetter" "$@"
 _${zsb}.nocompletion cgh
 hisIgnore vgh
 
+__tigg_dataGetter='fd -t f'
+__tigg_command='tig'
+tigg() ${zsb}.playMenuAndExecute "$0" "$__tigg_command" "$__tigg_dataGetter" "$@"
+compdef "_${zsb}.playMenuAndExecute '${__tigg_dataGetter}'" tigg
+hisIgnore tigg
+
+__tiggh_dataGetter='fd -t f --hidden --no-ignore'
+__tiggh_command='tig'
+tiggh() ${zsb}.playMenuAndExecute "$0" "$__tiggh_command" "$__tiggh_dataGetter" "$@"
+_${zsb}.nocompletion cgh
+hisIgnore tiggh
+
 __cg_dataGetter='fd -t f'
 __cg_command='c'
 cg() ${zsb}.playMenuAndExecute "$0" "$__cg_command" "$__cg_dataGetter" "$@"
