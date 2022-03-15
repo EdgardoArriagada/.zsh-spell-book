@@ -22,16 +22,17 @@
     "Anidations",
     "Before",
     "Bounding",
+    "Childs",
     "Closest",
     "Debouncing",
-    "Drag",
-    "Elements",
-    "Props",
     "depends",
+    "Drag",
     "draggable",
     "draggables",
     "dragging",
+    "Elements",
     "height",
+    "Props",
     "self",
     "sidekiq",
     "tmpfs",
@@ -1057,6 +1058,9 @@
   },
   "editor.inlineSuggest.enabled": true,
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": true
+  "editor.guides.bracketPairs": true,
+  "github.copilot.enable": {
+    "*": true
+  }
 }
 
