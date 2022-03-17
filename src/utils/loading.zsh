@@ -1,9 +1,8 @@
-${zsb}.loadingBar() {
-  local -r seconds=${1:?'Amount of seconds expecte.'}
-  local timeFragment=$(($seconds / 20.0))
+loading() {
+  local -r seconds=${1:?'Amount of seconds expected.'}
+  local timeFragment=$(($seconds / 25.0))
 
   echo -ne '[>                    ]   (0%)\r'
-  sleep "$timeFragment"
   sleep "$timeFragment"
   echo -ne '[=>                   ]   (5%)\r'
   sleep "$timeFragment"
