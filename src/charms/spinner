@@ -1,0 +1,39 @@
+#!/bin/bash
+
+function shutdown() {
+  tput cnorm # reset cursor
+}
+
+trap shutdown EXIT
+
+function cursorBack() {
+  echo -en "\033[$1D"
+}
+
+function spinner() {
+  local LC_CTYPE=C
+
+  local pid=$1 # Process Id of the previous running command
+  shift 1
+  local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
+  local charwidth=3
+
+  local msg="$@"
+
+  local i=0
+  tput civis # cursor invisible
+  while kill -0 $pid 2>/dev/null; do
+    local i=$(((i + $charwidth) % ${#spin}))
+    printf "\r${spin:$i:$charwidth} \e[38;5;8m# ${msg}\033[0m"
+
+    cursorBack 1
+    sleep .1
+  done
+  tput cnorm
+  wait $pid # capture exit code
+  return $?
+}
+
+("$@") &
+
+spinner $! "$@"
