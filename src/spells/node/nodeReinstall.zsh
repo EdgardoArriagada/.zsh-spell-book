@@ -9,7 +9,7 @@ ${zsb}.nodeReinstall() {
   fi
 
   if [[ -z "$keepNodeModules" ]] && [[ -d node_modules ]]; then
-    spinner rm -rf node_modules && ${zsb}.info "$(hl 'node_modules') deleted"
+    spinner rm -rf node_modules
   fi
 
   [[ -n "$skipInstall" ]] &&
