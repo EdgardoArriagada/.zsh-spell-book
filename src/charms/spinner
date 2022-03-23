@@ -11,7 +11,7 @@ function makeCursorInvisible() {
 trap makeCursorVisible EXIT
 
 function spinner() {
-  local LC_CTYPE=C
+  local LC_CTYPE=C # spinner does noe behave weird
 
   local pid=$1 # Process Id of the previous running command
   shift 1
