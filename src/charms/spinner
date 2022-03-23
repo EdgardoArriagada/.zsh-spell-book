@@ -1,14 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-function shutdown() {
-  tput cnorm # reset cursor
+
+function makeCursorVisible() {
+  tput cnorm
 }
 
-trap shutdown EXIT
-
-function cursorBack() {
-  echo -en "\033[$1D"
+function makeCursorInvisible() {
+  tput civis
 }
+
+trap makeCursorVisible EXIT
 
 function spinner() {
   local LC_CTYPE=C
@@ -18,18 +19,21 @@ function spinner() {
   local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
   local charwidth=3
 
-  local msg="$@"
+  local msg="\e[38;5;8m# ${@}\033[0m"
+
+  makeCursorInvisible
 
   local i=0
-  tput civis # cursor invisible
   while kill -0 $pid 2>/dev/null; do
     local i=$(((i + $charwidth) % ${#spin}))
-    printf "\r${spin:$i:$charwidth} \e[38;5;8m# ${msg}\033[0m"
+    printf "\r${spin:$i:$charwidth} ${msg}"
 
-    cursorBack 1
     sleep .1
   done
-  tput cnorm
+  print "\rDone ${msg}"
+
+  makeCursorVisible
+
   wait $pid # capture exit code
   return $?
 }
