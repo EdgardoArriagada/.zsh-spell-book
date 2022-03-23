@@ -69,12 +69,6 @@ cdgh() ${zsb}.playMenuAndExecute "$0" "$__cdgh_command" "$__cdgh_dataGetter" "$@
 _${zsb}.nocompletion cdgh
 hisIgnore cdgh
 
-__cdgp_dataGetter='fd -t f'
-__cdgp_command='cdp'
-cdgp() ${zsb}.playMenuAndExecute "$0" "$__cdgp_command" "$__cdgp_dataGetter" "$@"
-_${zsb}.nocompletion cdgp
-hisIgnore cdgp
-
 __cdd_dataGetter='dirs -p'
 __cdd_command='cd'
 cdd() ${zsb}.playMenuAndExecute "$0" "$__cdd_command" "$__cdd_dataGetter" "$@"
