@@ -29,7 +29,7 @@ function spinner() {
 
     sleep .1
   done
-  print "\rDone ${msg}"
+  print "\r\e[38;5;2m✔\033[0m ${msg}"
 
   makeCursorVisible
 
