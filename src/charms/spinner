@@ -18,7 +18,7 @@ function spinner() {
   local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
   local charwidth=3
 
-  local msg="\e[38;5;8m# ${@}\033[0m"
+  local msg="\e[38;5;8m${@}\033[0m"
 
   makeCursorInvisible
 
