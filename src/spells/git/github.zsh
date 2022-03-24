@@ -5,13 +5,22 @@
 }
 
 github() {
+  zparseopts -D -E -F -- -compare=compare  || return 1
   local remoteUrl=`git config --get remote.origin.url`
 
-  ${zsb}.isUrl "$remoteUrl" && zsb_open "$remoteUrl" && return $?
+  local url
+  if ${zsb}.isUrl "$remoteUrl"; then
+    url="$remoteUrl"
+  else
+    url=`.${0}.getNormalUrlFromSshUrl "$remoteUrl"`
+  fi
 
-  zsb_open `.${0}.getNormalUrlFromSshUrl "$remoteUrl"`
+  local tail
+  [[ -n "$compare" ]] && tail="/compare/$(git branch --show-current)"
+
+  zsb_open "${url}${tail}"
 }
 
-hisIgnore github
+hisIgnore 'github' 'github --compare'
 
-_${zsb}.nocompletion github
+compdef "_${zsb}.nonRepeatedList --compare" github
