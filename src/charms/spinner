@@ -22,7 +22,6 @@ function spinner() {
   local LC_CTYPE=C # spinner does noe behave weird
 
   local pid=$1 # Process Id of the previous running command
-  shift 1
   local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
   local charwidth=3
 
@@ -53,4 +52,4 @@ function spinner() {
 
 ("$@") &
 
-spinner $! "$@"
+spinner $!
