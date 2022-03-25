@@ -28,9 +28,8 @@ function spinner() {
 
   makeCursorInvisible
 
-  printf "  ${msg}"
-
   local i=0
+  printf "  ${msg}"
   while kill -0 $pid 2>/dev/null; do
     local i=$(((i + $charwidth) % ${#spin}))
     printf "\r${spin:$i:$charwidth}"
@@ -43,9 +42,9 @@ function spinner() {
   local exitCode=$?
   finished=true
   if (( $exitCode )); then
-    printf "\r\e[38;5;1m✘\033[0m\n"
+    printf "\r\e[38;5;1m✘\033[0m ${msg}\n"
   else
-    printf "\r\e[38;5;2m✔\033[0m\n"
+    printf "\r\e[38;5;2m✔\033[0m ${msg}\n"
   fi
 
   makeCursorVisible
