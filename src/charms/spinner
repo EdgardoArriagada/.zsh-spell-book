@@ -1,4 +1,7 @@
-#!/usr/bin/env zsh
+#!/bin/bash
+
+declare msg="\e[38;5;8m${@}\033[0m"
+declare finished=false
 
 function makeCursorVisible() {
   tput cnorm
@@ -8,7 +11,12 @@ function makeCursorInvisible() {
   tput civis
 }
 
-trap makeCursorVisible EXIT
+function shutdown() {
+  makeCursorVisible
+  ! "$finished" && printf "\r! ${msg}"
+}
+
+trap shutdown EXIT
 
 function spinner() {
   local LC_CTYPE=C # spinner does noe behave weird
@@ -18,23 +26,30 @@ function spinner() {
   local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
   local charwidth=3
 
-  local msg="\e[38;5;8m${@}\033[0m"
-
   makeCursorInvisible
+
+  printf "  ${msg}"
 
   local i=0
   while kill -0 $pid 2>/dev/null; do
     local i=$(((i + $charwidth) % ${#spin}))
-    printf "\r${spin:$i:$charwidth} ${msg}"
+    printf "\r${spin:$i:$charwidth}"
 
     sleep .1
   done
-  print "\r\e[38;5;2m✔\033[0m ${msg}"
 
-  makeCursorVisible
 
   wait $pid # capture exit code
-  return $?
+  local exitCode=$?
+  finished=true
+  if (( $exitCode )); then
+    printf "\r\e[38;5;1m✘\033[0m\n"
+  else
+    printf "\r\e[38;5;2m✔\033[0m\n"
+  fi
+
+  makeCursorVisible
+  return $exitCode
 }
 
 ("$@") &
