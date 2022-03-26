@@ -2,7 +2,6 @@
 
 declare msg="\e[38;5;8m${@}\033[0m"
 declare inputCommandCancelled=true
-declare spinnerPid
 declare inputCommandExitCode
 
 function makeCursorVisible() {
@@ -11,13 +10,6 @@ function makeCursorVisible() {
 
 function makeCursorInvisible() {
   tput civis
-}
-
-function killSpinner() {
-  # 'sleep' give a chance for spinner to appear before killing it
-  sleep .1
-  kill $spinnerPid
-  wait $! 2>/dev/null
 }
 
 function printEndMessage() {
@@ -32,7 +24,6 @@ function printEndMessage() {
 }
 
 function shutdown() {
-  killSpinner
   printEndMessage
   makeCursorVisible
 }
@@ -44,7 +35,7 @@ function spinner() {
   local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
 
   local i=0
-  while true; do
+  while kill -0 $inputCommandPid 2>/dev/null; do
     printf "\r${spinnerChars[$i]}"
     sleep .1
 
@@ -58,8 +49,7 @@ declare inputCommandPid=$!
 makeCursorInvisible
 printf "  ${msg}"
 
-spinner &
-spinnerPid=$!
+spinner
 
 wait $inputCommandPid
 inputCommandExitCode=$?
