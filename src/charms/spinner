@@ -1,7 +1,9 @@
 #!/bin/bash
 
 declare msg="\e[38;5;8m${@}\033[0m"
-declare finished=false
+declare inputCommandCancelled=true
+declare spinnerPid
+declare inputCommandExitCode
 
 function makeCursorVisible() {
   tput cnorm
@@ -11,9 +13,26 @@ function makeCursorInvisible() {
   tput civis
 }
 
+function killSpinner() {
+  kill $spinnerPid
+  wait $! 2>/dev/null
+}
+
+function printEndMessage() {
+  "$inputCommandCancelled" && printf "\r! ${msg}\n" && \
+    return 0
+
+  (( $inputCommandExitCode )) && \
+    printf "\r\e[38;5;1m✘\033[0m ${msg}\n" && \
+    return 0
+
+  printf "\r\e[38;5;2m✔\033[0m ${msg}\n"
+}
+
 function shutdown() {
+  killSpinner
+  printEndMessage
   makeCursorVisible
-  ! "$finished" && printf "\r! ${msg}"
 }
 
 trap shutdown EXIT
@@ -21,35 +40,29 @@ trap shutdown EXIT
 function spinner() {
   local LC_CTYPE=C # spinner does noe behave weird
 
-  local pid=$1 # Process Id of the previous running command
   local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
   local charwidth=3
 
-  makeCursorInvisible
-
   local i=0
-  printf "  ${msg}"
-  while kill -0 $pid 2>/dev/null; do
-    local i=$(((i + $charwidth) % ${#spin}))
+  while true; do
+    i=$(((i + $charwidth) % ${#spin}))
     printf "\r${spin:$i:$charwidth}"
 
     sleep .1
   done
-
-
-  wait $pid # capture exit code
-  local exitCode=$?
-  finished=true
-  if (( $exitCode )); then
-    printf "\r\e[38;5;1m✘\033[0m ${msg}\n"
-  else
-    printf "\r\e[38;5;2m✔\033[0m ${msg}\n"
-  fi
-
-  makeCursorVisible
-  return $exitCode
 }
 
 ("$@") &
+declare inputCommandPid=$!
 
-spinner $!
+makeCursorInvisible
+printf "  ${msg}"
+
+spinner &
+spinnerPid=$!
+
+wait $inputCommandPid
+inputCommandExitCode=$?
+inputCommandCancelled=false
+
+exit $inputCommandExitCode
