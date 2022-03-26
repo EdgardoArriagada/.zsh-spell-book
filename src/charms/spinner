@@ -38,8 +38,6 @@ function shutdown() {
 trap shutdown EXIT
 
 function spinner() {
-  local LC_CTYPE=C # spinner does noe behave weird
-
   local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
   local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
 
