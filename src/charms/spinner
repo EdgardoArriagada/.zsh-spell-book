@@ -40,15 +40,15 @@ trap shutdown EXIT
 function spinner() {
   local LC_CTYPE=C # spinner does noe behave weird
 
-  local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
-  local charwidth=3
+  local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
+  local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
 
   local i=0
   while true; do
-    i=$(((i + $charwidth) % ${#spin}))
-    printf "\r${spin:$i:$charwidth}"
-
+    printf "\r${spinnerChars[$i]}"
     sleep .1
+
+    [[ "$i" = "$spinLenMinusOne" ]] && i=0 || : $((i++))
   done
 }
 
