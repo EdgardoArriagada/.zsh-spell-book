@@ -13,7 +13,8 @@ function makeCursorInvisible() {
 }
 
 function printEndMessage() {
-  "$inputCommandCancelled" && printf "\r! ${msg}\n" && \
+  "$inputCommandCancelled" && \
+    printf "\r\e[38;5;3m⚠\033[0m ${msg}" && \
     return 0
 
   (( $inputCommandExitCode )) && \
