@@ -1061,6 +1061,7 @@
   "editor.guides.bracketPairs": true,
   "github.copilot.enable": {
     "*": true
-  }
+  },
+  "editor.accessibilitySupport": "off"
 }
 
