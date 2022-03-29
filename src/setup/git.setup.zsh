@@ -3,6 +3,7 @@ if git --version >/dev/null 2>&1; then
 
   git config --global core.editor "vim"
   git config --global --replace-all core.excludesfile ${ZSB_DIR}/src/dotFiles/git/global.gitignore
+  git config --global pull.rebase false
 
   git config --global pager.branch false # print branch info instead of "less" it
   git config --global pager.diff 'delta | less'
