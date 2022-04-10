@@ -1,18 +1,19 @@
-${zsb}.current.getDir() print ${ZSB_TICKETS_DIR}/${ZSB_CURRENT_TICKET}
+${zsb}.current.getDir() print ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
 
 ${zsb}.current.validate() {
   ${zsb}.validate 'ZSB_TICKETS_DIR'
   ${zsb}.validate 'ZSB_CURRENT_TICKET'
+  ${zsb}.validate 'ZSB_PARENT_TICKET'
 }
 
 ${zsb}_createCurrentDir() {
   ${zsb}.current.validate
 
-  local current_ticket_dir=`${zsb}.current.getDir`
+  local parentTicketDir=`${zsb}.current.getDir`
 
-  [[ ! -d ${current_ticket_dir} ]] && \
-    mkdir -p ${current_ticket_dir} && \
-      (builtin cd ${current_ticket_dir} && git init);
+  [[ ! -d ${parentTicketDir} ]] && \
+    mkdir -p ${parentTicketDir} && \
+      (builtin cd ${parentTicketDir} && git init);
 
   return 0
 }
