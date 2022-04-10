@@ -1,13 +1,7 @@
 ${zsb}.current.getDir() print ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
 
-${zsb}.current.validate() {
-  ${zsb}.validate 'ZSB_TICKETS_DIR'
-  ${zsb}.validate 'ZSB_CURRENT_TICKET'
-  ${zsb}.validate 'ZSB_PARENT_TICKET'
-}
-
 ${zsb}_createCurrentDir() {
-  ${zsb}.current.validate
+  ${zsb}.validateJira
 
   local parentTicketDir=`${zsb}.current.getDir`
 
