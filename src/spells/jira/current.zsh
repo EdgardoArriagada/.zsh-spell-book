@@ -23,6 +23,6 @@ pomodorocurrent() {
   ${zsb}.validate 'ZSB_CURRENT_TICKET'
   local inputTime="$1"
   shift 1
-  ${zsb}.info "Current ticket: `hl ${ZSB_CURRENT_TICKET}`"
-  pomodoro "$inputTime" "$ZSB_CURRENT_TICKET" "${ZSB_CURRENT_LABEL} ${*}"
+  ${zsb}.info "`hl ${ZSB_CURRENT_TICKET}` ${ZSB_CURRENT_LABEL}"
+  pomodoro "$inputTime" "$ZSB_CURRENT_TICKET" "${ZSB_CURRENT_LABEL}"
 }

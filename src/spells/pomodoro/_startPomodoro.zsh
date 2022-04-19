@@ -25,8 +25,7 @@ ${zsb}.pomodoro.startPomodoro() (
       beginString="Session for"
       return 0
     fi
-    local uppercaseLabel="${(C)label}"
-    beginString="${uppercaseLabel} for"
+    beginString="${label} for"
   }
 
   ${this}.setThisMonthFolder() {
@@ -39,7 +38,7 @@ ${zsb}.pomodoro.startPomodoro() (
 
   ${this}.appendPomodoroInfoToLog() {
     local verb="$1" # stared | ended
-    logToZsb "${beginString} $inputTime $verb at $(${this}.generateDate)" "$thisMonthFolder"
+    logToZsb "${beginString} ${inputTime} ${verb} at $(${this}.generateDate)" "$thisMonthFolder"
   }
 
   ${this}.generateDate() echo $(date +%H:%M:%S)
