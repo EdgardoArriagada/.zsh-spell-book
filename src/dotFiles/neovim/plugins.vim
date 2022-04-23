@@ -6,7 +6,6 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'asvetliakov/vim-easymotion'
   else
     Plug 'ThePrimeagen/vim-be-good', { 'on': 'VimBeGood' }
-    Plug 'fatih/vim-go', { 'tag': '*' }
     Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
     Plug 'mileszs/ack.vim'
     Plug 'tpope/vim-fugitive'
