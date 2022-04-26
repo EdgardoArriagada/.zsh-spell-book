@@ -39,3 +39,9 @@ ${zsb}.confirmMenu.withPrompt() {
   ${zsb}.confirmMenu
 }
 
+${zsb}.confirmMenu.warning() {
+  ${zsb}.warning "$@"
+
+  ${zsb}.confirmMenu.withPrompt
+}
+
