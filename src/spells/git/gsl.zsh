@@ -5,8 +5,7 @@ gsl() {
   [[ -z "$stashList" ]] && ${zsb}.cancel "$gslEmptyMsg"
 
   if [[ "$1" = "--clear" ]]; then
-    ${zsb}.warning "You are about to clear the `hl 'git stash list'`"
-    ${zsb}.confirmMenu.withPrompt
+    ${zsb}.confirmMenu.warning "You are about to clear the `hl 'git stash list'`"
 
     git stash clear && ${zsb}.success "$gslEmptyMsg"
     return 0
