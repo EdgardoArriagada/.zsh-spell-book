@@ -26,20 +26,11 @@ tmkill() (
   }
 
   ${this}.playMenu() {
-    ${this}.printPrompt
-    ${this}.killTmuxServerOnConfirm
-  }
+    ${zsb}.confirmMenu.withItems \
+      "The following tmux sessions will be deleted:" \
+      "$activeTmuxSessions"
 
-  ${this}.printPrompt() {
-    ${zsb}.warning "The following tmux sessions will be deleted:"
-    echo " "
-    echo "$(hl "$activeTmuxSessions")"
-    echo " "
-    ${zsb}.prompt "Do you really want to delete these sessions? [Y/n]."
-  }
-
-  ${this}.killTmuxServerOnConfirm() {
-    ${zsb}.confirmMenu && ${this}.killTmuxServer &&
+    ${this}.killTmuxServer &&
       ${zsb}.success "All tmux sessions have been deleted."
   }
 

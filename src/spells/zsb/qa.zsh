@@ -13,7 +13,7 @@ qa() (
 
   if [[ -f $resultFile ]]; then
     ${zsb}.prompt "Do you want to delete $(hl $resultFile)? [Y/n]"
-    ${zsb}.confirmMenu.continued && rm $resultFile
+    ${zsb}.confirmMenu && rm $resultFile
   fi
 
   zmodload zsh/mapfile

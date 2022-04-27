@@ -4,22 +4,14 @@ ${zsb}.confirmMenu() {
 
     case $yn in
       [Yy]*) return 0 ;;
-      [Nn]*) ${zsb}.cancel "Cancelled." ;;
+      [Nn]*) return 1 ;;
       *) ${zsb}.prompt "Please answer yes or no" ;;
     esac
   done
 }
 
-${zsb}.confirmMenu.continued() {
-  while true; do
-    read yn
-
-    case $yn in
-      [Yy]*) return 0 ;;
-      [Nn]*) return 1 ;;
-      *) ${zsb}.prompt "Please answer yes or no" ;;
-    esac
-  done
+${zsb}.confirmMenu.withCancel() {
+  ${zsb}.confirmMenu || ${zsb}.cancel "Cancelled."
 }
 
 ${zsb}.confirmMenu.withItems() {
@@ -36,7 +28,7 @@ ${zsb}.confirmMenu.withItems() {
 
 ${zsb}.confirmMenu.withPrompt() {
   ${zsb}.prompt "Are you sure? $(hl "[Y/n]")"
-  ${zsb}.confirmMenu
+  ${zsb}.confirmMenu.withCancel
 }
 
 ${zsb}.confirmMenu.warning() {
@@ -44,4 +36,3 @@ ${zsb}.confirmMenu.warning() {
 
   ${zsb}.confirmMenu.withPrompt
 }
-
