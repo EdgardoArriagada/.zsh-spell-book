@@ -33,6 +33,6 @@ ${zsb}.confirmMenu.withPrompt() {
 
 ${zsb}.confirmMenu.warning() {
   ${zsb}.warning "$@"
-
+  echo " "
   ${zsb}.confirmMenu.withPrompt
 }
