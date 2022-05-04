@@ -21,6 +21,6 @@ github() {
   zsb_open "${url}${tail}"
 }
 
-hisIgnore 'github' 'github --compare'
+hisIgnore 'github'
 
 compdef "_${zsb}.nonRepeatedList --compare" github
