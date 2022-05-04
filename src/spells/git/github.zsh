@@ -1,6 +1,6 @@
 .github.getNormalUrlFromSshUrl() {
   local input="${1:4}"
-  local formattedInput=`printf "$input" | sed 's/:/\//g' | sed 's/\.git$//g'`
+  local formattedInput=`printf "$input" | sd ':' '/' | sd '.git$' ''`
   printf "https://${formattedInput}"
 }
 
