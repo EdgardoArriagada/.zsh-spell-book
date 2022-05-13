@@ -1,10 +1,6 @@
-gswm() {
-  if git rev-parse --verify master >/dev/null 2>&1; then
-    git switch master; return $?
-  fi
+_gswm.switch() git switch ${1} >/dev/null 2>&1
 
-  git switch main
-}
+gswm() { _gswm.switch 'main' ||  _gswm.switch 'master'; }
 
 hisIgnore gswm
 
