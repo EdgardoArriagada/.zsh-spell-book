@@ -1,10 +1,4 @@
-ggl() {
-  local currentBranch=`git_current_branch`
-
-  ${zsb}.info "Pulling from `hl ${currentBranch}`"
-
-  git pull origin "$currentBranch"
-}
+ggl() { spinner git pull origin `git_current_branch`; }
 
 hisIgnore ggl
 
