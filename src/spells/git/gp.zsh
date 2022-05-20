@@ -8,6 +8,8 @@ gp() {
     ${zsb}.throw "It's not safe to push to default branch, use $(hl --aware) flag to do it anyway."
   fi
 
+  ${zsb}.info "Pushing to `hl ${inputRemoteBranch}`"
+  printf "...\n"
   git push origin "$inputRemoteBranch" "$@"
 }
 
