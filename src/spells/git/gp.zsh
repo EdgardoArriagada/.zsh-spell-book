@@ -9,7 +9,6 @@ gp() {
   fi
 
   ${zsb}.info "Pushing to `hl ${inputRemoteBranch}`"
-  printf "...\n"
   git push origin "$inputRemoteBranch" "$@"
 }
 
