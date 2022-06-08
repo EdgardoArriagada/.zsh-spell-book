@@ -1,3 +1,6 @@
+# Write to history as soon as input gets entered
+setopt INC_APPEND_HISTORY
+
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1
@@ -85,7 +88,7 @@ bindkey -M visual 'a' escape-from-zero-visual
 bindkey -M visual 'I' escape-from-zero-visual
 bindkey -M visual 'A' escape-from-zero-visual
 
-declare ZSB_HISTORY_IGNORE=('l[a,l,s,h,]*' l neofetch)
+declare ZSB_HISTORY_IGNORE=('l[a,l,s,h,]*' 'l' 'neofetch' ' *')
 
 hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
 
