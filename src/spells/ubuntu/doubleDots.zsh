@@ -1,2 +1,0 @@
-..() { builtin cd .. && ls }
-hisIgnore '..'
