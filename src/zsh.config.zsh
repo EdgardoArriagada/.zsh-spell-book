@@ -2,6 +2,19 @@
 bindkey -v
 export KEYTIMEOUT=1
 
+# completion
+autoload -Uz compinit
+compinit
+
+autoload -U bashcompinit
+bashcompinit
+
+zstyle ':completion:*' matcher-list \
+    'm:{[:lower:]}={[:upper:]}' \
+    '+r:|[._-]=* r:|=*' \
+    '+l:|=*'
+
+# allow to use throw
 autoload throw catch
 
 # Partial tab completion color
@@ -71,12 +84,6 @@ bindkey -M visual 'i' escape-from-zero-visual
 bindkey -M visual 'a' escape-from-zero-visual
 bindkey -M visual 'I' escape-from-zero-visual
 bindkey -M visual 'A' escape-from-zero-visual
-
-prompt_context() {
-  local emojis=( '⚡️' '🔥' '💀' '🦄' '🌈' '🚀' '🌙' '🌎' '🌞' )
-  local RAND_EMOJI_N=$(( $RANDOM % ${#emojis[@]} + 1))
-  prompt_segment black default "${emojis[$RAND_EMOJI_N]}"
-}
 
 declare ZSB_HISTORY_IGNORE=('l[a,l,s,h,]*' l neofetch)
 

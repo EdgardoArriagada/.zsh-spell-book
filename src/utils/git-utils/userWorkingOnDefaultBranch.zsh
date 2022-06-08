@@ -1,2 +1,2 @@
-${zsb}.userWorkingOnDefaultBranch() ${zsb}.isDefaultBranch `git_current_branch`
+${zsb}.userWorkingOnDefaultBranch() ${zsb}.isDefaultBranch `git branch --show-current`
 

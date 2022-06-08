@@ -1,3 +1,3 @@
 alias vim="nvim"
-alias nnvim="nvm --version && nvim"
+alias nnvim="nvim"
 
