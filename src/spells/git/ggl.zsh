@@ -1,4 +1,4 @@
-ggl() { spinner git pull origin `git_current_branch`; }
+ggl() { spinner git pull origin `git branch --show-current`; }
 
 hisIgnore ggl
 
