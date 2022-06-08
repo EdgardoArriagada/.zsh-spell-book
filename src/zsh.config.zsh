@@ -88,7 +88,13 @@ bindkey -M visual 'a' escape-from-zero-visual
 bindkey -M visual 'I' escape-from-zero-visual
 bindkey -M visual 'A' escape-from-zero-visual
 
-declare ZSB_HISTORY_IGNORE=('l[a,l,s,h,]*' 'l' 'neofetch' ' *')
+# Initialize hisignore with some stuff to ignore already
+declare ZSB_HISTORY_IGNORE=(
+  'l[a,l,s,h,]*'
+  'neofetch'
+  ' *'
+  'l'
+)
 
 hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
 
