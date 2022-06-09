@@ -2,4 +2,4 @@
 stty stop undef
 
 # Editor for `fc` command
-FCEDIT=nnvim
+FCEDIT=nvim
