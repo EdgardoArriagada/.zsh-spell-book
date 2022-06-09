@@ -80,9 +80,11 @@ bindkey -M viins '^e' end-of-line
 bindkey -M viins '^[d' kill-word
 bindkey -M viins '^w' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
-bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 bindkey -M viins '^s' push-line
 
+# Workarouds
+bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
+bindkey "^?" backward-delete-char # makes backspace work as normal when reentering to ins mode in the middle of the command
 bindkey -M visual 'i' escape-from-zero-visual
 bindkey -M visual 'a' escape-from-zero-visual
 bindkey -M visual 'I' escape-from-zero-visual
