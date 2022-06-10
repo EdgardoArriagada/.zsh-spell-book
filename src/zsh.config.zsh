@@ -1,3 +1,10 @@
+# Editor for `fc` command
+FCEDIT=nvim
+
+# Disable suspend the output "feature"
+stty stop undef # disables C-s
+stty start '^-' stop '^-' # disables C-q
+
 # Write to history as soon as input gets entered
 setopt INC_APPEND_HISTORY
 

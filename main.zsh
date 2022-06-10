@@ -8,7 +8,6 @@ ZSB_SNAPSHOT_PATH="$PATH"
   local -r envFile=${ZSB_DIR}/.env
   [[ -f $envFile ]] && source $envFile
 
-  source ${ZSB_DIR}/src/shell.config.zsh
   source ${ZSB_DIR}/src/zsh.config.zsh
 
   # Dynamic prefix
