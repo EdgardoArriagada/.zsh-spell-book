@@ -8,6 +8,9 @@ stty start '^-' stop '^-' # disables C-q
 # Write to history as soon as input gets entered
 setopt INC_APPEND_HISTORY
 
+# prevent unknown commands to be output to the history
+zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
+
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1
