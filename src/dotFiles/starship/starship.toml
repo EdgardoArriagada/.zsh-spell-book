@@ -28,6 +28,11 @@ $time\
 # Disable the blank line at the start of the prompt
 add_newline = false
 
+[character]
+success_symbol = "[❯](#33658A)"
+vicmd_symbol = "[❮](#33658A)"
+error_symbol = "[❯](#FCA17D)"
+
 # You can also replace your username with a neat symbol like  to save some space
 [username]
 show_always = true
