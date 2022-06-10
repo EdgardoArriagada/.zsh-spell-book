@@ -5,7 +5,6 @@ $username\
 $directory\
 [](fg:#DA627D bg:#FCA17D)\
 $git_branch\
-$git_status\
 [](fg:#FCA17D bg:#86BBD8)\
 $c\
 $elixir\
@@ -21,11 +20,13 @@ $rust\
 $docker_context\
 [](fg:#06969A bg:#33658A)\
 $time\
-[ ](fg:#33658A)\
+[](fg:#33658A)\
+(\n$git_status)\
+\n$character\
 """
 
 # Disable the blank line at the start of the prompt
-# add_newline = false
+add_newline = false
 
 # You can also replace your username with a neat symbol like  to save some space
 [username]
@@ -79,8 +80,17 @@ style = "bg:#FCA17D"
 format = '[[ $symbol $branch ](bg:#FCA17D)]($style)'
 
 [git_status]
-style = "bg:#FCA17D"
-format = '[[($all_status$ahead_behind )](bg:#FCA17D)]($style)'
+conflicted = "🔴"
+ahead = "🦄"
+behind = "💀"
+diverged = "🔁"
+untracked = "𐍈"
+stashed = "𐍈"
+modified = "𐍈"
+staged = "𐍈"
+renamed = "𐍈"
+deleted = "𐍈"
+format = "$all_status$ahead_behind"
 
 [golang]
 symbol = " "
