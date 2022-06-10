@@ -81,15 +81,15 @@ format = '[[ $symbol $branch ](bg:#FCA17D)]($style)'
 
 [git_status]
 conflicted = "🔴"
-ahead = "🦄"
+ahead = "🚀"
 behind = "💀"
 diverged = "🔁"
-untracked = "𐍈"
-stashed = "𐍈"
-modified = "𐍈"
-staged = "𐍈"
-renamed = "𐍈"
-deleted = "𐍈"
+untracked = "𐍈𐍈"
+stashed = ""
+modified = "𐍈𐍈"
+staged = "𐍈𐍈"
+renamed = "𐍈𐍈"
+deleted = "𐍈𐍈"
 format = "$all_status$ahead_behind"
 
 [golang]
