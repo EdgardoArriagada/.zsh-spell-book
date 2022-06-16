@@ -3,7 +3,7 @@ set -o errexit
 set -o pipefail
 
 if (( $ZSB_MACOS )); then
- print "$@" | pbcopy
+ pbcopy < "${1:-/dev/stdin}";
 else
  print "$@" | xclip -selection clipboard
 fi

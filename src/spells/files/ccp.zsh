@@ -1,0 +1,1 @@
+ccp() { < ${*} | zsb_clipcopy }
