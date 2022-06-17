@@ -2,6 +2,7 @@ heimdall() {
   zparseopts -D -E -F -- v=vim || return 1
 
   local arg="$1"
+  shift 1
 
   if [[ -z "$arg" ]]; then
     print -z "${0} `.heimdall.chooseRequest | fzf`"; return $?
@@ -11,7 +12,7 @@ heimdall() {
     eval "nnvim ~/heimdall/${arg}.zsh"; return 0
   fi
 
-  local response=`source ~/heimdall/${arg}.zsh`
+  local response=`source ~/heimdall/${arg}.zsh ${@}`
   [[ -z "$response" ]] && return 1
 
   # avoid printing hr output when redirecting to a file
