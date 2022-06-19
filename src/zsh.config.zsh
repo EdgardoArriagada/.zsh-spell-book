@@ -112,3 +112,22 @@ hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
 
 # the following line should be applied as an automatic call
 # export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})"
+#
+# Alien prompt https://github.com/eendroroy/alien
+#
+source ~/alien/alien.zsh
+
+export ALIEN_SECTIONS_LEFT=(
+  exit
+  battery
+  path
+  vcs_branch:async
+  vcs_status:async
+  vcs_dirty:async
+  newline
+  ssh
+  venv
+  prompt
+)
+
+export ALIEN_THEME="gruvbox"
