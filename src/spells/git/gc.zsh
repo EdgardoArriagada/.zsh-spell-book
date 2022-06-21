@@ -8,8 +8,6 @@ gc() {
     ${zsb}.throw "Can't commit into default branch, use `hl --aware` flag to do it anyway"
   fi
 
-  [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
-
   if [[ -z "$1" ]]; then
     git commit --gpg-sign ${noVerify} || return 1
   else

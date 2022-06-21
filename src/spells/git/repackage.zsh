@@ -20,8 +20,6 @@ repackage() (
 
   [[ -z "$force" ]] && ${this}.validateCommitOffline
 
-  [[ -z "$noVerify" ]] && ${zsb}.activateNvmIfHusky
-
   if [[ -n "$1" ]]; then
     amend --message "$*" ${noVerify} &&
       ${zsb}.gitStatus &&
