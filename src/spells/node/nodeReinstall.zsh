@@ -15,9 +15,7 @@ ${zsb}.nodeReinstall() {
   [[ -n "$skipInstall" ]] &&
     ${zsb}.cancel "Installation cancelled"
 
-  # BUG: npm always tries to acess to ${zsb}.lazyLoad inside a bash function
-  # eval is a workaround
-  eval "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
+  ${packageManager} install && ${zsb}.isGitRepo && ${zsb}.gitStatus
 
   alert "DONE: '${packageManager} install'"
 }
