@@ -1,9 +1,4 @@
-cd() {
-  builtin cd $1 && ls
-
-  [[ -f .nvmrc ]] && ${zsb}.useCachedNodeVersion
-  return 0
-}
+cd() { builtin cd ${1} && ls; }
 
 hisIgnore cd
 

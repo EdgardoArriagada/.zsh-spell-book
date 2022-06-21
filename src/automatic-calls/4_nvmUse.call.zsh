@@ -1,1 +1,0 @@
-[[ -f .nvmrc ]] && ${zsb}.useCachedNodeVersion
