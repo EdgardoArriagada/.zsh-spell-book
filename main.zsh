@@ -6,7 +6,7 @@ ZSB_SNAPSHOT_PATH="$PATH"
 () {
   # Source environment variables
   local -r envFile=${ZSB_DIR}/.env
-  [[ -f $envFile ]] && source $envFile
+  [[ -f ${envFile} ]] && source ${envFile}
 
   source ${ZSB_DIR}/src/zsh.config.zsh
 
@@ -26,15 +26,15 @@ ZSB_SNAPSHOT_PATH="$PATH"
   ${zsb}.sourceFiles() for file in $*; do source "$file"; done
 
   # Source files in this specific order
-  ${zsb}.sourceFiles $utilFiles
-  ${zsb}.sourceFiles $configurationFiles
-  ${zsb}.sourceFiles $spellPages
+  ${zsb}.sourceFiles ${utilFiles}
+  ${zsb}.sourceFiles ${configurationFiles}
+  ${zsb}.sourceFiles ${spellPages}
 
   # Temporal Spells
   local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
-  [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles $tempSpells
+  [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles ${tempSpells}
 
-  ${zsb}.sourceFiles $automaticCallFiles
+  ${zsb}.sourceFiles ${automaticCallFiles}
 }
 
 # Remove dynamic prefixed functions
