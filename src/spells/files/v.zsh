@@ -17,7 +17,7 @@ v() {
     |*.jpeg \
     |*.svg) (( $ZSB_MACOS )) && open "$file" || sxiv -f "$file" ;;
 
-    *) eval "nnvim ${file}" && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
+    *) nvim ${file} && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
 }
 

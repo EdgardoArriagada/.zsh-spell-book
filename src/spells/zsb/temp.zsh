@@ -7,12 +7,12 @@ ${zsb}.temp() {
 
   mkdir -p ${tempDir}
 
-  eval "${callback} ${tempDir}"
+  ${callback} ${tempDir}
 }
 
 _${zsb}.nocompletion modifyTemp
 
 alias cdtemp="${zsb}.temp cds"
-alias vtemp="${zsb}.temp nnvim"
+alias vtemp="${zsb}.temp nvim"
 
 hisIgnore cdtemp vtemp

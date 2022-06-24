@@ -9,7 +9,7 @@ heimdall() {
   fi
 
   if [[ -n "$vim" ]]; then
-    eval "nnvim ~/heimdall/${arg}.zsh"; return 0
+    nvim ~/heimdall/${arg}.zsh; return 0
   fi
 
   local response=`source ~/heimdall/${arg}.zsh ${@}`
