@@ -1,5 +1,5 @@
 alias npmls="npm ls --depth 0"
-alias npkill="npx npkill"
+alias npkill="printAndRun 'npx npkill'"
 alias pyarn="npm install --global yarn"
 alias pnest="npm install --global @nestjs/cli"
 alias npmi="printAndRun 'npm install'; alert DONE 'npm install'"
