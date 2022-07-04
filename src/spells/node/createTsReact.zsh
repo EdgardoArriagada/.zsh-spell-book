@@ -5,8 +5,7 @@ createTsReact() {
   [[ -d $projectName ]] && ${zsb}.throw "$(hl "$1") is already a dir."
   eval "npx create-react-app ${projectName} --template typescript" && \
     cd ${projectName} && \
-    eval "yarn add -D prettier" && \
-    prettierInit && \
+    prettier --init && \
     alert -i 'face-cool' "Happy Hacking" && \
     return 0
 
