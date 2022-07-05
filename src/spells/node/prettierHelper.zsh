@@ -1,4 +1,4 @@
-prettier() {
+prettierHelper() {
   zparseopts -D -E -F -- \
     -init=init \
     -install=install \
@@ -6,23 +6,23 @@ prettier() {
     || return 1
 
   if [[ -n "$init" ]]; then
-    _prettier.install
-    _prettier.file
+    _prettierHelper.install
+    _prettierHelper.file
     return
   fi
 
   if [[ -n "$install" ]]; then
-    _prettier.install
+    _prettierHelper.install
     return
   fi
 
   if [[ -n "$file" ]]; then
-    _prettier.file
+    _prettierHelper.file
     return
   fi
 }
 
-_prettier.file() {
+_prettierHelper.file() {
   local -r prettierFile=.prettierrc.yaml
   print "trailingComma: \"es5\"
 tabWidth: 2
@@ -33,7 +33,7 @@ singleQuote: true
   zsb_cat ${prettierFile}
 }
 
-_prettier.install() {
+_prettierHelper.install() {
   printAndRun 'npm install --save-dev --save-exact prettier'
 }
 
@@ -41,5 +41,5 @@ compdef "_${zsb}.nonRepeatedListD \
   '--init:install and create prettier .prettierrc.yaml' \
   '--install:install prettier' \
   '--file:create .prettierrc.yaml file' \
-  " prettier
+  " prettierHelper
 
