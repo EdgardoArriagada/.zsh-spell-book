@@ -1,0 +1,1 @@
+alias n="neovide --multigrid"
