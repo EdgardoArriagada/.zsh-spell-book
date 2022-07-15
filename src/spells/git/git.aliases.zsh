@@ -8,7 +8,7 @@ alias gsp='git status --porcelain=v2'
 hisIgnore gswd gs pop amend glog gsp
 
 alias gst='git status'
-alias gf='git fetch'
+alias gf='spinner git fetch'
 alias gsh='git show'
 alias prv='gh pr view --web'
 alias vpr='prv'
