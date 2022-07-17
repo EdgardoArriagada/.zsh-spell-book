@@ -44,7 +44,7 @@ ${zsb}.updateGroup() (
     while [[ "$continueUpdating" == "0" ]]; do
       ${this}.setCurrentBranch
 
-      if ${this}.isRepoInCleanState; then
+      if ${this}.isEligibleForUpdate; then
         ${this}.printCleanHeader
         ${this}.updateRepo
         return 0
@@ -55,9 +55,8 @@ ${zsb}.updateGroup() (
     done
   }
 
-  ${this}.isRepoInCleanState() {
-    local -r gitStatusOutput=$(script -qc "git status --short" /dev/null < /dev/null)
-    ${zsb}.userWorkingOnDefaultBranch && [[ -z "$gitStatusOutput" ]]
+  ${this}.isEligibleForUpdate() {
+    ${zsb}.userWorkingOnDefaultBranch && ${zsb}.isRepoClean
   }
 
   ${this}.printHeader() {
