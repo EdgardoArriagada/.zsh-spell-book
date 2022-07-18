@@ -5,8 +5,8 @@ FCEDIT=nvim
 stty stop undef # disables C-s
 stty start '^-' stop '^-' # disables C-q
 
-# Write to history as soon as input gets entered
-setopt INC_APPEND_HISTORY
+setopt INC_APPEND_HISTORY # Write to history as soon as input gets entered
+setopt INTERACTIVE_COMMENTS # Enable comments in interactive shells
 
 # prevent unknown commands to be output to the history
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
