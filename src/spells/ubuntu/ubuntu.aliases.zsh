@@ -14,8 +14,6 @@ alias cdesktop='cd ~/Desktop'
 alias cdocuments='cd ~/Documents'
 alias cdownloads='cd ~/Downloads'
 
-alias dondedice="rg -g '!{*.lock}'"
-
 whoInPort() { printAndRun "sudo lsof -i \":${1}\"" }
 killInPort() { sudo kill -9 $(sudo lsof -t -i ":${1}") }
 
