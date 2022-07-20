@@ -12,6 +12,7 @@ alias gf='spinner git fetch'
 alias gsh='git show'
 alias prv='gh pr view --web'
 alias vpr='prv'
+alias guu="ggl && gf"
 
 hisIgnore gsw gf gsh prv vpr
 
