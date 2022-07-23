@@ -25,13 +25,15 @@ tmkill() (
   ${this}.killTmuxServer() tmux kill-server
 
   ${this}.throwNoTmuxSessions() {
-    ${zsb}.info "There are no active tmux sessions."
-    return 0
   }
 
-  if ! ${this}.existsActiveTmuxSessions; then
-    ${this}.throwNoTmuxSessions; return $?
-  fi
+  ${this}.validateTmuxSessions() {
+    if ! ${this}.existsActiveTmuxSessions; then
+      ${zsb}.cancel "There are no active tmux sessions."
+    fi
+  } 
+
+  ${this}.validateTmuxSessions
 
   if ${this}.inputSessionsReceived; then
     ${this}.killInputSessions; return $?
