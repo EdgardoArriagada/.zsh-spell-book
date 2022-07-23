@@ -1,2 +1,2 @@
-${zsb}.isGitRepo() [[ -n "$(git rev-parse --git-dir 2>/dev/null)" ]]
+${zsb}.isGitRepo() { [[ -d .git ]] || $(git rev-parse --is-inside-work-tree 2>/dev/null); }
 
