@@ -3,18 +3,6 @@ tmkill() (
   local activeTmuxSessions=$(tmls)
   local inputSessions=( "$@" )
 
-  ${this}.main() {
-    if ! ${this}.existsActiveTmuxSessions; then
-      ${this}.throwNoTmuxSessions; return $?
-    fi
-
-    if ${this}.inputSessionsReceived; then
-      ${this}.killInputSessions; return $?
-    fi
-
-    ${this}.playMenu
-  }
-
   ${this}.inputSessionsReceived() [[ "${#inputSessions[@]}" -gt "0" ]]
 
   ${this}.existsActiveTmuxSessions() [[ -n "$activeTmuxSessions" ]]
@@ -41,7 +29,15 @@ tmkill() (
     return 0
   }
 
-  ${this}.main "$@"
+  if ! ${this}.existsActiveTmuxSessions; then
+    ${this}.throwNoTmuxSessions; return $?
+  fi
+
+  if ${this}.inputSessionsReceived; then
+    ${this}.killInputSessions; return $?
+  fi
+
+  ${this}.playMenu
 )
 
 compdef "_${zsb}.nonRepeatedListC tmls" tmkill
