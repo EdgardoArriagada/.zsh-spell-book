@@ -1,6 +1,6 @@
 ${zsb}.gitStatus() {
   print " "
   local -r gitStatusOutput=$(git -c color.status=always status --short)
-  [[ -z "$gitStatusOutput" ]] && git status || print "$gitStatusOutput"
+  [[ -z "$gitStatusOutput" ]] && print "nothing to commit, working tree clean" || print "$gitStatusOutput"
   print " "
 }
