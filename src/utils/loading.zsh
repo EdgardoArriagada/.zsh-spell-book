@@ -2,46 +2,45 @@ loading() {
   local -r seconds=${1:?'Amount of seconds expected.'}
   local timeFragment=$(($seconds / 25.0))
 
-  echo -ne '[>                    ]   (0%)\r'
+  printf '[>                    ]   (0%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=>                   ]   (5%)\r'
+  printf '[=>                   ]   (5%%)\r'
   sleep "$timeFragment"
-  echo -ne '[==>                  ]   (10%)\r'
+  printf '[==>                  ]   (10%%)\r'
   sleep "$timeFragment"
-  echo -ne '[===>                 ]   (15%)\r'
+  printf '[===>                 ]   (15%%)\r'
   sleep "$timeFragment"
-  echo -ne '[====>                ]   (20%)\r'
+  printf '[====>                ]   (20%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=====>               ]   (25%)\r'
+  printf '[=====>               ]   (25%%)\r'
   sleep "$timeFragment"
-  echo -ne '[======>              ]   (30%)\r'
+  printf '[======>              ]   (30%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=======>             ]   (35%)\r'
+  printf '[=======>             ]   (35%%)\r'
   sleep "$timeFragment"
-  echo -ne '[========>            ]   (40%)\r'
+  printf '[========>            ]   (40%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=========>           ]   (45%)\r'
+  printf '[=========>           ]   (45%%)\r'
   sleep "$timeFragment"
-  echo -ne '[==========>          ]   (50%)\r'
+  printf '[==========>          ]   (50%%)\r'
   sleep "$timeFragment"
-  echo -ne '[===========>         ]   (55%)\r'
+  printf '[===========>         ]   (55%%)\r'
   sleep "$timeFragment"
-  echo -ne '[============>        ]   (60%)\r'
+  printf '[============>        ]   (60%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=============>       ]   (65%)\r'
+  printf '[=============>       ]   (65%%)\r'
   sleep "$timeFragment"
-  echo -ne '[==============>      ]   (70%)\r'
+  printf '[==============>      ]   (70%%)\r'
   sleep "$timeFragment"
-  echo -ne '[===============>     ]   (75%)\r'
+  printf '[===============>     ]   (75%%)\r'
   sleep "$timeFragment"
-  echo -ne '[================>    ]   (80%)\r'
+  printf '[================>    ]   (80%%)\r'
   sleep "$timeFragment"
-  echo -ne '[=================>   ]   (85%)\r'
+  printf '[=================>   ]   (85%%)\r'
   sleep "$timeFragment"
-  echo -ne '[==================>  ]   (90%)\r'
+  printf '[==================>  ]   (90%%)\r'
   sleep "$timeFragment"
-  echo -ne '[===================> ]   (95%)\r'
+  printf '[===================> ]   (95%%)\r'
   sleep "$timeFragment"
-  echo -ne '[====================>]   (100%)\r'
-  echo -ne '\n'
+  printf '[====================>]   (100%%)\r\n'
 }
