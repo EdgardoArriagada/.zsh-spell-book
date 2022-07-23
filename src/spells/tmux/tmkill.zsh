@@ -18,13 +18,8 @@ tmkill() (
       "The following tmux sessions will be deleted:" \
       "$activeTmuxSessions"
 
-    ${this}.killTmuxServer &&
+    tmux kill-server &&
       ${zsb}.success "All tmux sessions have been deleted."
-  }
-
-  ${this}.killTmuxServer() tmux kill-server
-
-  ${this}.throwNoTmuxSessions() {
   }
 
   ${this}.validateTmuxSessions() {
