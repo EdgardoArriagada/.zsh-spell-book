@@ -19,4 +19,4 @@ pwdd() {
 
 hisIgnore pwdd
 
-compdef "_${zsb}.singleComp '--copy'" pwdd
+complete -W "--copy" pwdd

@@ -31,4 +31,4 @@ alias GPV='toggleCapsLock && prv'
 alias gswa='git switch'
 alias gswc='git switch -c'
 
-alias onotif="sendmeto 'https://github.com/notifications'"
+alias onotif="zsb_open 'https://github.com/notifications'"
