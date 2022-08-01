@@ -8,25 +8,6 @@ pomodoro() (
   shift 1
   local pomodoroLabel="${*}"
 
-  ${this}.main() {
-    totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
-
-    ${zsb}.pomodoro.validateSeconds "$totalSeconds"
-
-    ${this}.createPomodoroTmuxSession
-
-    if ${this}.isPomodoroRunning; then
-      ${zsb}.throw "A pomodoro timer is already running."
-    fi
-
-    ${this}.clearPomodoroSessionTty
-
-    ${this}.beginPomodoro
-
-    ${zsb}.success "Pomodoro started."
-    return 0
-  }
-
   ${this}.createPomodoroTmuxSession() {
     if ! $(tmux has-session -t pomodoro 2>/dev/null); then
       tmux new -d -s pomodoro
@@ -47,5 +28,21 @@ pomodoro() (
     tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
   }
 
-  ${this}.main "$@"
+  ## main ##
+  totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
+
+  ${zsb}.pomodoro.validateSeconds "$totalSeconds"
+
+  ${this}.createPomodoroTmuxSession
+
+  if ${this}.isPomodoroRunning; then
+    ${zsb}.throw "A pomodoro timer is already running."
+  fi
+
+  ${this}.clearPomodoroSessionTty
+
+  ${this}.beginPomodoro
+
+  ${zsb}.success "Pomodoro started."
+  return 0
 )
