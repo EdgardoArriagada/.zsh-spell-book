@@ -19,6 +19,12 @@ pomodoro() (
     ${zsb}.doesMatch "$lastPomodoroLines" "$POMODORO_REGEX"
   }
 
+  ${this}.validatePomodoroNotRunning() {
+    if ${this}.isPomodoroRunning; then
+      ${zsb}.throw "A pomodoro timer is already running."
+    fi
+  }
+
   ${this}.clearPomodoroSessionTty() tmux send-keys -t pomodoro.0 C-g
 
   ${this}.beginPomodoro() {
@@ -35,9 +41,7 @@ pomodoro() (
 
   ${this}.createPomodoroTmuxSession
 
-  if ${this}.isPomodoroRunning; then
-    ${zsb}.throw "A pomodoro timer is already running."
-  fi
+  ${this}.validatePomodoroNotRunning
 
   ${this}.clearPomodoroSessionTty
 
