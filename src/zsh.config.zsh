@@ -56,11 +56,7 @@ ZSB_CURSOR_VIM='\e[1 q'
 function zle-keymap-select {
   if [[ "$KEYMAP" = "vicmd" ]] || [[ "$1" = "block" ]]
     then printf ${ZSB_CURSOR_VIM}
-  elif [[ "$KEYMAP" = "main" ]] ||
-       [[ "$KEYMAP" = "viins" ]] ||
-       [[ -z "$KEYMAP" ]] ||
-       [[ "$1" = "beam" ]] 
-    then printf ${ZSB_CURSOR_DEFAULT}
+    else printf ${ZSB_CURSOR_DEFAULT}
   fi
 }
 
