@@ -54,25 +54,24 @@ ZSB_CURSOR_VIM='\e[1 q'
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select {
-  if [[ "$KEYMAP" = "vicmd" ]] ||
-     [[ "$1" = "block" ]]; then
-    printf ${ZSB_CURSOR_VIM}
+  if [[ "$KEYMAP" = "vicmd" ]] || [[ "$1" = "block" ]]
+    then printf ${ZSB_CURSOR_VIM}
   elif [[ "$KEYMAP" = "main" ]] ||
        [[ "$KEYMAP" = "viins" ]] ||
        [[ -z "$KEYMAP" ]] ||
-       [[ "$1" = "beam" ]]; then
-    printf ${ZSB_CURSOR_DEFAULT}
+       [[ "$1" = "beam" ]] 
+    then printf ${ZSB_CURSOR_DEFAULT}
   fi
 }
 
 zle -N zle-keymap-select
 zle-line-init() {
     zle vi-insert # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    printf "$ZSB_CURSOR_DEFAULT"
+    printf ${ZSB_CURSOR_DEFAULT}
 }
 zle -N zle-line-init
-printf "$ZSB_CURSOR_DEFAULT" # Use beam shape cursor on startup.
-preexec() { printf "$ZSB_CURSOR_DEFAULT"; } # Use beam shape cursor for each new prompt.
+printf ${ZSB_CURSOR_DEFAULT} # Use beam shape cursor on startup.
+preexec() { printf ${ZSB_CURSOR_DEFAULT}; } # Use beam shape cursor for each new prompt.
 
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
