@@ -54,16 +54,17 @@ ZSB_CURSOR_VIM='\e[1 q'
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select {
-  if [[ ${KEYMAP} == vicmd ]] ||
-     [[ $1 = 'block' ]]; then
-    printf "$ZSB_CURSOR_VIM"
-  elif [[ ${KEYMAP} == main ]] ||
-       [[ ${KEYMAP} == viins ]] ||
-       [[ ${KEYMAP} = '' ]] ||
-       [[ $1 = 'beam' ]]; then
-    printf "$ZSB_CURSOR_DEFAULT"
+  if [[ "$KEYMAP" = "vicmd" ]] ||
+     [[ "$1" = "block" ]]; then
+    printf ${ZSB_CURSOR_VIM}
+  elif [[ "$KEYMAP" = "main" ]] ||
+       [[ "$KEYMAP" = "viins" ]] ||
+       [[ -z "$KEYMAP" ]] ||
+       [[ "$1" = "beam" ]]; then
+    printf ${ZSB_CURSOR_DEFAULT}
   fi
 }
+
 zle -N zle-keymap-select
 zle-line-init() {
     zle vi-insert # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
