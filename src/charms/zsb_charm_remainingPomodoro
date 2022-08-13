@@ -15,11 +15,9 @@ else
   popupWidth=33
 fi
 
-if (( $ZSB_MACOS )); then
-  osascript -e "display notification \"$popupMessage\""
-else
-  timeout 0.6 \
-    rofi -width "-${popupWidth}" -e "$popupMessage"
+if (( $ZSB_MACOS ))
+  then osascript -e "display notification \"$popupMessage\""
+  else timeout 0.6 rofi -width "-${popupWidth}" -e "$popupMessage"
 fi
 
 exit 0
