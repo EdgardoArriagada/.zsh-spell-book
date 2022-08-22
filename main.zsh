@@ -3,15 +3,17 @@ ZSB_DIR=$(dirname $0)
 ZSB_TEMP_DIR=${ZSB_DIR}/src/temp
 ZSB_SNAPSHOT_PATH="$PATH"
 
+# Dynamic prefix
+: ${zsb:='zsb'}
+
+${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
+
 () {
   # Source environment variables
   local -r envFile=${ZSB_DIR}/.env
   [[ -f ${envFile} ]] && source ${envFile}
 
   source ${ZSB_DIR}/src/zsh.config.zsh
-
-  # Dynamic prefix
-  : ${zsb:='zsb'}
 
   # Source global variables
   source ${ZSB_DIR}/src/globalVariables.zsh
@@ -21,9 +23,6 @@ ZSB_SNAPSHOT_PATH="$PATH"
   local configurationFiles=( ${ZSB_DIR}/src/configurations/**/*.zsh )
   local spellPages=( ${ZSB_DIR}/src/spells/**/*.zsh )
   local automaticCallFiles=( ${ZSB_DIR}/src/automatic-calls/**/*.zsh )
-
-  # Create a dynamic prefixed function
-  ${zsb}.sourceFiles() for file in $*; do source "$file"; done
 
   # Source files in this specific order
   ${zsb}.sourceFiles ${utilFiles}
@@ -37,6 +36,6 @@ ZSB_SNAPSHOT_PATH="$PATH"
   ${zsb}.sourceFiles ${automaticCallFiles}
 }
 
-# Remove dynamic prefixed functions
+# Remove dynamic prefixed functions that start with fouble underscore
 unfunction -m "__${zsb}.*"
 
