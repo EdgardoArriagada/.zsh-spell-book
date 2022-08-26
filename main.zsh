@@ -15,22 +15,16 @@ ${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
   source ${ZSB_DIR}/src/zsh.config.zsh
   source ${ZSB_DIR}/src/globalVariables.zsh
 
-  # Declare source files
-  local utilFiles=( ${ZSB_DIR}/src/utils/**/*.zsh )
-  local configurationFiles=( ${ZSB_DIR}/src/configurations/**/*.zsh )
-  local spellPages=( ${ZSB_DIR}/src/spells/**/*.zsh )
-  local automaticCallFiles=( ${ZSB_DIR}/src/automatic-calls/**/*.zsh )
-
   # Source files in this specific order
-  ${zsb}.sourceFiles ${utilFiles}
-  ${zsb}.sourceFiles ${configurationFiles}
-  ${zsb}.sourceFiles ${spellPages}
+  ${zsb}.sourceFiles ${ZSB_DIR}/src/utils/**/*.zsh
+  ${zsb}.sourceFiles ${ZSB_DIR}/src/configurations/**/*.zsh
+  ${zsb}.sourceFiles ${ZSB_DIR}/src/spells/**/*.zsh
 
   # Temporal Spells
   local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
   [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles ${tempSpells}
 
-  ${zsb}.sourceFiles ${automaticCallFiles}
+  ${zsb}.sourceFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
 }
 
 # Remove dynamic prefixed functions that start with fouble underscore
