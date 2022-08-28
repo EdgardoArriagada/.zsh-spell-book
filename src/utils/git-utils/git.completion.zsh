@@ -19,7 +19,6 @@ ${zsb}.getGitFiles.getgitflesfromregex() {
 
 declare -gAr ZSB_FILE_TOCMD=(
   ['staged']="${zsb}.getGitFiles.getgitflesfromregex '^[MARCD]'"
-  ['green']="${zsb}.getGitFiles.getgitflesfromregex '^[MARCD]'"
   ['unstaged']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCD]'"
   ['untracked']="${zsb}.getGitFiles.getgitflesfromregex '^\?{2}'"
   ['red-safe']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCD\?]'"
