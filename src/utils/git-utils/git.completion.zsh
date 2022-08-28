@@ -29,10 +29,10 @@ declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
 
 ${zsb}.getGitFiles() (
   local this="$0"
-  local token="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
+  local regex="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
 
-  if [[ -n "$token" ]]
-    then ${this}.getGitFilesFromRegex ${token}
+  if [[ -n "$regex" ]]
+    then ${this}.getGitFilesFromRegex ${regex}
     else ${this}.gitShortStatus | ${this}.removeGitTokens
   fi
 )
