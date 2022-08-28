@@ -17,7 +17,7 @@ ${zsb}.getGitFiles.getGitFilesFromRegex() {
   ${zsb}.getGitFiles.gitShortStatus | rg "$1" | ${zsb}.getGitFiles.removeGitTokens
 }
 
-declare -gAr ZSB_FILE_TOCMD=(
+declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
   ['staged']='^[MARCD]'
   ['unstaged']='^.[MARCD]'
   ['untracked']='^\?{2}'
@@ -29,7 +29,7 @@ declare -gAr ZSB_FILE_TOCMD=(
 
 ${zsb}.getGitFiles() (
   local this="$0"
-  local token="${ZSB_FILE_TOCMD[$1]}"
+  local token="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
 
   if [[ -n "$token" ]]
     then ${this}.getGitFilesFromRegex ${token}
