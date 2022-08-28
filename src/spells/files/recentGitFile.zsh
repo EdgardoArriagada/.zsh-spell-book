@@ -1,10 +1,32 @@
-${zsb}.recentGitFile() eval "$@"
+# first item can be "-staged, -unmerged, etc"
+${zsb}.recentGitFile() {
+  local callback=${1}
+  local fileType=${2}
+
+  if [[ -f ${fileType} ]]
+    then ${callback} ${fileType}
+    else ${callback} ${@:3}
+  fi
+}
 
 _${zsb}.recentGitFile() {
-  [[ "$CURRENT" -gt "3" ]] && return 0
+  local usedCompletion=( "${words[@]:2:$CURRENT-3}" )
+  local firstItemUsed="${words[3]}" # first item can be "-staged, -unmerged, etc or a file"
+  local currentCompletion="${words[CURRENT]}"
+  local completionList=( $(${zsb}.getGitFiles "${firstItemUsed:1}") )
 
-  local completionList=( $(${zsb}.getGitFiles) )
-  _describe 'command' completionList
+  # if we are completing the first item
+  if [[ "$CURRENT" = "3" ]] && [[ -n "$currentCompletion" ]]; then
+    for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
+      if [[ "-${key}" =~ "^${currentCompletion}.*" ]]
+        then completionList+=( "-${key}" )
+      fi
+    done
+  fi
+
+  local newCompletion=( ${completionList:|usedCompletion} )
+
+  _describe 'command' newCompletion
 }
 
 compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
