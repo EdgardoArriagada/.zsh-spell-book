@@ -3,7 +3,7 @@ gds() {
     git diff --staged && ${zsb}.gitStatus; return $?
   fi
 
-  git diff --staged "$@" && ${zsb}.gitStatus
+  git diff --staged -- "$@" && ${zsb}.gitStatus
 }
 
 hisIgnore gds

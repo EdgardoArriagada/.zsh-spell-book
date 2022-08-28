@@ -3,7 +3,7 @@ gd() {
     git diff && ${zsb}.gitStatus; return $?
   fi
 
-  git diff "$@" && ${zsb}.gitStatus
+  git diff -- "$@" && ${zsb}.gitStatus
 }
 
 hisIgnore gd
