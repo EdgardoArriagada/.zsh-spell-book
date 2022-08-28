@@ -15,4 +15,13 @@ ZSB_GIT_AWARE="--aware:Proceed even if affecting a default branch"
 ZSB_GIT_FORCE="--force:Proceed even in commit have already been pushed online"
 ZSB_GIT_LOCK_FILES=( package-lock.json Gemfile.lock yarn.lock Cargo.lock )
 ZSB_GIT_PACKAGE_FILES=( package.json Gemfile Cargo.toml )
+declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
+  ['staged']='^[MARCD]'
+  ['unstaged']='^.[MARCD]'
+  ['untracked']='^\?{2}'
+  ['red-safe']='^.[MARCD\?]'
+  ['red']='^.[MARCUD\?]'
+  ['red-with-diff']='^.[MARCUD]'
+  ['unmerged']='(^U)|(^.U)'
+)
 

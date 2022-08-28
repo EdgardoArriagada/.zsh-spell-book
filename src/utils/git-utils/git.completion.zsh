@@ -17,16 +17,6 @@ ${zsb}.getGitFiles.getGitFilesFromRegex() {
   ${zsb}.getGitFiles.gitShortStatus | rg "$1" | ${zsb}.getGitFiles.removeGitTokens
 }
 
-declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
-  ['staged']='^[MARCD]'
-  ['unstaged']='^.[MARCD]'
-  ['untracked']='^\?{2}'
-  ['red-safe']='^.[MARCD\?]'
-  ['red']='^.[MARCUD\?]'
-  ['red-with-diff']='^.[MARCUD]'
-  ['unmerged']='(^U)|(^.U)'
-)
-
 ${zsb}.getGitFiles() (
   local this="$0"
   local regex="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
