@@ -13,26 +13,26 @@ ${zsb}.getGitFiles.removeGitTokens() sd '^...' '$1'
 # to current working folder
 ${zsb}.getGitFiles.gitShortStatus() git status --short 2>/dev/null
 
-${zsb}.getGitFiles.getgitflesfromregex() {
+${zsb}.getGitFiles.getGitFilesFromRegex() {
   ${zsb}.getGitFiles.gitShortStatus | rg "$1" | ${zsb}.getGitFiles.removeGitTokens
 }
 
 declare -gAr ZSB_FILE_TOCMD=(
-  ['staged']="${zsb}.getGitFiles.getgitflesfromregex '^[MARCD]'"
-  ['unstaged']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCD]'"
-  ['untracked']="${zsb}.getGitFiles.getgitflesfromregex '^\?{2}'"
-  ['red-safe']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCD\?]'"
-  ['red']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCUD\?]'"
-  ['red-with-diff']="${zsb}.getGitFiles.getgitflesfromregex '^.[MARCUD]'"
-  ['unmerged']="${zsb}.getGitFiles.getgitflesfromregex '(^U)|(^.U)'"
+  ['staged']='^[MARCD]'
+  ['unstaged']='^.[MARCD]'
+  ['untracked']='^\?{2}'
+  ['red-safe']='^.[MARCD\?]'
+  ['red']='^.[MARCUD\?]'
+  ['red-with-diff']='^.[MARCUD]'
+  ['unmerged']='(^U)|(^.U)'
 )
 
 ${zsb}.getGitFiles() (
   local this="$0"
-  local newCmd="${ZSB_FILE_TOCMD[$1]}"
+  local token="${ZSB_FILE_TOCMD[$1]}"
 
-  if [[ -n "$newCmd" ]]
-    then eval ${newCmd}
+  if [[ -n "$token" ]]
+    then ${this}.getGitFilesFromRegex ${token}
     else ${this}.gitShortStatus | ${this}.removeGitTokens
   fi
 )
