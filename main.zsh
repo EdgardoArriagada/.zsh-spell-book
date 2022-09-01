@@ -28,5 +28,5 @@ ${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
 }
 
 # Remove dynamic prefixed functions that start with fouble underscore
-unfunction -m "__${zsb}.*"
+# unfunction -m "__${zsb}.*" <- commented cuz unused
 
