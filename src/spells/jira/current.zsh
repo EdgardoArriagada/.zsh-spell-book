@@ -12,8 +12,9 @@ ${zsb}_createCurrentDir() {
   return 0
 }
 
-alias cdcurrent="${zsb}_createCurrentDir && cd `${zsb}.current.getDir`"
-alias vnotescurrent="${zsb}_createCurrentDir && (cdcurrent && nvim `${zsb}.current.getDir`/NOTES.md)"
+alias cdcurrent="${zsb}_createCurrentDir && cds `${zsb}.current.getDir`"
+alias builtincdcurrent="${zsb}_createCurrentDir && builtin cd `${zsb}.current.getDir`"
+alias vnotescurrent="${zsb}_createCurrentDir && (builtincdcurrent && nvim `${zsb}.current.getDir`/NOTES.md)"
 alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat `${zsb}.current.getDir`/NOTES.md"
 alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
 
