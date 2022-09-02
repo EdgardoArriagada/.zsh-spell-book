@@ -1,1 +1,1 @@
-${zsb}.isHusky() { [[ -f .huskyrc ]] || [[ -d .husky ]]; }
+${zsb}.isHusky() [[ -f .huskyrc || -d .husky ]]

@@ -4,11 +4,11 @@ ${zsb}.nodeReinstall() {
 
   zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall || return 1
 
-  if [[ -z "$keepLockFile" ]] && [[ -f ${packageManagerLock} ]]; then
+  if [[ -z "$keepLockFile" && -f ${packageManagerLock} ]]; then
     messageStatus rm ${packageManagerLock}
   fi
 
-  if [[ -z "$keepNodeModules" ]] && [[ -d node_modules ]]; then
+  if [[ -z "$keepNodeModules" && -d node_modules ]]; then
     spinner rm -rf node_modules
   fi
 

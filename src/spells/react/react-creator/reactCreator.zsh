@@ -8,7 +8,7 @@ reactCreator() {
 
   zparseopts -D -E -F -- o=overwrite || return 1
 
-  if [[ -d "$newComponentPath" ]] && [[ -z "$overwrite" ]] ; then
+  if [[ -d "$newComponentPath" && -z "$overwrite" ]] ; then
     ${zsb}.throw "Can't overwrite already existing component, use $(hl "-o") flag to do it anyway"
   fi
 

@@ -11,7 +11,7 @@ catdiff() (
     local file1Lacks=$(${this}.compareFiles "$file1" "$file2")
     local file2Lacks=$(${this}.compareFiles "$file2" "$file1")
 
-    if [[ -z "$file1Lacks" ]] && [[ -z "$file2Lacks" ]]; then
+    if [[ -z "$file1Lacks" && -z "$file2Lacks" ]]; then
       ${zsb}.info "Both files are equal"
       return 0
     fi
@@ -21,7 +21,7 @@ catdiff() (
       echo "$file1Lacks"
     fi
 
-    if [[ -n "$file1Lacks" ]] && [[ -n "$file2Lacks" ]]; then
+    if [[ -n "$file1Lacks" && -n "$file2Lacks" ]]; then
       hr
       echo " "
     fi
@@ -34,7 +34,7 @@ catdiff() (
     echo " "
   }
 
-  ${this}.areArgsInvalid() $([[ ! -f "$file1" ]] || [[ ! -f "$file2" ]])
+  ${this}.areArgsInvalid() [[ ! -f "$file1" || ! -f "$file2" ]]
 
   ${this}.throwArgsInvalidException() {
     ${zsb}.throw "Two valid files to compare expected"
