@@ -5,9 +5,9 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
   ${this}.main () {
     ${this}.runTimer
 
+    ${this}.playNotifSound &
+    ${this}.printEndOfTimeMsg &
     ${this}.displayNotifCard
-    ${this}.playNotifSound
-    ${this}.printEndOfTimeMsg
   }
 
   ${this}.runTimer() {
