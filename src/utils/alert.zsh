@@ -3,9 +3,10 @@ alert() {
   local icon="${_icon[2]}"
   : ${icon:='timer'}
 
-  (( $ZSB_MACOS )) && \
-    osascript -e "display notification \"$*\"" || \
-    notify-send --icon "$icon" --urgency critical "$*"
+  if (( $ZSB_MACOS ))
+    then osascript -e "tell app \"System Events\" to display dialog \"${*}\"" >/dev/null 2>&1
+    else notify-send --icon "$icon" --urgency critical "$*"
+  fi
 }
 
 alias a="alert"
