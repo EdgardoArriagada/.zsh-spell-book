@@ -14,6 +14,8 @@ ${zsb}_createCurrentDir() {
 
 alias cdcurrent="${zsb}_createCurrentDir && cds `${zsb}.current.getDir`"
 alias builtincdcurrent="${zsb}_createCurrentDir && builtin cd `${zsb}.current.getDir`"
+
+# We enter in the directory to be ablo to open new shell to interact with git
 alias vnotescurrent="${zsb}_createCurrentDir && (builtincdcurrent && nvim `${zsb}.current.getDir`/NOTES.md)"
 alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat `${zsb}.current.getDir`/NOTES.md"
 alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
