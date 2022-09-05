@@ -4,8 +4,8 @@ ${zsb}.recentGitFile() {
   local fileType=${2}
 
   if [[ -f ${fileType} ]]
-    then ${callback} ${fileType}
-    else ${callback} ${@:3}
+    then eval "${callback} ${fileType}"
+    else "${callback} ${@:3}"
   fi
 }
 
