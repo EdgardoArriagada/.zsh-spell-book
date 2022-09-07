@@ -14,7 +14,7 @@ alias prv='gh pr view --web'
 alias vpr='prv'
 alias guu="ggl && gf"
 
-hisIgnore gsw gf gsh prv vpr
+hisIgnore gf gsh prv vpr
 
 alias GSWD='toggleCapsLock && gswd'
 alias GS='toggleCapsLock && gs'
@@ -26,9 +26,5 @@ alias GST='toggleCapsLock && gst'
 alias GF='toggleCapsLock && gf'
 alias GSH='toggleCapsLock && gsh'
 alias GPV='toggleCapsLock && prv'
-
-# this aliases reveice args, so toggleCapsLocks makes no sense
-alias gswa='git switch'
-alias gswc='git switch -c'
 
 alias onotif="zsb_open 'https://github.com/notifications'"
