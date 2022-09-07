@@ -8,7 +8,7 @@ ga() (
       '.') ${this}.addFilesWithDotFlag ;;
       'new') ${this}.addFilesWithNewFlag "$@" ;;
       'fast') ${this}.addFilesWithFastFlag "$@" ;;
-      'unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
+      '-unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
   }
@@ -81,7 +81,7 @@ _${zsb}.ga() {
   case "$firstItemUsed" in
     'new') completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
     'fast') completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
-    'unmerged') completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
+    '-unmerged') completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
     '.') return 0 ;;
     *) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
   esac
@@ -91,7 +91,7 @@ _${zsb}.ga() {
     case "$currentCompletion" in
       n*) completionList+=('new') ;;
       f*) completionList+=('fast') ;;
-      u*) completionList+=('unmerged') ;;
+      -*) completionList+=('-unmerged') ;;
     esac
   fi
 
