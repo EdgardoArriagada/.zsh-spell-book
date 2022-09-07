@@ -1,11 +1,11 @@
-# first item can be "-staged, -unmerged, etc"
+# firstArg can be "-staged, -unmerged, etc"
 ${zsb}.recentGitFile() {
   local callback=${1}
-  local fileType=${2}
+  local firstArg=${2}
 
-  if [[ -f ${fileType} ]]
-    then eval "${callback} ${fileType}"
-    else "${callback} ${@:3}"
+  if [[ "$firstArg" =~ "^-" ]]
+    then eval "${callback} ${@:3}"
+    else eval "${callback} ${firstArg}"
   fi
 }
 
@@ -16,7 +16,7 @@ _${zsb}.recentGitFile() {
   local completionList=( $(${zsb}.getGitFiles "${firstItemUsed:1}") )
 
   # if we are completing the first item
-  if [[ "$CURRENT" = "3" && -n "$currentCompletion" && "$currentCompletion" =~ "^-" ]]; then
+  if [[ "$CURRENT" = "3" && "$currentCompletion" =~ "^-" ]]; then
     for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
       if [[ "-${key}" =~ "^${currentCompletion}" ]]
         then completionList+=( "-${key}" )
