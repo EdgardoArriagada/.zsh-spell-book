@@ -36,7 +36,6 @@ ZSB_MACOS=1
 CONFIG=$HOME/Library/Application\ Support
 ```
 
-
 ### Usage
 
 - Explore the _src/spells_ folder to see a list of aliases and function available, or use that folder as a template to build your custom aliases and functions
@@ -45,7 +44,7 @@ CONFIG=$HOME/Library/Application\ Support
 
 - You should add your Linux application configurations on _src/configurations_ folder
 
-- If you want to add temporal (ignored by git) aliases, configurations, functions, variable exports, etc. You can run the _temp_ command and create/edit new files and folders with aliases as you which. Once you finish editing, you can restart your terminal or run the `resource` command to see your new temporal magic.
+- If you want to add temporal (ignored by git) aliases, configurations, functions, variable exports, etc. You can run the _temp_ command and create/edit new files and folders with aliases as you which. Once you finish editing, you can restart your terminal to see your new temporal magic.
 
 - Use the _src/automatic-calls_ folder to add anything you want to be executed and printed to console right after a new terminal is initialized
 
