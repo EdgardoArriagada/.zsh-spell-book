@@ -3,7 +3,7 @@ visualizeAll() {
 
   for file in ./*.${extension}; do
     ${zsb}.info "Visualizing ${file}"
-    eval "v ${file}"
+    eval "v '${file}'"
   done
 }
 
