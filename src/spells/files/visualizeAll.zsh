@@ -9,9 +9,9 @@ visualizeAll() {
 
 _${zsb}.visualizeAll() {
   local files=("${(@f)$(ls | rg '\.')}")
-  local compList=(${(u)files##*\.})
+  local uniqueFileExtensions=(${(u)files##*\.})
 
-  _describe 'command' compList
+  _describe 'command' uniqueFileExtensions
 }
 
 compdef _${zsb}.visualizeAll visualizeAll
