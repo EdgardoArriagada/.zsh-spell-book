@@ -20,6 +20,8 @@ prettierHelper() {
     _prettierHelper.file
     return
   fi
+
+  ${zsb}.throw "you have to pass either --init, --install or --file"
 }
 
 _prettierHelper.file() {
