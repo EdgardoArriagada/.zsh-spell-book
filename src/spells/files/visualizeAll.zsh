@@ -7,5 +7,11 @@ visualizeAll() {
   done
 }
 
-# TODO: complete with all file extensions in current directory
+_${zsb}.visualizeAll() {
+  local files=("${(@f)$(ls | rg '\.')}")
+  local compList=(${(u)files##*\.})
 
+  _describe 'command' compList
+}
+
+compdef _${zsb}.visualizeAll visualizeAll
