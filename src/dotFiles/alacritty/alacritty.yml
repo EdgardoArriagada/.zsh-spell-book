@@ -564,7 +564,6 @@ key_bindings:
   - { key: A,         mods: Command,       chars: "\x1ba"                       }
   - { key: B,         mods: Command,       chars: "\x1bb"                       }
   - { key: C,         mods: Command,       chars: "\x1bc"                       }
-  - { key: C,         mods: Command,       chars: "\x1bc"                       }
   - { key: D,         mods: Command,       chars: "\x1bd"                       }
   - { key: E,         mods: Command,       chars: "\x1be"                       }
   - { key: F,         mods: Command,       chars: "\x1bf"                       }
@@ -579,6 +578,8 @@ key_bindings:
   - { key: O,         mods: Command,       chars: "\x1bo"                       }
   - { key: P,         mods: Command,       chars: "\x1bp"                       }
   - { key: Q,         mods: Command,       chars: "\x1bq"                       }
+    # fix double c-q on macOS
+  - { key: Q,         mods: Control,   chars: "\x11"                        }
   - { key: R,         mods: Command,       chars: "\x1br"                       }
   - { key: S,         mods: Command,       chars: "\x1bs"                       }
   - { key: T,         mods: Command,       chars: "\x1bt"                       }
