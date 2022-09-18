@@ -35,6 +35,7 @@ zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:
 
 ## Autosuggestion plugin
 bindkey '^ ' autosuggest-accept
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#928374"
 
 ## Highlight plugin
 typeset -Ag ZSH_HIGHLIGHT_STYLES
