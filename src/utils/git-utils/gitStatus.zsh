@@ -1,6 +1,12 @@
 ${zsb}.gitStatus() {
-  print " "
-  local -r gitStatusOutput=$(git -c color.status=always status --short)
-  [[ -z "$gitStatusOutput" ]] && print "nothing to commit, working tree clean" || print "$gitStatusOutput"
-  print " "
+  print ''
+
+  local gitStatusOutput=`git -c color.status=always status --short`
+
+  if [[ -z "$gitStatusOutput" ]] 
+    then print 'nothing to commit, working tree clean'
+    else print ${gitStatusOutput}
+  fi
+
+  print ''
 }
