@@ -555,13 +555,14 @@ key_bindings:
   - { key: O,         mods: Command,       chars: "\x1bo"                       }
   - { key: P,         mods: Command,       chars: "\x1bp"                       }
   - { key: Q,         mods: Command,       chars: "\x1bq"                       }
-    # fix double c-q on macOS
-  - { key: Q,         mods: Control,   chars: "\x11"                        }
+# Fix double c-q on macOS
+  - { key: Q,         mods: Control,       chars: "\x11"                        }
   - { key: R,         mods: Command,       chars: "\x1br"                       }
   - { key: S,         mods: Command,       chars: "\x1bs"                       }
   - { key: T,         mods: Command,       chars: "\x1bt"                       }
   - { key: U,         mods: Command,       chars: "\x1bu"                       }
-  - { key: V,         mods: Command,       chars: "\x1bv"                       }
+# Disabled to be able to paste
+# - { key: V,         mods: Command,       chars: "\x1bv"                       }
   - { key: W,         mods: Command,       chars: "\x1bw"                       }
   - { key: X,         mods: Command,       chars: "\x1bx"                       }
   - { key: Y,         mods: Command,       chars: "\x1by"                       }
