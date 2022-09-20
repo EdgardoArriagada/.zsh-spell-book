@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare msg="\e[38;5;8m${@}\033[0m"
+declare msg="\e[38;5;244m${@}\033[0m"
 declare inputCommandCancelled=true
 declare inputCommandExitCode
 declare inputCommandPid
