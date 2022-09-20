@@ -1,4 +1,9 @@
 morning() {
+  if (( $ZSB_MACOS )); then
+    printAndRun 'brew update && brew upgrade'
+    return $?
+  fi
+
   local attempts=0
 
   # Unlock sudo password
