@@ -1,5 +1,5 @@
 messageStatus() {
-  local msg="\e[38;5;8m${@}\033[0m"
+  local msg="\e[38;5;244m${@}\033[0m"
 
   "$@"
 
