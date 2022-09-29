@@ -34,6 +34,6 @@ ${zsb}.page() {
 
 alias page="${zsb}.page nvim"
 alias cpage="${zsb}.page zsb_cat"
-alias ccppage="${zsb}.page ccp"
+alias cppage="${zsb}.page ccp"
 
-hisIgnore cdpage cdnotebook page cpage ccppage
+hisIgnore cdpage cdnotebook page cpage cppage
