@@ -9,7 +9,7 @@ ${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
 
 () {
   # Source environment variables
-  local -r envFile=${ZSB_DIR}/.env
+  local envFile=${ZSB_DIR}/.env
   [[ -f ${envFile} ]] && source ${envFile}
   source ${ZSB_DIR}/src/zsh.config.zsh
   source ${ZSB_DIR}/src/globalVariables.zsh
