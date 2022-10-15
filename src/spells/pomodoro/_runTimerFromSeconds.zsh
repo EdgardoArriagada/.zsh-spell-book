@@ -14,7 +14,7 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     local -r spacesToKeepOutputClean="   "
     for i in {$totalSeconds..01}
     do
-      echo -ne "\r⏳ $(${this}.convertSecondsToTime $i)${spacesToKeepOutputClean}"
+      printf "\r⏳ $(${this}.convertSecondsToTime $i)${spacesToKeepOutputClean}"
       sleep 1
     done
   }
