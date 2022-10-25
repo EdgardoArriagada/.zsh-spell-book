@@ -1,5 +1,5 @@
 # Root global variables
-ZSB_DIR=$(dirname $0)
+ZSB_DIR=`dirname ${0}`
 ZSB_TEMP_DIR=${ZSB_DIR}/src/temp
 
 # Dynamic prefix
