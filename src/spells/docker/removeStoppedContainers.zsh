@@ -1,5 +1,5 @@
 removeStoppedContainers() {
-  local stoppedContainers=$(docker container ls -aq)
+  local stoppedContainers=`docker container ls -aq`
 
   [[ -z "$stoppedContainers" ]] &&
     ${zsb}.info "There are no stopped containers to remove." &&
@@ -7,7 +7,7 @@ removeStoppedContainers() {
 
   ${zsb}.info "Removing all stopped Containers..."
 
-  docker container rm $(echo "$stoppedContainers") && \
+  docker container rm `printf ${stoppedContainers}` && \
     ${zsb}.success "All containers were removed."
 }
 
