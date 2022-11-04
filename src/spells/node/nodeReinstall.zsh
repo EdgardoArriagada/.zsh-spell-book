@@ -4,16 +4,17 @@ ${zsb}.nodeReinstall() {
 
   zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall || return 1
 
-  if [[ -z "$keepLockFile" && -f ${packageManagerLock} ]]; then
-    messageStatus rm ${packageManagerLock}
+  if [[ -z "$keepLockFile" && -f ${packageManagerLock} ]]
+    then messageStatus rm ${packageManagerLock}
   fi
 
-  if [[ -z "$keepNodeModules" && -d node_modules ]]; then
-    spinner rm -rf node_modules
+  if [[ -z "$keepNodeModules" && -d node_modules ]]
+    then spinner rm -rf node_modules
   fi
 
-  [[ -n "$skipInstall" ]] &&
-    ${zsb}.cancel "Installation cancelled"
+  if [[ -n "$skipInstall" ]]
+    then ${zsb}.cancel "Installation cancelled"
+  fi
 
   ${packageManager} install && ${zsb}.isGitRepo && ${zsb}.gitStatus
 
