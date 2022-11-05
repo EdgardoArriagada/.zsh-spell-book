@@ -7,8 +7,9 @@ ZSB_DIR=`pwd`
 
 # Dynamic prefix
 : ${zsb:='zsb'}
+print "${zsb}.sourceFiles() for f in \${*}; do source \${f}; done" >> temp_transpilation.zsh
 
-${zsb}.sourceFiles() for f in ${*}; do cat ${f} >> temp_transpilation.zsh; done
+${zsb}.transpileFiles() for f in ${*}; do cat ${f} >> temp_transpilation.zsh; done
 
 () {
   # Source environment variables
@@ -18,15 +19,15 @@ ${zsb}.sourceFiles() for f in ${*}; do cat ${f} >> temp_transpilation.zsh; done
   cat ${ZSB_DIR}/src/globalVariables.zsh >> temp_transpilation.zsh
 
   # Source files in this specific order
-  ${zsb}.sourceFiles ${ZSB_DIR}/src/utils/**/*.zsh
-  ${zsb}.sourceFiles ${ZSB_DIR}/src/configurations/**/*.zsh
-  ${zsb}.sourceFiles ${ZSB_DIR}/src/spells/**/*.zsh
+  ${zsb}.transpileFiles ${ZSB_DIR}/src/utils/**/*.zsh
+  ${zsb}.transpileFiles ${ZSB_DIR}/src/configurations/**/*.zsh
+  ${zsb}.transpileFiles ${ZSB_DIR}/src/spells/**/*.zsh
 
   # Temporal Spells
   local tempSpells=( ${ZSB_DIR}/src/temp/spells**/*.zsh )>/dev/null 2>&1
-  [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles ${tempSpells}
+  [[ -n "$tempSpells" ]] && ${zsb}.transpileFiles ${tempSpells}
 
-  ${zsb}.sourceFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
+  ${zsb}.transpileFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
 }
 
 ZSB_DIR=`print -P %~` # this works in transpilation only

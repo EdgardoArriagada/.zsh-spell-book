@@ -8,6 +8,7 @@ describe() {
 }
 
 runTests() (
+  : ${zsb:='zsb'}
   local testFiles=( ${ZSB_DIR}/src/__tests__/**/*.test.zsh )
   ${zsb}.sourceFiles $testFiles
 )
