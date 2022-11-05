@@ -17,7 +17,7 @@ _${zsb}.run() {
   [[ -f package.json ]] || return 0
   local completion=( `<package.json jq '.scripts' | jq -r 'keys[]'` )
 
-  compadd ${completion}
+  compadd -U ${completion}
 }
 
 
