@@ -1,5 +1,7 @@
-rm transpiled.zsh
-rm temp_transpilation.zsh
+# WARNING: EXPERIMENTAL
+#
+[[ -f transpiled.zsh ]] && rm transpiled.zsh
+[[ -f temp_transpilation.zsh ]] && rm temp_transpilation.zsh
 # Root global variables
 ZSB_DIR=`pwd`
 
@@ -36,3 +38,5 @@ sd '\$\{ZSB_DIR\}' "${ZSB_DIR}" temp_transpilation.zsh
 sd '\$\{ZSB_TEMP_DIR\}' "${ZSB_TEMP_DIR}" temp_transpilation.zsh
 sed '/^ *$/d' temp_transpilation.zsh > transpiled.zsh # remove empty lines
 rm temp_transpilation.zsh
+
+print "Transpilation finished!"
