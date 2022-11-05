@@ -10,7 +10,10 @@ run() {
 
   printAndRun "${packageManager} ${@}"
 
-  alert "DONE: '${packageManager} ${@}'"
+
+  if (($#))
+    then alert "DONE: '${packageManager} ${@}'"
+  fi
 }
 
 _${zsb}.run() {
