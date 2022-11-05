@@ -1,8 +1,7 @@
 rm transpiled.zsh
 rm temp_transpilation.zsh
 # Root global variables
-ZSB_DIR=`dirname ${0}`
-ZSB_TEMP_DIR=${ZSB_DIR}/src/temp
+ZSB_DIR=`pwd`
 
 # Dynamic prefix
 : ${zsb:='zsb'}
@@ -27,6 +26,9 @@ ${zsb}.sourceFiles() for f in ${*}; do cat ${f} >> temp_transpilation.zsh; done
 
   ${zsb}.sourceFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
 }
+
+ZSB_DIR=`print -P %~` # this works in transpilation only
+ZSB_TEMP_DIR=${ZSB_DIR}/src/temp
 
 sd '( |^)#.*' '' temp_transpilation.zsh # remove comments
 sd '\$\{zsb\}' "${zsb}" temp_transpilation.zsh
