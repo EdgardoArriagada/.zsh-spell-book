@@ -34,5 +34,5 @@ sd '( |^)#.*' '' temp_transpilation.zsh # remove comments
 sd '\$\{zsb\}' "${zsb}" temp_transpilation.zsh
 sd '\$\{ZSB_DIR\}' "${ZSB_DIR}" temp_transpilation.zsh
 sd '\$\{ZSB_TEMP_DIR\}' "${ZSB_TEMP_DIR}" temp_transpilation.zsh
-sed '/^$/d' temp_transpilation.zsh > transpiled.zsh
+sed '/^ *$/d' temp_transpilation.zsh > transpiled.zsh # remove empty lines
 rm temp_transpilation.zsh
