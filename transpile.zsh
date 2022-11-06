@@ -39,6 +39,7 @@ sd '\$\{ZSB_DIR\}' "${ZSB_DIR}" temp_transpilation.zsh
 sd '\$\{ZSB_TEMP_DIR\}' "${ZSB_TEMP_DIR}" temp_transpilation.zsh
 sd '^ *' '' temp_transpilation.zsh # remove leading spaces
 sed '/^$/d' temp_transpilation.zsh > transpiled.zsh # remove empty lines
+sd '\\\n' '' transpiled.zsh # remove bash line breaks
 rm temp_transpilation.zsh
 
 print "Transpilation finished!"
