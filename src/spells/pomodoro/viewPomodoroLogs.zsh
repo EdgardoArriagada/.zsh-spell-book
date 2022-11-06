@@ -6,13 +6,12 @@ ${zsb}.pomodoro.viewPomodoroLogs() {
   local year="$(echo "$fileName" | cut -d "-" -f3 | cut -d "." -f1)"
   local month="$(echo "$fileName" | cut -d "-" -f 1)"
 
-  local logFolder="${ZSB_DIR}/logs/pomodoro/${year}/${month}"
+  local logFolder=${ZSB_DIR}/logs/pomodoro/${year}/${month}
 
   local fullFilePath=${logFolder}/${fileName}
 
-  if [[ ! -f $fullFilePath ]]; then
-    ${zsb}.info "Pomodoro not found"
-    return 0
+  if [[ ! -f ${fullFilePath} ]]
+    then ${zsb}.cancel "Pomodoro not found"
   fi
 
   ${fileOpenerProgram} ${fullFilePath}
