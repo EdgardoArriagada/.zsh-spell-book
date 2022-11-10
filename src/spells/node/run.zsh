@@ -18,9 +18,16 @@ run() {
 
 _${zsb}.run() {
   [[ -f package.json ]] || return 0
-  local completion=( `<package.json jq '.scripts' | jq -r 'keys[]'` )
+  local token='=_=_='
+  local parsed=` 
+    <package.json jq '.scripts' |\
+    jq -r "to_entries|map(\"\(.key)${token}\(.value|tostring)\")|.[]" |\
+    sd ':' '\:' |\
+    sd "${token}" ':'
+  `
+  local completion=( ${(@f)parsed} )
 
-  compadd -U ${completion}
+  _describe 'command' completion
 }
 
 
