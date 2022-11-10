@@ -1,18 +1,10 @@
 run() {
-  local packageManager
-  if [[ -f package-lock.json ]]; then
-    packageManager="npm run"
-  elif [[ -f yarn.lock ]]; then
-    packageManager="yarn"
-  else
-    ${zsb}.cancel 'No package manager found'
-  fi
+  local runCmd=`[[ -f yarn.lock ]] && print "yarn" || print "npm run"`
 
-  printAndRun "${packageManager} ${@}"
-
+  printAndRun "${runCmd} ${@}"
 
   if (($#))
-    then alert "DONE: '${packageManager} ${@}'"
+    then alert "DONE: '${runCmd} ${@}'"
   fi
 }
 
