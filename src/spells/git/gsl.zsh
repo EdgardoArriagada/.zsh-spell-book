@@ -1,17 +1,14 @@
 gsl() {
-  local gslEmptyMsg="Stash list is empty."
-  local -r stashList="`git stash list`"
-
-  [[ -z "$stashList" ]] && ${zsb}.cancel "$gslEmptyMsg"
+  ${zsb}.validateStashList
 
   if [[ "$1" = "--clear" ]]; then
     ${zsb}.confirmMenu.warning "You are about to clear the `hl 'git stash list'`"
 
-    git stash clear && ${zsb}.success "$gslEmptyMsg"
+    git stash clear && ${zsb}.success 'Stash list is empty'
     return 0
   fi
 
-  echo "$stashList" | c -p -l ruby -
+  git stash list | c -p -l ruby -
 }
 
 hisIgnore gsl 'gsl --clear'

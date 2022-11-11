@@ -19,9 +19,9 @@ ${zsb}.confirmMenu.withItems() {
   local inputItems="$2"
 
   ${zsb}.warning "$inputWarning"
-  echo " "
-  [[ -n "$inputItems" ]] && echo "$(hl ${inputItems})"
-  echo " "
+  print ' '
+  [[ -n "$inputItems" ]] && print "$(hl ${inputItems})"
+  print ' '
 
   ${zsb}.confirmMenu.withPrompt
 }
@@ -33,6 +33,6 @@ ${zsb}.confirmMenu.withPrompt() {
 
 ${zsb}.confirmMenu.warning() {
   ${zsb}.warning "$@"
-  echo " "
+  print ' '
   ${zsb}.confirmMenu.withPrompt
 }
