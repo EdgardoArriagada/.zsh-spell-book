@@ -8,7 +8,7 @@ ga() (
       '.') ${this}.addFilesWithDotFlag ;;
       'new') ${this}.addFilesWithNewFlag "$@" ;;
       'fast') ${this}.addFilesWithFastFlag "$@" ;;
-      '-unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
+      '--unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
   }

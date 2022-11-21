@@ -1,4 +1,4 @@
-# firstArg can be "-staged, -unmerged, etc"
+# firstArg can be "--staged, --unmerged, etc"
 ${zsb}.recentGitFile() {
   local callback=${1}
   local firstArg=${2}
@@ -11,7 +11,7 @@ ${zsb}.recentGitFile() {
 
 _${zsb}.recentGitFile() {
   local usedCompletion=( "${words[@]:2:$CURRENT-3}" )
-  local firstItemUsed="${words[3]}" # first item can be "-staged, -unmerged, etc or a file"
+  local firstItemUsed="${words[3]}" # first item can be "--staged, --unmerged, etc or a file"
   local currentCompletion="${words[CURRENT]}"
   local completionList=( $(${zsb}.getGitFiles "${firstItemUsed:2}") )
 
