@@ -2,8 +2,8 @@
 tmls() { tmux ls 2>&1 | cut -d':' -s -f1 }
 
 tml() {
-  local latestSession=$(tmux display-message -p '#S')
-  local currentList=(`eval "tmls"`)
+  local latestSession=`tmux display-message -p '#S'`
+  local currentList=(`tmls`)
   printf "\n"
   for session in "${currentList[@]}"; do
     if [[ "$session" = "$latestSession" ]]; then
