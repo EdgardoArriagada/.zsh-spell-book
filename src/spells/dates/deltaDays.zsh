@@ -4,5 +4,5 @@ deltaDays() {
   date1=$(date -j -f "%Y-%m-%d"  "$1" +%s)
   date2=$(date -j -f "%Y-%m-%d"  "$2" +%s)
 
-  printf '%d delta days\n' "$(( (date2-date1)/86400 ))"
+  printf $(( (date2-date1)/86400 ))
 }
