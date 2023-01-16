@@ -84,11 +84,11 @@ cdp() {
   fi
 
   if [[ -d "$1" ]]; then
-    eval "cd ${1}"; return 0
+    eval "cd '${1}'"; return 0
   fi
 
   if [[ -f "$1" ]]; then
-    eval "cd $(dirname ${1})"; return 0
+    eval "cd '`dirname ${1}`'"; return 0
   fi
 }
 compdef "_${zsb}.playMenuAndExecute '${__cdp_dataGetter}'" cdp
