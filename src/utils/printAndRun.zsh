@@ -1,4 +1,1 @@
-printAndRun() {
-  ${zsb}.info "Running `hl ${@}`"
-  eval "$@"
-}
+printAndRun() { ${zsb}.info "Running `hl ${@}`"; eval "$@" }
