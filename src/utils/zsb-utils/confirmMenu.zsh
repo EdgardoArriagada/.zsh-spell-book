@@ -36,3 +36,10 @@ ${zsb}.confirmMenu.warning() {
   print ' '
   ${zsb}.confirmMenu.withPrompt
 }
+
+${zsb}.confirmMenu.info() {
+  ${zsb}.info "${@} $(hl "[Y/n]")"
+  print ' '
+  ${zsb}.confirmMenu.withCancel
+}
+
