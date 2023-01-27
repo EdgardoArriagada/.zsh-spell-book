@@ -1,5 +1,5 @@
 alias cdzsb="cds ${ZSB_DIR}"
-alias vzsb="cdzsb && nvim"
+alias vzsb="builtin cd ${ZSB_DIR} && nvim && ${zsb}.gitStatus"
 alias galias="alias | rg"
 alias his="nvim ~/.zsh_history"
 alias lis="tail -5 ~/.zsh_history | c -p -l ruby -"
