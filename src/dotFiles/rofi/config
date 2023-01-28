@@ -1,4 +1,0 @@
-rofi.theme: ~/.zsh-spell-book/src/dotFiles/rofi/custom.theme
-
-rofi.kb-cancel: Control+c
-
