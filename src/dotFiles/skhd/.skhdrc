@@ -1,5 +1,0 @@
-fn - l : zsb_charm_handyLinks
-fn - r : zsb_charm_remainingPomodoro
-cmd - h [
-  "alacritty" : tmux select-pane -L
-]

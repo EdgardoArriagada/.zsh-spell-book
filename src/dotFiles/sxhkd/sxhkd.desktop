@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Exec=sh -c "pgrep sxhkd || sxhkd -c ~/.sxhkdrc &"
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-Name=sxhkd
-Comment=Enable sxhkd daemon that listen for keyboard shortcuts
-
