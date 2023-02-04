@@ -73,10 +73,6 @@ preexec() { printf ${ZSB_CURSOR_DEFAULT}; } # Use beam shape cursor for each new
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
-# solves a bug for when you enter in visual mode empty and can't escape
-function escape-from-zero-visual { ((CURSOR == 0)) && zle vi-insert; }
-zle -N escape-from-zero-visual
-
 # for more, run "zle -al" and/or "bindkey -l"
 bindkey -M vicmd '.' append-last-word
 
@@ -92,10 +88,6 @@ bindkey -M viins '^q' push-line
 # Workarouds
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 bindkey "^?" backward-delete-char # makes backspace work as normal when reentering to ins mode in the middle of the command
-bindkey -M visual 'i' escape-from-zero-visual
-bindkey -M visual 'a' escape-from-zero-visual
-bindkey -M visual 'I' escape-from-zero-visual
-bindkey -M visual 'A' escape-from-zero-visual
 
 # Initialize hisignore with some stuff to ignore already
 declare ZSB_HISTORY_IGNORE=(
