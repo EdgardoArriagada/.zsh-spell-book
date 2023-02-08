@@ -4,9 +4,8 @@ searchAndReplace() {
 
   local filesWithMatches=(`rg --files-with-matches ${search}`)
 
-  if (( ${#filesWithMatches[@]} == 0 )); then
-    ${zsb}.throw "No files found with matches for '`hl ${search}`'"
-    return 1
+  if (( ${#filesWithMatches[@]} == 0 ))
+    then ${zsb}.throw "No files found with matches for '`hl ${search}`'"
   fi
 
   ${zsb}.confirmMenu.withPrompt
