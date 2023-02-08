@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+
+if [[ -f ${1} ]]
+  then nvim ${1}
+fi
