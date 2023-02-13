@@ -1,2 +1,2 @@
 alias configurejava='sudo update-alternatives --config java'
-alias javaVersion="java -version 2>&1 | awk -F '\"' 'FNR==2 {print \$2}'"
+alias javaVersion="java --version | head -1 | cut -d' ' -f2"
