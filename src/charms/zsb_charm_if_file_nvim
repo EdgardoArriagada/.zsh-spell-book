@@ -2,6 +2,7 @@
 set -o errexit
 set -o pipefail
 
-if [[ -f ${1} ]]
-  then nvim ${1}
+if [[ -f ${1} ]]; then
+  eval "$(fnm env --use-on-cd)"
+  nvim ${1}
 fi
