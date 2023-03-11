@@ -7,8 +7,8 @@ multisearch() {
   local lastArg="${@[$#]}"
   local files=(`rg --files-with-matches ${1}`)
 
-  for arg in ${@:2}; do
-    [[ "$arg" = "$lastArg" ]] && break
+  # skip first and last arg
+  for arg in ${@:2:# - 2}; do
     (( ${#files[@]} )) || break
 
     files=(`rg --files-with-matches ${arg} ${files[@]}`)
