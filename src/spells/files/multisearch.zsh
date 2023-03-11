@@ -11,12 +11,12 @@ multisearch() {
     [[ "$arg" = "$lastArg" ]] && break
     (( ${#files[@]} )) || break
 
-    files=(`rg --files-with-matches ${arg} $(print -r -- -g ${^files})`)
+    files=(`rg --files-with-matches ${arg} ${files[@]}`)
   done
 
   (( ${#files[@]} )) || return 0
 
-  rg ${lastArg} `print -r -- -g ${^files}`
+  rg ${lastArg} ${files[@]}
 }
 
 
