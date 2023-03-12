@@ -9,14 +9,10 @@ multisearch() {
 
   # skip first and last arg
   for arg in ${@:2:# - 2}; do
-    (( ${#files[@]} )) || break
+    (( ${#files[@]} )) || return 0
 
     files=(`rg --files-with-matches ${arg} ${files[@]}`)
   done
 
-  (( ${#files[@]} )) || return 0
-
   rg ${lastArg} ${files[@]}
 }
-
-
