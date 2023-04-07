@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o nounset
+set -o pipefail
+
+function getNormalUrlFromSshUrl() {
+  local input="${1:4}"
+  local formattedInput=`printf "$input" | sd ':' '/' | sd '.git$' ''`
+  printf "https://${formattedInput}"
+}
+
+local remoteUrl=`git config --get remote.origin.url`
+
+if [[ "$remoteUrl" =~ "^http[s]?:\/{2}" ]]
+  then printf ${remoteUrl}
+  else getNormalUrlFromSshUrl ${remoteUrl}
+fi

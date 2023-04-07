@@ -1,22 +1,10 @@
-.github.getNormalUrlFromSshUrl() {
-  local input="${1:4}"
-  local formattedInput=`printf "$input" | sd ':' '/' | sd '.git$' ''`
-  printf "https://${formattedInput}"
-}
-
 github() {
   zparseopts -D -E -F -- -compare=compare  || return 1
-  local remoteUrl=`git config --get remote.origin.url`
 
-  local url
-  if ${zsb}.isUrl "$remoteUrl"; then
-    url="$remoteUrl"
-  else
-    url=`.${0}.getNormalUrlFromSshUrl "$remoteUrl"`
-  fi
+  local url=`get_repo_url`
 
   local tail
-  [[ -n "$compare" ]] && tail="/compare/$(git branch --show-current)"
+  [[ -n "$compare" ]] && tail="/compare/`git branch --show-current`"
 
   zsb_open "${url}${tail}"
 }
