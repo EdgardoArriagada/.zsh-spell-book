@@ -14,30 +14,34 @@ function makeCursorInvisible() {
 }
 
 function printEndMessage() {
-  "$inputCommandCancelled" && \
+  ${inputCommandCancelled} && \
     printf "\r\e[38;5;3m⚠\033[0m ${msg}" && \
     return 0
 
-  (( $inputCommandExitCode )) && \
+  (( ${inputCommandExitCode} )) && \
     printf "\r\e[38;5;1m✘\033[0m ${msg}\n" && \
     return 0
 
   printf "\r\e[38;5;2m✔\033[0m ${msg}\n"
 }
 
-function shutdown() {
+function handleShutdown() {
   printEndMessage
   makeCursorVisible
 }
 
-trap shutdown EXIT
+trap handleShutdown EXIT
 
-function spinner() {
+function printMessageWithMarginForSpinner() {
+  printf "  ${msg}"
+}
+
+function spinUntilFinish() {
   local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
   local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
 
   local i=0
-  while kill -0 $inputCommandPid 2>/dev/null; do
+  while kill -0 ${inputCommandPid} 2>/dev/null; do
     printf "\r${spinnerChars[$i]}"
     sleep .1
 
@@ -45,16 +49,16 @@ function spinner() {
   done
 }
 
-("$@") &
-inputCommandPid=$!
+# Execute the input command in the background in a subshell
+(${@}) &
+inputCommandPid=${!}
 
 makeCursorInvisible
-printf "  ${msg}"
+printMessageWithMarginForSpinner
+spinUntilFinish
 
-spinner
-
-wait $inputCommandPid
-inputCommandExitCode=$?
+wait ${inputCommandPid}
+inputCommandExitCode=${?}
 inputCommandCancelled=false
 
-exit $inputCommandExitCode
+exit ${inputCommandExitCode}
