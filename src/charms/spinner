@@ -3,14 +3,9 @@
 declare msg="\e[38;5;244m${@}\033[0m"
 declare inputCommandCancelled=true
 declare inputCommandExitCode
-declare inputCommandPid
 
 function makeCursorVisible() {
   tput cnorm
-}
-
-function makeCursorInvisible() {
-  tput civis
 }
 
 function printEndMessage() {
@@ -31,10 +26,18 @@ function handleShutdown() {
 }
 
 trap handleShutdown EXIT
+# trap shutdown as soon as it mets all
+# the requirements to declare handler
+
+function makeCursorInvisible() {
+  tput civis
+}
 
 function printMessageWithMarginForSpinner() {
   printf "  ${msg}"
 }
+
+declare inputCommandPid
 
 function spinUntilFinish() {
   local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
