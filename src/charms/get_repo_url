@@ -4,8 +4,8 @@ set -o nounset
 set -o pipefail
 
 function getNormalUrlFromSshUrl() {
-  local input="${1:4}"
-  local formattedInput=`printf "$input" | sd ':' '/' | sd '.git$' ''`
+  local input=${1:4}
+  local formattedInput=`printf ${input} | sd ':' '/' | sd '.git$' ''`
   printf "https://${formattedInput}"
 }
 
