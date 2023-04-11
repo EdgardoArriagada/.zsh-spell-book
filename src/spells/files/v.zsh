@@ -9,12 +9,12 @@ else
 fi
 
 v() {
-  local -r file="$1"
+  local -r file=${1}
 
-  case "$file" in
-    *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv "$file" ;;
+  case ${file:l} in
+    *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv ${file} ;;
 
-    *.mp4|*.mkv|*.avi|*.mov|*.webm|*.flv|*.wmv) ${zsb}.v.openVideo "$file" ;;
+    *.mp4|*.mkv|*.avi|*.mov|*.webm|*.flv|*.wmv) ${zsb}.v.openVideo ${file} ;;
 
     *.pdf \
     |*.jpg \
@@ -27,7 +27,7 @@ v() {
     |*.bmp \
     |*.heif \
     |*.jpeg \
-    |*.svg) ${zsb}.v.openImg "$file" ;;
+    |*.svg) ${zsb}.v.openImg ${file} ;;
 
     *) nvim ${file} && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
