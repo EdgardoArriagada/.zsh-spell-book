@@ -3,15 +3,6 @@ ga() (
   local firstArg="$1" # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
   local filesToAdd=( )
 
-  ${this}.main() {
-    case "$firstArg" in
-      '.') ${this}.addFilesWithDotFlag ;;
-      'new') ${this}.addFilesWithNewFlag "$@" ;;
-      'fast') ${this}.addFilesWithFastFlag "$@" ;;
-      '--unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
-      *) ${this}.addFilesWithDefaulBehavior "$@" ;;
-    esac
-  }
 
   ${this}.addFilesWithDotFlag() git add .
 
@@ -68,7 +59,14 @@ ga() (
     git add "${filesToAdd[@]}"
   }
 
-  ${this}.main "$@"
+  case "$firstArg" in
+    '.') ${this}.addFilesWithDotFlag ;;
+    'new') ${this}.addFilesWithNewFlag "$@" ;;
+    'fast') ${this}.addFilesWithFastFlag "$@" ;;
+    '--unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
+    *) ${this}.addFilesWithDefaulBehavior "$@" ;;
+  esac
+
   ${zsb}.gitStatus
 )
 
