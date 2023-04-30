@@ -34,19 +34,19 @@ pomodoro() (
     tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
   }
 
-  ## main ##
-  totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
+  { # main
+    totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
 
-  ${zsb}.pomodoro.validateSeconds "$totalSeconds"
+    ${zsb}.pomodoro.validateSeconds "$totalSeconds"
 
-  ${this}.createPomodoroTmuxSession
+    ${this}.createPomodoroTmuxSession
 
-  ${this}.validatePomodoroNotRunning
+    ${this}.validatePomodoroNotRunning
 
-  ${this}.clearPomodoroSessionTty
+    ${this}.clearPomodoroSessionTty
 
-  ${this}.beginPomodoro
+    ${this}.beginPomodoro
 
-  ${zsb}.success "Pomodoro started."
-  return 0
+    ${zsb}.success "Pomodoro started."
+  }
 )

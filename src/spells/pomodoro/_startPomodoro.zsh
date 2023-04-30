@@ -6,20 +6,6 @@ ${zsb}.pomodoro.startPomodoro() (
   local beginString
   local thisMonthFolder
 
-  ${this}.main() {
-    ${this}.setBeginString
-
-    ${this}.setThisMonthFolder
-
-    ${this}.appendSpaceToLog
-
-    ${this}.appendPomodoroInfoToLog "started"
-
-    ${zsb}.pomodoro.runTimerFromSeconds "$totalSeconds"
-
-    ${this}.appendPomodoroInfoToLog "ended"
-  }
-
   ${this}.setBeginString() {
     if [[ -z "$label" ]]; then
       beginString="Session for"
@@ -43,5 +29,17 @@ ${zsb}.pomodoro.startPomodoro() (
 
   ${this}.generateDate() echo $(date +%H:%M:%S)
 
-  ${this}.main "$@"
+  { # main
+    ${this}.setBeginString
+
+    ${this}.setThisMonthFolder
+
+    ${this}.appendSpaceToLog
+
+    ${this}.appendPomodoroInfoToLog "started"
+
+    ${zsb}.pomodoro.runTimerFromSeconds "$totalSeconds"
+
+    ${this}.appendPomodoroInfoToLog "ended"
+  }
 )

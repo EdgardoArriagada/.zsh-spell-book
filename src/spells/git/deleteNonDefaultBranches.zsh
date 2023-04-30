@@ -16,17 +16,19 @@ deleteNonDefaultBranches() (
     echo "$nonDefaultBranches" | xargs git branch -D
   }
 
-  ${zsb}.validateGitRepo
+  { # main
+    ${zsb}.validateGitRepo
 
-  ${zsb}.userWorkingOnDefaultBranch || ${zsb}.throw "You must run this command from a default branch"
+    ${zsb}.userWorkingOnDefaultBranch || ${zsb}.throw "You must run this command from a default branch"
 
-  ${this}.setNonDefaultBranches
+    ${this}.setNonDefaultBranches
 
-  [[ -z "$nonDefaultBranches" ]] &&
-    ${zsb}.cancel "There are no non default branches to delete."
+    [[ -z "$nonDefaultBranches" ]] &&
+      ${zsb}.cancel "There are no non default branches to delete."
 
-  ${this}.printPrompt
-  ${this}.performDeletion
+    ${this}.printPrompt
+    ${this}.performDeletion
+  }
 )
 
 hisIgnore deleteNonDefaultBranches

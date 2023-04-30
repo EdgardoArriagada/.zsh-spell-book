@@ -3,12 +3,6 @@ ${zsb}.pomodoro.convertToSeconds() (
   local inputTime="$1"
   local totalSeconds
 
-  ${this}.main () {
-    ${this}.setTotalSeconds
-
-    echo "$totalSeconds"
-  }
-
   ${this}.setTotalSeconds() {
     if ${this}.isShortTimeFormat; then ${this}.setTotalSecondsFromShortTimeFormat;
     elif ${zsb}.isInteger "$inputTime"; then totalSeconds="$inputTime";
@@ -57,6 +51,10 @@ ${zsb}.pomodoro.convertToSeconds() (
     totalSeconds=$(($hoursToSeconds + $minutesToSeconds + $seconds ))
   }
 
-  ${this}.main "$@"
+  { # main
+    ${this}.setTotalSeconds
+
+    print ${totalSeconds}
+  }
 )
 

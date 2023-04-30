@@ -2,12 +2,6 @@ dice() (
   local this="$0"
   local sides="${1:=6}"
 
-  ${this}.main() {
-    ${this}.validateSides
-
-    ${this}.rollTheDice
-  }
-
   ${this}.validateSides() {
     ${this}.areSidesValid && return 0
     ${zsb}.throw "Invalid number of sides. $(it "{sides : sides ∈ Z and 2 ≤ sides ≤ ∞}")"
@@ -28,7 +22,11 @@ dice() (
     echo $((randomNumber % ${sides} + 1))
   }
 
-  ${this}.main "$@"
+  { # main
+    ${this}.validateSides
+
+    ${this}.rollTheDice
+  }
 )
 
 complete -W "2 4 6 8 12" dice

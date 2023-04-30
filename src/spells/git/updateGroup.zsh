@@ -5,14 +5,6 @@ ${zsb}.updateGroup() (
   local currentRepo
   local currentBranch
 
-  ${this}.main() {
-    ${this}.validateRepoList
-
-    ${this}.manageEachRepo
-
-    ${zsb}.success "Finished"
-  }
-
   ${this}.validateRepoList() {
     [[ -z "$repoList" ]] && ${zsb}.throw "Invalid repolist."
   }
@@ -88,5 +80,11 @@ ${zsb}.updateGroup() (
     done
   }
 
-  ${this}.main "$@"
+  { # main
+    ${this}.validateRepoList
+
+    ${this}.manageEachRepo
+
+    ${zsb}.success "Finished"
+  }
 )

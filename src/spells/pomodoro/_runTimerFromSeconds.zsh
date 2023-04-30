@@ -2,14 +2,6 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
   local this="$0"
   local totalSeconds="$1"
 
-  ${this}.main () {
-    ${this}.runTimer
-
-    ${this}.playNotifSound &
-    ${this}.printEndOfTimeMsg &
-    ${this}.displayNotifCard
-  }
-
   ${this}.runTimer() {
     local -r spacesToKeepOutputClean="   "
     for i in {$totalSeconds..01}
@@ -66,6 +58,12 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     ${zsb}.info "The timer for `hl "$(${this}.getCustomTimeMessage)"` was up at `hl $(date +%H:%M:%S)`"
   }
 
-  ${this}.main "$@"
+   { # main
+    ${this}.runTimer
+
+    ${this}.playNotifSound &
+    ${this}.printEndOfTimeMsg &
+    ${this}.displayNotifCard
+   }
 )
 
