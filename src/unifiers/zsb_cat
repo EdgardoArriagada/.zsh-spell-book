@@ -2,6 +2,9 @@
 set -o errexit
 set -o pipefail
 
-(( $ZSB_MACOS )) && bat $@ || batcat $@
+if (( $ZSB_MACOS ))
+  then bat $@
+  else batcat $@
+fi
 
 exit 0
