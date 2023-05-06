@@ -9,8 +9,8 @@ pomodoro() (
   local pomodoroLabel=${*}
 
   ${this}.createPomodoroTmuxSession() {
-    if ! $(tmux has-session -t pomodoro 2>/dev/null); then
-      tmux new -d -s pomodoro
+    if ! tmux has-session -t pomodoro 2>/dev/null
+      then tmux new -d -s pomodoro
     fi
   }
 
