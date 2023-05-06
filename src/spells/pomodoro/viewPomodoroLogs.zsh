@@ -1,17 +1,17 @@
 ${zsb}.pomodoro.viewPomodoroLogs() {
-  local fileName="$1"
-  local fileOpenerProgram="$2"
+  local fileName=$1
+  local fileOpenerProgram=$2
 
   # File format: mnt-dd-yyyy.log
-  local year="$(echo "$fileName" | cut -d "-" -f3 | cut -d "." -f1)"
-  local month="$(echo "$fileName" | cut -d "-" -f 1)"
+  local year=`cut -d '-' -f3 <<< ${fileName} | cut -d '.' -f1`
+  local month=`cut -d '-' -f 1 <<< ${fileName}`
 
   local logFolder=${ZSB_DIR}/logs/pomodoro/${year}/${month}
 
   local fullFilePath=${logFolder}/${fileName}
 
   if [[ ! -f ${fullFilePath} ]]
-    then ${zsb}.cancel "Pomodoro not found"
+    then ${zsb}.cancel 'Pomodoro not found'
   fi
 
   ${fileOpenerProgram} ${fullFilePath}
@@ -33,20 +33,23 @@ ${zsb}.pomodoro.lastWorkingDay() {
   local today=`date +%w`
   local SUNDAY=0
   local MONDAY=1
-  if [[ $today = $SUNDAY ]] ; then
-    ${zsb}.pomodoro.twoDaysAgo
-  elif [[ $today = $MONDAY ]] ; then
-    ${zsb}.pomodoro.threeDaysAgo
-  else
-    ${zsb}.pomodoro.oneDayAgo
+
+  if (( ${today} == ${SUNDAY} ))
+    then ${zsb}.pomodoro.twoDaysAgo
+
+  elif (( ${today} == ${MONDAY} ))
+    then ${zsb}.pomodoro.threeDaysAgo
+
+  else ${zsb}.pomodoro.oneDayAgo
+
   fi
 }
 
-cpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) zsb_cat
-vpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log) nvim
+cpomodoro() ${zsb}.pomodoro.viewPomodoroLogs `date +%b-%d-%Y.log` zsb_cat
+vpomodoro() ${zsb}.pomodoro.viewPomodoroLogs `date +%b-%d-%Y.log` nvim
 
-cypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") zsb_cat
-vypomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date +%b-%d-%Y.log -d "yesterday") nvim
+cypomodoro() ${zsb}.pomodoro.viewPomodoroLogs `date +%b-%d-%Y.log -d yesterday` zsb_cat
+vypomodoro() ${zsb}.pomodoro.viewPomodoroLogs `date +%b-%d-%Y.log -d yesterday` nvim
 
 if (( $ZSB_MACOS )); then
   cwpomodoro() ${zsb}.pomodoro.viewPomodoroLogs $(date `${zsb}.pomodoro.lastWorkingDay` +%b-%d-%Y.log) zsb_cat

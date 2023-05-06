@@ -1,12 +1,12 @@
 # send instructions to pomodoro tmux session without attaching to it
 pomodoro() (
-  local this="$0"
-  local POMODORO_REGEX="^⏳"
+  local this=$0
+  local POMODORO_REGEX='^⏳'
 
   local totalSeconds
-  local inputTime="$1"
+  local inputTime=$1
   shift 1
-  local pomodoroLabel="${*}"
+  local pomodoroLabel=${*}
 
   ${this}.createPomodoroTmuxSession() {
     if ! $(tmux has-session -t pomodoro 2>/dev/null); then
@@ -21,7 +21,7 @@ pomodoro() (
 
   ${this}.validatePomodoroNotRunning() {
     if ${this}.isPomodoroRunning; then
-      ${zsb}.throw "A pomodoro timer is already running."
+      ${zsb}.throw 'A pomodoro timer is already running.'
     fi
   }
 
@@ -30,14 +30,14 @@ pomodoro() (
   ${this}.beginPomodoro() {
     # the white space at the beginning is to
     # skip it from being saved to zsh history
-    local pomodoroCmd=" ${zsb}.pomodoro.startPomodoro $totalSeconds $inputTime '$pomodoroLabel'"
-    tmux send-keys -t pomodoro.0 "$pomodoroCmd" ENTER
+    local pomodoroCmd=" ${zsb}.pomodoro.startPomodoro ${totalSeconds} ${inputTime} '${pomodoroLabel}'"
+    tmux send-keys -t pomodoro.0 ${pomodoroCmd} ENTER
   }
 
   { # main
-    totalSeconds=$(${zsb}.pomodoro.convertToSeconds "$inputTime")
+    totalSeconds=`${zsb}.pomodoro.convertToSeconds ${inputTime}`
 
-    ${zsb}.pomodoro.validateSeconds "$totalSeconds"
+    ${zsb}.pomodoro.validateSeconds ${totalSeconds}
 
     ${this}.createPomodoroTmuxSession
 
@@ -47,6 +47,6 @@ pomodoro() (
 
     ${this}.beginPomodoro
 
-    ${zsb}.success "Pomodoro started."
+    ${zsb}.success 'Pomodoro started.'
   }
 )
