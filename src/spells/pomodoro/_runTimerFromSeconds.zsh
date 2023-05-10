@@ -10,23 +10,25 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     done
   }
 
+  # Refactored to perform the less amount of instructions
   ${this}.convertSecondsToTime() {
-    local seconds=$1
-    local hours=$((${seconds} / 3600))
-    local mins=$((${seconds} / 60 % 60))
-    local secs=$((${seconds} % 60))
+    # $1 input total seconds
+    local hours=$(($1 / 3600))
+    local mins=$(($1 / 60 % 60))
+    local secs=$(($1 % 60))
 
-    (( ${hours} < 10 )) && hours=0${hours}
-    (( ${mins} < 10 )) && mins=0${mins}
-    (( ${secs} < 10 )) && secs=0${secs}
+    (( $secs < 10 )) && secs=0${secs}
 
-    if (( ${hours} == 0 )); then
-      if (( ${mins} == 0 ))
+    if (( $hours == 0 )); then
+      if (( $mins == 0 ))
         then printf ${secs}
-        else printf ${mins}:${secs}
+        else (( $mins < 10 )) && mins=0${mins}; printf ${mins}:${secs}
       fi
       return 0
     fi
+
+    (( ${hours} < 10 )) && hours=0${hours}
+    (( ${mins} < 10 )) && mins=0${mins}
 
     printf ${hours}:${mins}:${secs}
   }
