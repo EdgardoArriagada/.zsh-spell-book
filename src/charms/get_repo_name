@@ -5,15 +5,17 @@ set -o pipefail
 
 
 local pathToDotGit=`git rev-parse --git-dir 2>/dev/null`
-[[ -z "$pathToDotGit" ]] && return 0
+if [[ -z "$pathToDotGit" ]]
+  then return 0
+fi
 
-if [[ "$pathToDotGit" = ".git" ]]; then
-  printf ${PWD##*/}; return $?
+if [[ "$pathToDotGit" = ".git" ]]
+  then printf ${PWD##*/}; return $?
 fi
 
 local tail=${pathToDotGit##*/}
-if [[ "$tail" != ".git" ]]; then
-  printf "$tail"; return $?
+if [[ "$tail" != ".git" ]]
+  then printf ${tail}; return $?
 fi
 
 local parentRootDir=`dirname ${pathToDotGit}`
