@@ -1,4 +1,4 @@
-ZSB_MESSAGE_BADGE=`color 244 zsb`
+ZSB_MESSAGE_BADGE=`color 245 zsb`
 
 ${zsb}.message() print "${ZSB_MESSAGE_BADGE} `color ${1} ${2}`: ${@:3}"
 
