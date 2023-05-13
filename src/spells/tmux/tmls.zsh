@@ -4,13 +4,12 @@ tmls() tmux ls -F "#{session_name}"
 tml() {
   local latestSession=`tmux display-message -p '#S'`
   local currentList=(`tmls`)
-  printf "\n"
+  print ' '
   for session in "${currentList[@]}"; do
-    if [[ "$session" = "$latestSession" ]]; then
-      [[ -z "$TMUX" ]] && printf "~ ${session}\n" || printf "* $(hl ${session})\n"
-    else
-      printf "  ${session}\n"
+    if [[ "$session" = "$latestSession" ]]
+      then [[ -z "$TMUX" ]] && print "~ ${session}" || print "* `hl ${session}`"
+      else print "  ${session}"
     fi
   done
-  printf "\n"
+  print ' '
 }

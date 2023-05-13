@@ -9,10 +9,10 @@ pwdd() {
   fi
 
   if [[ -n "$copy" ]]; then
-    print "$result" | zsb_clipcopy
+    zsb_clipcopy <<< $result
     ${zsb}.info "`hl ${result}` copied"
   else
-    print "$result"
+    print $result
   fi
 }
 
