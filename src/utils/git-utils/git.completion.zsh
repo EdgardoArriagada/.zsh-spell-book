@@ -2,7 +2,7 @@ ${zsb}.gitBranches() {
   ${zsb}.isGitRepo || return 0
   case "$1" in
     'current') git branch --show-current ;;
-    *) git branch | sd '^\*' '$1' ;;
+    *) git branch --format='%(refname:short)' ;;
   esac
 }
 

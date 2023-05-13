@@ -1,9 +1,7 @@
-_gswm.branchList() { git branch | sd '^\*' '$1'; }
-
 gswm() {
   local this=$0
 
-  for b in `_${this}.branchList`; do
+  for b in `${zsb}.gitBranches`; do
     if [[ "$b" == "main" || "$b" == "master" ]]
       then git switch ${b}; return
     fi
