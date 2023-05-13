@@ -18,7 +18,7 @@ ${zsb}.getGitFiles.getGitFilesFromRegex() {
 }
 
 ${zsb}.getGitFiles() (
-  local this="$0"
+  local this=$0
   local regex="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
 
   if [[ -n "$regex" ]]
