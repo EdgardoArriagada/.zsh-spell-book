@@ -1,4 +1,4 @@
-${zsb}.current.getDir() print ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
+${zsb}.current.getDir() <<< ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
 
 ${zsb}_createCurrentDir() {
   ${zsb}.validateJira

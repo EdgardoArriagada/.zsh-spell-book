@@ -28,19 +28,19 @@ catdiff() (
 
     if [[ -n "$file1Lacks" ]]; then
       ${this}.printFileInfo ${file1}
-      print ${file1Lacks}
+      <<< ${file1Lacks}
     fi
 
     if [[ -n "$file1Lacks" && -n "$file2Lacks" ]]; then
       hr
-      print ""
+      <<< ''
     fi
 
     if [[ -n "$file2Lacks" ]]; then
       ${this}.printFileInfo ${file2}
-      printf ${file2Lacks}
+      <<< ${file2Lacks}
     fi
 
-    print ""
+    <<< ''
   }
 )

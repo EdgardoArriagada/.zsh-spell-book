@@ -1,5 +1,5 @@
 cds() {
-  print ' '
+  <<< ''
   cd $1
 
   if ${zsb}.isGitRepo; then
@@ -8,5 +8,5 @@ cds() {
     return 0
   fi
 
-  print ' '
+  <<< ''
 }

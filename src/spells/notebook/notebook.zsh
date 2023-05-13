@@ -13,7 +13,7 @@ ${zsb}.page.getTodaysPage() {
   local currentPage="${ZSB_CHAPT}/${year}/${month}/${page}"
   mkdir -p $(dirname ${currentPage})
 
-  print ${currentPage}
+  <<< ${currentPage}
 }
 
 

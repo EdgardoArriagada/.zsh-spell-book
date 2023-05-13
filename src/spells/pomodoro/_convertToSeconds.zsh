@@ -60,7 +60,7 @@ ${zsb}.pomodoro.convertToSeconds() (
   { # main
     ${this}.setTotalSeconds
 
-    printf ${totalSeconds}
+    <<< ${totalSeconds}
   }
 )
 

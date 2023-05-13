@@ -18,15 +18,15 @@ ${zsb}.pomodoro.viewPomodoroLogs() {
 }
 
 ${zsb}.pomodoro.twoDaysAgo() {
-  (( $ZSB_MACOS )) && printf '-v -2d' || printf  '-d 2 days ago'
+  (( $ZSB_MACOS )) && <<< '-v -2d' || <<<  '-d 2 days ago'
 }
 
 ${zsb}.pomodoro.threeDaysAgo() {
-  (( $ZSB_MACOS )) && printf '-v -3d' || printf  '-d 3 days ago'
+  (( $ZSB_MACOS )) && <<< '-v -3d' || <<<  '-d 3 days ago'
 }
 
 ${zsb}.pomodoro.oneDayAgo() {
-  (( $ZSB_MACOS )) && printf '-v -1d' || printf  '-d 1 day ago'
+  (( $ZSB_MACOS )) && <<< '-v -1d' || <<<  '-d 1 day ago'
 }
 
 ${zsb}.pomodoro.lastWorkingDay() {

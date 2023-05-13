@@ -5,5 +5,5 @@ kebab-case() {
     tr -s '-' | # Remove duplicated dashes
     sed 's/^-//;s/-$//'` # Remove dashes at the beginning and at the end
 
-  print ${(L)result}
+  <<< ${(L)result}
 }

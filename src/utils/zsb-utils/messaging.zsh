@@ -1,6 +1,6 @@
 ZSB_MESSAGE_BADGE=`color 245 zsb`
 
-${zsb}.message() print "${ZSB_MESSAGE_BADGE} `color ${1} ${2}`: ${@:3}"
+${zsb}.message() <<< "${ZSB_MESSAGE_BADGE} `color ${1} ${2}`: ${@:3}"
 
 ${zsb}.throw() {
   ${zsb}.message $ZSB_RED 'ERROR' "$@"

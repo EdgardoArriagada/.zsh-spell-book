@@ -1,4 +1,4 @@
-# ghpr.my-repo-folder() printf "--title 'Pr title' --body 'some body to love'"
+# ghpr.my-repo-folder() <<< "--title 'Pr title' --body 'some body to love'"
 
 createPr_defaultProps="--title WIP --body WIP"
 

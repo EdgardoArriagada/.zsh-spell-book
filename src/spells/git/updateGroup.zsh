@@ -1,6 +1,6 @@
 ${zsb}.updateGroup() (
-  local this="$0"
-  local repoFile="$1"
+  local this=$0
+  local repoFile=$1
   local repoList=($(< ${repoFile}))
   local currentRepo
   local currentBranch
@@ -14,10 +14,10 @@ ${zsb}.updateGroup() (
       hr
 
       # Repo has to start with "~/"
-      currentRepo="${HOME}/${repo#*/}"
+      currentRepo=${HOME}/${repo#*/}
       ${this}.validateRepo
 
-      builtin cd "$currentRepo"
+      builtin cd $currentRepo
       ${this}.manageRepo
     done
   }
@@ -52,7 +52,7 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.printHeader() {
-    printf "[ $(hl ${currentRepo##*/}) ($currentBranch) ${1}]\n"
+    <<< "[ $(hl `pwdd`) ($currentBranch) ${1}]"
   }
 
   ${this}.printCleanHeader() ${this}.printHeader

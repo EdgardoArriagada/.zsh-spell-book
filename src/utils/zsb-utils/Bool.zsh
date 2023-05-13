@@ -1,10 +1,10 @@
 Bool() {
-  [[ "$1" == "0" ]] && printf true && return
-  [[ -z "$1" ]] && printf false && return
+  [[ "$1" == "0" ]] && <<< true && return
+  [[ -z "$1" ]] && <<< false && return
 
-  ${zsb}.isInteger "$1" && printf false && return
+  ${zsb}.isInteger "$1" && <<< false && return
 
-  [[ "$1" = "false" ]] && printf false && return
+  [[ "$1" = "false" ]] && <<< false && return
 
-  printf true
+  <<< true
 }

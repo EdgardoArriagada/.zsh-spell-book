@@ -13,13 +13,13 @@ dice() (
 
   ${this}.rollTheDice() {
     local result=$(${this}.generateRandom)
-    print "[${sides}]: $(hl "$result")"
+    <<< "[${sides}]: $(hl "$result")"
   }
 
   ${this}.generateRandom() {
     # changing seed is mandatory as base seed doesn't change in a subshell
     local randomNumber=$(head -1 /dev/urandom | od -An | awk 'FNR == 1 { print $2 }')
-    print $((randomNumber % ${sides} + 1))
+    <<< $((randomNumber % ${sides} + 1))
   }
 
   { # main

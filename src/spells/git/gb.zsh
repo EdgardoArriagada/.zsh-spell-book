@@ -1,6 +1,6 @@
 gb() {
   if [[ -z "$1" ]]
-    then print ' ' ; git branch; print ' '; return 0
+    then <<< '' ; git branch; <<< ''; return 0
   fi
 
   git branch "$@"

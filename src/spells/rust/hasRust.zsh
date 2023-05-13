@@ -1,7 +1,7 @@
 hasRust() {
-  print " "; printAndRun "rustc --version"
-  print " "; printAndRun "cargo --version"
-  print " "; printAndRun "rustup --version"
-  print " "
+  <<< ''; printAndRun "rustc --version"
+  <<< ''; printAndRun "cargo --version"
+  <<< ''; printAndRun "rustup --version"
+  <<< ''
   ${zsb}.info "run `hl 'rustup update stable'` to update to the latest stable release"
 }

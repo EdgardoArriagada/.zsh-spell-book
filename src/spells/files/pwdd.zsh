@@ -12,7 +12,7 @@ pwdd() {
     zsb_clipcopy <<< $result
     ${zsb}.info "`hl ${result}` copied"
   else
-    print $result
+    <<< $result
   fi
 }
 

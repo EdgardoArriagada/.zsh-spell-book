@@ -14,7 +14,7 @@ gnameit() {
     \r$(hl $oldUrl)"
 
   local regexReplacer="s/:\/{2}/:\/\/${userName}@/"
-  local newUrl="$(printf "$oldUrl" | sed -E "$regexReplacer")"
+  local newUrl="$(sed -E "$regexReplacer" <<< "$oldUrl")"
 
   git remote set-url origin "$newUrl" && \
     ${zsb}.success "Url changed from
