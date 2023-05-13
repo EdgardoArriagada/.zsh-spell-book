@@ -51,9 +51,7 @@ ${zsb}.updateGroup() (
     ${zsb}.userWorkingOnDefaultBranch && ${zsb}.isRepoClean
   }
 
-  ${this}.printHeader() {
-    <<< "[ $(hl `pwdd`) ($currentBranch) ${1}]"
-  }
+  ${this}.printHeader() <<< "[ $(hl `get_repo_name`) ($currentBranch) ${1}]"
 
   ${this}.printCleanHeader() ${this}.printHeader
 
