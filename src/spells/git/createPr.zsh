@@ -14,7 +14,7 @@ createPr() {
 
   ${zsb}.confirmMenu.warning "Pull request to `hl ${parentBranch}` from `hl $(git branch --show-current)`"
 
-  local propsGetter="ghpr.`getRepoName`"
+  local propsGetter="ghpr.`get_repo_name`"
   local restOfProps
   if type "$propsGetter" > /dev/null; then
     restOfProps=`${propsGetter}`
