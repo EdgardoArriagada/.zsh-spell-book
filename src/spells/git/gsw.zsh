@@ -5,6 +5,8 @@ gsw() {
   esac
 }
 
+hisIgnore 'gsw -' 'gsw 0' 'gsw ='
+
 _${zsb}.gsw() {
   [[ "$CURRENT" -gt "2" ]] && return 0
 
