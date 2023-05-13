@@ -1,4 +1,4 @@
-alias gswd='git checkout develop'
+alias gswd='git switch develop'
 alias gs='${zsb}.gitStatus'
 alias pop='git stash pop'
 alias amend='git commit --amend --no-edit --gpg-sign'

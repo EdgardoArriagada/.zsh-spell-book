@@ -1,5 +1,8 @@
 gsw() {
-  git switch ${1}
+  case $1 in
+    [0=]) git switch - ;;
+    *) git switch ${1} ;;
+  esac
 }
 
 _${zsb}.gsw() {
