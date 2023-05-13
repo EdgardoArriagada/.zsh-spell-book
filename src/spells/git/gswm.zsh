@@ -1,6 +1,14 @@
-_gswm.switch() git switch ${1} >/dev/null 2>&1
+_gswm.branchList() { git branch | sd '^\*' '$1'; }
 
-gswm() { _gswm.switch 'main' ||  _gswm.switch 'master'; }
+gswm() {
+  local this=$0
+
+  for b in `_${this}.branchList`; do
+    if [[ "$b" == "main" || "$b" == "master" ]]
+      then git switch ${b}; return
+    fi
+  done
+}
 
 hisIgnore gswm
 
