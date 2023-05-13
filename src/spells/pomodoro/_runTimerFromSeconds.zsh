@@ -21,8 +21,8 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
 
     if (( $hours == 0 )); then
       if (( $mins == 0 ))
-        then printf ${secs}
-        else (( $mins < 10 )) && mins=0${mins}; printf ${mins}:${secs}
+        then <<< ${secs}
+        else (( $mins < 10 )) && mins=0${mins}; <<< ${mins}:${secs}
       fi
       return 0
     fi
@@ -30,7 +30,7 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     (( ${hours} < 10 )) && hours=0${hours}
     (( ${mins} < 10 )) && mins=0${mins}
 
-    printf ${hours}:${mins}:${secs}
+    <<< ${hours}:${mins}:${secs}
   }
 
   ${this}.displayNotifCard() alert "The timer for `${this}.getCustomTimeMessage` is over"
