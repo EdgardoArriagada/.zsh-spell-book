@@ -14,7 +14,7 @@ gp() {
 
 
 _${zsb}.gp() {
-  [[ "$CURRENT" -gt 3 ]] && return 0
+  (( $CURRENT > 3 )) && return 0
 
   local compList
   case $CURRENT in

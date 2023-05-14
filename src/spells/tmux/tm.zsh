@@ -16,7 +16,7 @@ tm() {
 }
 
 _${zsb}.tm() {
-  [[ "$CURRENT" -gt "2" ]] && return 0
+  (( $CURRENT > 2 )) && return 0
 
   local -r tmuxList=( `tmls` )
 

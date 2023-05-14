@@ -22,7 +22,7 @@ unz() {
 }
 
 _${zsb}.unz() {
-  [[ "$CURRENT" -gt 2 ]] && return 0
+  (( $CURRENT > 2 )) && return 0
   local -a ext
   ext=( *.{tar.gz,tar.bz2,tar.xz,bz2,rar,gz,tar,tbz2,tgz,xz,zip,Z,7z} )
   _multi_parts / ext

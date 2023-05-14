@@ -1,20 +1,20 @@
 # TODO Refactor to remove dup code
 _${zsb}.singleComp() {
-  [[ "$CURRENT" -gt 2 ]] && return 0
+  (( $CURRENT > 2 )) && return 0
   local -r comp=( "$@" )
   _describe 'command' comp
 }
 
 # singleComp with Command
 _${zsb}.singleCompC() {
-  [[ "$CURRENT" -gt 2 ]] && return 0
+  (( $CURRENT > 2 )) && return 0
   local -r comp=( $(eval "$1") )
   _describe 'command' comp
 }
 
 # cache expensive commands
 _${zsb}.cachedSingleComp() {
-  [[ "$CURRENT" -gt 2 ]] && return 0
+  (( $CURRENT > 2 )) && return 0
 
   local comp
   local -r inputCommand=${1:?'You must provide a command'}
@@ -33,7 +33,7 @@ _${zsb}.cachedSingleComp() {
 
 # cachedSingleComp by Working Directory
 _${zsb}.cachedSingleCompWD() {
-  [[ "$CURRENT" -gt 2 ]] && return 0
+  (( $CURRENT > 2 )) && return 0
 
   local comp
   local -r inputCommand=${1:?'You must provide a command'}
