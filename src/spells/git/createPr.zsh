@@ -1,6 +1,6 @@
 # ghpr.my-repo-folder() <<< "--title 'Pr title' --body 'some body to love'"
 
-createPr_defaultProps="--title WIP --body WIP"
+ZSB_CREATEPR_DEFAULT_PROPS="--title WIP --body WIP"
 
 createPr() {
   ${zsb}.validateGitRepo
@@ -16,10 +16,9 @@ createPr() {
 
   local propsGetter="ghpr.`get_repo_name`"
   local restOfProps
-  if type "$propsGetter" > /dev/null; then
-    restOfProps=`${propsGetter}`
-  else
-    restOfProps="$createPr_defaultProps"
+  if type "$propsGetter" > /dev/null
+    then restOfProps=`${propsGetter}`
+    else restOfProps="$ZSB_CREATEPR_DEFAULT_PROPS"
   fi
 
   gh pr create --draft --base "$parentBranch" ${(z)restOfProps}
