@@ -86,7 +86,7 @@ _${zsb}.ga() {
   esac
 
   # if we are completing the first item
-  if (( $CURRENT = 2 )) then
+  if (( $CURRENT == 2 )) then
     case "$currentCompletion" in
       n*) completionList+=('new') ;;
       f*) completionList+=('fast') ;;
