@@ -1,6 +1,6 @@
 gb() {
   case $# in
-    0) <<< '' ; git branch; <<< ''  ;;
+    0) <<< '' ; git branch; <<< '' ;;
     *) git branch "$@" ;;
   esac
 }
