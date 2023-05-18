@@ -19,11 +19,11 @@ _${zsb}.gp() {
   local compList
   case $CURRENT in
     2)
-      compList=( $(${zsb}.gitBranches 'current') )
+      compList=( `${zsb}.gitBranches 'current'` )
       ;;
     3)
-      local -r firstItemUsed="${words[2]}"
-      if ${zsb}.isDefaultBranch "$firstItemUsed"; then
+      local -r firstItemUsed=${words[2]}
+      if ${zsb}.isDefaultBranch ${firstItemUsed}; then
         compList=( --aware )
       fi
       ;;
