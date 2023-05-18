@@ -1,8 +1,7 @@
 ${zsb}.gitBranches() {
-  ${zsb}.isGitRepo || return 0
-  case "$1" in
-    'current') git branch --show-current ;;
-    *) git branch --format='%(refname:short)' ;;
+  case $1 in
+    'current') git branch --show-current 2>/dev/null ;;
+    *) git branch --format='%(refname:short)' 2>/dev/null ;;
   esac
 }
 
