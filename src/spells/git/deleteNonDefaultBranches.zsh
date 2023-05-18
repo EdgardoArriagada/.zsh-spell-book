@@ -3,7 +3,7 @@ deleteNonDefaultBranches() (
   local nonDefaultBranches
 
   ${this}.setNonDefaultBranches() {
-    nonDefaultBranches=`${zsb}.gitBranches | command grep -vE "^(${ZSB_GIT_DEFAULT_BRANCHES})$"`
+    nonDefaultBranches=`${zsb}.gitBranches | grep -vE "^(${ZSB_GIT_DEFAULT_BRANCHES})$"`
   }
 
   ${this}.printPrompt() {
