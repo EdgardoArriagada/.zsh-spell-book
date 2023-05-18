@@ -1,9 +1,8 @@
 gb() {
-  if [[ -z "$1" ]]
-    then <<< '' ; git branch; <<< ''; return 0
-  fi
-
-  git branch "$@"
+  case $# in
+    0) <<< '' ; git branch; <<< ''  ;;
+    *) git branch "$@" ;;
+  esac
 }
 
 _gb() { git branch | sd "^.." ""; }
