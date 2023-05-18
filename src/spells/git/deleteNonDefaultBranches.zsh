@@ -1,5 +1,5 @@
 deleteNonDefaultBranches() (
-  local this="$0"
+  local this=$0
   local nonDefaultBranches
 
   ${this}.setNonDefaultBranches() {
