@@ -5,9 +5,7 @@ gb() {
   esac
 }
 
-_gb() { git branch | sd "^.." ""; }
-
-compdef "_${zsb}.nonRepeatedListC _gb" gb
+compdef "_${zsb}.nonRepeatedListC ${zsb}.gitBranches" gb
 
 alias GB="toggleCapsLock && gb"
 
