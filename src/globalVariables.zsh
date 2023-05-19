@@ -10,7 +10,7 @@ ZSB_PURPLE=13
 ZSB_CYAN=14
 
 # Git
-ZSB_GIT_DEFAULT_BRANCHES="(master|develop|devel|dev|main)"
+ZSB_GIT_DEFAULT_BRANCHES="(master|develop|main)"
 ZSB_GIT_CRITICAL_BRANCHES="(master|main)"
 ZSB_GIT_AWARE="--aware:Proceed even if affecting a default branch"
 ZSB_GIT_FORCE="--force:Proceed even in commit have already been pushed online"
