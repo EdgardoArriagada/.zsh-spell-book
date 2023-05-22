@@ -8,7 +8,7 @@ ${zsb}.gitSwitch() {
   done
 }
 
-alias gswm="${zsb}.gitSwitch '${ZSB_GIT_CRITICAL_BRANCHES}'"
+alias gswm="${zsb}.gitSwitch '${ZSB_GIT_MAIN_BRANCHES}'"
 alias gswd="${zsb}.gitSwitch '${ZSB_GIT_DEVELOP_BRANCHES}'"
 
 hisIgnore gswm gswd
