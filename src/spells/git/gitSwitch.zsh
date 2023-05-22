@@ -1,11 +1,10 @@
 ${zsb}.gitSwitch() {
-  local branchReg="^${1}$"
+  local branch=`${zsb}.gitBranches | rg "^${1}$"`
 
-  for b in `${zsb}.gitBranches`; do
-    if [[ "$b" =~ "$branchReg" ]]
-      then git switch ${b}; return
-    fi
-  done
+  if [[ -n "${branch}" ]]
+    then git switch ${branch}
+    else ${zsb}.throw "No branch found for ${1}"
+  fi
 }
 
 alias gswm="${zsb}.gitSwitch '${ZSB_GIT_MAIN_BRANCHES}'"
