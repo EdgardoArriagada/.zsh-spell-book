@@ -5,24 +5,16 @@ ${zsb}.gitBranches() {
   esac
 }
 
-${zsb}.getGitFiles.removeGitTokens() sd '^...' '$1'
-
-# '--short' is better than '--porcelain' because
-# it keeps the paths of the git files relative
-# to current working folder
-${zsb}.getGitFiles.gitShortStatus() git status --short 2>/dev/null
-
-${zsb}.getGitFiles.getGitFilesFromRegex() {
-  ${zsb}.getGitFiles.gitShortStatus | rg "$1" | ${zsb}.getGitFiles.removeGitTokens
-}
-
 ${zsb}.getGitFiles() (
-  local this=$0
-  local regex="${ZSB_GIT_FILETYPE_TO_REGEX[$1]}"
+  local regex="${ZSB_GIT_FILETYPE_TO_REGEX[${1}]}"
+
+  # '--short' is better than '--porcelain' because
+  # it keeps the paths of the git files relative
+  # to current working folder
 
   if [[ -n "$regex" ]]
-    then ${this}.getGitFilesFromRegex ${regex}
-    else ${this}.gitShortStatus | ${this}.removeGitTokens
+    then git status --short 2>/dev/null | rg "${regex}" | cut -c 4-
+    else git status --short 2>/dev/null | cut -c 4-
   fi
 )
 
