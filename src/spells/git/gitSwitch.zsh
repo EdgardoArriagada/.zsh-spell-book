@@ -1,5 +1,5 @@
 ${zsb}.gitSwitch() {
-  local branch=`${zsb}.gitBranches | rg "^${1}$"`
+  local branch=`${zsb}.gitBranches | rg -m1 "^${1}$"`
 
   if [[ -n "${branch}" ]]
     then git switch ${branch}
