@@ -10,12 +10,15 @@ ZSB_PURPLE=13
 ZSB_CYAN=14
 
 # Git
-ZSB_GIT_DEFAULT_BRANCHES="(master|develop|main)"
-ZSB_GIT_CRITICAL_BRANCHES="(master|main)"
+declare ZSB_GIT_CRITICAL_BRANCHES_ARRAY=(master main)
+declare ZSB_GIT_DEVELOP_BRANCHES_ARRAY=(develop)
+
 ZSB_GIT_AWARE="--aware:Proceed even if affecting a default branch"
 ZSB_GIT_FORCE="--force:Proceed even in commit have already been pushed online"
+
 ZSB_GIT_LOCK_FILES=( package-lock.json Gemfile.lock yarn.lock Cargo.lock go.sum )
 ZSB_GIT_PACKAGE_FILES=( package.json Gemfile Cargo.toml go.mod )
+
 declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
   ['staged']='^[MARCD]'
   ['green']='^[MARCD]'
@@ -27,3 +30,11 @@ declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
   ['unmerged']='(^U)|(^.U)'
 )
 
+
+### DONT TOUCH ###
+declare ZSB_GIT_DEFAULT_BRANCHES_ARRAY=( ${ZSB_GIT_CRITICAL_BRANCHES_ARRAY[@]} )
+ZSB_GIT_DEFAULT_BRANCHES_ARRAY+=( ${ZSB_GIT_DEVELOP_BRANCHES_ARRAY[@]} )
+
+ZSB_GIT_CRITICAL_BRANCHES="(${(j:|:)ZSB_GIT_CRITICAL_BRANCHES_ARRAY})"
+ZSB_GIT_DEVELOP_BRANCHES="(${(j:|:)ZSB_GIT_DEVELOP_BRANCHES_ARRAY})"
+ZSB_GIT_DEFAULT_BRANCHES="(${(j:|:)ZSB_GIT_DEFAULT_BRANCHES_ARRAY})"
