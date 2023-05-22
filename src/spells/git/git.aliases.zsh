@@ -1,11 +1,10 @@
-alias gswd='git switch develop'
 alias gs='${zsb}.gitStatus'
 alias pop='git stash pop'
 alias amend='git commit --amend --no-edit --gpg-sign'
 alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit --branches"
 alias gsp='git status --porcelain=v2'
 
-hisIgnore gswd gs pop amend glog gsp
+hisIgnore gs pop amend glog gsp
 
 alias gst='git status'
 alias gf='spinner git fetch'
@@ -16,7 +15,6 @@ alias guu="ggl && gf"
 
 hisIgnore gf gsh prv vpr
 
-alias GSWD='toggleCapsLock && gswd'
 alias GS='toggleCapsLock && gs'
 alias POP='toggleCapsLock && pop'
 alias SIGN='toggleCapsLock && sign'
