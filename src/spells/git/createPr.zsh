@@ -25,4 +25,4 @@ createPr() {
   gh pr view --web
 }
 
-compdef _git createPr=git-branch
+compdef "_${zsb}.singleCompC '${zsb}.gitBranches'" createPr
