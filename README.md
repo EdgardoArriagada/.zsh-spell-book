@@ -28,12 +28,10 @@ Like this:
 then, in ~/temp/.zshenv paste the following depending on your OS
 
 ```zsh
-# Linux
-CONFIG=$HOME/.config
-
 # MacOS
 ZSB_MACOS=1
-CONFIG=$HOME/Library/Application\ Support
+
+# empty for the rest of OSs
 ```
 
 ### Usage
