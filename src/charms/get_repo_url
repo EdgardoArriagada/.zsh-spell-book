@@ -5,7 +5,7 @@ set -o pipefail
 
 function getNormalUrlFromSshUrl() {
   local input=${1:4}
-  local formattedInput=`sd ':' '/' <<< ${input} | sd '.git$' ''`
+  local formattedInput=`sd 'github\.com.*:' 'github.com/' <<< ${input} | sd '.git$' ''`
   printf "https://${formattedInput}"
 }
 
