@@ -1,5 +1,8 @@
 ${zsb}.gitSwitchDefault() {
-  local branch=`${zsb}.gitBranches | rg -m1 "^${1}$"`
+  local branch=`git branch --format "%(refname:short)" --all \
+    | rg -m1 "^(origin/)?${1}$" \
+    | sd '^origin/' ''
+  `
 
   if [[ -n "$branch" ]]
     then git switch ${branch}
