@@ -1,7 +1,7 @@
 ${zsb}.gitSwitchDefault() {
   local branch=`git branch --format "%(refname:short)" --all \
     | rg -m1 "^(origin/)?${1}$" \
-    | sd '^origin/' ''
+    | sd '^origin/' '' \
   `
 
   if [[ -n "$branch" ]]
