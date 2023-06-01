@@ -34,9 +34,12 @@ hisIgnore repackage
 
 _${zsb}.repackage() {
   local noVerify
-  ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
+  local aware
 
-  _${zsb}.nonRepeatedListD "$ZSB_GIT_AWARE" "$ZSB_GIT_FORCE" "$noVerify"
+  ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
+  ${zsb}.userWorkingOnDefaultBranch && aware=${ZSB_GIT_AWARE}
+
+  _${zsb}.nonRepeatedListD ${aware} ${ZSB_GIT_FORCE} ${noVerify}
 }
 
 compdef _${zsb}.repackage repackage

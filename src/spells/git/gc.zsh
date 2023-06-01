@@ -25,7 +25,6 @@ _${zsb}.gc() {
   local aware
 
   ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
-
   ${zsb}.userWorkingOnDefaultBranch && aware=${ZSB_GIT_AWARE}
 
   _${zsb}.nonRepeatedListD ${aware} ${noVerify}
