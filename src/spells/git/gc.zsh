@@ -22,9 +22,13 @@ gc() {
 
 _${zsb}.gc() {
   local noVerify
+  local aware
+
   ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
 
-  _${zsb}.nonRepeatedListD "$ZSB_GIT_AWARE" "$noVerify"
+  ${zsb}.userWorkingOnDefaultBranch && aware=${ZSB_GIT_AWARE}
+
+  _${zsb}.nonRepeatedListD ${aware} ${noVerify}
 }
 
 compdef _${zsb}.gc gc
