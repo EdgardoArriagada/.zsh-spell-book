@@ -40,4 +40,4 @@ sed '/^$/d' temp_transpilation.zsh > result.zsh # remove empty lines
 sd '\\\n' '' result.zsh # remove bash line breaks
 rm temp_transpilation.zsh
 
-print "Spellbock bundled!!"
+print "ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!"

@@ -7,11 +7,7 @@
   SD=$((RANDOM % 2))
   COLOR="\033[${SD};${CL}m"
   NOCOL='\033[0m'
-  SPACE=''
 
-  print "
-${COLOR}      ╦ ╦╔═╗╦  ╔═╗╔═╗╔╦╗╔═╗
-${SPACE}      ║║║║╣ ║  ║  ║ ║║║║║╣
-${NOCOL}      ╚╩╝╚═╝╩═╝╚═╝╚═╝╩ ╩╚═╝\n"
+  print "\n${COLOR}            ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨${NOCOL}\n"
 )
 
