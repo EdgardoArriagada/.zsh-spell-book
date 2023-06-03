@@ -9,6 +9,7 @@
 ### Prerequisites
 
 - zsh installed and configured as default shell
+- some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
 
 ### Installing
 
@@ -42,27 +43,9 @@ export PATH=~/.zsh-spell-book/src/charms:${PATH}
 
 - Use the _src/utils_ folder to add functions that can help other functions inside _src_ folder.
 
-- You should add your Linux application configurations on _src/configurations_ folder
-
 - If you want to add temporal (ignored by git) aliases, configurations, functions, variable exports, etc. You can run the _temp_ command and create/edit new files and folders with aliases as you which. Once you finish editing, you can restart your terminal to see your new temporal magic.
 
 - Use the _src/automatic-calls_ folder to add anything you want to be executed and printed to console right after a new terminal is initialized
-
-- User the _setup_ folder to setup (once per installation) some programs to use configurations stored in this project, then use the `source` command to source these scripts manually
-
-### Dynamic prefixing
-
-To use dynamic prefixing, just use the `__${zsb}.` variable to prefix function names. I.E:
-
-```shell
-  __${zsb}.example () { ... }
-```
-
-- All these functions will be deleted after _main.zsh_ is finished
-
-- To avoid clashes, you can change the prefix string in the _.env_ file at the root of the project modifying the `zsb` global variable. _(see .env.example file)_
-
-- _(Optional)_ All functions that are mean to be used inside scripts only and need to be kept after _main.zsh_ is finished should start with `${zsb}.` instead
 
 ## License
 
