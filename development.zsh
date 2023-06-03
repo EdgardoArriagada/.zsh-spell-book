@@ -26,5 +26,5 @@ ${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
   ${zsb}.sourceFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
 }
 
-print "            ::Dev Mode::\n"
+print "               🕯️ 📜🪶\n"
 
