@@ -5,4 +5,4 @@ set -o pipefail
 if (( $ZSB_MACOS ))
   then open $@
   else xdg-open $@
-if
+fi
