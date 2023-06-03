@@ -9,16 +9,25 @@
 ### Prerequisites
 
 - zsh installed and configured as default shell
+- [sd](https://github.com/chmln/sd) for bundling
 - some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
 
 ### Installing
 
-Just source the _main.zsh_ file at the end of your _.zshrc_ file
+1.- git clone ~/.zsh-spell-book
+
+2.- Bundle the project:
+
+```
+source ~/.zsh-spell-book/bundle.zsh
+```
+
+3.- source the project
 
 Like this:
 
 ```shell
- source ~/.zsh-spell-book/main.zsh
+echo "source ~/.zsh-spell-book/result.zsh" > ~/.zshrc
 ```
 
 ### Configuring
@@ -36,6 +45,19 @@ export PATH=~/.zsh-spell-book/src/charms:${PATH}
 # the rest of OSs
 export PATH=~/.zsh-spell-book/src/charms:${PATH}
 ```
+
+### Development
+
+When developing new aliases and function, it is convenient to do the following modification:
+
+```diff
+- source ~/.zsh-spell-book/result.zsh
++ source ~/.zsh-spell-book/development.zsh
+```
+
+So you get refreshed code every time you open a new terminal
+
+When finished, bundle project again and change back `development.zsh` -> `result.zsh` in your `~/.zshrc`
 
 ### Usage
 
