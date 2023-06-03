@@ -26,6 +26,5 @@ ${zsb}.sourceFiles() for f in ${*}; do source ${f}; done
   ${zsb}.sourceFiles ${ZSB_DIR}/src/automatic-calls/**/*.zsh
 }
 
-# Remove dynamic prefixed functions that start with fouble underscore
-# unfunction -m "__${zsb}.*" <- commented cuz unused
+print "    ::Dev Mode::\n"
 
