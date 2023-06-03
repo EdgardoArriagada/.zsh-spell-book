@@ -30,8 +30,10 @@ then, in ~/temp/.zshenv paste the following depending on your OS
 ```zsh
 # MacOS
 ZSB_MACOS=1
+export PATH=~/.zsh-spell-book/src/charms:${PATH}
 
-# empty for the rest of OSs
+# the rest of OSs
+export PATH=~/.zsh-spell-book/src/charms:${PATH}
 ```
 
 ### Usage
