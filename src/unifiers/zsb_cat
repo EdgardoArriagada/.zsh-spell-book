@@ -6,5 +6,3 @@ if (( $ZSB_MACOS ))
   then bat $@
   else batcat $@
 fi
-
-exit 0

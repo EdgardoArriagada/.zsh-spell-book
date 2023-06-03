@@ -2,6 +2,7 @@
 set -o errexit
 set -o pipefail
 
-(( $ZSB_MACOS )) && open $@ || xdg-open $@
-
-exit 0
+if (( $ZSB_MACOS ))
+  then open $@
+  else xdg-open $@
+if
