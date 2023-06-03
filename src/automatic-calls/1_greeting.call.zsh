@@ -8,6 +8,6 @@
   COLOR="\033[${SD};${CL}m"
   NOCOL='\033[0m'
 
-  print "\n${COLOR}            ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨${NOCOL}\n"
+  print "\n${COLOR}            𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐${NOCOL}\n"
 )
 
