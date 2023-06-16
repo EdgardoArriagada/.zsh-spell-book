@@ -11,6 +11,10 @@ function getNormalUrlFromSshUrl() {
 
 local remoteUrl=`git config --get remote.origin.url`
 
+if [[ -z "$remoteUrl" ]]
+  then exit 1
+fi
+
 if [[ "$remoteUrl" =~ "^http[s]?:\/{2}" ]]
   then printf ${remoteUrl}
   else getNormalUrlFromSshUrl ${remoteUrl}
