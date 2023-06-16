@@ -5,14 +5,14 @@ github() {
 
   local url=`get_repo_url`
 
-  if [[ -z "$url" ]]; then
-    ${zsb}.throw "Remote url not set."
+  if [[ -z "$url" ]]
+    then ${zsb}.throw "Remote url not set."
   fi
 
-  local tail
-  [[ -n "$compare" ]] && tail="/compare/`git branch --show-current`"
-
-  zsb_open "${url}${tail}"
+  if [[ -n "$compare" ]]
+    then zsb_open "${url}/compare/`git branch --show-current`"
+    else zsb_open ${url}
+  fi
 }
 
 hisIgnore 'github'
