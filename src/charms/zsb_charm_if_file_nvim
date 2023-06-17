@@ -3,6 +3,9 @@ set -o errexit
 set -o pipefail
 
 
+# (tightly coupled with tmux config, ripgrep, and nvim)
+# for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
+
 function loadFile() {
   # cargo
   export PATH=$PATH:~/.cargo/bin
