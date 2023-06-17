@@ -2,11 +2,50 @@
 set -o errexit
 set -o pipefail
 
-[[ ! -f ${1} ]] && exit 1
 
-# cargo
-export PATH=$PATH:~/.cargo/bin
-# fnm
-eval "$(fnm env --use-on-cd)"
+function loadFile() {
+  # cargo
+  export PATH=$PATH:~/.cargo/bin
+  # fnm
+  eval "$(fnm env --use-on-cd)"
 
-nvim ${1}
+  case $# in
+    1) nvim ${1} ;;
+    2) nvim ${1} +${2} ;;
+  esac
+}
+
+local lines=( ${(s.§.)"${@}"} )
+local cursorLine=${lines[$#lines]}
+
+if [[ -f ${cursorLine} ]]
+  then loadFile ${cursorLine}; exit 0
+fi
+
+function findFileIndex() {
+  local i=0
+  for line in "${lines[@]}"; do
+    : $((i++))
+    if [[ -f ${line} ]]; then
+      printf ${i}
+      return
+    fi
+  done
+  printf "Err"
+}
+
+local fileIndex=`findFileIndex`
+
+if [[ ${fileIndex} == "Err" ]]
+  then exit 1
+fi
+
+# get number out of first number until ':' in a line using param expansion
+local lineNumber=${cursorLine%%:*}
+
+# if its a valid number, open the file
+if [[ "$lineNumber" = <-> ]]
+  then loadFile ${lines[${fileIndex}]} ${lineNumber}; exit 0
+fi
+
+exit 1
