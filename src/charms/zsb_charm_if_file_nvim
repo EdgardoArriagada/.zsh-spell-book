@@ -19,7 +19,7 @@ function loadFile() {
 }
 
 local lines=( ${(s.§.)"${@}"} )
-local cursorLine=${lines[$#lines]}
+local cursorLine=${lines[${#lines}]}
 
 if [[ -f ${cursorLine} ]]
   then loadFile ${cursorLine}; exit 0
