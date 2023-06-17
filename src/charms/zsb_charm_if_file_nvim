@@ -28,7 +28,7 @@ function findFileIndexInValidParagraph() {
   for ((i=${#lines}; i>0; i--)); do
     if [[ ${lines[${i}]} =~ ^[0-9]+: ]]
       then continue
-    elif  [[ -f ${lines[${i}]} ]]
+    elif [[ -f ${lines[${i}]} ]]
       then printf ${i}; return
     else
       exit 1 # invalid paragraph
