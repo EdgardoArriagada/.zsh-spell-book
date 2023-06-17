@@ -38,6 +38,10 @@ function findFileIndexInValidParagraph() {
 
 local fileIndex=`findFileIndexInValidParagraph`
 
+if [[ -z "${fileIndex}" ]]
+  then exit 1
+fi
+
 # get number out of first number until ':' in a line using param expansion
 local lineNumber=${cursorLine%%:*}
 
