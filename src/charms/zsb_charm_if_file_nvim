@@ -31,14 +31,14 @@ function findFileIndexInValidParagraph() {
     elif [[ -f ${lines[${i}]} ]]
       then printf ${i}; return
     else
-      exit 1 # invalid paragraph
+      break # invalid paragraph
     fi
   done
 }
 
 local fileIndex=`findFileIndexInValidParagraph`
 
-if [[ -z "${fileIndex}" ]]
+if [[ -z "$fileIndex" ]]
   then exit 1
 fi
 
