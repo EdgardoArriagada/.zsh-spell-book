@@ -25,19 +25,20 @@ if [[ -f ${cursorLine} ]]
   then loadFile ${cursorLine}; exit 0
 fi
 
-function findFileIndex() {
-  local i=0
-  for line in "${lines[@]}"; do
-    : $((i++))
-    if [[ -f ${line} ]]; then
-      printf ${i}
-      return
+function findFileIndexInValidParagraph() {
+  for ((i=${#lines}; i>0; i--)); do
+    if [[ -f ${lines[${i}]} ]]
+      then printf ${i}; return
+      elif [[ ${lines[${i}]} =~ ^[0-9]+: ]]
+        then continue
+      else break
     fi
   done
+
   printf "Err"
 }
 
-local fileIndex=`findFileIndex`
+local fileIndex=`findFileIndexInValidParagraph`
 
 if [[ ${fileIndex} == "Err" ]]
   then exit 1
