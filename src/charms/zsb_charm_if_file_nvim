@@ -2,7 +2,6 @@
 set -o errexit
 set -o pipefail
 
-
 # (tightly coupled with tmux config, ripgrep, and nvim)
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
 
@@ -29,27 +28,19 @@ function findFileIndexInValidParagraph() {
   for ((i=${#lines}; i>0; i--)); do
     if [[ ${lines[${i}]} =~ ^[0-9]+: ]]
       then continue
-      elif  [[ -f ${lines[${i}]} ]]
-        then printf ${i}; return
-      else break # invalid paragraph
+    elif  [[ -f ${lines[${i}]} ]]
+      then printf ${i}; return
+    else
+      exit 1 # invalid paragraph
     fi
   done
-
-  printf "Err"
 }
 
 local fileIndex=`findFileIndexInValidParagraph`
 
-if [[ ${fileIndex} == "Err" ]]
-  then exit 1
-fi
-
 # get number out of first number until ':' in a line using param expansion
 local lineNumber=${cursorLine%%:*}
 
-# if its a valid number, open the file
-if [[ "$lineNumber" = <-> ]]
-  then loadFile ${lines[${fileIndex}]} ${lineNumber}; exit 0
-fi
+loadFile ${lines[${fileIndex}]} ${lineNumber}
 
-exit 1
+exit 0
