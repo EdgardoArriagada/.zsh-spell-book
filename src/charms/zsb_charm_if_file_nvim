@@ -27,11 +27,11 @@ fi
 
 function findFileIndexInValidParagraph() {
   for ((i=${#lines}; i>0; i--)); do
-    if [[ -f ${lines[${i}]} ]]
-      then printf ${i}; return
-      elif [[ ${lines[${i}]} =~ ^[0-9]+: ]]
-        then continue
-      else break
+    if [[ ${lines[${i}]} =~ ^[0-9]+: ]]
+      then continue
+      elif  [[ -f ${lines[${i}]} ]]
+        then printf ${i}; return
+      else break # invalid paragraph
     fi
   done
 
