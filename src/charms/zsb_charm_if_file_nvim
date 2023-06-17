@@ -33,6 +33,9 @@ case ${#lines} in
     # get number out of first number until ':' in a line using param expansion
     local lineNumber=${cursorLine%%:*}
 
+    # check if number is valid
+    [[ ${lineNumber} != <-> ]] && exit 1
+
     loadFile ${fileName} ${lineNumber}
     ;;
 esac
