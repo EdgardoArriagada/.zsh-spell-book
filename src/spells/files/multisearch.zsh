@@ -16,5 +16,5 @@ multisearch() {
     (( ${#files[@]} )) || return 0
   done
 
-  rg ${lastArg} ${files[@]}
+  rg ${lastArg} ${files[@]} `${zsb}.getMaxSearchColumns`
 }
