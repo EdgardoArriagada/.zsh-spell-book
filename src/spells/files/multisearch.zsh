@@ -4,7 +4,7 @@ multisearch() {
     1) rg ${1} ;;
   esac
 
-  local lastArg="${@[$#]}"
+  local lastArg=${@[${#}]}
   local files=(`rg --files-with-matches ${1}`)
 
   (( ${#files} )) || return 0
