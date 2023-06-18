@@ -21,7 +21,7 @@ function loadFile() {
 
   case $# in
     1) nvim ${1} ;;
-    2) nvim ${1} +${2} ;;
+    2) nvim ${1} +${2} -c 'normal zz' ;;
   esac
 }
 
