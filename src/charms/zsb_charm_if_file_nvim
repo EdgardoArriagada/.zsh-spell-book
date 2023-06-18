@@ -36,7 +36,7 @@ case ${#lines} in
     [[ ${lineNumber} != <-> ]] && exit 1
 
     loadFile ${fileName} ${lineNumber}
-    ;;
+  ;;
 esac
 
 exit 0
