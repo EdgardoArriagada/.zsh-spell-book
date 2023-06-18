@@ -13,8 +13,6 @@ if [[ ! -f ${fileName} ]]
   then exit 1
 fi
 
-local cursorLine=${lines[${#lines}]}
-
 function loadFile() {
   # cargo
   export PATH=$PATH:~/.cargo/bin
@@ -30,6 +28,7 @@ function loadFile() {
 case ${#lines} in
   1) loadFile ${fileName} ;;
   *)
+    local cursorLine=${lines[${#lines}]}
     # get number out of first number until ':' in a line using param expansion
     local lineNumber=${cursorLine%%:*}
 
