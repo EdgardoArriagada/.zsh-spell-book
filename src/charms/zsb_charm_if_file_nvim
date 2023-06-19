@@ -24,8 +24,7 @@ function loadFile() {
   esac
 }
 
-local argsMinusLastToken=${*%?} # where token is §
-local cursorLine=${argsMinusLastToken##*§}
+local cursorLine=${*##*§}
 
 if [[ -f "$cursorLine" ]]
   then loadFile ${fileName}; exit 0
