@@ -7,8 +7,8 @@ local -r lastPomodoroSessionLines="$(tmux capture-pane -p -t pomodoro | rg -m1 '
 local popupMessage
 local popupWidth
 
-if [[ "$lastPomodoroSessionLines" =~ "^⏳" ]]; then
-  popupMessage="$lastPomodoroSessionLines"
+if [[ -n "$lastPomodoroSessionLines" ]]; then
+  popupMessage=$lastPomodoroSessionLines
   popupWidth=9
 else
   popupMessage=" No pomodoro timer is running."
