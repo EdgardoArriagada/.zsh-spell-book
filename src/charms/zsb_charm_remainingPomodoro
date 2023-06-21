@@ -2,7 +2,7 @@
 set -o errexit
 set -o pipefail
 
-local -r lastPomodoroSessionLines="$(tmux capture-pane -p -t pomodoro | sed '/^$/d' | tail -1)"
+local -r lastPomodoroSessionLines="$(tmux capture-pane -p -t pomodoro | rg -m1 ⏳)"
 
 local popupMessage
 local popupWidth
