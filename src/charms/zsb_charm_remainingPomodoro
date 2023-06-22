@@ -2,13 +2,13 @@
 set -o errexit
 set -o pipefail
 
-local -r lastPomodoroSessionLines="$(tmux capture-pane -p -t pomodoro | rg -m1 '^⏳ [0-9]')"
+local -r lastPomodoroSessionLines=`tmux capture-pane -p -t pomodoro | rg -m1 '^⏳ [0-9]'`
 
 local popupMessage
 local popupWidth
 
 if [[ -n "$lastPomodoroSessionLines" ]]; then
-  popupMessage=$lastPomodoroSessionLines
+  popupMessage=${lastPomodoroSessionLines}
   popupWidth=9
 else
   popupMessage=" No pomodoro timer is running."
