@@ -18,7 +18,7 @@ ${zsb}.nodeReinstall() {
 
   ${packageManager} install && ${zsb}.isGitRepo && ${zsb}.gitStatus
 
-  alert "DONE: '${packageManager} install'"
+  alert "🏁 ${packageManager} install 🏁"
 }
 
 compdef "_${zsb}.nonRepeatedListD '-l:Keep lock files' '-n:Keep node modules' '-i:Skip installation'" ${zsb}.nodeReinstall
