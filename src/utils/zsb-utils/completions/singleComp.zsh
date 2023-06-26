@@ -1,14 +1,14 @@
 # TODO Refactor to remove dup code
 _${zsb}.singleComp() {
   (( $CURRENT > 2 )) && return 0
-  local -r comp=( "$@" )
+  local comp=( "$@" )
   _describe 'command' comp
 }
 
 # singleComp with Command
 _${zsb}.singleCompC() {
   (( $CURRENT > 2 )) && return 0
-  local -r comp=( $(eval "$1") )
+  local comp=( $(eval "$1") )
   _describe 'command' comp
 }
 
@@ -17,10 +17,10 @@ _${zsb}.cachedSingleComp() {
   (( $CURRENT > 2 )) && return 0
 
   local comp
-  local -r inputCommand=${1:?'You must provide a command'}
-  local -r cacheKey=${2:?'You must provide a cacheKey'}
-  local -r cacheDuration=${3:='5'}
-  local -r cachedValue="$(${zsb}.cache.get "$cacheKey")"
+  local inputCommand=${1:?'You must provide a command'}
+  local cacheKey=${2:?'You must provide a cacheKey'}
+  local cacheDuration=${3:='5'}
+  local cachedValue="$(${zsb}.cache.get "$cacheKey")"
 
   if [[ -z "$cachedValue" ]]; then
     comp=( $(eval "$inputCommand") )
@@ -36,12 +36,12 @@ _${zsb}.cachedSingleCompWD() {
   (( $CURRENT > 2 )) && return 0
 
   local comp
-  local -r inputCommand=${1:?'You must provide a command'}
-  local -r cacheKey=${2:?'You must provide a cacheKey'}
-  local -r cacheDuration=${3:='5'}
+  local inputCommand=${1:?'You must provide a command'}
+  local cacheKey=${2:?'You must provide a cacheKey'}
+  local cacheDuration=${3:='5'}
 
-  local -r cacheKeyWithWD="${cacheKey}---${PWD}"
-  local -r cachedValue="$(${zsb}.cache.get "$cacheKeyWithWD")"
+  local cacheKeyWithWD="${cacheKey}---${PWD}"
+  local cachedValue="$(${zsb}.cache.get "$cacheKeyWithWD")"
 
   if [[ -z "$cachedValue" ]]; then
     comp=( $(eval "$inputCommand") )

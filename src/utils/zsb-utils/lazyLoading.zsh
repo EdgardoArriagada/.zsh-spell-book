@@ -15,7 +15,7 @@ ${zsb}.lazyLoad() {
 }
 
 ${zsb}.prepareLazyLoad() {
-  local -r script=$1
+  local script=$1
   shift 1
 
   for cmd in ${@}; do

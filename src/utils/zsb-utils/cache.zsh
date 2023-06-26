@@ -7,12 +7,12 @@ ${zsb}.cache.set() {
 }
 
 ${zsb}.cache.get() {
-  local -r cacheValue="${ZSB_CACHE[${1},VALUE]}"
+  local cacheValue="${ZSB_CACHE[${1},VALUE]}"
   [[ -z "$cacheValue" ]] && return 0
 
-  local -r cacheStart="${ZSB_CACHE[${1},START]}"
-  local -r cacheDuration="${ZSB_CACHE[${1},DURATION]}"
-  local -r elapsedTime="$(($(date +%s) - $cacheStart))"
+  local cacheStart="${ZSB_CACHE[${1},START]}"
+  local cacheDuration="${ZSB_CACHE[${1},DURATION]}"
+  local elapsedTime="$(($(date +%s) - $cacheStart))"
 
   if [[ "$elapsedTime" -le "$cacheDuration" ]]; then
     echo "$cacheValue" && return 0

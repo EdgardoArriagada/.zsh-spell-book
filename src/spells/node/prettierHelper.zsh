@@ -25,7 +25,7 @@ prettierHelper() {
 }
 
 _prettierHelper.file() {
-  local -r prettierFile=.prettierrc.yaml
+  local prettierFile=.prettierrc.yaml
   print "trailingComma: \"es5\"
 tabWidth: 2
 semi: false

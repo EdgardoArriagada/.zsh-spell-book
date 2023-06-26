@@ -2,12 +2,12 @@ _${zsb}.make() {
   (( $CURRENT > 2 )) && return 0
   [[ ! -f ./Makefile ]] && return 0
 
-  local -r parsedMakefile="`
+  local parsedMakefile="`
       grep --only-matching '^[a-zA-Z-]*:' Makefile |\
       sd ':' ''
   `"
 
-  local -r compList=( "${(@f)parsedMakefile}" )
+  local compList=( "${(@f)parsedMakefile}" )
 
   _describe 'command' compList
 }

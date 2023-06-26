@@ -9,14 +9,14 @@ morning() {
   # Unlock sudo password
   sudo cat /dev/null
 
-  local -r start=`date +%s`
+  local start=`date +%s`
   while true; do
     sudo apt update && sudo apt dist-upgrade -y && break
     : $((attempts++))
     ${zsb}.info "Attempts: ${attempts}"
     sleep 2
   done
-  local -r end=`date +%s`
+  local end=`date +%s`
 
   a "Morning completed in $((end - start)) seconds."
 }

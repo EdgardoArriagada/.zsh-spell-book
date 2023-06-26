@@ -19,7 +19,7 @@ declare -Ar SPANISH_CHARACTERS=(
   [N\ =\>\ Ñ]='Ñ'
 )
 
-declare -r selection=$(print -l "${(@k)SPANISH_CHARACTERS}" | rofi ${(z)commonRofiProps} -width -8 -auto-select -p "")
+declare selection=$(print -l "${(@k)SPANISH_CHARACTERS}" | rofi ${(z)commonRofiProps} -width -8 -auto-select -p "")
 
 [[ -z "$selection" ]] && exit 0
 

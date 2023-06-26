@@ -6,17 +6,17 @@ ${zsb}.loopFiles() {
 }
 
 visualizeAll() {
-  local -r extension=${1}
+  local extension=${1}
   ${zsb}.loopFiles ./*.${extension}
 }
 
 vmatches() {
-  local -r matchingFiles=(`rg --files-with-matches ${1}`)
+  local matchingFiles=(`rg --files-with-matches ${1}`)
   ${zsb}.loopFiles ${matchingFiles[@]}
 }
 
 vgit() {
-  local -r gitFiles=(`${zsb}.getGitFiles ${1}`)
+  local gitFiles=(`${zsb}.getGitFiles ${1}`)
   ${zsb}.loopFiles ${gitFiles[@]}
 }
 

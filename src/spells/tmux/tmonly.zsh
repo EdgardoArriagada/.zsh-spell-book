@@ -1,7 +1,7 @@
 tmonly() {
-  local -r tmuxList=( $(tmls) )
-  local -r currentSession=( "$(tmux display-message -p '#S')" )
-  local -r otherSessions=${tmuxList:|currentSession}
+  local tmuxList=( $(tmls) )
+  local currentSession=( "$(tmux display-message -p '#S')" )
+  local otherSessions=${tmuxList:|currentSession}
 
   [[ -z "$otherSessions" ]] && ${zsb}.cancel "There are no other sessions."
 

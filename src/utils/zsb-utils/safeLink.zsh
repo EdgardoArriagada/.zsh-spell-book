@@ -1,6 +1,6 @@
 ${zsb}.safeLink() {
-  local -r localFile=${ZSB_DIR}/src/dotFiles/${1}
-  local -r destinationFile=${2}
+  local localFile=${ZSB_DIR}/src/dotFiles/${1}
+  local destinationFile=${2}
 
   # Check if setup is already done
   [[ "$(readlink ${destinationFile})" = "$localFile" ]] &&

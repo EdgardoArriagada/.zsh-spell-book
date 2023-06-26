@@ -1,7 +1,7 @@
 _tm.getCurrenSession() tmux display-message -p '#S'
 
 tm() {
-  local -r targetSession=${1:='main'}
+  local targetSession=${1:='main'}
 
   # if outside tmux
   [[ -z "$TMUX" ]] && tmux new -A -s ${targetSession} && return $?
@@ -18,13 +18,13 @@ tm() {
 _${zsb}.tm() {
   (( $CURRENT > 2 )) && return 0
 
-  local -r tmuxList=( `tmls` )
+  local tmuxList=( `tmls` )
 
   # if outside tmux
   [[ -z "$TMUX" ]] &&  _describe 'command' tmuxList && return 0
 
-  local -r currentSession=( `_tm.getCurrenSession` )
-  local -r actualList=(${tmuxList:|currentSession})
+  local currentSession=( `_tm.getCurrenSession` )
+  local actualList=(${tmuxList:|currentSession})
   _describe 'command' actualList
 }
 

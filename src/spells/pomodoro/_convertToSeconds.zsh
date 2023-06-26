@@ -44,15 +44,15 @@ ${zsb}.pomodoro.convertToSeconds() (
   }
 
   ${this}.setTotalSecondsFromTimeFormat() {
-    local -r reverseTime=`rev <<< ${inputTime}`
+    local reverseTime=`rev <<< ${inputTime}`
 
-    local -r seconds=`cut -d':' -f1 <<< ${reverseTime} | rev`
-    local -r minutes=`cut -d':' -f2 <<< ${reverseTime} | rev`
-    local -r hours=`cut -d':' -f3 <<< ${reverseTime} | rev`
+    local seconds=`cut -d':' -f1 <<< ${reverseTime} | rev`
+    local minutes=`cut -d':' -f2 <<< ${reverseTime} | rev`
+    local hours=`cut -d':' -f3 <<< ${reverseTime} | rev`
 
     local hoursToSeconds=0
     [[ -n "$hours" ]] && hoursToSeconds=$((${hours} * 60 * 60))
-    local -r minutesToSeconds=$((${minutes} * 60))
+    local minutesToSeconds=$((${minutes} * 60))
 
     totalSeconds=$((${hoursToSeconds} + ${minutesToSeconds} + ${seconds} ))
   }

@@ -3,7 +3,7 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
   local totalSeconds=$1
 
   ${this}.runTimer() {
-    local -r spacesToKeepOutputClean='   '
+    local spacesToKeepOutputClean='   '
     for i in {${totalSeconds}..01}; do
       printf "\r⏳ `${this}.convertSecondsToTime ${i}`${spacesToKeepOutputClean}"
       sleep 1

@@ -22,7 +22,7 @@ _${zsb}.gp() {
       compList=( `${zsb}.gitBranches 'current'` )
       ;;
     3)
-      local -r firstItemUsed=${words[2]}
+      local firstItemUsed=${words[2]}
       if ${zsb}.isDefaultBranch ${firstItemUsed}; then
         compList=( --aware )
       fi
