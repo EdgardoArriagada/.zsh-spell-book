@@ -16,7 +16,7 @@ gc() {
   ${zsb}.gitStatus
 
   if "$isUserInDefaultBranch"; then
-    ${zsb}.warning "Commit made into default branch, use `hl git reset HEAD~` to undo the entire previous commit"
+    ${zsb}.warning "Commit made into default branch, use `hl 'git reset HEAD~'` to undo the entire previous commit"
   fi
 }
 
