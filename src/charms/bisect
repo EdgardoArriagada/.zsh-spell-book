@@ -1,0 +1,43 @@
+#!/bin/bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+function handleShutdown() {
+  printf "shutting down bisect...\n"
+  hl_tmux_tab --clear
+  git bisect reset
+}
+
+trap handleShutdown EXIT
+# trap shutdown as soon as it mets all
+# the requirements to declare handler
+hl_tmux_tab
+
+git bisect start
+
+printf "enter good commit\n"
+read good
+git bisect good ${good}
+
+printf "enter bad commit\n"
+read bad
+git bisect bad ${bad}
+
+while true; do
+  printf "Is this commit good? (y/n/f)\n"
+
+  read yn
+
+  case $yn in
+    [Yy]* ) git bisect good;;
+    [Nn]* ) git bisect bad;;
+    [Ff]* ) exit 0;;
+    * ) printf "Please answer yes or no.\n";;
+  esac
+done
+
+
+
+
+
