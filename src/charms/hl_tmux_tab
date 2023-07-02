@@ -2,16 +2,13 @@
 set -o errexit
 set -o pipefail
 
-if [[ -z "${TMUX:-}" ]]; then
-  echo "This script must be run inside tmux" >&2
+if [[ -z "$TMUX" ]]; then
+  print "This script must be run inside tmux"
   exit 1
 fi
 
-if [[ "$1" = "--clear" ]]; then
-  tmux clear1;
-  tmux clear2;
-else
-  tmux alert1;
-  tmux alert2;
+if [[ "$1" = "--clear" ]]
+  then tmux clear1 \; clear2;
+  else tmux alert1 \; alert2;
 fi
 
