@@ -1,6 +1,6 @@
 dice() (
-  local this="$0"
-  local sides="${1:=6}"
+  local this=$0
+  local sides=${1:=6}
 
   ${this}.validateSides() {
     ${this}.areSidesValid && return 0
@@ -8,17 +8,17 @@ dice() (
   }
 
   ${this}.areSidesValid() {
-    ${zsb}.isInteger "$sides" && [[ "$sides" -gt "1" ]]
+    ${zsb}.isInteger $sides && (( $sides > 1 ))
   }
 
   ${this}.rollTheDice() {
-    local result=$(${this}.generateRandom)
+    local result=`${this}.generateRandom`
     <<< "[${sides}]: $(hl "$result")"
   }
 
   ${this}.generateRandom() {
     # changing seed is mandatory as base seed doesn't change in a subshell
-    local randomNumber=$(head -1 /dev/urandom | od -An | awk 'FNR == 1 { print $2 }')
+    local randomNumber=`head -1 /dev/urandom | od -An | awk 'FNR == 1 { print $2 }'`
     <<< $((randomNumber % ${sides} + 1))
   }
 
