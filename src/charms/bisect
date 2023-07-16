@@ -36,8 +36,3 @@ while true; do
     * ) printf "Please answer yes or no.\n";;
   esac
 done
-
-
-
-
-
