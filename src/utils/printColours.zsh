@@ -1,11 +1,11 @@
 printColours() (
-  local this="$0"
+  local this=$0
   integer cols=0
 
   ${this}.printRange() {
-    local left="$1"
-    local right="$2"
-    local spaces="$3"
+    local left=$1
+    local right=$2
+    local spaces=$3
 
     for i in {${left}..${right}}; do
       (( cols++ ))
