@@ -1,5 +1,5 @@
 tmheaderbar() {
-  tmux split-window -vb -p 6 -t 0 \; \
+  tmux split-window -vb -p 6 -t 0 -P -F "#{pane_id}" \; \
     send-keys -t 0 " printCentered \"${*}\" | less; exit " Enter \; \
     select-pane -t 1
 }
@@ -10,7 +10,7 @@ tmheaderbarFixed() {
   local givenWindow="${1}:${2}"
   shift 2
 
-  tmux split-window -vb -p 6 -t ${givenWindow}.0 \; \
+  tmux split-window -vb -p 6 -t ${givenWindow}.0 -P -F "#{pane_id}" \; \
     send-keys -t ${givenWindow}.0 " printCentered \"${*}\" | less; exit " Enter \; \
     select-pane -t ${givenWindow}.1
 
