@@ -12,7 +12,7 @@ convertMovToGif() {
 }
 
 _${zsb}.convertMovToGif() {
-  local filesWithMovExtension=( ${(@f)$(ls | rg '\.mov$')} )
+  local filesWithMovExtension=( ${(@)$(ls | rg '\.mov$')} )
 
   _describe 'command' filesWithMovExtension
 }
