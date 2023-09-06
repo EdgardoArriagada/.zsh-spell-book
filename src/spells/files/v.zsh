@@ -9,7 +9,7 @@ else
 fi
 
 v() {
-  local file=${1}
+  local file=$1
 
   case ${file:l} in
     *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv ${file} ;;
