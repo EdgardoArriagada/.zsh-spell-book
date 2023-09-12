@@ -61,12 +61,12 @@ ${zsb}.pomodoro.runTimerFromSeconds() (
     ${zsb}.info "The timer for `hl $(${this}.getCustomTimeMessage)` was up at `hl $(date +%H:%M:%S)`"
   }
 
-   { # main
+  { # main
     ${this}.runTimer
 
     ${this}.playNotifSound &
     ${this}.printEndOfTimeMsg &
     ${this}.displayNotifCard
-   }
+  }
 )
 
