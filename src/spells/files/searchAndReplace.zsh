@@ -1,11 +1,14 @@
 ${zsb}.searchAndReplace.replaceInFiles() {
   local filesWithMatches=(`rg --files-with-matches ${search}`)
 
-  if (( ${#filesWithMatches} == 0 ))
-    then ${zsb}.throw "No files found with matches for '`hl ${search}`'"
+  if (( ${#filesWithMatches} == 0 )); then
+    ${zsb}.info "No files found with matches for '`hl ${search}`'"
+    return 1
   fi
 
-  ${zsb}.confirmMenu.withPrompt
+  if [[ -z "$skipPrompt" ]]; then
+    ${zsb}.confirmMenu.withPrompt
+  fi
 
   sd ${search} ${replace} ${filesWithMatches[@]}
 
@@ -15,11 +18,14 @@ ${zsb}.searchAndReplace.replaceInFiles() {
 ${zsb}.searchAndReplace.replaceFilesAndFolders() {
   local filesAndFoldersWithMatches=(`fd ${search}`)
 
-  if (( ${#filesAndFoldersWithMatches} == 0 ))
-    then ${zsb}.throw "No files or folders found with matches for '`hl ${search}`'"
+  if (( ${#filesAndFoldersWithMatches} == 0 )); then
+    ${zsb}.info "No files or folders found with matches for '`hl ${search}`'"
+    return 1
   fi
 
-  ${zsb}.confirmMenu.withPrompt
+  if [[ -z "$skipPrompt" ]]; then
+    ${zsb}.confirmMenu.withPrompt
+  fi
 
   for file in ${filesAndFoldersWithMatches[@]}; do
     if [[ -d ${file} ]]
@@ -38,7 +44,7 @@ ${zsb}.searchAndReplace.replaceFilesAndFolders() {
 searchAndReplace() {
   local this=${zsb}.${0}
 
-  zparseopts -D -E -F -- f=filesAndFolders || return 1
+  zparseopts -D -E -F -- f=filesAndFolders y=skipPrompt || return 1
 
   local search=${1:?Search string is required}
   local replace=${2:?Replace string is required}
