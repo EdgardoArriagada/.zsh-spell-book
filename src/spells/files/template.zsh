@@ -17,23 +17,22 @@ template() {
     then ${zsb}.throw "Replacement is required"
   fi
 
-  cp -r "$file" "$replace"
+  cp -r ${file} ${replace}
 
   (
-    cd "$replace"
+    cd $replace
 
     local replace_u=`firstToUpper ${replace}`
     local replace_l=`firstToLower ${replace}`
     local file_u=`firstToUpper ${file}`
     local file_l=`firstToLower ${file}`
 
-    searchAndReplace $file_u $replace_u -y
-    searchAndReplace $file_l $replace_l -y
+    searchAndReplace ${file_u} ${replace_u} -y
+    searchAndReplace ${file_l} ${replace_l} -y
 
-    searchAndReplace -f $file_u $replace_u -y
-    searchAndReplace -f $file_l $replace_l -y
+    searchAndReplace -f ${file_u} ${replace_u} -y
+    searchAndReplace -f ${file_l} ${replace_l} -y
   )
 
   tree $replace
 }
-
