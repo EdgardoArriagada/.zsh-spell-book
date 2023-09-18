@@ -22,16 +22,17 @@ template() {
   (
     cd $replace
 
-    local replace_u=`firstToUpper ${replace}`
-    local replace_l=`firstToLower ${replace}`
-    local file_u=`firstToUpper ${file}`
-    local file_l=`firstToLower ${file}`
+    local -A replaces=(
+      ["`wcase -w ${file} --kebab`"]="`wcase -w ${replace} --kebab`"
+      ["`wcase -w ${file} --camel`"]="`wcase -w ${replace} --camel`"
+      ["`wcase -w ${file} --pascal`"]="`wcase -w ${replace} --pascal`"
+    )
 
-    searchAndReplace ${file_u} ${replace_u} -y
-    searchAndReplace ${file_l} ${replace_l} -y
+    for key value in ${(@kv)replaces}; do
+      searchAndReplace ${key} ${value} -y
+      searchAndReplace -f ${key} ${value} -y
+    done
 
-    searchAndReplace -f ${file_u} ${replace_u} -y
-    searchAndReplace -f ${file_l} ${replace_l} -y
   )
 
   tree $replace
