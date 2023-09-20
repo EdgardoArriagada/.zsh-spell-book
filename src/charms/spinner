@@ -48,7 +48,7 @@ function spinUntilFinish() {
     printf "\r${spinnerChars[$i]}"
     sleep .1
 
-    [[ "$i" = "$spinLenMinusOne" ]] && i=0 || : $((i++))
+    (( $i == $spinLenMinusOne )) && i=0 || : $((i++))
   done
 }
 
