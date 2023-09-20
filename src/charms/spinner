@@ -9,11 +9,11 @@ function makeCursorVisible() {
 }
 
 function printEndMessage() {
-  ${inputCommandCancelled} && \
+  $inputCommandCancelled && \
     printf "\r\e[38;5;3m⚠\033[0m ${msg}" && \
     return 0
 
-  (( ${inputCommandExitCode} )) && \
+  (( $inputCommandExitCode )) && \
     printf "\r\e[38;5;1m✘\033[0m ${msg}\n" && \
     return 0
 
@@ -41,7 +41,7 @@ declare inputCommandPid
 
 function spinUntilFinish() {
   local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
-  local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
+  local spinLenMinusOne=$(( ${#spinnerChars[@]} - 1))
 
   local i=0
   while kill -0 $inputCommandPid 2>/dev/null; do
