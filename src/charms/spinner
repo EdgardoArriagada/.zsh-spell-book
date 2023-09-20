@@ -44,7 +44,7 @@ function spinUntilFinish() {
   local spinLenMinusOne="$(( ${#spinnerChars[@]} - 1))"
 
   local i=0
-  while kill -0 ${inputCommandPid} 2>/dev/null; do
+  while kill -0 $inputCommandPid 2>/dev/null; do
     printf "\r${spinnerChars[$i]}"
     sleep .1
 
@@ -53,15 +53,15 @@ function spinUntilFinish() {
 }
 
 # Execute the input command in the background in a subshell
-(${@}) &
-inputCommandPid=${!}
+($@) &
+inputCommandPid=$!
 
 makeCursorInvisible
 printMessageWithMarginForSpinner
 spinUntilFinish
 
-wait ${inputCommandPid}
-inputCommandExitCode=${?}
+wait $inputCommandPid
+inputCommandExitCode=$?
 inputCommandCancelled=false
 
-exit ${inputCommandExitCode}
+exit $inputCommandExitCode
