@@ -11,7 +11,7 @@ if [[ -n "$lastPomodoroSessionLines" ]]; then
   popupMessage=$lastPomodoroSessionLines
   popupWidth=9
 else
-  popupMessage=" No pomodoro timer is running."
+  popupMessage=' No pomodoro timer is running.'
   popupWidth=33
 fi
 
