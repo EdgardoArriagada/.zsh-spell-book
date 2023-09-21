@@ -7,7 +7,7 @@ _${zsb}.make() {
       sd ':' ''
   `"
 
-  local compList=( "${(@f)parsedMakefile}" )
+  local compList=( ${(@f)parsedMakefile} )
 
   _describe 'command' compList
 }
