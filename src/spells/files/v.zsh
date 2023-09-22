@@ -1,20 +1,18 @@
 if (( $ZSB_MACOS )); then
-  ${zsb}.v.openCsv() open "${1}"
-  ${zsb}.v.openImg() open "${1}"
-  ${zsb}.v.openVideo() open "${1}"
+  ${zsb}.v.openCsv() open $1
+  ${zsb}.v.openImg() open $1
+  ${zsb}.v.openVideo() open $1
 else
-  ${zsb}.v.openCsv() libreoffice --calc "${1}"
-  ${zsb}.v.openImg() sxiv -f "${1}"
-  ${zsb}.v.openVideo() vlc "${1}"
+  ${zsb}.v.openCsv() libreoffice --calc $1
+  ${zsb}.v.openImg() sxiv -f $1
+  ${zsb}.v.openVideo() vlc $1
 fi
 
 v() {
-  local file=$1
+  case ${1:l} in
+    *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv $1 ;;
 
-  case ${file:l} in
-    *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv ${file} ;;
-
-    *.mp4|*.mkv|*.avi|*.mov|*.webm|*.flv|*.wmv) ${zsb}.v.openVideo ${file} ;;
+    *.mp4|*.mkv|*.avi|*.mov|*.webm|*.flv|*.wmv) ${zsb}.v.openVideo $1 ;;
 
     *.pdf \
     |*.jpg \
@@ -27,9 +25,9 @@ v() {
     |*.bmp \
     |*.heif \
     |*.jpeg \
-    |*.svg) ${zsb}.v.openImg ${file} ;;
+    |*.svg) ${zsb}.v.openImg $1 ;;
 
-    *) nvim ${file} && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
+    *) nvim $1 && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
 }
 
