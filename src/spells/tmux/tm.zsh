@@ -4,15 +4,15 @@ tm() {
   local targetSession=${1:='main'}
 
   # if outside tmux
-  [[ -z "$TMUX" ]] && tmux new -A -s ${targetSession} && return $?
+  [[ -z "$TMUX" ]] && tmux new -A -s $targetSession && return $?
 
   [[ "`_tm.getCurrenSession`" = "$targetSession" ]] && \
-    ${zsb}.throw "You did not move."
+    ${zsb}.throw 'You did not move.'
 
   # Create session if it doesn't exists
-  tmux new -d -s ${targetSession} 2>/dev/null
+  tmux new -d -s $targetSession 2>/dev/null
 
-  tmux switch-client -t ${targetSession}
+  tmux switch-client -t $targetSession
 }
 
 _${zsb}.tm() {
