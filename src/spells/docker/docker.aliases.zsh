@@ -9,12 +9,12 @@ alias dkr='docker container run'
 alias dkrm='docker container rm'
 alias dkl="printAndRun 'docker container ls'"
 alias dkll="printAndRun 'docker container ls -a'"
-alias dkle="printAndRun \"docker container ls\
- -f 'status=exited'\
- -f 'status=created'\
- -f 'status=restarting'\
- -f 'status=removing'\
- -f 'status=paused'\
+alias dkle="printAndRun \"docker container ls \
+ -f 'status=exited' \
+ -f 'status=created' \
+ -f 'status=restarting' \
+ -f 'status=removing' \
+ -f 'status=paused' \
  -f 'status=dead'\"
 "
 
