@@ -56,8 +56,8 @@ ZSB_CURSOR_VIM='\e[1 q'
 # Change cursor shape for different vi modes.
 function zle-keymap-select {
   if [[ "$KEYMAP" = "vicmd" || "$1" = "block" ]]
-    then printf ${ZSB_CURSOR_VIM}
-    else printf ${ZSB_CURSOR_DEFAULT}
+    then printf $ZSB_CURSOR_VIM
+    else printf $ZSB_CURSOR_DEFAULT
   fi
 }
 
