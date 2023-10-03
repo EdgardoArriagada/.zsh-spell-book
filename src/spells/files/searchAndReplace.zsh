@@ -55,4 +55,8 @@ searchAndReplace() {
   fi
 }
 
+compdef "_${zsb}.nonRepeatedListD \
+  '-f:replace files and dirs' \
+  '-c:replace file contents (default)' \
+  " searchAndReplace
 
