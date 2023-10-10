@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+
+local message=${1:?message is required}
+local folderPath=${2:='default'}
+local logFileName=${3:='default.log'}
+
+if [[ -z "$logFileName" ]]
+  then logFileName=`date +%b-%d-%Y.log`
+fi
+
+local logsPath=~/.zsh-spell-book/logs/${folderPath}
+
+[[ ! -d $logsPath ]] && mkdir -p $logsPath
+printf $message >> ${logsPath}/${logFileName}
