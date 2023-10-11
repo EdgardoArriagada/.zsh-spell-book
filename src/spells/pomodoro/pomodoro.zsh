@@ -22,7 +22,10 @@ pomodoro() (
   }
 
   ${this}.beginPomodoro() {
-    pdoro -t $inputTime -c "pdoro_callback --phase started ${cbMessage}"
+    pdoro_cb --phase started ${cbMessage}
+
+    # redirect only stdout, keep stderr for error handling
+    pdoro -t $inputTime -c "pdoro_cb --phase ended ${cbMessage}" 1> /dev/null
   }
 
   { # main
@@ -31,6 +34,7 @@ pomodoro() (
     ## TODO: validate pomodoro not running
 
 
+    ${this}.setBeginString
     ${this}.beginPomodoro
 
     # ${zsb}.success 'Pomodoro started.'

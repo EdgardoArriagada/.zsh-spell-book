@@ -4,24 +4,47 @@ set -o pipefail
 
 # phase is started | ended
 zparseopts -D -E -F -- \
-  -phase:=phase \
+  -phase:=phaseArg \
   || return 1
+
+local phase=${phaseArg[2]}
+
+if [[ -z "$phase" ]]
+  then echo "phase is required"; exit 1
+fi
+
+if [[ "$phase" != "started" && "$phase" != "ended" ]]
+  then echo "phase must be 'started' or 'ended'"; exit 1
+fi
+
+echo "${phase} 1"
 
 TIME=`date +%H:%M:%S`
 YEAR=`date +%Y`
 MONTH=`date +%b`
-THIS_MONTH_FOLDER=`pomodoro/${YEAR}/${MONTH}`
+THIS_MONTH_FOLDER=pomodoro/${YEAR}/${MONTH}
 
+echo "${phase} 2"
 
 function appendPomodoroInfoToLog() {
+  echo "${*} ${phase} at ${TIME}"
   log_to_zsb "${*} ${phase} at ${TIME}" $THIS_MONTH_FOLDER
 }
 
+
+echo "${phase} 3"
+
 if [[ "$phase" = "started" ]]; then
-  log_to_zsb " "
+  echo "you started"
+  log_to_zsb " " $THIS_MONTH_FOLDER
 fi
 
-appendPomodoroInfoToLog()
+
+echo "${phase} 4"
+
+appendPomodoroInfoToLog
+
+echo "${phase} 5"
 
 if [[ "$phase" = "ended" ]]; then
   alert $@ &

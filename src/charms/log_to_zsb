@@ -4,13 +4,13 @@ set -o pipefail
 
 local message=${1:?message is required}
 local folderPath=${2:='default'}
-local logFileName=${3:='default.log'}
+local logFileName=${3:=`date +%b-%d-%Y.log`}
 
-if [[ -z "$logFileName" ]]
-  then logFileName=`date +%b-%d-%Y.log`
-fi
-
+echo "before"
 local logsPath=~/.zsh-spell-book/logs/${folderPath}
 
 [[ ! -d $logsPath ]] && mkdir -p $logsPath
-printf $message >> ${logsPath}/${logFileName}
+echo "$message" >> ${logsPath}/${logFileName}
+
+echo "echo ${message}"
+echo ${logsPath}/${logFileName}
