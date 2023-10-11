@@ -26,10 +26,10 @@ pomodoro() (
   }
 
   ${this}.beginPomodoro() {
-    pdoro_cb --phase started $cbMessage
+    pdoro_cb -p started -t $inputTime $cbMessage
 
     # redirect only stdout, keep stderr for error handling
-    pdoro -t $inputTime -c "pdoro_cb --phase ended ${cbMessage}" 1> /dev/null
+    pdoro -t $inputTime -c "pdoro_cb -p ended -t ${inputTime} ${cbMessage}" 1> /dev/null
   }
 
   { # main

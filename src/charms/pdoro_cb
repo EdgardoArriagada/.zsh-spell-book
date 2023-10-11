@@ -4,14 +4,16 @@ set -o pipefail
 
 # phase is started | ended
 zparseopts -D -E -F -- \
-  -phase:=phaseArg \
+  p:=phaseArg \
+  t:=timeArg \
   || return 1
 
 local phase=${phaseArg[2]}
+local inputTime=${timeArg[2]}
 local message=$*
 
-if [[ -z "$phase" ]]
-  then printf "phase is required"; exit 1
+if [[ -z "$inputTime" ]]
+  then printf "time must be specified"; exit 1
 fi
 
 if [[ "$phase" != "started" && "$phase" != "ended" ]]
@@ -36,7 +38,7 @@ fi
 appendPomodoroInfoToLog
 
 if [[ "$phase" = "ended" ]]; then
-  alert $@ &
+  alert "Pomodoro for ${inputTime} ended" &
 
   local soundFile=~/.zsh-spell-book/src/media/sounds/xylofon.wav
   [[ -f $soundFile ]] && zsb_play $soundFile &
