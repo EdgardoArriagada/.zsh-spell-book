@@ -6,9 +6,12 @@ local result=`pdoro -r`
 
 local popupMessage
 local popupWidth
+local prefix
 
-if [[ "$result" =~ '^[0-9]' ]]
-  then popupWidth=9
+if [[ "$result" =~ '^[0-9]' ]]; then
+  popupWidth=9
+  result="⌛ ${result}"
+
   else popupWidth=33
 fi
 
