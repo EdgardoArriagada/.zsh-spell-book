@@ -41,6 +41,9 @@ pomodoro() (
     ${this}.decorateCbMessage
     ${this}.beginPomodoro
 
-    # ${zsb}.success 'Pomodoro started.'
+    if (( $? ))
+      then ${zsb}.throw 'Pomodoro failed.'
+      else ${zsb}.success 'Pomodoro started.'
+    fi
   }
 )
