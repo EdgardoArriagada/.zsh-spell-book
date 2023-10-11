@@ -2,22 +2,19 @@
 set -o errexit
 set -o pipefail
 
-local lastPomodoroSessionLines=`tmux capture-pane -p -t pomodoro | rg -m1 '^⏳ [0-5][0-9]'`
+local result=`pdoro -r`
 
 local popupMessage
 local popupWidth
 
-if [[ -n "$lastPomodoroSessionLines" ]]; then
-  popupMessage=$lastPomodoroSessionLines
-  popupWidth=9
-else
-  popupMessage=' No pomodoro timer is running.'
-  popupWidth=33
+if [[ "$result" =~ '^[0-9]' ]]
+  then popupWidth=9
+  else popupWidth=33
 fi
 
 if (( $ZSB_MACOS ))
-  then alert $popupMessage
-  else timeout 0.6 rofi -width -${popupWidth} -e $popupMessage
+  then alert $result
+  else timeout 0.6 rofi -width -${popupWidth} -e $result
 fi
 
 exit 0
