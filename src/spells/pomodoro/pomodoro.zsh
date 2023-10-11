@@ -7,9 +7,15 @@ pomodoro() (
 
   local cbMessage
 
-  ${this}.validatePomodoroNotRunning() {
-    if ${this}.isPomodoroRunning; then
-      ${zsb}.throw 'A pomodoro timer is already running.'
+  ${this}.assertPomodoroNotRunning() {
+    if `pdoro --is-counter-running`
+      then ${zsb}.throw 'Pomodoro already running.'
+    fi
+  }
+
+  ${this}.assertInputTime() {
+    if ! `pdoro --is-valid-time ${inputTime}`
+      then ${zsb}.throw 'Invalid input time.'
     fi
   }
 
@@ -29,9 +35,9 @@ pomodoro() (
   }
 
   { # main
-    ## TODO: validate input time
+    ${this}.assertInputTime
 
-    ## TODO: validate pomodoro not running
+    ${this}.assertPomodoroNotRunning
 
 
     ${this}.setBeginString
