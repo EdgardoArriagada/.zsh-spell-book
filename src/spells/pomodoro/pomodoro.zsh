@@ -3,9 +3,7 @@ pomodoro() (
   local this=$0
   local inputTime=$1
   shift 1
-  local pomodoroLabel=${*}
-
-  local cbMessage
+  local cbMessage=${*}
 
   ${this}.assertPomodoroNotRunning() {
     if `pdoro --is-counter-running`
@@ -20,15 +18,15 @@ pomodoro() (
   }
 
 
-  ${this}.setBeginString() {
-    if [[ -z "$label" ]]
+  ${this}.decorateCbMessage() {
+    if [[ -z "$cbMessage" ]]
       then cbMessage="Session for ${inputTime}"
-      else cbMessage="${label} for ${inputTime}"
+      else cbMessage="${cbMessage} for ${inputTime}"
     fi
   }
 
   ${this}.beginPomodoro() {
-    pdoro_cb --phase started ${cbMessage}
+    pdoro_cb --phase started $cbMessage
 
     # redirect only stdout, keep stderr for error handling
     pdoro -t $inputTime -c "pdoro_cb --phase ended ${cbMessage}" 1> /dev/null
@@ -40,7 +38,7 @@ pomodoro() (
     ${this}.assertPomodoroNotRunning
 
 
-    ${this}.setBeginString
+    ${this}.decorateCbMessage
     ${this}.beginPomodoro
 
     # ${zsb}.success 'Pomodoro started.'
