@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+
+# phase is started | ended
+zparseopts -D -E -F -- \
+  -phase:=phase \
+  || return 1
+
+TIME=`date +%H:%M:%S`
+YEAR=`date +%Y`
+MONTH=`date +%b`
+THIS_MONTH_FOLDER=`pomodoro/${YEAR}/${MONTH}`
+
+
+function appendPomodoroInfoToLog() {
+  log_to_zsb "${*} ${phase} at ${TIME}" $THIS_MONTH_FOLDER
+}
+
+if [[ "$phase" = "started" ]]; then
+  log_to_zsb " "
+fi
+
+appendPomodoroInfoToLog()
+
+if [[ "$phase" = "ended" ]]; then
+  alert $@ &
+
+  local soundFile=~/.zsh-spell-book/src/media/sounds/xylofon.wav
+  [[ -f $soundFile ]] && zsb_play $soundFile &
+fi
+
+
+exit 0
