@@ -1,4 +1,4 @@
-${zsb}.pomodoro.runTimerFromSeconds() (
+${zsb}.countdown.runTimerFromSeconds() (
   local this=$0
   local totalSeconds=$1
 

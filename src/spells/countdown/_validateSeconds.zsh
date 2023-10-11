@@ -1,4 +1,4 @@
-${zsb}.pomodoro.validateSeconds() {
+${zsb}.countdown.validateSeconds() {
   local totalSeconds=$1
   local sixtyHours=216000
 
