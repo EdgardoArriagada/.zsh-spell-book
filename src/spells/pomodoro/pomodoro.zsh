@@ -34,9 +34,7 @@ pomodoro() (
 
   { # main
     ${this}.assertInputTime
-
     ${this}.assertPomodoroNotRunning
-
 
     ${this}.decorateCbMessage
     ${this}.beginPomodoro

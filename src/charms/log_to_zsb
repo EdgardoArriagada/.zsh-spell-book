@@ -6,11 +6,8 @@ local message=${1:?message is required}
 local folderPath=${2:='default'}
 local logFileName=${3:=`date +%b-%d-%Y.log`}
 
-echo "before"
 local logsPath=~/.zsh-spell-book/logs/${folderPath}
 
 [[ ! -d $logsPath ]] && mkdir -p $logsPath
-echo "$message" >> ${logsPath}/${logFileName}
 
-echo "echo ${message}"
-echo ${logsPath}/${logFileName}
+printf "${message}\n" >> ${logsPath}/${logFileName}
