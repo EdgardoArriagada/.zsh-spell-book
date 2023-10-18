@@ -13,14 +13,14 @@ ${zsb}.nodeReinstall() {
   fi
 
   if [[ -n "$cacheClean" ]]
-    then npm cache clean --force
+    then printAndRun 'npm cache clean --force'
   fi
 
   if [[ -n "$skipInstall" ]]
     then ${zsb}.cancel "Installation cancelled"
   fi
 
-  ${packageManager} install && ${zsb}.isGitRepo && ${zsb}.gitStatus
+  printAndRun "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 
   alert "🏁 ${packageManager} install 🏁"
 }
