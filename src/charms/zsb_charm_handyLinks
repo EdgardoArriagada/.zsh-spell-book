@@ -6,13 +6,13 @@ declare urlList=`print -l ${(@k)ZSB_CHARM_LINKS_DICTIONARY}`
 declare selection
 
 if (( $ZSB_MACOS ))
-  then selection=`choose ${(z)commonChooseGuiProps} <<< ${urlList}`
-  else selection=`rofi ${(z)commonRofiProps} -i -p 'Open link' <<< ${urlList}`
+  then selection=`choose ${(z)commonChooseGuiProps} <<< $urlList`
+  else selection=`rofi ${(z)commonRofiProps} -i -p 'Open link' <<< $urlList`
 fi
 
 [[ -z "$selection" ]] && exit 0
 
-zsb_open "${ZSB_CHARM_LINKS_DICTIONARY[${selection}]}"
+zsb_open ${ZSB_CHARM_LINKS_DICTIONARY[$selection]}
 
 exit 0
 
