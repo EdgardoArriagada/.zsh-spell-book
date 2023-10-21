@@ -5,7 +5,7 @@ ${zsb}.page.validateEnv() {
   ${zsb}.validate "ZSB_NOTEBOOK_CHAPTER"
 }
 
-${zsb}.page.getTodaysPage() {
+${zsb}.page.getTodaysPageName() {
   local year=`date +%Y`
   local month=`date +%b`
   local page=`date +%b-%d-%Y`
@@ -23,7 +23,7 @@ ${zsb}.page() {
   ${zsb}.page.validateEnv
 
   if [[ -z "$currentPage" ]]; then
-    local todaysPage=`${zsb}.page.getTodaysPage`
+    local todaysPage=`${zsb}.page.getTodaysPageName`
 
     (builtin cd `dirname $todaysPage` && \
       $cmd ${todaysPage}.md)
