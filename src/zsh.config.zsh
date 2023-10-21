@@ -22,16 +22,8 @@ compinit
 autoload -U bashcompinit
 bashcompinit
 
-zstyle ':completion:*' matcher-list \
-    'm:{[:lower:]}={[:upper:]}' \
-    '+r:|[._-]=* r:|=*' \
-    '+l:|=*'
-
 # allow to use throw
 autoload throw catch
-
-# Partial tab completion color
-zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==34=34}:${(s.:.)LS_COLORS}")';
 
 ## Autosuggestion plugin
 bindkey '^ ' autosuggest-accept
@@ -62,8 +54,8 @@ zle-line-init() {
     printf $ZSB_CURSOR_DEFAULT
 }
 zle -N zle-line-init
-printf $ZSB_CURSOR_DEFAULT # Use beam shape cursor on startup.
-preexec() { printf $ZSB_CURSOR_DEFAULT; } # Use beam shape cursor for each new prompt.
+printf $ZSB_CURSOR_DEFAULT # Print startup cursor
+preexec() { printf $ZSB_CURSOR_DEFAULT; } # Print cursor for each new prompt
 
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
