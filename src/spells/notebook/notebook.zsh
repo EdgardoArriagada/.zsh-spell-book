@@ -8,7 +8,7 @@ ${zsb}.page.validateEnv() {
 ${zsb}.page.getTodaysPage() {
   local year=`date +%Y`
   local month=`date +%b`
-  local page=`date +%b-%d-%Y.md`
+  local page=`date +%b-%d-%Y`
 
   local currentPage=${ZSB_CHAPT}/${year}/${month}/${page}
   mkdir -p `dirname $currentPage`
@@ -26,17 +26,25 @@ ${zsb}.page() {
     local todaysPage=`${zsb}.page.getTodaysPage`
 
     (builtin cd `dirname $todaysPage` && \
-      $cmd $todaysPage)
+      $cmd ${todaysPage}.md)
   else
     (builtin cd $ZSB_CHAPT && \
-      $cmd $currentPage)
+      $cmd ${currentPage}.md)
   fi
 }
 
 _${zsb}.page() {
-  local files=("${(@f)$(ls $ZSB_CHAPT | rg --invert-match '__off\.md$')}")
+  local files=(${(@f)$(ls $ZSB_CHAPT | rg --invert-match '__off\.md$')})
+  local result=()
 
-  _describe 'command' files
+  for f in $files; do
+    if [[ -f ${ZSB_CHAPT}/${f} ]];then
+      # trim the extension
+       result+=(${f%.*})
+    fi
+  done
+
+  _describe 'command' result
 }
 
 compdef _${zsb}.page ${zsb}.page
