@@ -31,7 +31,8 @@ ${zsb}.expected() ${zsb}.message $ZSB_GREEN '+ Expected' $@
 ${zsb}.current() ${zsb}.message $ZSB_RED '- Current' $@
 
 ${zsb}.validate() {
-  [[ -z "${(P)1}" ]] && ${zsb}.throw "You must set `hl ${1}` first."
-  return 0
+  [[ -n "${(P)1}" ]] && return 0
+
+  ${zsb}.throw "You must set `hl $1` first."
 }
 
