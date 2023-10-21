@@ -11,30 +11,30 @@ ${zsb}.page.getTodaysPage() {
   local page=`date +%b-%d-%Y.md`
 
   local currentPage=${ZSB_CHAPT}/${year}/${month}/${page}
-  mkdir -p `dirname ${currentPage}`
+  mkdir -p `dirname $currentPage`
 
-  <<< ${currentPage}
+  <<< $currentPage
 }
 
 
 ${zsb}.page() {
-  local cmd="$1"
-  local currentPage="$2"
+  local cmd=$1
+  local currentPage=$2
   ${zsb}.page.validateEnv
 
   if [[ -z "$currentPage" ]]; then
     local todaysPage=`${zsb}.page.getTodaysPage`
 
-    (builtin cd `dirname ${todaysPage}` && \
-      ${cmd} ${todaysPage})
+    (builtin cd `dirname $todaysPage` && \
+      $cmd $todaysPage)
   else
-    (builtin cd ${ZSB_CHAPT} && \
-      ${cmd} ${currentPage})
+    (builtin cd $ZSB_CHAPT && \
+      $cmd $currentPage)
   fi
 }
 
 _${zsb}.page() {
-  local files=("${(@f)$(ls ${ZSB_CHAPT} | rg --invert-match '__off\.md$')}")
+  local files=("${(@f)$(ls $ZSB_CHAPT | rg --invert-match '__off\.md$')}")
 
   _describe 'command' files
 }
