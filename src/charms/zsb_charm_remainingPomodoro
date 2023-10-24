@@ -2,7 +2,11 @@
 set -o errexit
 set -o pipefail
 
-local result=`pdoro -r`
+local result
+if res=`pdoro -r 2>&1` # capture both stdout and stderr
+  then result=$res
+  else result=$res
+fi
 
 local popupMessage
 local popupWidth
