@@ -4,8 +4,8 @@ ${zsb}.nodeReinstall() {
 
   zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall c=cacheClean || return 1
 
-  if [[ -z "$keepLockFile" && -f ${packageManagerLock} ]]
-    then messageStatus rm ${packageManagerLock}
+  if [[ -z "$keepLockFile" && -f $packageManagerLock ]]
+    then messageStatus rm $packageManagerLock
   fi
 
   if [[ -z "$keepNodeModules" && -d node_modules ]]
