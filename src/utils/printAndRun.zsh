@@ -1,1 +1,1 @@
-printAndRun() { ${zsb}.info "Running `hl ${@}`"; eval "$@" }
+printAndRun() { print "❱ `hl ${@}`"; eval "$@"; }
