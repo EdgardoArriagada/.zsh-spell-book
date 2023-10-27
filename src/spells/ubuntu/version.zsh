@@ -15,4 +15,7 @@ version() {
   fi
 }
 
+alias vs=version
+
 compdef "_${zsb}.singleCompC 'compgen -c'" version
+
