@@ -1,4 +1,4 @@
-${zsb}.countdown.validateSeconds() {
+${zsb}.countdown.assertSeconds() {
   local totalSeconds=$1
   local sixtyHours=216000
 

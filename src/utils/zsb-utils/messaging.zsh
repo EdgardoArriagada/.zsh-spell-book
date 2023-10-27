@@ -30,7 +30,7 @@ ${zsb}.expected() ${zsb}.message $ZSB_GREEN '+ Expected' $@
 
 ${zsb}.current() ${zsb}.message $ZSB_RED '- Current' $@
 
-${zsb}.validate() {
+${zsb}.assertIsSet() {
   [[ -n "${(P)1}" ]] && return 0
 
   ${zsb}.throw "You must set `hl $1` first."

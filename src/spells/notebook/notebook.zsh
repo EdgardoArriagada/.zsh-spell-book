@@ -1,8 +1,8 @@
 export ZSB_CHAPT=${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}
 
 ${zsb}.page.validateEnv() {
-  ${zsb}.validate "ZSB_NOTEBOOK_DIR"
-  ${zsb}.validate "ZSB_NOTEBOOK_CHAPTER"
+  ${zsb}.assertIsSet "ZSB_NOTEBOOK_DIR"
+  ${zsb}.assertIsSet "ZSB_NOTEBOOK_CHAPTER"
 }
 
 ${zsb}.page.getTodaysPageName() {
@@ -49,7 +49,7 @@ _${zsb}.page() {
 
 compdef _${zsb}.page ${zsb}.page
 
-alias cdnotebook="${zsb}.validate 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
+alias cdnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
 alias page="${zsb}.page nvim"
 alias cpage="${zsb}.page zsb_cat"
 alias ccpage="${zsb}.page ccp"

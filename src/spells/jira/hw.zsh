@@ -1,5 +1,5 @@
 hw() {
-  ${zsb}.validateJira
+  ${zsb}.assertJira
   zparseopts -D -E -F -- p=parent || return 1
   local msg=${*:?Error: You must provide a message.}
 

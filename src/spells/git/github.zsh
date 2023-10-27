@@ -1,7 +1,7 @@
 github() {
   zparseopts -D -E -F -- -compare=compare  || return 1
 
-  ${zsb}.validateGitRepo
+  ${zsb}.assertGitRepo
 
   local url=`get_repo_url`
 

@@ -3,7 +3,7 @@ countdown() {
   local inputTime=$1
   local totalSeconds=`${this}.convertToSeconds ${inputTime}`
 
-  ${this}.validateSeconds ${totalSeconds}
+  ${this}.assertSeconds ${totalSeconds}
 
   ${this}.runTimerFromSeconds ${totalSeconds}
 }

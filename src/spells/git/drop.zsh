@@ -1,5 +1,5 @@
 drop() {
-  ${zsb}.validateStashList
+  ${zsb}.assertStashList
 
   ${zsb}.confirmMenu.warning "You are about to drop `hl 'the last'` stash entry."
 

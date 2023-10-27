@@ -3,7 +3,7 @@
 ZSB_CREATEPR_DEFAULT_PROPS="--title WIP --body WIP"
 
 createPr() {
-  ${zsb}.validateGitRepo
+  ${zsb}.assertGitRepo
   local parentBranch=${1:="$(parentBranch)"}
 
   if ${zsb}.userWorkingOnDefaultBranch; then

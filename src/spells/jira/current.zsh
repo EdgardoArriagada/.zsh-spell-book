@@ -1,7 +1,7 @@
 ${zsb}.current.getDir() <<< ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
 
 ${zsb}_createCurrentDir() {
-  ${zsb}.validateJira
+  ${zsb}.assertJira
 
   local parentTicketDir=`${zsb}.current.getDir`
 
@@ -23,7 +23,7 @@ alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
 hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent
 
 pomodorocurrent() {
-  ${zsb}.validate 'ZSB_CURRENT_TICKET'
+  ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
   local inputTime="$1"
   shift 1
   ${zsb}.info "`hl ${ZSB_CURRENT_TICKET}` ${ZSB_CURRENT_LABEL}"

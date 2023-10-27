@@ -1,5 +1,5 @@
 gsl() {
-  ${zsb}.validateStashList
+  ${zsb}.assertStashList
 
   if [[ "$1" = "--clear" ]]; then
     ${zsb}.confirmMenu.warning "You are about to clear the `hl 'git stash list'`"
