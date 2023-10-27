@@ -23,7 +23,7 @@ _${zsb}.gp() {
       ;;
     3)
       local firstItemUsed=${words[2]}
-      if ${zsb}.isDefaultBranch ${firstItemUsed}; then
+      if ${zsb}.isDefaultBranch $firstItemUsed; then
         compList=( --aware )
       fi
       ;;
