@@ -1,15 +1,15 @@
 gp() {
   zparseopts -D -E -F -- -aware=aware || return 1
 
-  local inputRemoteBranch="${1:?'You must provede a branch'}"
+  local inputRemoteBranch=${1?Error: You must provede a branch.}
   shift 1
 
-  if ${zsb}.isDefaultBranch "$inputRemoteBranch" && [[ -z "$aware" ]]; then
-    ${zsb}.throw "It's not safe to push to default branch, use $(hl --aware) flag to do it anyway."
+  if ${zsb}.isDefaultBranch $inputRemoteBranch && [[ -z "$aware" ]]; then
+    ${zsb}.throw "It's not safe to push to default branch, use `hl --aware` flag to do it anyway."
   fi
 
-  ${zsb}.info "Pushing to `hl ${inputRemoteBranch}`"
-  git push origin "$inputRemoteBranch" "$@"
+  ${zsb}.info "Pushing to `hl $inputRemoteBranch`"
+  git push origin $inputRemoteBranch $@
 }
 
 

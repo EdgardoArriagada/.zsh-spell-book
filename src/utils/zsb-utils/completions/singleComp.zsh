@@ -17,8 +17,8 @@ _${zsb}.cachedSingleComp() {
   (( $CURRENT > 2 )) && return 0
 
   local comp
-  local inputCommand=${1:?'You must provide a command'}
-  local cacheKey=${2:?'You must provide a cacheKey'}
+  local inputCommand=${1?Error: You must provide a command.}
+  local cacheKey=${2?Error: You must provide a cacheKey.}
   local cacheDuration=${3:='5'}
   local cachedValue="$(${zsb}.cache.get "$cacheKey")"
 
@@ -36,8 +36,8 @@ _${zsb}.cachedSingleCompWD() {
   (( $CURRENT > 2 )) && return 0
 
   local comp
-  local inputCommand=${1:?'You must provide a command'}
-  local cacheKey=${2:?'You must provide a cacheKey'}
+  local inputCommand=${1?Error: You must provide a command.}
+  local cacheKey=${2?Error: You must provide a cacheKey.}
   local cacheDuration=${3:='5'}
 
   local cacheKeyWithWD="${cacheKey}---${PWD}"

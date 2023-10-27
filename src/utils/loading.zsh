@@ -1,5 +1,5 @@
 loading() {
-  local seconds=${1:?'Amount of seconds expected.'}
+  local seconds=${1?Error: Amount of seconds expected.}
   local timeFragment=$(($seconds / 25.0))
 
   printf '[>                    ]   (0%%)\r'

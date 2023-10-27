@@ -1,6 +1,6 @@
 createTsReact() {
-  local args="${@:?'You must provide a project name'}"
-  local projectName="$(wcase -w "$args" --kebab)"
+  local args=${@?Error: You must provide a project name.}
+  local projectName=`wcase -w $args --kebab`
 
   [[ -d $projectName ]] && ${zsb}.throw "$(hl "$1") is already a dir."
   eval "npx create-react-app ${projectName} --template typescript" && \
