@@ -1,5 +1,5 @@
 template() {
-  local file=${1?Error: File is required.}
+  local file=${1:?Error: File is required.}
 
   if [[ ! -f "$file" && ! -d "$file" ]]
     then ${zsb}.throw "File `hl ${file}` does not exist"

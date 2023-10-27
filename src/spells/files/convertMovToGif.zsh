@@ -2,7 +2,7 @@
 # brew install gifsicle
 
 convertMovToGif() {
-  local input=${1?Error: Input file is required.}
+  local input=${1:?Error: Input file is required.}
   local output=${input:r}.gif
 
   [[ ! -f ${input} ]] && ${zsb}.throw "File ${input} does not exist"

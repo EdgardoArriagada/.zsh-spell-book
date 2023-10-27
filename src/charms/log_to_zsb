@@ -2,7 +2,7 @@
 set -o errexit
 set -o pipefail
 
-local message=${1?Error: Message is required.}
+local message=${1:?Error: Message is required.}
 local folderPath=${2:='default'}
 local logFileName=${3:=`date +%b-%d-%Y.log`}
 

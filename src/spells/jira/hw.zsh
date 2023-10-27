@@ -1,7 +1,7 @@
 hw() {
   ${zsb}.validateJira
   zparseopts -D -E -F -- p=parent || return 1
-  local msg=${*?Error: You must provide a message.}
+  local msg=${*:?Error: You must provide a message.}
 
   local ticket
   [[ -n "$parent" ]] && ticket="$ZSB_PARENT_TICKET" || ticket="$ZSB_CURRENT_TICKET"

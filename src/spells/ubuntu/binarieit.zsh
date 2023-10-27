@@ -1,5 +1,5 @@
 binarieit() {
-  local executable=${1?Error: You must provide an executable file.}
+  local executable=${1:?Error: You must provide an executable file.}
 
   local sourceBin=$(pwd)/${executable}
 

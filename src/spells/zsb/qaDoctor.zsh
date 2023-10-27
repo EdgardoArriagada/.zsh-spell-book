@@ -1,5 +1,5 @@
 qaDoctor() (
-  local file=${1?Error: You must provide a file.}
+  local file=${1:?Error: You must provide a file.}
 
   ${zsb}.doesMatch "$file" "\.qa$" || ${zsb}.throw "File has to be a $(hl ".qa")"
 

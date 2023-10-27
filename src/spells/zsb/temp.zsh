@@ -2,7 +2,7 @@
 # use :e temp/<new-file>.zsh to create new files
 
 ${zsb}.temp() {
-  local callback=${1?Error: You must provide a callback function.}
+  local callback=${1:?Error: You must provide a callback function.}
   local tempDir=${ZSB_DIR}/src/temp
 
   mkdir -p ${tempDir}

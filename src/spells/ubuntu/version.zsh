@@ -6,7 +6,7 @@ declare -gAr ZSH_VERSION_DIC=(
 )
 
 version() {
-  local input=${1?Error: No input given.}
+  local input=${1:?Error: No input given.}
   local cmd=${ZSH_VERSION_DIC[$input]}
 
   if [[ -n "$cmd" ]]

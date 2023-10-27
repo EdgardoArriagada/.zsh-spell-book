@@ -1,5 +1,5 @@
 createTsReact() {
-  local args=${@?Error: You must provide a project name.}
+  local args=${@:?Error: You must provide a project name.}
   local projectName=`wcase -w $args --kebab`
 
   [[ -d $projectName ]] && ${zsb}.throw "$(hl "$1") is already a dir."

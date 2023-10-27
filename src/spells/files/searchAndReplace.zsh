@@ -46,8 +46,8 @@ searchAndReplace() {
 
   zparseopts -D -E -F -- f=filesAndFolders y=skipPrompt || return 1
 
-  local search=${1?Error: Search string is required.}
-  local replace=${2?Error: Replace string is required.}
+  local search=${1:?Error: Search string is required.}
+  local replace=${2:?Error: Replace string is required.}
 
   if [[ -n "$filesAndFolders" ]]
     then ${this}.replaceFilesAndFolders

@@ -1,7 +1,7 @@
 gp() {
   zparseopts -D -E -F -- -aware=aware || return 1
 
-  local inputRemoteBranch=${1?Error: You must provede a branch.}
+  local inputRemoteBranch=${1:?Error: You must provede a branch.}
   shift 1
 
   if ${zsb}.isDefaultBranch $inputRemoteBranch && [[ -z "$aware" ]]; then

@@ -2,7 +2,7 @@ ${zsb}.stashListMenu() {
   local stashList="$(git stash list)"
   [[ -z "$stashList" ]] && ${zsb}.cancel "Stash list is empty."
 
-  local callback=${1?Error: You must provida a callback function.}
+  local callback=${1:?Error: You must provida a callback function.}
   local callbackArg="$2"
 
   if [[ -n "$callbackArg" ]]; then
