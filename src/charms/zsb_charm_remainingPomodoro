@@ -10,7 +10,7 @@ local prefix
 
 if [[ "$result" =~ '^[0-9]' ]]; then
   popupWidth=9
-  result="⌛ ${result}"
+  result="⌛ $result"
 
   else popupWidth=33
 fi
