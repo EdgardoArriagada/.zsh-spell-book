@@ -1,7 +1,7 @@
 # send instructions to pomodoro tmux session without attaching to it
 pomodoro() (
   local this=$0
-  local inputTime=$1
+  local inputTime=${1:?Error: missing input time.}
   shift 1
   local cbMessage=${*}
 
