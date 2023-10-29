@@ -12,7 +12,7 @@ pomodoro() (
   }
 
   ${this}.assertInputTime() {
-    if ! `pdoro --is-valid-time ${inputTime}`
+    if ! `pdoro --is-valid-time $inputTime`
       then ${zsb}.throw 'Invalid input time.'
     fi
   }
