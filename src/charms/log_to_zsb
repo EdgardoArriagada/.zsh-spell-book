@@ -6,8 +6,8 @@ local message=${1:?Error: Message is required.}
 local folderPath=${2:='default'}
 local logFileName=${3:=`date +%b-%d-%Y.log`}
 
-local logsPath=~/.zsh-spell-book/logs/${folderPath}
+local logsPath=~/.zsh-spell-book/logs/$folderPath
 
 [[ ! -d $logsPath ]] && mkdir -p $logsPath
 
-printf "${message}\n" >> ${logsPath}/${logFileName}
+printf "${message}\n" >> $logsPath/$logFileName

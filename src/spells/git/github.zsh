@@ -10,8 +10,8 @@ github() {
   fi
 
   if [[ -n "$compare" ]]
-    then zsb_open "${url}/compare/`git branch --show-current`"
-    else zsb_open ${url}
+    then zsb_open "$url/compare/`git branch --show-current`"
+    else zsb_open $url
   fi
 }
 

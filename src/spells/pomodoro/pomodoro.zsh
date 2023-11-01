@@ -3,7 +3,7 @@ pomodoro() (
   local this=$0
   local inputTime=${1:?Error: missing input time.}
   shift 1
-  local cbMessage=${*}
+  local cbMessage=$*
 
   ${this}.assertPomodoroNotRunning() {
     if `pdoro --is-counter-running`
@@ -20,8 +20,8 @@ pomodoro() (
 
   ${this}.decorateCbMessage() {
     if [[ -z "$cbMessage" ]]
-      then cbMessage="Session for ${inputTime}"
-      else cbMessage="${cbMessage} for ${inputTime}"
+      then cbMessage="Session for $inputTime"
+      else cbMessage="$cbMessage for $inputTime"
     fi
   }
 
@@ -29,7 +29,7 @@ pomodoro() (
     pdoro_cb -p started -t $inputTime $cbMessage
 
     # redirect only stdout, keep stderr for error handling
-    pdoro -t $inputTime -c "pdoro_cb -p ended -t ${inputTime} ${cbMessage}" 1> /dev/null
+    pdoro -t $inputTime -c "pdoro_cb -p ended -t $inputTime $cbMessage" 1> /dev/null
   }
 
   { # main

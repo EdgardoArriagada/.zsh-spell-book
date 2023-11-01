@@ -14,7 +14,7 @@ describe "Bool function"; () (
   )
 
   for input expected in "${(@kv)testData}"; do
-    it="should return '${expected}' for '${input}'"; () {
+    it="should return '$expected' for '$input'"; () {
       [[ "$(Bool $input)" == $expected ]]
       expect $?
     }

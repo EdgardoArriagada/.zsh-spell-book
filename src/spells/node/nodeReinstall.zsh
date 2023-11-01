@@ -20,9 +20,9 @@ ${zsb}.nodeReinstall() {
     then ${zsb}.cancel "Installation cancelled"
   fi
 
-  printAndRun "${packageManager} install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
+  printAndRun "$packageManager install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
 
-  alert "🏁 ${packageManager} install 🏁"
+  alert "🏁 $packageManager install 🏁"
 }
 
 compdef "_${zsb}.nonRepeatedListD '-l:Keep lock files' '-n:Keep node modules' '-i:Skip installation' '-c:Cache clean'" ${zsb}.nodeReinstall

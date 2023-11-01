@@ -14,7 +14,7 @@ describe "isInteger function" $0; () (
   )
 
   for input expected in "${(@kv)testData}"; do
-    it="should return '${expected}' for '${input}'"; () {
+    it="should return '$expected' for '$input'"; () {
       local result="$(${zsb}.isInteger $input)"
       [[ "$result" -eq "$expected" ]]
       expect $?

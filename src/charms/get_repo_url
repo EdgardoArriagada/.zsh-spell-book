@@ -5,8 +5,8 @@ set -o pipefail
 
 function getNormalUrlFromSshUrl() {
   local input=${1:4}
-  local formattedInput=`sd 'github\.com.*:' 'github.com/' <<< ${input} | sd '.git$' ''`
-  printf "https://${formattedInput}"
+  local formattedInput=`sd 'github\.com.*:' 'github.com/' <<< $input | sd '.git$' ''`
+  printf "https://$formattedInput"
 }
 
 local remoteUrl=`git config --get remote.origin.url`
@@ -16,6 +16,6 @@ if [[ -z "$remoteUrl" ]]
 fi
 
 if [[ "$remoteUrl" =~ "^http[s]?:\/{2}" ]]
-  then printf ${remoteUrl}
-  else getNormalUrlFromSshUrl ${remoteUrl}
+  then printf $remoteUrl
+  else getNormalUrlFromSshUrl $remoteUrl
 fi

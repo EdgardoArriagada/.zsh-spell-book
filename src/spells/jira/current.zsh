@@ -1,13 +1,13 @@
-${zsb}.current.getDir() <<< ${ZSB_TICKETS_DIR}/${ZSB_PARENT_TICKET}
+${zsb}.current.getDir() <<< $ZSB_TICKETS_DIR/$ZSB_PARENT_TICKET
 
 ${zsb}_createCurrentDir() {
   ${zsb}.assertJira
 
   local parentTicketDir=`${zsb}.current.getDir`
 
-  [[ ! -d ${parentTicketDir} ]] && \
-    mkdir -p ${parentTicketDir} && \
-      (builtin cd ${parentTicketDir} && git init);
+  [[ ! -d $parentTicketDir ]] && \
+    mkdir -p $parentTicketDir && \
+      (builtin cd $parentTicketDir && git init);
 
   return 0
 }
@@ -24,8 +24,8 @@ hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
-  local inputTime="$1"
+  local inputTime=$1
   shift 1
-  ${zsb}.info "`hl ${ZSB_CURRENT_TICKET}` ${ZSB_CURRENT_LABEL}"
-  pomodoro "$inputTime" "$ZSB_CURRENT_TICKET" "${ZSB_CURRENT_LABEL}"
+  ${zsb}.info "`hl $ZSB_CURRENT_TICKET` $ZSB_CURRENT_LABEL"
+  pomodoro $inputTime $ZSB_CURRENT_TICKET $ZSB_CURRENT_LABEL
 }

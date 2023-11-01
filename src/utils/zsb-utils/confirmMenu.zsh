@@ -20,7 +20,7 @@ ${zsb}.confirmMenu.withItems() {
 
   ${zsb}.warning "$inputWarning"
   <<< ''
-  [[ -n "$inputItems" ]] && <<< "$(hl ${inputItems})"
+  [[ -n "$inputItems" ]] && <<< "$(hl $inputItems)"
   <<< ''
 
   ${zsb}.confirmMenu.withPrompt

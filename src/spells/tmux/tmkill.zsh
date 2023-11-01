@@ -9,7 +9,7 @@ tmkill() (
 
   ${this}.killInputSessions() {
     for session in "${inputSessions[@]}"; do
-      tmux kill-session -t "$session" >/dev/null 2>&1
+      tmux kill-session -t $session >/dev/null 2>&1
     done
   }
 
@@ -26,7 +26,7 @@ tmkill() (
     if ! ${this}.existsActiveTmuxSessions; then
       ${zsb}.cancel "There are no active tmux sessions."
     fi
-  } 
+  }
 
   ${this}.validateTmuxSessions
 

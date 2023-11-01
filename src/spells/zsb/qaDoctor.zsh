@@ -17,16 +17,16 @@ qaDoctor() (
 
     if [[ "$item" = "$Q" ]]; then
       (( tokenCounter++ ))
-      (( tokenCounter >= 2 )) && ${zsb}.throw "Question duplication in line `hl ${i}`."
+      (( tokenCounter >= 2 )) && ${zsb}.throw "Question duplication in line `hl $i`."
       continue
     fi
 
     if [[ "$item" = "$A" ]]; then
       (( tokenCounter-- ))
-      (( tokenCounter < 0 )) && ${zsb}.throw "Answer duplication in line `hl ${i}`."
+      (( tokenCounter < 0 )) && ${zsb}.throw "Answer duplication in line `hl $i`."
       continue
     fi
   done
 
-  ${zsb}.success "`hl ${file}` is ok."
+  ${zsb}.success "`hl $file` is ok."
 )

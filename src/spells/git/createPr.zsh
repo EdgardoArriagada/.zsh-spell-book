@@ -12,12 +12,12 @@ createPr() {
 
   [[ -z "$parentBranch" ]] && ${zsb}.throw "Couldn't retrieve parent branch info. Pass it manually"
 
-  ${zsb}.confirmMenu.warning "Pull request to `hl ${parentBranch}` from `hl $(git branch --show-current)`"
+  ${zsb}.confirmMenu.warning "Pull request to `hl $parentBranch` from `hl $(git branch --show-current)`"
 
   local propsGetter="ghpr.`get_repo_name`"
   local restOfProps
   if type "$propsGetter" > /dev/null
-    then restOfProps=`${propsGetter}`
+    then restOfProps=`$propsGetter`
     else restOfProps="$ZSB_CREATEPR_DEFAULT_PROPS"
   fi
 

@@ -1,4 +1,4 @@
-cd() { builtin cd ${1} && ls; }
+cd() { builtin cd $1 && ls; }
 
 hisIgnore cd
 

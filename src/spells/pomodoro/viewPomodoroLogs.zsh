@@ -3,18 +3,18 @@ ${zsb}.pomodoro.viewPomodoroLogs() {
   local fileOpenerProgram=$2
 
   # File format: mnt-dd-yyyy.log
-  local year=`cut -d '-' -f3 <<< ${fileName} | cut -d '.' -f1`
-  local month=`cut -d '-' -f 1 <<< ${fileName}`
+  local year=`cut -d '-' -f3 <<< $fileName | cut -d '.' -f1`
+  local month=`cut -d '-' -f 1 <<< $fileName`
 
-  local logFolder=${ZSB_DIR}/logs/pomodoro/${year}/${month}
+  local logFolder=$ZSB_DIR/logs/pomodoro/$year/$month
 
-  local fullFilePath=${logFolder}/${fileName}
+  local fullFilePath=$logFolder/$fileName
 
-  if [[ ! -f ${fullFilePath} ]]
+  if [[ ! -f $fullFilePath ]]
     then ${zsb}.cancel 'Pomodoro not found'
   fi
 
-  ${fileOpenerProgram} ${fullFilePath}
+  $fileOpenerProgram $fullFilePath
 }
 
 ${zsb}.pomodoro.twoDaysAgo() {
@@ -34,10 +34,10 @@ ${zsb}.pomodoro.lastWorkingDay() {
   local SUNDAY=0
   local MONDAY=1
 
-  if (( ${today} == ${SUNDAY} ))
+  if (( $today == $SUNDAY ))
     then ${zsb}.pomodoro.twoDaysAgo
 
-  elif (( ${today} == ${MONDAY} ))
+  elif (( $today == $MONDAY ))
     then ${zsb}.pomodoro.threeDaysAgo
 
   else ${zsb}.pomodoro.oneDayAgo

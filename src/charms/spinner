@@ -10,7 +10,7 @@ function makeCursorVisible() {
 
 function printEndMessage() {
   $inputCommandCancelled && \
-    printf "\r\e[38;5;3m⚠\033[0m ${msg}" && \
+    printf "\r\e[38;5;3m⚠\033[0m $msg" && \
     return 0
 
   (( $inputCommandExitCode )) && \
@@ -34,7 +34,7 @@ function makeCursorInvisible() {
 }
 
 function printMessageWithMarginForSpinner() {
-  printf "  ${msg}"
+  printf "  $msg"
 }
 
 declare inputCommandPid

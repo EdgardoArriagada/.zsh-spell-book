@@ -5,10 +5,10 @@ convertMovToGif() {
   local input=${1:?Error: Input file is required.}
   local output=${input:r}.gif
 
-  [[ ! -f ${input} ]] && ${zsb}.throw "File ${input} does not exist"
-  [[ "${input:e:l}" != "mov" ]] && ${zsb}.throw "File ${input} does not have .mov extension"
+  [[ ! -f ${input} ]] && ${zsb}.throw "File $input does not exist"
+  [[ "${input:e:l}" != "mov" ]] && ${zsb}.throw "File $input does not have .mov extension"
 
-  ffmpeg -i ${input} -pix_fmt rgb8 -r 10 ${output} && gifsicle -O3 ${output} -o ${output}
+  ffmpeg -i $input -pix_fmt rgb8 -r 10 $output && gifsicle -O3 $output -o $output
 }
 
 _${zsb}.convertMovToGif() {

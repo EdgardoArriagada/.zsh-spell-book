@@ -1,1 +1,1 @@
-printAndRun() { print "❱ `hl ${@}`"; eval "$@"; }
+printAndRun() { print "❱ `hl $@`"; eval "$@"; }

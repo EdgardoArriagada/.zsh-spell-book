@@ -7,7 +7,7 @@ tmonly() {
 
   ${zsb}.confirmMenu.withItems \
     "You are about to kill the following sessions" \
-    "$otherSessions"
+    $otherSessions
 
   tmux kill-session -a
 }

@@ -1,1 +1,1 @@
-${zsb}.getMaxSearchColumns() printf $((${COLUMNS} - 5))
+${zsb}.getMaxSearchColumns() printf $(($COLUMNS - 5))

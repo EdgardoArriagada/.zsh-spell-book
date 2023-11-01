@@ -15,8 +15,8 @@ fi
 
 local tail=${pathToDotGit##*/}
 if [[ "$tail" != ".git" ]]
-  then printf ${tail}; return $?
+  then printf $tail; return $?
 fi
 
-local parentRootDir=`dirname ${pathToDotGit}`
+local parentRootDir=`dirname $pathToDotGit`
 printf ${parentRootDir##*/}

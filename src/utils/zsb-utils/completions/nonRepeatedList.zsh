@@ -17,15 +17,15 @@ _${zsb}.nonRepeatedListD() {
   local completionTokens=(  )
   for item in ${completionList[@]}; do
     local token=${item%%:*}
-    tokenDictionary[${token}]=${item}
-    completionTokens+=( ${token} )
+    tokenDictionary[${token}]=$item
+    completionTokens+=( $token )
   done
 
   local newTokens=( ${completionTokens:|usedCompletion} )
 
   local newCompletion=(  )
   for token in ${newTokens[@]}; do
-    newCompletion+=( ${tokenDictionary[${token}]} )
+    newCompletion+=( ${tokenDictionary[$token]} )
   done
 
   _describe 'command' newCompletion

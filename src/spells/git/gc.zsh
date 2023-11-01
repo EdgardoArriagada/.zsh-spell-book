@@ -9,8 +9,8 @@ gc() {
   fi
 
   if [[ -z "$1" ]]
-    then git commit --gpg-sign ${noVerify} || return 1
-    else git commit --gpg-sign -m "$*" ${noVerify} || return 1
+    then git commit --gpg-sign $noVerify || return 1
+    else git commit --gpg-sign -m "$*" $noVerify || return 1
   fi
 
   ${zsb}.gitStatus
@@ -25,9 +25,9 @@ _${zsb}.gc() {
   local aware
 
   ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
-  ${zsb}.userWorkingOnDefaultBranch && aware=${ZSB_GIT_AWARE}
+  ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
-  _${zsb}.nonRepeatedListD ${aware} ${noVerify}
+  _${zsb}.nonRepeatedListD $aware $noVerify
 }
 
 compdef _${zsb}.gc gc

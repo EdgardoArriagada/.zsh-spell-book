@@ -34,7 +34,7 @@ ga() (
   ${this}.areAddingPackageFiles() [[ -n ${ZSB_GIT_PACKAGE_FILES:*filesToAdd} ]]
 
   ${this}.setFilesToAdd() {
-    local gitFileType="$1"; shift 1
+    local gitFileType=$1; shift 1
 
     if [[ "$#" = "0" ]]; then
       filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )

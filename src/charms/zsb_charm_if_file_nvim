@@ -8,7 +8,7 @@ set -o nounset
 
 local fileName=${*%%§*}
 
-if [[ ! -f ${fileName} ]]
+if [[ ! -f $fileName ]]
   then exit 1
 fi
 
@@ -19,23 +19,23 @@ function loadFile() {
   eval "$(fnm env --use-on-cd)"
 
   case $# in
-    1) nvim ${1} ;;
-    2) nvim ${1} +${2} -c 'normal zz' ;;
+    1) nvim $1 ;;
+    2) nvim $1 +${2} -c 'normal zz' ;;
   esac
 }
 
 local cursorLine=${*##*§}
 
 if [[ -f "$cursorLine" ]]
-  then loadFile ${fileName}; exit 0
+  then loadFile $fileName; exit 0
 fi
 
 # get number out of first number until ':' in a line using param expansion
 local lineNumber=${cursorLine%%:*}
 
 # check if number is valid
-[[ ${lineNumber} != <-> ]] && exit 1
+[[ $lineNumber != <-> ]] && exit 1
 
-loadFile ${fileName} ${lineNumber}
+loadFile $fileName $lineNumber
 
 exit 0

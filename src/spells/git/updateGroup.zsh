@@ -1,7 +1,7 @@
 ${zsb}.updateGroup() (
   local this=$0
   local repoFile=$1
-  local repoList=($(< ${repoFile}))
+  local repoList=($(< $repoFile))
   local currentRepo
   local currentBranch
 
@@ -14,7 +14,7 @@ ${zsb}.updateGroup() (
       hr
 
       # Repo has to start with "~/"
-      currentRepo=${HOME}/${repo#*/}
+      currentRepo=$HOME/${repo#*/}
       ${this}.validateRepo
 
       builtin cd $currentRepo
@@ -58,7 +58,7 @@ ${zsb}.updateGroup() (
   ${this}.printDirtyHeader() ${this}.printHeader "± "
 
   ${this}.updateRepo() {
-    ${zsb}.info "Pulling from ${currentBranch}"
+    ${zsb}.info "Pulling from $currentBranch"
     git pull origin "$currentBranch"
   }
 

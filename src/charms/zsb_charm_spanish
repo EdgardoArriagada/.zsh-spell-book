@@ -23,7 +23,7 @@ declare selection=$(print -l "${(@k)SPANISH_CHARACTERS}" | rofi ${(z)commonRofiP
 
 [[ -z "$selection" ]] && exit 0
 
-echo "${SPANISH_CHARACTERS[$selection]}" | xclip -r -selection clipboard && xdotool key shift+Insert
+printf "${SPANISH_CHARACTERS[$selection]}" | xclip -r -selection clipboard && xdotool key shift+Insert
 
 exit 0
 

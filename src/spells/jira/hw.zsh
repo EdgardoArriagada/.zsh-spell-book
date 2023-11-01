@@ -10,7 +10,7 @@ hw() {
   [[ -z "$token" ]] && ${zsb}.throw "Token obtain failed"
 
   curl -s -o /dev/null -w "%{http_code}" -u "${ZSB_JIRA_EMAIL}:${token}" \
-   -H "Content-Type: application/json" "${ZSB_JIRA_BASEURL}/rest/api/3/issue/${ticket}/comment" \
+   -H "Content-Type: application/json" "$ZSB_JIRA_BASEURL/rest/api/3/issue/$ticket/comment" \
    -X POST --data \
       "{
       \"body\": {

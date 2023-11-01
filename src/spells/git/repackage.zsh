@@ -22,11 +22,11 @@ repackage() (
     [[ -z "$force" ]] && ${this}.validateCommitOffline
 
     if [[ -n "$1" ]]; then
-      amend --message "$*" ${noVerify} &&
+      amend --message "$*" $noVerify &&
         ${zsb}.gitStatus &&
         ${this}.warnUnintendedAddedFiles
     else
-      amend --no-edit ${noVerify} &&
+      amend --no-edit $noVerify &&
         ${zsb}.gitStatus
     fi
   }
@@ -39,9 +39,9 @@ _${zsb}.repackage() {
   local aware
 
   ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
-  ${zsb}.userWorkingOnDefaultBranch && aware=${ZSB_GIT_AWARE}
+  ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
-  _${zsb}.nonRepeatedListD ${aware} ${ZSB_GIT_FORCE} ${noVerify}
+  _${zsb}.nonRepeatedListD $aware $ZSB_GIT_FORCE $noVerify
 }
 
 compdef _${zsb}.repackage repackage

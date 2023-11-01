@@ -1,8 +1,8 @@
 ${zsb}.searchAndReplace.replaceInFiles() {
-  local filesWithMatches=(`rg --files-with-matches ${search}`)
+  local filesWithMatches=(`rg --files-with-matches $search`)
 
   if (( ${#filesWithMatches} == 0 )); then
-    ${zsb}.info "No files found with matches for '`hl ${search}`'"
+    ${zsb}.info "No files found with matches for '`hl $search`'"
     return 1
   fi
 
@@ -10,16 +10,16 @@ ${zsb}.searchAndReplace.replaceInFiles() {
     ${zsb}.confirmMenu.withPrompt
   fi
 
-  sd ${search} ${replace} ${filesWithMatches[@]}
+  sd $search $replace ${filesWithMatches[@]}
 
-  (( $? == 0 )) && ${zsb}.success "`hl ${search}` -> `hl ${replace}`"
+  (( $? == 0 )) && ${zsb}.success "`hl $search` -> `hl $replace`"
 }
 
 ${zsb}.searchAndReplace.replaceFilesAndFolders() {
-  local filesAndFoldersWithMatches=(`fd ${search}`)
+  local filesAndFoldersWithMatches=(`fd $search`)
 
   if (( ${#filesAndFoldersWithMatches} == 0 )); then
-    ${zsb}.info "No files or folders found with matches for '`hl ${search}`'"
+    ${zsb}.info "No files or folders found with matches for '`hl $search`'"
     return 1
   fi
 
@@ -28,16 +28,16 @@ ${zsb}.searchAndReplace.replaceFilesAndFolders() {
   fi
 
   for file in ${filesAndFoldersWithMatches[@]}; do
-    if [[ -d ${file} ]]
+    if [[ -d $file ]]
       then continue
     fi
 
-    local newFile=`sd ${search} ${replace} <<< ${file}`
+    local newFile=`sd $search $replace <<< $file`
 
-    mkdir -p `dirname ${newFile}`
-    mv ${file} ${newFile}
+    mkdir -p `dirname $newFile`
+    mv $file $newFile
 
-    (( $? == 0 )) && ${zsb}.success "`hl ${file}` -> `hl ${newFile}`"
+    (( $? == 0 )) && ${zsb}.success "`hl $file` -> `hl $newFile`"
   done
 }
 

@@ -3,11 +3,11 @@
 
 ${zsb}.temp() {
   local callback=${1:?Error: You must provide a callback function.}
-  local tempDir=${ZSB_DIR}/src/temp
+  local tempDir=$ZSB_DIR/src/temp
 
-  mkdir -p ${tempDir}
+  mkdir -p $tempDir
 
-  ${callback} ${tempDir}
+  $callback $tempDir
 }
 
 _${zsb}.nocompletion modifyTemp

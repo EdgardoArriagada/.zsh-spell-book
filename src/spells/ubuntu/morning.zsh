@@ -13,7 +13,7 @@ morning() {
   while true; do
     sudo apt update && sudo apt dist-upgrade -y && break
     : $((attempts++))
-    ${zsb}.info "Attempts: ${attempts}"
+    ${zsb}.info "Attempts: $attempts"
     sleep 2
   done
   local end=`date +%s`

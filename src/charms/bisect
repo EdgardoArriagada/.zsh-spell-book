@@ -18,11 +18,11 @@ git bisect start
 
 printf "enter good commit\n"
 read good
-git bisect good ${good}
+git bisect good $good
 
 printf "enter bad commit\n"
 read bad
-git bisect bad ${bad}
+git bisect bad $bad
 
 while true; do
   printf "Is this commit good? (y/n/f)\n"

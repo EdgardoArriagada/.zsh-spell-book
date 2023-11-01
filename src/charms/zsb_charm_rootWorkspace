@@ -3,11 +3,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-declare files=$(ls ${ZSB_CHARM_ROOT_WORKSPACE})
+declare files=`ls $ZSB_CHARM_ROOT_WORKSPACE`
 
 declare dirs
 for file in ${(z)files}; do
-  [[ -d ${ZSB_CHARM_ROOT_WORKSPACE}/${file} ]] && \
+  [[ -d $ZSB_CHARM_ROOT_WORKSPACE/$file ]] && \
     dirs+="$file\n"
 done
 
@@ -15,7 +15,7 @@ declare selection=$(echo "$dirs" | rofi ${(z)commonRofiProps} -i -p "Open")
 
 [[ -z "$selection" ]] && exit 0
 
-code ${ZSB_CHARM_ROOT_WORKSPACE}/${selection}
+code $ZSB_CHARM_ROOT_WORKSPACE/$selection
 
 exit 0
 

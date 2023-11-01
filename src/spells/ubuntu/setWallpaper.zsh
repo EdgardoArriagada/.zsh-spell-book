@@ -7,11 +7,11 @@ setWallpaper() {
 
   [[ -z "$chosenWallpaper" ]] && ${zsb}.cancel "No Wallpaper has been chosen."
 
-  xwallpaper --center ~/Wallpapers/${chosenWallpaper} &&
-    ${zsb}.success "New wallpaper is $(hl ${chosenWallpaper})"
+  xwallpaper --center ~/Wallpapers/$chosenWallpaper &&
+    ${zsb}.success "New wallpaper is $(hl $chosenWallpaper)"
 
   # Persistence after reboot (see .xprofile)
   mkdir -pv ~/temp/wallpaper
-  find ~/temp/wallpaper -lname "${HOME}/Wallpapers/*" -delete
-  ln -s ~/Wallpapers/${chosenWallpaper} ~/temp/wallpaper/
+  find ~/temp/wallpaper -lname "$HOME/Wallpapers/*" -delete
+  ln -s ~/Wallpapers/$chosenWallpaper ~/temp/wallpaper/
 }

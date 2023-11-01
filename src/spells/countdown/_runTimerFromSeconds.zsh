@@ -5,7 +5,7 @@ ${zsb}.countdown.runTimerFromSeconds() (
   ${this}.runTimer() {
     local spacesToKeepOutputClean='   '
     for i in {${totalSeconds}..01}; do
-      printf "\r⏳ `${this}.convertSecondsToTime ${i}`${spacesToKeepOutputClean}"
+      printf "\r⏳ `${this}.convertSecondsToTime $i`${spacesToKeepOutputClean}"
       sleep 1
     done
   }
@@ -21,14 +21,14 @@ ${zsb}.countdown.runTimerFromSeconds() (
 
     if (( $hours == 0 )); then
       if (( $mins == 0 ))
-        then <<< ${secs}
+        then <<< $secs
         else (( $mins < 10 )) && mins=0${mins}; <<< ${mins}:${secs}
       fi
       return 0
     fi
 
-    (( ${hours} < 10 )) && hours=0${hours}
-    (( ${mins} < 10 )) && mins=0${mins}
+    (( $hours < 10 )) && hours=0${hours}
+    (( $mins < 10 )) && mins=0${mins}
 
     <<< ${hours}:${mins}:${secs}
   }
@@ -38,22 +38,22 @@ ${zsb}.countdown.runTimerFromSeconds() (
   ${this}.getCustomTimeMessage() {
     local customTimeMessage
 
-    if (( ${totalSeconds} == 1 ))
-      then customTimeMessage="${totalSeconds} second"
+    if (( $totalSeconds == 1 ))
+      then customTimeMessage="$totalSeconds second"
 
-    elif (( ${totalSeconds} < 60 ))
-      then customTimeMessage="${totalSeconds} seconds"
+    elif (( $totalSeconds < 60 ))
+      then customTimeMessage="$totalSeconds seconds"
 
     else
-      customTimeMessage="`${this}.convertSecondsToTime ${totalSeconds}`"
+      customTimeMessage="`${this}.convertSecondsToTime $totalSeconds`"
     fi
 
-    printf ${customTimeMessage}
+    printf $customTimeMessage
   }
 
   ${this}.playNotifSound() {
-    local soundFile=${ZSB_DIR}/src/media/sounds/xylofon.wav
-    [[ -f ${soundFile} ]] && zsb_play ${soundFile}
+    local soundFile=$ZSB_DIR/src/media/sounds/xylofon.wav
+    [[ -f $soundFile ]] && zsb_play $soundFile
   }
 
   ${this}.printEndOfTimeMsg() {

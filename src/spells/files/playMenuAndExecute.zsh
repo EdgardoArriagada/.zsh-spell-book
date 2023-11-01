@@ -5,13 +5,13 @@ ${zsb}.playMenuAndExecute() {
   shift 3
 
   if [[ -a "$1" ]]; then
-    eval "${inputCommand} ${@}"; return $?
+    eval "$inputCommand $@"; return $?
   fi
 
   local choosenFile=$(eval "$dataGetter" | fzf --query "$1")
   [[ -z "$choosenFile" ]] && return 0
 
-  print -z "${inputAlias} ${choosenFile}"
+  print -z "$inputAlias $choosenFile"
 }
 
 _${zsb}.playMenuAndExecute() {
@@ -23,8 +23,8 @@ compdef _${zsb}.playMenuAndExecute ${zsb}.playMenuAndExecute
 
 __vg_dataGetter='fd -t f'
 __vg_command='v'
-vg() ${zsb}.playMenuAndExecute "$0" "$__vg_command" "$__vg_dataGetter" "$@"
-compdef "_${zsb}.playMenuAndExecute '${__vg_dataGetter}'" vg
+vg() ${zsb}.playMenuAndExecute $0 $__vg_command $__vg_dataGetter $@
+compdef "_${zsb}.playMenuAndExecute '$__vg_dataGetter'" vg
 hisIgnore vg
 
 __vgh_dataGetter='fd -t f --hidden --no-ignore'

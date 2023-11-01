@@ -30,9 +30,9 @@ _prettierHelper.file() {
 tabWidth: 2
 semi: false
 singleQuote: true
-" > ${prettierFile} && \
-  ${zsb}.success "$(hl ${prettierFile}) initialized" && \
-  zsb_cat ${prettierFile}
+" > $prettierFile && \
+  ${zsb}.success "$(hl $prettierFile) initialized" && \
+  zsb_cat $prettierFile
 }
 
 _prettierHelper.install() {

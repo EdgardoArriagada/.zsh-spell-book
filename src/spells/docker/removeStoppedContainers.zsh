@@ -7,7 +7,7 @@ removeStoppedContainers() {
 
   ${zsb}.info 'Removing all stopped Containers...'
 
-  docker container rm `printf ${stoppedContainers}` && \
+  docker container rm `printf $stoppedContainers` && \
     ${zsb}.success 'All containers were removed.'
 }
 

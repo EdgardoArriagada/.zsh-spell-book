@@ -32,7 +32,7 @@ qa() (
     [[ "$item" = "$Q" ]] && (( numQuestions++ ))
   done
 
-  local positions=($(seq 1 ${numQuestions}))
+  local positions=($(seq 1 $numQuestions))
   positions=( $(shuf -e "${positions[@]}") )
 
   local currentPosition
@@ -55,7 +55,7 @@ qa() (
     if [[ "$state" = "$Q" ]]; then
       if "$justSwitched"; then
         justSwitched=false
-        questions[$currentPosition]="${item}"
+        questions[$currentPosition]=$item
         continue
       fi
       questions[$currentPosition]="${questions[$currentPosition]}\n${item}"
@@ -65,7 +65,7 @@ qa() (
     if [[ "$state" = "$A" ]]; then
       if "$justSwitched"; then
         justSwitched=false
-        answers[$currentPosition]="${item}"
+        answers[$currentPosition]=$item
         continue
       fi
       answers[$currentPosition]="${answers[$currentPosition]}\n${item}"
@@ -114,5 +114,5 @@ qa() (
     echo " " >> $resultFile
   done
 
-  ${zsb}.info "$(hl "./${resultFile}") generated with $(hl "$#failedQuestions") failing question(s)"
+  ${zsb}.info "$(hl "./$resultFile") generated with $(hl ${#failedQuestions}) failing question(s)"
 )

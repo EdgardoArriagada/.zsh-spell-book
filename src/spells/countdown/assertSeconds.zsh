@@ -2,7 +2,7 @@ ${zsb}.countdown.assertSeconds() {
   local totalSeconds=$1
   local sixtyHours=216000
 
-  (( 0 < ${totalSeconds} && ${totalSeconds} < ${sixtyHours} )) && return 0
+  (( 0 < $totalSeconds && $totalSeconds < $sixtyHours )) && return 0
 
   ${zsb}.throw "Bad argument.
         \rTry with (hh:)?mm:ss $(it '(min 1, max 59:59:59)')

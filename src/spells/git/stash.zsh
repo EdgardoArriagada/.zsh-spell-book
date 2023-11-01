@@ -1,6 +1,6 @@
 stash() {
   if [[ -n "$1" ]]
-    then git stash push --include-untracked -m "${*}"
+    then git stash push --include-untracked -m $*
     else git stash push --include-untracked
   fi
 

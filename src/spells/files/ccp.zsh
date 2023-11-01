@@ -1,1 +1,1 @@
-ccp() { < ${*} | zsb_clipcopy }
+ccp() { < $* | zsb_clipcopy }

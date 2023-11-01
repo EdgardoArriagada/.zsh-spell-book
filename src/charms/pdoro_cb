@@ -23,22 +23,21 @@ fi
 TIME=`date +%H:%M:%S`
 YEAR=`date +%Y`
 MONTH=`date +%b`
-THIS_MONTH_FOLDER=pomodoro/${YEAR}/${MONTH}
+THIS_MONTH_FOLDER=pomodoro/$YEAR/$MONTH
 
 function appendPomodoroInfoToLog() {
   # second message decoration
-  log_to_zsb "${message} ${phase} at ${TIME}" $THIS_MONTH_FOLDER
+  log_to_zsb "$message $phase at $TIME" $THIS_MONTH_FOLDER
 }
 
-
 if [[ "$phase" = "started" ]]; then
-  log_to_zsb " " $THIS_MONTH_FOLDER
+  log_to_zsb ' ' $THIS_MONTH_FOLDER
 fi
 
 appendPomodoroInfoToLog
 
 if [[ "$phase" = "ended" ]]; then
-  alert "Pomodoro for ${inputTime} ended" &
+  alert "Pomodoro for $inputTime ended" &
 
   local soundFile=~/.zsh-spell-book/src/media/sounds/xylofon.wav
   [[ -f $soundFile ]] && zsb_play $soundFile &

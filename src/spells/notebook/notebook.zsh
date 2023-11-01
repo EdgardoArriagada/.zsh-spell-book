@@ -1,4 +1,4 @@
-export ZSB_CHAPT=${ZSB_NOTEBOOK_DIR}/${ZSB_NOTEBOOK_CHAPTER}
+export ZSB_CHAPT=$ZSB_NOTEBOOK_DIR/$ZSB_NOTEBOOK_CHAPTER
 
 ${zsb}.page.validateEnv() {
   ${zsb}.assertIsSet "ZSB_NOTEBOOK_DIR"
@@ -10,7 +10,7 @@ ${zsb}.page.getTodaysPageName() {
   local month=`date +%b`
   local page=`date +%b-%d-%Y`
 
-  local currentPage=${ZSB_CHAPT}/${year}/${month}/${page}
+  local currentPage=$ZSB_CHAPT/$year/$month/$page
   mkdir -p `dirname $currentPage`
 
   <<< $currentPage
@@ -38,7 +38,7 @@ _${zsb}.page() {
   local result=()
 
   for f in $files; do
-    if [[ -f ${ZSB_CHAPT}/${f} ]];then
+    if [[ -f $ZSB_CHAPT/$f ]];then
       # trim the extension
        result+=(${f%.*})
     fi
@@ -49,10 +49,10 @@ _${zsb}.page() {
 
 compdef _${zsb}.page ${zsb}.page
 
-alias cdnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && cds ${ZSB_NOTEBOOK_DIR}"
+alias cdnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && cds $ZSB_NOTEBOOK_DIR"
 alias page="${zsb}.page nvim"
 alias cpage="${zsb}.page zsb_cat"
 alias ccpage="${zsb}.page ccp"
-alias cdpage="${zsb}.page.validateEnv && cd ${ZSB_CHAPT}"
+alias cdpage="${zsb}.page.validateEnv && cd $ZSB_CHAPT"
 
 hisIgnore cdnotebook page cpage cppage cdpage

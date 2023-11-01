@@ -7,7 +7,7 @@ stopRunningContainers() {
 
   ${zsb}.info 'Stopping all running containers...'
 
-  docker container stop `printf ${runningContainers}` &&
+  docker container stop `printf $runningContainers` &&
     ${zsb}.success 'All containers did halt.'
 }
 

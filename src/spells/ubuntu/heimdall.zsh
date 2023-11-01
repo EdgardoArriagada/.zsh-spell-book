@@ -12,7 +12,7 @@ heimdall() {
     nvim ~/heimdall/${arg}.zsh; return 0
   fi
 
-  local response=`source ~/heimdall/${arg}.zsh ${@}`
+  local response=`source ~/heimdall/${arg}.zsh $@`
   [[ -z "$response" ]] && return 1
 
   # avoid printing hr output when redirecting to a file

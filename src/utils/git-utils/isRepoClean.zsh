@@ -1,1 +1,1 @@
-${zsb}.isRepoClean() [[ -z "$(git status -z)" ]]
+${zsb}.isRepoClean() [[ -z "`git status -z`" ]]

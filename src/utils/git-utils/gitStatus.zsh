@@ -5,7 +5,7 @@ ${zsb}.gitStatus() {
 
   if [[ -z "$gitStatusOutput" ]]
     then <<< 'nothing to commit, working tree clean'
-    else <<< ${gitStatusOutput}
+    else <<< $gitStatusOutput
   fi
 
   <<< ''

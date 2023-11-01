@@ -9,8 +9,8 @@ tml() {
 
   for session in "${currentList[@]}"; do
     if [[ "$session" = "$latestSession" ]]
-      then [[ -z "$TMUX" ]] && <<< "~ ${session}" || <<< "* `hl ${session}`"
-      else <<< "  ${session}"
+      then [[ -z "$TMUX" ]] && <<< "~ $session" || <<< "* `hl $session`"
+      else <<< "  $session"
     fi
   done
 

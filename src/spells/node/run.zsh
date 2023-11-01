@@ -1,7 +1,7 @@
 run() {
   local runCmd=`[[ -f yarn.lock ]] && <<< 'yarn' || <<< 'npm run'`
 
-  printAndRun "${runCmd} ${@}"
+  printAndRun "$runCmd $@"
 }
 
 _${zsb}.run() {
@@ -11,7 +11,7 @@ _${zsb}.run() {
     <package.json jq '.scripts' |\
     jq -r "to_entries|map(\"\(.key)${token}\(.value|tostring)\")|.[]" |\
     sd ':' '\:' |\
-    sd "${token}" ':'
+    sd "$token" ':'
   `
   local completion=( ${(@f)parsed} )
 

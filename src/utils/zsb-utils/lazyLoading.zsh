@@ -10,8 +10,8 @@ ${zsb}.lazyLoad() {
   ${zsb}.info "Lazy loading..."
 
   unalias ${aliasesToRelease[@]}
-  source ${scriptToLazyLoad}
-  eval "${commandToRun} ${commandToRunArgs}"
+  source $scriptToLazyLoad
+  eval "$commandToRun $commandToRunArgs"
 }
 
 ${zsb}.prepareLazyLoad() {
@@ -19,6 +19,6 @@ ${zsb}.prepareLazyLoad() {
   shift 1
 
   for cmd in ${@}; do
-    alias ${cmd}="${zsb}.lazyLoad \"${*}\" ${script} ${cmd}"
+    alias ${cmd}="${zsb}.lazyLoad \"${*}\" $script $cmd"
   done
 }

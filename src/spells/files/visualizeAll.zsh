@@ -1,24 +1,24 @@
 ${zsb}.loopFiles() {
-  for file in ${*}; do
-    ${zsb}.info "Visualizing ${file}"
-    eval "v '${file}'"
+  for file in $*; do
+    ${zsb}.info "Visualizing $file"
+    eval "v '$file'"
   done
 }
 
 visualizeAll() {
-  local extension=${1}
+  local extension=$1
   ${zsb}.loopFiles ./*.${extension}
 }
 
 vmatches() {
-  local matchingFiles=(`rg --files-with-matches ${1}`)
-  (( ${#matchingFiles} )) || ${zsb}.throw "No files found matching `hl ${1}`"
+  local matchingFiles=(`rg --files-with-matches $1`)
+  (( ${#matchingFiles} )) || ${zsb}.throw "No files found matching `hl $1`"
   ${zsb}.loopFiles ${matchingFiles[@]}
 }
 
 vgit() {
-  local gitFiles=(`${zsb}.getGitFiles ${1}`)
-  (( ${#gitFiles} )) || ${zsb}.throw "No files found matching `hl ${1}`"
+  local gitFiles=(`${zsb}.getGitFiles $1`)
+  (( ${#gitFiles} )) || ${zsb}.throw "No files found matching `hl $1`"
   ${zsb}.loopFiles ${gitFiles[@]}
 }
 

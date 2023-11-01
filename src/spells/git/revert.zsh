@@ -6,7 +6,7 @@ revert() {
       \rPrefer `hl 'git reset HEAD~'` if commit is `hl not` online.\n"
   fi
 
-  printAndRun "git revert ${rev}"
+  printAndRun "git revert $rev"
 }
 
 hisIgnore revert
