@@ -1,32 +1,32 @@
 ga() (
-  local this="$0"
-  local firstArg="$1" # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
-  local filesToAdd=( )
+  local this=$0
+  local firstArg=$1 # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
+  local -a filesToAdd
 
   ${this}.addFilesWithDotFlag() git add .
 
   ${this}.addFilesWithNewFlag() {
     shift 1 # remove 'new' flag
-    ${this}.setFilesToAdd 'untracked' "$@"
-    [[ "$#" -gt "0" ]] && ${this}.areAddingPackageFiles && galock
+    ${this}.setFilesToAdd 'untracked' $@
+    (( $# > 0 )) && ${this}.areAddingPackageFiles && galock
     ${this}.addFiles
   }
 
   ${this}.addFilesWithFastFlag() {
     shift 1 # remove 'fast' flag
-    ${this}.setFilesToAdd 'unstaged' "$@"
+    ${this}.setFilesToAdd 'unstaged' $@
     ${this}.areAddingPackageFiles && galock
     ${this}.addFiles
   }
 
   ${this}.addFilesWithUnmergedFlag() {
     shift 1 # remove 'unmerged' flag
-    ${this}.setFilesToAdd 'unmerged' "$@"
+    ${this}.setFilesToAdd 'unmerged' $@
     ${this}.addFiles
   }
 
   ${this}.addFilesWithDefaulBehavior() {
-    ${this}.setFilesToAdd 'unstaged' "$@"
+    ${this}.setFilesToAdd 'unstaged' $@
     ${this}.areAddingPackageFiles && galock
     ${this}.addFiles '-p'
   }
@@ -34,12 +34,12 @@ ga() (
   ${this}.areAddingPackageFiles() [[ -n ${ZSB_GIT_PACKAGE_FILES:*filesToAdd} ]]
 
   ${this}.setFilesToAdd() {
-    local gitFileType=$1; shift 1
+    local gitFileType=$1
+    shift 1
 
-    if [[ "$#" = "0" ]]; then
-      filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
-    else
-      filesToAdd=( "$@" )
+    if (( $# ))
+      then filesToAdd=( $@ )
+      else filesToAdd=( $(${zsb}.getGitFiles "$gitFileType") )
     fi
 
     ${this}.validateFilesToAdd "$gitFileType"
@@ -51,11 +51,10 @@ ga() (
   }
 
   ${this}.addFiles() {
-    if [[ -n "$1" ]]; then
-      git add "$@" "${filesToAdd[@]}"; return $?
+    if (( $# ))
+      then git add $@ ${filesToAdd[@]}
+      else git add ${filesToAdd[@]}
     fi
-
-    git add "${filesToAdd[@]}"
   }
 
   { # main
