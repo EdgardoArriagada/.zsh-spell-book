@@ -71,10 +71,10 @@ ga() (
 )
 
 _${zsb}.ga() {
-  local usedCompletion=( "${words[@]:1:$CURRENT-2}" )
-  local firstItemUsed="${words[2]}"
-  local currentCompletion="${words[CURRENT]}"
-  local completionList=( )
+  local usedCompletion=(${words[@]:1:$CURRENT-2})
+  local firstItemUsed=${words[2]}
+  local currentCompletion=${words[CURRENT]}
+  local -a completionList
 
   case "$firstItemUsed" in
     'new') completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
@@ -86,14 +86,14 @@ _${zsb}.ga() {
 
   # if we are completing the first item
   if (( $CURRENT == 2 )) then
-    case "$currentCompletion" in
+    case $currentCompletion in
       n*) completionList+=('new') ;;
       f*) completionList+=('fast') ;;
       -*) completionList+=('--unmerged') ;;
     esac
   fi
 
-  local newCompletion=( ${completionList:|usedCompletion} )
+  local newCompletion=(${completionList:|usedCompletion})
 
   _describe 'command' newCompletion
 }
