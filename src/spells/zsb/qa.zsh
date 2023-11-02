@@ -114,5 +114,5 @@ qa() (
     echo " " >> $resultFile
   done
 
-  ${zsb}.info "$(hl "./$resultFile") generated with $(hl ${#failedQuestions}) failing question(s)"
+  ${zsb}.info "$(hl "./$resultFile") generated with $(hl $#failedQuestions) failing question(s)"
 )

@@ -1,9 +1,9 @@
 tmkill() (
-  local this="$0"
-  local activeTmuxSessions=$(tmls)
-  local inputSessions=( "$@" )
+  local this=$0
+  local activeTmuxSessions=`tmls`
+  local inputSessions=( $@ )
 
-  ${this}.inputSessionsReceived() [[ "${#inputSessions[@]}" -gt "0" ]]
+  ${this}.inputSessionsReceived() (( $#inputSessions > 0 ))
 
   ${this}.existsActiveTmuxSessions() [[ -n "$activeTmuxSessions" ]]
 

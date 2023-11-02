@@ -1,7 +1,7 @@
 ${zsb}.searchAndReplace.replaceInFiles() {
   local filesWithMatches=(`rg --files-with-matches $search`)
 
-  if (( ${#filesWithMatches} == 0 )); then
+  if (( $#filesWithMatches == 0 )); then
     ${zsb}.info "No files found with matches for '`hl $search`'"
     return 1
   fi
@@ -18,7 +18,7 @@ ${zsb}.searchAndReplace.replaceInFiles() {
 ${zsb}.searchAndReplace.replaceFilesAndFolders() {
   local filesAndFoldersWithMatches=(`fd $search`)
 
-  if (( ${#filesAndFoldersWithMatches} == 0 )); then
+  if (( $#filesAndFoldersWithMatches == 0 )); then
     ${zsb}.info "No files or folders found with matches for '`hl $search`'"
     return 1
   fi
