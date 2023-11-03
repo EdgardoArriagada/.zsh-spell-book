@@ -14,15 +14,23 @@ _${zsb}.recentGitFile() {
   local usedCompletion=(${words[@]:2:$CURRENT-3})
   local firstItemUsed=${words[$FIRST_ITEM_INDEX]} # first item can be "--staged, --unmerged, etc or a file"
   local currentCompletion=${words[$CURRENT]}
-  local completionList=( `${zsb}.getGitFiles ${firstItemUsed:2}` )
+  local -a completionList
 
   # if we are completing the first item
-  if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$currentCompletion" =~ "^-" ]]; then
+  if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$currentCompletion" =~ '^-' ]]; then
     for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
-      if [[ "--${key}" =~ "^${currentCompletion}" ]]
-        then completionList+=( --${key} )
+      if [[ "--${key}" =~ "^${currentCompletion}" ]]; then
+         completionList+=( --${key} )
       fi
     done
+
+    _describe 'command' completionList
+    return
+  fi
+
+  if [[ "$firstItemUsed" =~ '^--' ]]
+    then completionList=( `${zsb}.getGitFiles ${firstItemUsed:2}` )
+    else completionList=( `${zsb}.getGitFiles` )
   fi
 
   local newCompletion=( ${completionList:|usedCompletion} )
