@@ -18,9 +18,7 @@ _${zsb}.recentGitFile() {
   # if we are completing the first item
   if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$firstItemUsed" =~ '^-' ]]; then
     for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
-      if [[ "--${key}" =~ "^${firstItemUsed}" ]]; then
-         completionList+=( --${key} )
-      fi
+       completionList+=( --${key} )
     done
 
     _describe 'command' completionList
