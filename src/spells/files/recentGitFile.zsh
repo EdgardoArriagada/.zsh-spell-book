@@ -32,9 +32,10 @@ _${zsb}.recentGitFile() {
     else completionList=( `${zsb}.getGitFiles` )
   fi
 
-  local newCompletion=( ${completionList:|usedCompletion} )
+  # filter used competion
+  completionList=( ${completionList:|usedCompletion} )
 
-  _describe 'command' newCompletion
+  _describe 'command' completionList
 }
 
 compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
