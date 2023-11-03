@@ -13,13 +13,12 @@ _${zsb}.recentGitFile() {
   local FIRST_ITEM_INDEX=3
   local usedCompletion=(${words[@]:2:$CURRENT-3})
   local firstItemUsed=${words[$FIRST_ITEM_INDEX]} # first item can be "--staged, --unmerged, etc or a file"
-  local currentCompletion=${words[$CURRENT]}
   local -a completionList
 
   # if we are completing the first item
-  if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$currentCompletion" =~ '^-' ]]; then
+  if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$firstItemUsed" =~ '^-' ]]; then
     for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
-      if [[ "--${key}" =~ "^${currentCompletion}" ]]; then
+      if [[ "--${key}" =~ "^${firstItemUsed}" ]]; then
          completionList+=( --${key} )
       fi
     done
