@@ -12,7 +12,13 @@ ${zsb}.getGitFiles() (
 
   case $# in
     0) git status --short 2>/dev/null | cut -c 4- ;;
-    *) git status --short 2>/dev/null | rg ${ZSB_GIT_FILETYPE_TO_REGEX[$1]} | cut -c 4- ;;
+    *)
+      local reg=${ZSB_GIT_FILETYPE_TO_REGEX[$1]}
+
+      if [[ -n "$reg" ]]
+        then git status --short 2>/dev/null | rg $reg | cut -c 4-
+      fi
+      ;;
   esac
 )
 
