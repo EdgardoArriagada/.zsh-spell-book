@@ -1,6 +1,6 @@
+# $1 can be 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
 ga() (
   local this=$0
-  local firstArg=$1 # 'fast' | 'new' | 'unmerged' | '.' | @unstagedFile | @untrackedFile
   local -a filesToAdd
 
   ${this}.addFilesWithDotFlag() git add .
@@ -58,11 +58,11 @@ ga() (
   }
 
   { # main
-    case "$firstArg" in
-      '.') ${this}.addFilesWithDotFlag ;;
-      'new') ${this}.addFilesWithNewFlag "$@" ;;
-      'fast') ${this}.addFilesWithFastFlag "$@" ;;
-      '--unmerged') ${this}.addFilesWithUnmergedFlag "$@" ;;
+    case $1 in
+      .) ${this}.addFilesWithDotFlag ;;
+      new) ${this}.addFilesWithNewFlag "$@" ;;
+      fast) ${this}.addFilesWithFastFlag "$@" ;;
+      --unmerged) ${this}.addFilesWithUnmergedFlag "$@" ;;
       *) ${this}.addFilesWithDefaulBehavior "$@" ;;
     esac
 
@@ -76,10 +76,10 @@ _${zsb}.ga() {
   local -a completionList
 
   case $firstItemUsed in
+    .) return 0 ;;
     new) completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
     fast) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
     --unmerged) completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
-    .) return 0 ;;
     *) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
   esac
 
