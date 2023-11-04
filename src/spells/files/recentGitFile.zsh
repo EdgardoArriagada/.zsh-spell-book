@@ -17,7 +17,7 @@ _${zsb}.recentGitFile() {
 
   # if we are completing the first item and its an arg
   if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$firstItemUsed" =~ '^-' ]]; then
-    completionList=(print  "--${(@k)ZSB_GIT_FILETYPE_TO_REGEX}")
+    completionList=("--${(@k)ZSB_GIT_FILETYPE_TO_REGEX}")
 
     _describe 'command' completionList
     return
