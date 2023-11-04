@@ -71,25 +71,24 @@ ga() (
 )
 
 _${zsb}.ga() {
-  local usedCompletion=(${words[@]:1:$CURRENT-2})
+  local usedCompletion=(${words[@]:1:$CURRENT - 2})
   local firstItemUsed=${words[2]}
-  local currentCompletion=${words[CURRENT]}
   local -a completionList
 
-  case "$firstItemUsed" in
-    'new') completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
-    'fast') completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
-    '--unmerged') completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
-    '.') return 0 ;;
+  case $firstItemUsed in
+    new) completionList=( $(${zsb}.getGitFiles 'untracked') ) ;;
+    fast) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
+    --unmerged) completionList=( $(${zsb}.getGitFiles 'unmerged') ) ;;
+    .) return 0 ;;
     *) completionList=( $(${zsb}.getGitFiles 'unstaged') ) ;;
   esac
 
   # if we are completing the first item
   if (( $CURRENT == 2 )) then
-    case $currentCompletion in
-      n*) completionList+=('new') ;;
-      f*) completionList+=('fast') ;;
-      -*) completionList+=('--unmerged') ;;
+    case $firstItemUsed in
+      n*) completionList+=(new) ;;
+      f*) completionList+=(fast) ;;
+      -*) completionList+=(--unmerged) ;;
     esac
   fi
 
