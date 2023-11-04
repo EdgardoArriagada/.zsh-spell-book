@@ -15,11 +15,9 @@ _${zsb}.recentGitFile() {
   local firstItemUsed=${words[$FIRST_ITEM_INDEX]} # first item can be "--staged, --unmerged, etc or a file"
   local -a completionList
 
-  # if we are completing the first item
+  # if we are completing the first item and its an arg
   if [[ "$CURRENT" = "$FIRST_ITEM_INDEX" && "$firstItemUsed" =~ '^-' ]]; then
-    for key in "${(@k)ZSB_GIT_FILETYPE_TO_REGEX}"; do
-       completionList+=( --${key} )
-    done
+    completionList=(print  "--${(@k)ZSB_GIT_FILETYPE_TO_REGEX}")
 
     _describe 'command' completionList
     return
