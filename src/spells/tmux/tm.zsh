@@ -1,7 +1,11 @@
 _tm.getCurrenSession() tmux display-message -p '#S'
 
 tm() {
-  local targetSession=${1:='main'}
+  local targetSession=$1
+  if [[ -z "$targetSession" ]]; then
+    targetSession=`tmux display-message -p '#S'` # last session
+    : ${targetSession:='main'}
+  fi
 
   # if outside tmux
   [[ -z "$TMUX" ]] && tmux new -A -s $targetSession && return $?
