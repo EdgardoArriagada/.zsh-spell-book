@@ -11,7 +11,6 @@ ${zsb}.recentGitFile() {
 
 _${zsb}.recentGitFile() {
   local FIRST_ITEM_INDEX=3
-  local usedCompletion=(${words[@]:2:$CURRENT - $FIRST_ITEM_INDEX})
   local firstItemUsed=${words[$FIRST_ITEM_INDEX]} # first item can be "--staged, --unmerged, etc or a file"
   local -a completionList
 
@@ -28,7 +27,7 @@ _${zsb}.recentGitFile() {
     else completionList=( `${zsb}.getGitFiles` )
   fi
 
-  # filter used competion
+  local usedCompletion=(${words[@]:2:$CURRENT - $FIRST_ITEM_INDEX})
   completionList=( ${completionList:|usedCompletion} )
 
   _describe 'command' completionList
