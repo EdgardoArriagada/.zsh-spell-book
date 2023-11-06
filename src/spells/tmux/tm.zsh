@@ -1,16 +1,16 @@
-_tm.getCurrenSession() tmux display-message -p '#S'
+_tm.lastActive() tmux display-message -p '#S'
 
 tm() {
   local targetSession=$1
   if [[ -z "$targetSession" ]]; then
-    targetSession=`tmux display-message -p '#S'` # last session
+    targetSession=`_tm.lastActive`
     : ${targetSession:='main'}
   fi
 
   # if outside tmux
   [[ -z "$TMUX" ]] && tmux new -A -s $targetSession && return $?
 
-  [[ "`_tm.getCurrenSession`" = "$targetSession" ]] && \
+  [[ "`_tm.lastActive`" = "$targetSession" ]] && \
     ${zsb}.throw 'You did not move.'
 
   # Create session if it doesn't exists
@@ -27,7 +27,7 @@ _${zsb}.tm() {
   # if outside tmux
   [[ -z "$TMUX" ]] &&  _describe 'command' tmuxList && return 0
 
-  local currentSession=( `_tm.getCurrenSession` )
+  local currentSession=( `_tm.lastActive` )
   local actualList=(${tmuxList:|currentSession})
   _describe 'command' actualList
 }
