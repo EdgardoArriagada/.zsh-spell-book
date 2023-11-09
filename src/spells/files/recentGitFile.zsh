@@ -35,13 +35,13 @@ _${zsb}.recentGitFile() {
 
 compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
 
-alias vr="${zsb}.recentGitFile v"
-alias cr="${zsb}.recentGitFile c"
-alias ccpr="${zsb}.recentGitFile ccp"
-alias tigr="${zsb}.recentGitFile tig"
-alias rmr="${zsb}.recentGitFile 'rm -rf'"
-alias mvr="${zsb}.recentGitFile mv"
-alias lr="${zsb}.recentGitFile l"
-alias cpnr="${zsb}.recentGitFile cpn"
-alias cdpr="${zsb}.recentGitFile cdp"
+alias vr="noglob ${zsb}.recentGitFile v"
+alias cr="noglob ${zsb}.recentGitFile c"
+alias ccpr="noglob ${zsb}.recentGitFile ccp"
+alias tigr="noglob ${zsb}.recentGitFile tig"
+alias rmr="noglob ${zsb}.recentGitFile 'rm -rf'"
+alias mvr="noglob ${zsb}.recentGitFile mv"
+alias lr="noglob ${zsb}.recentGitFile l"
+alias cpnr="noglob ${zsb}.recentGitFile cpn"
+alias cdpr="noglob ${zsb}.recentGitFile cdp"
 alias cdr="cdpr"
