@@ -2,9 +2,9 @@ gc() {
   zparseopts -D -E -F -- -aware=aware -no-verify=noVerify || return 1
 
   ${zsb}.userWorkingOnDefaultBranch
-  local isUserInDefaultBranch="$(Bool $?)"
+  local isUserInDefaultBranch=$(( $? == 0 ))
 
-  if "$isUserInDefaultBranch" && [[ -z "$aware" ]]; then
+  if (( $isUserInDefaultBranch )) && [[ -z "$aware" ]]; then
     ${zsb}.throw "Can't commit into default branch, use `hl --aware` flag to do it anyway"
   fi
 
@@ -15,7 +15,7 @@ gc() {
 
   ${zsb}.gitStatus
 
-  if "$isUserInDefaultBranch"; then
+  if (( $isUserInDefaultBranch )); then
     ${zsb}.warning "Commit made into default branch, use `hl 'git reset HEAD~'` to undo the entire previous commit"
   fi
 }
