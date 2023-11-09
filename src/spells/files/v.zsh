@@ -8,7 +8,7 @@ else
   ${zsb}.v.openVideo() vlc $1
 fi
 
-v() {
+${zsb}.visualize() {
   case ${1:l} in
     *.xlsx|*.csv|*.odt) ${zsb}.v.openCsv $1 ;;
 
@@ -30,6 +30,8 @@ v() {
     *) nvim $1 && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
 }
+
+alias v='noglob ${zsb}.visualize'
 
 hisIgnore v
 
