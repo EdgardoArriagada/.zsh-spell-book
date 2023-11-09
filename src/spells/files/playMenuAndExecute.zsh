@@ -24,7 +24,7 @@ compdef _${zsb}.playMenuAndExecute ${zsb}.playMenuAndExecute
 __vg_dataGetter='fd -t f'
 __vg_command='v'
 vg() ${zsb}.playMenuAndExecute $0 $__vg_command $__vg_dataGetter $@
-compdef "_${zsb}.playMenuAndExecute '$__vg_dataGetter'" vg
+compdef "_${zsb}.playMenuAndExecute $__vg_dataGetter" vg
 hisIgnore vg
 
 __vgh_dataGetter='fd -t f --hidden --no-ignore'
@@ -36,7 +36,7 @@ hisIgnore vgh
 __tigg_dataGetter='fd -t f'
 __tigg_command='tig'
 tigg() ${zsb}.playMenuAndExecute $0 $__tigg_command $__tigg_dataGetter $@
-compdef "_${zsb}.playMenuAndExecute '$__tigg_dataGetter'" tigg
+compdef "_${zsb}.playMenuAndExecute $__tigg_dataGetter" tigg
 hisIgnore tigg
 
 __tiggh_dataGetter='fd -t f --hidden --no-ignore'
@@ -48,7 +48,7 @@ hisIgnore tiggh
 __cg_dataGetter='fd -t f'
 __cg_command='c'
 cg() ${zsb}.playMenuAndExecute $0 $__cg_command $__cg_dataGetter $@
-compdef "_${zsb}.playMenuAndExecute '$__cg_dataGetter'" cg
+compdef "_${zsb}.playMenuAndExecute $__cg_dataGetter" cg
 hisIgnore cg
 
 __cgh_dataGetter='fd -t f --hidden --no-ignore'
@@ -60,7 +60,7 @@ hisIgnore cgh
 __cdg_dataGetter='fd -t d'
 __cdg_command='cd'
 cdg() ${zsb}.playMenuAndExecute $0 $__cdg_command $__cdg_dataGetter $@
-compdef "_${zsb}.playMenuAndExecute '$__cdg_dataGetter'" cdg
+compdef "_${zsb}.playMenuAndExecute $__cdg_dataGetter" cdg
 hisIgnore cdg
 
 __cdgh_dataGetter='fd -t d --hidden --no-ignore'
@@ -72,7 +72,7 @@ hisIgnore cdgh
 __cdd_dataGetter='dirs -p'
 __cdd_command='cd'
 cdd() ${zsb}.playMenuAndExecute $0 $__cdd_command $__cdd_dataGetter $@
-compdef "_${zsb}.playMenuAndExecute '$__cdd_dataGetter'" cdd
+compdef "_${zsb}.playMenuAndExecute $__cdd_dataGetter" cdd
 hisIgnore cdd
 
 __cdp_dataGetter='fd'
@@ -87,6 +87,6 @@ cdp() {
       cd `dirname $1`
   fi
 }
-compdef "_${zsb}.playMenuAndExecute '$__cdp_dataGetter'" cdp
+compdef "_${zsb}.playMenuAndExecute $__cdp_dataGetter" cdp
 hisIgnore cdp
 
