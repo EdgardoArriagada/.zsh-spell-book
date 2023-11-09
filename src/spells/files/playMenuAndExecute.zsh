@@ -78,17 +78,13 @@ hisIgnore cdd
 __cdp_dataGetter='fd'
 __cdp_command='cd'
 cdp() {
-  if ! [[ -a "$1" ]]; then
-    ${zsb}.playMenuAndExecute $0 $__cdp_command $__cdp_dataGetter $@
-    return 0
-  fi
-
-  if [[ -d "$1" ]]; then
-    cd $1; return 0
-  fi
-
-  if [[ -f "$1" ]]; then
-    cd `dirname $1`; return 0
+  if ! [[ -a "$1" ]]
+    then
+      ${zsb}.playMenuAndExecute $0 $__cdp_command $__cdp_dataGetter $@
+    elif [[ -d "$1" ]]; then
+      cd $1
+    elif [[ -f "$1" ]]; then
+      cd `dirname $1`
   fi
 }
 compdef "_${zsb}.playMenuAndExecute '$__cdp_dataGetter'" cdp
