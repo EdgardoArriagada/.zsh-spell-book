@@ -1,2 +1,2 @@
-alias n="neovide --multigrid"
-alias vdiff="nvim -d"
+alias n="noglob neovide --multigrid"
+alias vdiff="noglob nvim -d"
