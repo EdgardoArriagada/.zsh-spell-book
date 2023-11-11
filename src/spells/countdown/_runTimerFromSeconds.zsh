@@ -3,9 +3,8 @@ ${zsb}.countdown.runTimerFromSeconds() (
   local totalSeconds=$1
 
   ${this}.runTimer() {
-    local spacesToKeepOutputClean='   '
     for i in {${totalSeconds}..01}; do
-      printf "\r⏳ `${this}.convertSecondsToTime $i`${spacesToKeepOutputClean}"
+      printf "\r⏳ `${this}.convertSecondsToTime $i`   " # extra spaces keeps output clean
       sleep 1
     done
   }
