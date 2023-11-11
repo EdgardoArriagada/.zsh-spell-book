@@ -9,23 +9,12 @@ else
 fi
 
 ${zsb}.visualize() {
-  case ${1:l:e} in
+  case ${1:e:l} in
     xlsx|csv|odt) ${zsb}.v.openCsv $1 ;;
 
     mp4|mkv|avi|mov|webm|flv|wmv) ${zsb}.v.openVideo $1 ;;
 
-    pdf \
-    |jpg \
-    |png \
-    |gif \
-    |webp \
-    |tiff \
-    |psd \
-    |raw \
-    |bmp \
-    |heif \
-    |jpeg \
-    |svg) ${zsb}.v.openImg $1 ;;
+    pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${zsb}.v.openImg $1 ;;
 
     *) nvim $1 && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
