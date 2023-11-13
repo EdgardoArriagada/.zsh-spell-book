@@ -8,19 +8,19 @@ else
   ${zsb}.v.openVideo() vlc $1
 fi
 
-${zsb}.visualize() {
+${zsb}.v() {
   case ${1:e:l} in
-    xlsx|csv|odt) ${zsb}.v.openCsv $1 ;;
+    xlsx|csv|odt) ${0}.openCsv $1 ;;
 
-    mp4|mkv|avi|mov|webm|flv|wmv) ${zsb}.v.openVideo $1 ;;
+    mp4|mkv|avi|mov|webm|flv|wmv) ${0}.openVideo $1 ;;
 
-    pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${zsb}.v.openImg $1 ;;
+    pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg $1 ;;
 
     *) nvim $1 && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
   esac
 }
 
-alias v='noglob ${zsb}.visualize'
+alias v='noglob ${zsb}.v'
 
 hisIgnore v
 
