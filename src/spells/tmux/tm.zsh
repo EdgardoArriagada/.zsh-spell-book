@@ -8,23 +8,17 @@ tm() {
   local session=${1:=$lastActive}
   : ${session:='main'}
 
-  # if outside tmux
-  if [[ -z "$TMUX" ]]; then
-    if tmux has-session -t $session 2>/dev/null
-      then tmux attach-session -t $session
-      else tmux new -s $session $changeDir
-    fi
-
-    return $?
+  if [[ -n "$TMUX" ]] && [[ "$lastActive" = "$session" ]]
+    then ${zsb}.throw 'You did not move.'
   fi
-
-  [[ "$lastActive" = "$session" ]] && \
-    ${zsb}.throw 'You did not move.'
 
   # Create session if it doesn't exists
   tmux new -s $session $changeDir -d 2>/dev/null
 
-  tmux switch-client -t $session
+  if [[ -n "$TMUX" ]]
+    then tmux switch-client -t $session
+    else tmux attach-session -t $session
+  fi
 }
 
 _${zsb}.tm() {
