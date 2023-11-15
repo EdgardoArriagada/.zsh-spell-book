@@ -1,4 +1,4 @@
-_tm.lastActive() tmux display-message -p '#S'
+_tm.lastActive() tmux display-message -p '#S' 2>/dev/null
 
 tm() {
   zparseopts -D -E -F -- c:=changeDir || return 1
