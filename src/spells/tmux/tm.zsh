@@ -3,11 +3,8 @@ _tm.lastActive() tmux display-message -p '#S'
 tm() {
   zparseopts -D -E -F -- c:=changeDir || return 1
 
-  local session=$1
-  if [[ -z "$session" ]]; then
-    session=`_tm.lastActive`
-    : ${session:='main'}
-  fi
+  local session=${1:=`_tm.lastActive`}
+  : ${session:='main'}
 
   # if outside tmux
   if [[ -z "$TMUX" ]]; then
