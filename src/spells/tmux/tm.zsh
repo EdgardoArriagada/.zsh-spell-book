@@ -24,14 +24,16 @@ tm() {
 _${zsb}.tm() {
   (( $CURRENT > 2 )) && return 0
 
-  local tmuxList=( `tmls` )
+  local tmuxList=(`tmls`)
 
   # if outside tmux
   [[ -z "$TMUX" ]] &&  _describe 'command' tmuxList && return 0
 
-  local currentSession=( `_tm.lastActive` )
-  local actualList=(${tmuxList:|currentSession})
-  _describe 'command' actualList
+  local currentSession=(`_tm.lastActive`)
+
+  tmuxList=(${tmuxList:|currentSession})
+
+  _describe 'command' tmuxList
 }
 
 hisIgnore tm
