@@ -3,22 +3,25 @@ _tm.lastActive() tmux display-message -p '#S' 2>/dev/null
 tm() {
   zparseopts -D -E -F -- c:=changeDir || return 1
 
-  local lastActive=`_tm.lastActive`
+  # if outside tmux
+  if [[ -z "$TMUX" ]]; then
+    local session=${1:=`_tm.lastActive`}
+    : ${session:=main}
 
-  local session=${1:=$lastActive}
-  : ${session:='main'}
+    tmux new -A -s $session $changeDir
+    return $?
+  fi
 
-  if [[ -n "$TMUX" ]] && [[ "$lastActive" = "$session" ]]
+  local session=${1:?Error: session name is required.}
+
+  if [[ "$session" = "`_tm.lastActive`" ]]
     then ${zsb}.throw 'You did not move.'
   fi
 
   # Create session if it doesn't exists
   tmux new -s $session $changeDir -d 2>/dev/null
 
-  if [[ -n "$TMUX" ]]
-    then tmux switch-client -t $session
-    else tmux attach-session -t $session
-  fi
+  tmux switch-client -t $session
 }
 
 _${zsb}.tm() {
