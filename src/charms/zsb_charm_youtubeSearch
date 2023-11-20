@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+set -o nounset
+
+local qs=`choose -n0 -m <<< _`
+
+if [[ -z "$qs" || "$qs" == "_" ]]
+  then exit 1
+fi
+
+zsb_open "https://www.youtube.com/results?search_query=${qs// /+}"
