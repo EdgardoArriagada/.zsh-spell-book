@@ -4,24 +4,23 @@ ${zsb}.nodeReinstall() {
 
   zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall c=cacheClean || return 1
 
-  if [[ ! -f $packageManagerLock ]]
-    then iconize.notFound "rm $packageManagerLock"
+  if [[ -n "$keepLockFile" ]]
+    then iconize.skip "rm $packageManagerLock"
     else
-      if [[ -z "$keepLockFile" ]]
+      if [[ -f $packageManagerLock ]]
         then iconize.output rm $packageManagerLock
-        else iconize.skip "rm $packageManagerLock"
+        else iconize.notFound "rm $packageManagerLock"
       fi
   fi
 
-  if [[ ! -d node_modules ]]
-    then iconize.notFound "rm -rf node_modules"
+  if [[ -n "$keepNodeModules" ]]
+    then iconize.skip "rm -rf node_modules"
     else
-      if [[ -z "$keepNodeModules" ]]
-        then spinner rm -rf node_modules
-        else iconize.skip "rm -rf node_modules"
+      if [[ -d node_modules ]]
+        then iconize.output rm -rf node_modules
+        else iconize.notFound "rm -rf node_modules"
       fi
   fi
-
 
   if [[ -n "$cacheClean" ]]
     then printAndRun 'npm cache clean --force'
