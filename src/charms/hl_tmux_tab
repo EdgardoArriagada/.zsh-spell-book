@@ -7,8 +7,21 @@ if [[ -z "$TMUX" ]]; then
   exit 1
 fi
 
-if [[ "$1" = "--clear" ]]
-  then tmux clear1 \; clear2;
-  else tmux alert1 \; alert2;
+zparseopts -D -E -F -- \
+  -clear=clear \
+  -id:=winId \
+  || return 1
+
+local targetWin
+if [[ -n "$winId" ]]
+  then targetWin="-t ${winId[2]}"
+  else targetWin=""
 fi
 
+local action
+if [[ -n "$clear" ]]
+  then action="clear"
+  else action="alert"
+fi
+
+tmux ${action}1 $targetWin \; ${action}2 $targetWin
