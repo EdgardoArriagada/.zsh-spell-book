@@ -25,11 +25,11 @@ ${zsb}.nodeReinstall() {
 
   if [[ -n "$cacheClean" ]]
     then printAndRun 'npm cache clean --force'
-    else messageSkip 'npm cache clean --force'
+    else iconize.skip 'npm cache clean --force'
   fi
 
   if [[ -n "$skipInstall" ]]
-    then messageSkip "$packageManager install" && return 0
+    then iconize.skip "$packageManager install" && return 0
   fi
 
   printAndRun "$packageManager install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
