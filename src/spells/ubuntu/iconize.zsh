@@ -10,9 +10,9 @@ iconize.output() {
 }
 
 iconize.skip() {
-  printf "\r\e[38;5;3m•\033[0m `iconize.fmt $@`\n"
+  printf "\r\e[38;5;3mskip\033[0m `iconize.fmt $@`\n"
 }
 
 iconize.notFound() {
-  printf "\r\e[38;5;6m○\033[0m `iconize.fmt $@`\n"
+  printf "\r\e[38;5;6mnot found\033[0m `iconize.fmt $@`\n"
 }

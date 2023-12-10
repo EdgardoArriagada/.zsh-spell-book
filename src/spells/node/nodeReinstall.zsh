@@ -9,7 +9,7 @@ ${zsb}.nodeReinstall() {
     else
       if [[ -f $packageManagerLock ]]
         then iconize.output rm $packageManagerLock
-        else iconize.notFound "rm $packageManagerLock"
+        else iconize.notFound "$packageManagerLock"
       fi
   fi
 
@@ -18,7 +18,7 @@ ${zsb}.nodeReinstall() {
     else
       if [[ -d node_modules ]]
         then iconize.output rm -rf node_modules
-        else iconize.notFound "rm -rf node_modules"
+        else iconize.notFound "node_modules"
       fi
   fi
 
