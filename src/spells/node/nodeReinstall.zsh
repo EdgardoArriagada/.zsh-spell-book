@@ -17,7 +17,7 @@ ${zsb}.nodeReinstall() {
     then iconize.skip "rm -rf node_modules"
     else
       if [[ -d node_modules ]]
-        then iconize.output rm -rf node_modules
+        then spinner rm -rf node_modules
         else iconize.notFound "node_modules"
       fi
   fi
