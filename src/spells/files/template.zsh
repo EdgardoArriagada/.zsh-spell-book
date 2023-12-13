@@ -26,6 +26,7 @@ template() {
       ["`wcase -w $file --kebab`"]="`wcase -w $replace --kebab`"
       ["`wcase -w $file --camel`"]="`wcase -w $replace --camel`"
       ["`wcase -w $file --pascal`"]="`wcase -w $replace --pascal`"
+      ["`wcase -w $file --all-caps`"]="`wcase -w $replace --all-caps`"
     )
 
     for key value in ${(@kv)replaces}; do
