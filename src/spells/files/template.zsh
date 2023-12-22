@@ -22,12 +22,15 @@ template() {
   (
     cd $replace
 
-    local -A replaces=(
-      ["`wcase -w $file --kebab`"]="`wcase -w $replace --kebab`"
-      ["`wcase -w $file --camel`"]="`wcase -w $replace --camel`"
-      ["`wcase -w $file --pascal`"]="`wcase -w $replace --pascal`"
-      ["`wcase -w $file --all-caps`"]="`wcase -w $replace --all-caps`"
+    # wcase -h
+    local cases=(
+      'flat' 'upper' 'camel' 'pascal' 'snake' 'all-caps' 'kebab' 'train' 'spaced' 'http-header' 'title'
     )
+
+    local -A replaces
+    for kase in $cases; do
+      replaces[`wcase -w $file --${kase}`]=`wcase -w $replace --${kase}`
+    done
 
     for key value in ${(@kv)replaces}; do
       searchAndReplace $key $value -y
