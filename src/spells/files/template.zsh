@@ -22,10 +22,23 @@ template() {
     then ${zsb}.throw "Replacement is required"
   fi
 
+  local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
+  local spinLenMinusOne=$(( ${#spinnerChars[@]} - 1))
+  local i=0
+
+  spin() {
+    printf "\r${spinnerChars[$i]} "
+    (( $i == $spinLenMinusOne )) && i=0 || : $((i++))
+  }
+
+  printf "  `color 245 'Replacing...'`"
+
   cp -r $file $replace
 
+  spin
+
   (
-    cd $replace
+    builtin cd $replace
 
     # wcase -h
     local cases=(
@@ -38,11 +51,14 @@ template() {
     done
 
     for key value in ${(@kv)replaces}; do
+      spin
       searchAndReplace $key $value -ys
       searchAndReplace $key $value -fys
     done
 
   )
+
+  printf "\r`color 245 'Done!'`         \n"
 
   tree $replace
 }
