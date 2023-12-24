@@ -2,7 +2,7 @@ ${zsb}.searchAndReplace.replaceInFiles() {
   local filesWithMatches=(`rg --files-with-matches $search`)
 
   if (( $#filesWithMatches == 0 )); then
-    ${zsb}.info "No files found with matches for '`hl $search`'"
+    [[ -z "$silent" ]] && ${zsb}.info "No files found with matches for '`hl $search`'"
     return 1
   fi
 
@@ -12,14 +12,16 @@ ${zsb}.searchAndReplace.replaceInFiles() {
 
   sd $search $replace ${filesWithMatches[@]}
 
-  (( $? == 0 )) && ${zsb}.success "`hl $search` -> `hl $replace`"
+  if [[ -z "$silent" ]]
+    then (( $? == 0 )) && ${zsb}.success "`hl $search` -> `hl $replace`"
+  fi
 }
 
 ${zsb}.searchAndReplace.replaceFilesAndFolders() {
   local filesAndFoldersWithMatches=(`fd $search`)
 
   if (( $#filesAndFoldersWithMatches == 0 )); then
-    ${zsb}.info "No files or folders found with matches for '`hl $search`'"
+    [[ -z "$silent" ]] && ${zsb}.info "No files or folders found with matches for '`hl $search`'"
     return 1
   fi
 
@@ -37,14 +39,16 @@ ${zsb}.searchAndReplace.replaceFilesAndFolders() {
     mkdir -p `dirname $newFile`
     mv $file $newFile
 
-    (( $? == 0 )) && ${zsb}.success "`hl $file` -> `hl $newFile`"
+    if [[ -z "$silent" ]]
+      then (( $? == 0 )) && ${zsb}.success "`hl $file` -> `hl $newFile`"
+    fi
   done
 }
 
 searchAndReplace() {
   local this=${zsb}.${0}
 
-  zparseopts -D -E -F -- f=filesAndFolders y=skipPrompt || return 1
+  zparseopts -D -E -F -- f=filesAndFolders y=skipPrompt s=silent || return 1
 
   local search=${1:?Error: Search string is required.}
   local replace=${2:?Error: Replace string is required.}
