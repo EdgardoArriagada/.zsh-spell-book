@@ -9,9 +9,14 @@ template() {
 
   printf "\n"
 
-  local replace=$file
-  ${zsb}.prompt "Replace with:"
-  vared replace
+  local replace
+  if [[ -n "$2" ]]
+    then replace=$2
+    else
+      replace=$file
+      ${zsb}.prompt "Replace with:"
+      vared replace
+  fi
 
   if [[ -z "$replace" || "$replace" == "$file" ]]
     then ${zsb}.throw "Replacement is required"
