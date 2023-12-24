@@ -38,8 +38,8 @@ template() {
     done
 
     for key value in ${(@kv)replaces}; do
-      searchAndReplace $key $value -y
-      searchAndReplace -f $key $value -y
+      searchAndReplace $key $value -ys
+      searchAndReplace $key $value -fys
     done
 
   )
