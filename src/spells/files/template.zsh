@@ -1,4 +1,5 @@
 template() {
+
   local file=${1:?Error: File is required.}
 
   if [[ ! -f "$file" && ! -d "$file" ]]
@@ -22,6 +23,17 @@ template() {
     then ${zsb}.throw "Replacement is required"
   fi
 
+  # input validation ends
+
+  function shutdown() {
+    # make cursor visible
+    tput cnorm
+  }
+
+  TRAPINT() { shutdown }
+  TRAPQUIT() { shutdown }
+  TRAPTERM() { shutdown }
+
   local spinnerChars=(⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷)
   local spinLenMinusOne=$(( ${#spinnerChars[@]} - 1))
   local i=0
@@ -35,6 +47,8 @@ template() {
 
   cp -r $file $replace
 
+
+  tput civis # make cursor invisible
   spin
 
   (
