@@ -3,7 +3,8 @@ createTsReact() {
   local projectName=`wcase -w $args --kebab`
 
   [[ -d $projectName ]] && ${zsb}.throw "$(hl "$1") is already a dir."
-  eval "npx create-react-app $projectName --template typescript" && \
+
+  npm create vite@latest $projectName -- --template ts-react && \
     cd $projectName && \
     prettierHelper --init && \
     alert -i 'face-cool' "Happy Hacking" && \
