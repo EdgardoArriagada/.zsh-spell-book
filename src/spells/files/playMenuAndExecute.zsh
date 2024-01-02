@@ -89,7 +89,7 @@ __cdp_command='cd'
 __cdp() {
   if ! [[ -a "$1" ]]
     then
-      ${zsb}.playMenuAndExecute $0 $__cdp_command $__cdp_dataGetter $@
+      ${zsb}.playMenuAndExecute cdp $__cdp_command $__cdp_dataGetter $@
     elif [[ -d "$1" ]]; then
       cd $1
     elif [[ -f "$1" ]]; then
