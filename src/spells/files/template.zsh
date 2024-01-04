@@ -54,13 +54,8 @@ template() {
   (
     builtin cd $replace
 
-    # wcase -h
-    local cases=(
-      'flat' 'upper' 'camel' 'pascal' 'snake' 'all-caps' 'kebab' 'train' 'spaced' 'http-header' 'title'
-    )
-
     local -A replaces
-    for kase in $cases; do
+    for kase in $ZSB_WCASE_CASES; do
       replaces[`wcase -w $file --${kase}`]=`wcase -w $replace --${kase}`
     done
 

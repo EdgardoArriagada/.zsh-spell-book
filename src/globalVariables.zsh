@@ -30,6 +30,10 @@ declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
   ['unmerged']='(^U)|(^.U)'
 )
 
+# wcase -h
+declare -g ZSB_WCASE_CASES=(
+  'flat' 'upper' 'camel' 'pascal' 'snake' 'all-caps' 'kebab' 'train' 'spaced' 'http-header' 'title'
+)
 
 ### DONT TOUCH ###
 declare ZSB_GIT_DEFAULT_BRANCHES_ARRAY=( ${ZSB_GIT_MAIN_BRANCHES_ARRAY[@]} )
