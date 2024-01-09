@@ -15,10 +15,12 @@ dondedice() {
   zparseopts -D -E -F -- m=multiCase s:=skip
 
   local searchInput=${1:?Error: Search input required.}
+  echo "le searchInput: ${searchInput}";
   shift
 
-  if [[ -z "$multiCase" ]]
-    then __dondedice $searchInput $@ && return $?
+  if [[ -z "$multiCase" ]]; then
+    __dondedice $searchInput $@
+    return $?
   fi
 
   for kase in $ZSB_WCASE_CASES; do
