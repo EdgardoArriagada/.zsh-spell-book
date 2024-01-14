@@ -1,7 +1,7 @@
 ${zsb}.loopFiles() {
   for file in $*; do
     ${zsb}.info "Visualizing $file"
-    eval "v '$file'"
+    eval "noglob nvim $file"
   done
 }
 
