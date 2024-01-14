@@ -31,7 +31,7 @@ ${zsb}.nodeReinstall() {
     then iconize.skip "$packageManager install" && return 0
   fi
 
-  printAndRun "$packageManager install" && ${zsb}.isGitRepo && ${zsb}.gitStatus
+  printAndRun "$packageManager install" && ${zsb}.tryGitStatus
 
   alert "🏁 $packageManager install 🏁"
 }

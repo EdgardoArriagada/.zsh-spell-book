@@ -1,2 +1,2 @@
-${zsb}.isGitRepo && ${zsb}.gitStatus
+${zsb}.tryGitStatus
 

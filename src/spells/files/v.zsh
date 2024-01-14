@@ -16,7 +16,7 @@ ${zsb}.v() {
 
     pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg $1 ;;
 
-    *) nvim $1 && ${zsb}.isGitRepo && ${zsb}.gitStatus ;;
+    *) nvim $1 && ${zsb}.tryGitStatus ;;
   esac
 }
 
