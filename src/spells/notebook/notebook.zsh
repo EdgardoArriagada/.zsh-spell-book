@@ -51,6 +51,7 @@ compdef _${zsb}.page ${zsb}.page
 
 alias cdnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && cds $ZSB_NOTEBOOK_DIR"
 alias page="${zsb}.page nvim"
+alias p="${zsb}.page nvim"
 alias cpage="${zsb}.page zsb_cat"
 alias ccpage="${zsb}.page ccp"
 alias cdpage="${zsb}.page.validateEnv && cd $ZSB_CHAPT"
