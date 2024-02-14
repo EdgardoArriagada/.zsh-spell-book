@@ -15,9 +15,9 @@ alias cdocuments='cd ~/Documents'
 alias cdownloads='cd ~/Downloads'
 alias links="nvim ~/temp/links.zsh"
 
-alias cmdRank="< ~/.zsh_history | awk '{print \$1}' | sort | uniq -c | sort -nr | head -20"
+alias cmdRank="awk '{print \$1}' ~/.zsh_history | sort | uniq -c | sort -nr | head -20"
 
-hisIgnore ee links
+hisIgnore ee links cmdRank
 
 whoInPort() { printAndRun "sudo lsof -i \":${1}\"" }
 killInPort() { sudo kill -9 $(sudo lsof -t -i ":${1}") }
