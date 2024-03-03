@@ -1,7 +1,7 @@
 run() {
   local runCmd="pnpm run"
   [[ -f yarn.lock ]] && runCmd="yarn"
-  [[ -f package.json ]] && runCmd="npm run"
+  [[ -f package-lock.json ]] && runCmd="npm run"
 
   printAndRun "$runCmd $@"
 }
