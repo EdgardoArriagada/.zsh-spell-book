@@ -21,13 +21,11 @@ gc() {
 }
 
 _${zsb}.gc() {
-  local noVerify
   local aware
 
-  ${zsb}.isHusky && noVerify='--no-verify:Skip husky verifications'
   ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
-  _${zsb}.nonRepeatedListD $aware $noVerify
+  _${zsb}.nonRepeatedListD $aware '--no-verify:Skip pre-commit verifications'
 }
 
 compdef _${zsb}.gc gc
