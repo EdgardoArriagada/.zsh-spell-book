@@ -25,7 +25,7 @@ _${zsb}.gc() {
 
   ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
-  _${zsb}.nonRepeatedListD $aware '--no-verify:Skip pre-commit verifications'
+  _${zsb}.nonRepeatedListD $aware "`${zsb}.getNoVerifyProp`"
 }
 
 compdef _${zsb}.gc gc

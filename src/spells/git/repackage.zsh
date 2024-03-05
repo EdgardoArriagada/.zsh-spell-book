@@ -39,7 +39,7 @@ _${zsb}.repackage() {
 
   ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
-  _${zsb}.nonRepeatedListD $aware $ZSB_GIT_FORCE '--no-verify:Skip pre-commit verifications'
+  _${zsb}.nonRepeatedListD $aware $ZSB_GIT_FORCE "`${zsb}.getNoVerifyProp`"
 }
 
 compdef _${zsb}.repackage repackage
