@@ -10,7 +10,7 @@ fi
 
 ${zsb}.v() {
   if [[ -n $1 && ! -a $1 ]]; then
-    if ! ${zsb}.isGitRepo || [[ "$1" =~ '^(/|~|..)' ]]
+    if ! ${zsb}.isGitRepo || [[ "$1" =~ '^(/|~|\.\.)' ]]
       then ${zsb}.throw 'Unsafe to perform roman expansion.'
     fi
 
