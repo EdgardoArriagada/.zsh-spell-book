@@ -19,7 +19,7 @@ ${zsb}.v() {
       else mkdir -p `dirname $1`
     fi
 
-    nvim $1
+    nvim $1 && ${zsb}.tryGitStatus
 
     return 0
   fi
