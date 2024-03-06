@@ -10,6 +10,10 @@ fi
 
 ${zsb}.v() {
   if [[ -n $1 && ! -a $1 ]]; then
+    if ! ${zsb}.isGitRepo || [[ "$1" =~ '^(/|~|..)' ]]
+      then ${zsb}.throw 'Unsafe to perform roman expansion.'
+    fi
+
     if [[ "${1: -1}" == "/" ]]
       then mkdir -p $1
       else mkdir -p `dirname $1`
