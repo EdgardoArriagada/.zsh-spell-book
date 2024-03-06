@@ -9,6 +9,17 @@ else
 fi
 
 ${zsb}.v() {
+  if [[ -n $1 ]] && [[ ! -f $1 || ! -d $1 ]]; then
+    if [[ "${1: -1}" == "/" ]]
+      then mkdir -p $1
+      else mkdir -p `dirname $1`
+    fi
+
+    nvim $1
+
+    return 0
+  fi
+
   case ${1:e:l} in
     xlsx|csv|odt) ${0}.openCsv $1 ;;
 
