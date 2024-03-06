@@ -15,7 +15,7 @@ alias cdocuments='cd ~/Documents'
 alias cdownloads='cd ~/Downloads'
 alias links="nvim ~/temp/links.zsh"
 
-alias cmdRank="awk '{print \$1}' ~/.zsh_history | sort | uniq -c | sort -nr | head -20"
+alias cmdRank="awk '!(\$1==\"\" || match(\$1, /^(-| |\\\)/)) {print \$1}' ~/.zsh_history | sort | uniq -c | sort -nr | head -20"
 
 hisIgnore ee links cmdRank
 
