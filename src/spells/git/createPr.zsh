@@ -21,7 +21,7 @@ createPr() {
     else restOfProps="$ZSB_CREATEPR_DEFAULT_PROPS"
   fi
 
-  gh pr create --draft --base "$parentBranch" ${(z)restOfProps}
+  eval "gh pr create --draft --base $parentBranch ${(z)restOfProps}"
   gh pr view --web
 }
 
