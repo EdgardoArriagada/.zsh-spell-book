@@ -36,7 +36,12 @@ ${zsb}.nodeReinstall() {
   alert "🏁 $packageManager install 🏁"
 }
 
-compdef "_${zsb}.nonRepeatedListD '-l:Keep lock files' '-n:Keep node modules' '-i:Skip installation' '-c:Cache clean'" ${zsb}.nodeReinstall
+compdef "_${zsb}.nonRepeatedListD \
+  '-l:Keep lock files' \
+  '-n:Keep node modules' \
+  -i:Skip installation' \
+  '-c:Cache clean' \
+  " ${zsb}.nodeReinstall
 
 alias npmreinstall="${zsb}.nodeReinstall npm package-lock.json"
 
