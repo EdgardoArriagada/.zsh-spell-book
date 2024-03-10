@@ -1,5 +1,3 @@
-# -m: (boolean) multicase search
-# -s: (string) skip space separated list of globs
 dondedice() {
   zparseopts -D -E -F -- m=multiCase s:=skip
 
@@ -39,3 +37,8 @@ snt() {
 
   dondedice -s $skips $@
 }
+
+compdef "_${zsb}.nonRepeatedListD \
+  '-m:Multicase search' \
+  '-s:Skip given space separated list of globs' \
+  " dondedice snt
