@@ -1,16 +1,5 @@
-# when $# > 1, $1 is a comma separated list of globs
-
-__dondedice() {
-  local maxColumns=`${zsb}.getMaxSearchColumns`
-
-  if [[ -n "$skip" ]];then
-     rg --glob "!{package-lock.json,${skip[2]}}" $@ -M $maxColumns
-     return $?
-  fi
-
-  rg --glob '!{package-lock.json}' $@ -M $maxColumns
-}
-
+# -m: (boolean) multicase search
+# -s: (string) skip space separated list of globs
 dondedice() {
   zparseopts -D -E -F -- m=multiCase s:=skip
 
@@ -25,4 +14,32 @@ dondedice() {
   for kase in $ZSB_WCASE_CASES; do
     __dondedice "`wcase --${kase} -w $searchInput`" $@
   done
+}
+
+__dondedice() {
+  local maxColumns=`${zsb}.getMaxSearchColumns`
+  local globs="-g '!package-lock.json'"
+
+  if [[ -n "$skip" ]];then
+    for glob in ${(z)skip[2]}; do
+      globs+=" -g '!$glob'"
+    done
+  fi
+
+  eval "rg $globs $@ -M $maxColumns"
+  return $?
+}
+
+# util that already skip tests and allow to pass multiple other skips
+snt() {
+  zparseopts -D -E -F -- s:=skip
+  local skips='*__tests__* *Test.java'
+
+  if [[ -n "$skip" ]];then
+    for glob in ${(z)skip[2]}; do
+      skips+=" $glob"
+    done
+  fi
+
+  dondedice -s $skips $@
 }
