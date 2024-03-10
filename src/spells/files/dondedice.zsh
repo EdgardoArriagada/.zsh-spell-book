@@ -20,11 +20,9 @@ __dondedice() {
   local maxColumns=`${zsb}.getMaxSearchColumns`
   local globs="-g '!package-lock.json'"
 
-  if [[ -n "$skip" ]];then
-    for glob in ${(z)skip[2]}; do
-      globs+=" -g '!$glob'"
-    done
-  fi
+  for glob in ${(z)skip[2]}; do
+    globs+=" -g '!$glob'"
+  done
 
   eval "rg $globs $@ -M $maxColumns"
   return $?
@@ -35,11 +33,9 @@ snt() {
   zparseopts -D -E -F -- s:=skip
   local skips='*__tests__* *Test.java'
 
-  if [[ -n "$skip" ]];then
-    for glob in ${(z)skip[2]}; do
-      skips+=" $glob"
-    done
-  fi
+  for glob in ${(z)skip[2]}; do
+    skips+=" $glob"
+  done
 
   dondedice -s $skips $@
 }
