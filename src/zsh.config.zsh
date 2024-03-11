@@ -66,6 +66,15 @@ preexec() { printf $ZSB_CURSOR_DEFAULT; } # Print cursor for each new prompt
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
+vim-like-delete-word() {
+    local WORDCHARS=$WORDCHARS
+    WORDCHARS="${WORDCHARS//:}"
+    WORDCHARS="${WORDCHARS//\/}"
+    WORDCHARS="${WORDCHARS//.}"
+    zle backward-delete-word
+}
+zle -N vim-like-delete-word
+
 # for more, run "zle -al" and/or "bindkey -l"
 bindkey -M vicmd '.' append-last-word
 
@@ -74,7 +83,8 @@ bindkey -M viins '^p' history-search-backward
 bindkey -M viins '^n' history-search-forward
 bindkey -M viins '^e' end-of-line
 bindkey -M viins '^[d' kill-word
-bindkey -M viins '^w' backward-kill-word
+bindkey -M viins '^w' vim-like-delete-word
+bindkey -M viins '^v' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^q' push-line
 
