@@ -24,8 +24,8 @@ hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
-  local inputTime=$1
-  shift 1
+  local inputTime=${1?Error: missing time}
+
   ${zsb}.info "`hl $ZSB_CURRENT_TICKET` $ZSB_CURRENT_LABEL"
   pomodoro $inputTime $ZSB_CURRENT_TICKET $ZSB_CURRENT_LABEL
 }
