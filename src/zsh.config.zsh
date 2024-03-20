@@ -71,6 +71,7 @@ vim-like-delete-word() {
     WORDCHARS="${WORDCHARS//:}"
     WORDCHARS="${WORDCHARS//\/}"
     WORDCHARS="${WORDCHARS//.}"
+    WORDCHARS="${WORDCHARS//-}"
     zle backward-delete-word
 }
 zle -N vim-like-delete-word
