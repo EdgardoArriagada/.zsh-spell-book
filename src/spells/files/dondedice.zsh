@@ -22,7 +22,7 @@ __dondedice() {
     globs+=" -g '!$glob'"
   done
 
-  eval "rg $globs $@ -M $maxColumns"
+  eval "rg $globs '$@' -M $maxColumns"
   return $?
 }
 
