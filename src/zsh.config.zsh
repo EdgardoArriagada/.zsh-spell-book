@@ -85,6 +85,7 @@ bindkey -M viins '^w' vim-like-delete-word
 bindkey -M viins '^v' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^q' push-line
+bindkey -M viins '^o' clear-screen
 
 # Workarouds
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
