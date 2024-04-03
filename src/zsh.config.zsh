@@ -67,7 +67,7 @@ function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
 vim-like-delete-word() {
-    local WORDCHARS="${WORDCHARS//[\/:.-]/}"
+    local WORDCHARS="${WORDCHARS//[\/:.]/}"
 
     zle backward-delete-word
 }
