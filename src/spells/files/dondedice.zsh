@@ -29,7 +29,7 @@ __dondedice() {
 # util that already skip tests and allow to pass multiple other skips
 snt() {
   zparseopts -D -E -F -- s:=skip
-  local skips='*__tests__* *Test.java'
+  local skips='*__tests__* *Test.java *mocks* *fixtures*'
 
   for glob in ${(z)skip[2]}; do
     skips+=" $glob"
