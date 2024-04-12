@@ -76,11 +76,11 @@ zle -N vim-like-delete-word
 # for more, run "zle -al" and/or "bindkey -l"
 bindkey -M vicmd '.' append-last-word
 
+bindkey -M viins '^[c' vi-cmd-mode
 bindkey -M viins '^a' beginning-of-line
 bindkey -M viins '^p' history-search-backward
 bindkey -M viins '^n' history-search-forward
 bindkey -M viins '^e' end-of-line
-bindkey -M viins '^[d' kill-word
 bindkey -M viins '^w' vim-like-delete-word
 bindkey -M viins '^v' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
