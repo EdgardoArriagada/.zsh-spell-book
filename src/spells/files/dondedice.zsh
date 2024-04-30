@@ -1,5 +1,5 @@
 dondedice() {
-  zparseopts -D -E -F -- m=multiCase s:=skip
+  zparseopts -D -E -F -- m=multiCase s:=skip || return 1
 
   local searchInput=${1:?Error: Search input required.}
   shift
@@ -23,19 +23,18 @@ __dondedice() {
   done
 
   eval "rg $globs '$@' -M $maxColumns"
-  return $?
 }
 
 # util that already skip tests and allow to pass multiple other skips
 snt() {
-  zparseopts -D -E -F -- s:=skip
+  zparseopts -D -E -F -- m=multiCase s:=skip || return 1
   local skips='*__tests__* *Test.java *mocks* *fixtures*'
 
   for glob in ${(z)skip[2]}; do
     skips+=" $glob"
   done
 
-  dondedice -s $skips $@
+  dondedice -s $skips $multiCase $@
 }
 
 compdef "_${zsb}.nonRepeatedListD \
