@@ -9,9 +9,21 @@ dondedice() {
     return $?
   fi
 
-  for kase in $ZSB_WCASE_CASES; do
-    __dondedice "`wcase --${kase} -w $searchInput`" $@
-  done
+  local currentKase=`wcase -w "$searchInput" 2>&1`
+
+  case $currentKase in
+    'Invalid input')
+      ${zsb}.throw "Invalid input for multicase."
+      ;;
+    flat)
+      __dondedice $searchInput $@
+      ;;
+    *)
+      for kase in $ZSB_WCASE_CASES; do
+        __dondedice "`wcase --${kase} -w $searchInput`" $@
+      done
+      ;;
+  esac
 }
 
 __dondedice() {
