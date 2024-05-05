@@ -20,11 +20,10 @@ dondedice() {
   for kase in $ZSB_WCASE_CASES; do
     local result=`wcase --${kase} -w $searchInput`
 
-    if [[ -n ${duplicates[$result]} ]]; then
-      continue
+    if [[ -n ${duplicates[$result]} ]]
+      then continue
+      else duplicates[$result]=1
     fi
-
-    duplicates[$result]=1
 
     __dondedice $result $@
   done
