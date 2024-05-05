@@ -9,10 +9,8 @@ dondedice() {
     return $?
   fi
 
-  local currentKase=`wcase -w "$searchInput" 2>&1`
-
-  if [[ "$currentKase" == 'Invalid input' ]]; then
-    ${zsb}.throw "Invalid input for multicase."
+  if [[ 'Invalid input' == "`wcase -w "$searchInput" 2>&1`" ]]
+    then ${zsb}.throw "Invalid input for multicase."
   fi
 
   local -A duplicates
