@@ -11,19 +11,25 @@ dondedice() {
 
   local currentKase=`wcase -w "$searchInput" 2>&1`
 
-  case $currentKase in
-    'Invalid input')
-      ${zsb}.throw "Invalid input for multicase."
-      ;;
-    flat)
-      __dondedice $searchInput $@
-      ;;
-    *)
-      for kase in $ZSB_WCASE_CASES; do
-        __dondedice "`wcase --${kase} -w $searchInput`" $@
-      done
-      ;;
-  esac
+  if [[ "$currentKase" == 'Invalid input' ]]; then
+    ${zsb}.throw "Invalid input for multicase."
+  fi
+
+  local -A duplicates
+
+  for kase in $ZSB_WCASE_CASES; do
+    local result=`wcase --${kase} -w $searchInput`
+
+    if [[ -n ${duplicates[$result]} ]]; then
+      continue
+    fi
+
+    duplicates[$result]=1
+
+    __dondedice $result $@
+  done
+
+  unset duplicates
 }
 
 __dondedice() {
