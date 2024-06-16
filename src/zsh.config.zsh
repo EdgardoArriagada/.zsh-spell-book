@@ -121,7 +121,7 @@ export ALIEN_SECTIONS_LEFT=(
   prompt
 )
 
-export ALIEN_THEME="gruvbox"
+export ALIEN_THEME="bnw"
 
 export ALIEN_SECTION_VCS_DIRTY_FG=0
 export ALIEN_SECTION_VCS_DIRTY_BG=4
