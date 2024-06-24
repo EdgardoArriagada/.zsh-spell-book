@@ -37,6 +37,14 @@ ${zsb}.confirmMenu.warning() {
   ${zsb}.confirmMenu.withPrompt
 }
 
+${zsb}.continueMenu() {
+  ${zsb}.info "$@"
+  <<< ''
+  ${zsb}.prompt "Continue? $(hl "[Y/n]")"
+  <<< ''
+  ${zsb}.confirmMenu
+}
+
 ${zsb}.confirmMenu.info() {
   ${zsb}.info "${@} $(hl "[Y/n]")"
   <<< ''
