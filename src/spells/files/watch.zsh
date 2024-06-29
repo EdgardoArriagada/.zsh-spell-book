@@ -5,6 +5,7 @@ watch() {
 
   case ${1:e:l} in
     lua) echo $file | entr -c lua $file ;;
+    go) echo $file | entr -c go run $file ;;
     js) node --watch $file ;;
     *) ${zsb}.throw "Not configured yet: `hl $extension`"
   esac
