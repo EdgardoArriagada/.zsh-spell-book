@@ -20,15 +20,14 @@ if [[ -n "$winId" ]]
   else targetWin=""
 fi
 
-local action
-if [[ -n "$clear" ]]; then
-  action="clear"
-  tmux rename-window zsh
-else
-  action="alert"
-  if [[ -n "$rename" ]]
-    then tmux rename-window "$rename"
-  fi
+local action=`[[ -n "$clear" ]] && print "clear" || print "alert"`
+
+if [[ -n "$clear" ]]
+  then tmux set automatic-rename
+fi
+
+if [[ -n "$rename" && -z "$clear" ]]
+  then tmux rename-window "$rename"
 fi
 
 tmux ${action}1 $targetWin \; ${action}2 $targetWin
