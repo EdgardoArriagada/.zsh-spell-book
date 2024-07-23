@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# (tightly coupled with tmux config and nvim)
+# for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
+
+local selection="${1:-/dev/stdin}"
+
+if [[ -n $selection ]]; then
+  zsb_clipcopy $selection
+  exit 0
+fi
+
+exit 0
