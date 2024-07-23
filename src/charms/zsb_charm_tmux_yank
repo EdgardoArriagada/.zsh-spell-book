@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
+# set -o errexit
+# set -o pipefail
 set -o nounset
 
 # (tightly coupled with tmux config and nvim)
@@ -13,6 +13,30 @@ if [[ -n "$selection" ]]; then
   exit 0
 fi
 
-tmux command-prompt "zsb_charm_tmux_yank_normal %%"
+
+local temp_file=$(mktemp)
+TRAPEXIT() { rm -f $temp_file }
+
+
+local read_char_command="read -n 1 char; echo \$char > $temp_file"
+tmux popup -E "$read_char_command"
+
+local char=$(< $temp_file)
+
+case $char in
+  "w")
+    tmux send -X select-word \; send -X other-end \; send -X copy-selection
+    ;;
+
+  "y")
+    tmux send -X select-line \; send -X copy-selection
+    ;;
+  "q")
+    exit 0
+    ;;
+  *)
+    exit 1
+    ;;
+esac
 
 exit 0
