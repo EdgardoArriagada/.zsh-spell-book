@@ -6,11 +6,13 @@ set -o nounset
 # (tightly coupled with tmux config and nvim)
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
 
-local selection="${1:-/dev/stdin}"
+local selection=`< /dev/stdin`
 
-if [[ -n $selection ]]; then
-  zsb_clipcopy $selection
+if [[ -n "$selection" ]]; then
+  zsb_clipcopy <<< "$selection"
   exit 0
 fi
+
+tmux command-prompt "zsb_charm_tmux_yank_normal %%"
 
 exit 0
