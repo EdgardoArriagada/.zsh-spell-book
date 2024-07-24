@@ -17,12 +17,12 @@ local fn='inline_fn() {
   case $1 in
     w|e) tmux send -X select-word \; send -X other-end \; send -X copy-selection ;;
     y) tmux send -X copy-line ;;
+    b) tmux send -X begin-selection \; send -X previous-word \; send -X copy-selection ;;
     $) tmux send -X copy-end-of-line ;;
     q) exit 0 ;;
     *) exit 1 ;;
   esac
 }'
 
-tmux command-prompt -1 -p "(w/y/$/q)" "run-shell '$fn; inline_fn \"%%\"'"
-
+tmux command-prompt -1 -p '(w/e/b/y/$/q)' "run-shell '$fn; inline_fn \"%%\"'"
 exit 0
