@@ -14,28 +14,23 @@ if [[ -n "$selection" ]]; then
 fi
 
 
-local temp_file=$(mktemp)
-TRAPEXIT() { rm -f $temp_file }
+local fn='inline_fn() {
+  case $1 in
+    "w")
+      tmux send -X select-word \; send -X other-end \; send -X copy-selection
+      ;;
+    "y")
+      tmux send -X copy-line
+      ;;
+    "q")
+      exit 0
+      ;;
+    *)
+      exit 1
+      ;;
+  esac
+}'
 
-
-local read_char_command="printf '(w/y/q)'; read -n 1 char; printf \$char > $temp_file"
-tmux popup -E -h3 -w11 -x0 -y100% "$read_char_command"
-
-local char=$(< $temp_file)
-
-case $char in
-  "w")
-    tmux send -X select-word \; send -X other-end \; send -X copy-selection
-    ;;
-  "y")
-    tmux send -X copy-line
-    ;;
-  "q")
-    exit 0
-    ;;
-  *)
-    exit 1
-    ;;
-esac
+tmux command-prompt -1 -p "(w/y/q)" "run-shell '$fn; inline_fn \"%%\"'"
 
 exit 0
