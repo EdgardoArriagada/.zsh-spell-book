@@ -13,7 +13,6 @@ if [[ -n "$selection" ]]; then
   exit 0
 fi
 
-
 local fn='inline_fn() {
   case $1 in
     "w") tmux send -X select-word \; send -X other-end \; send -X copy-selection ;;
