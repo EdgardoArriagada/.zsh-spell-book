@@ -15,10 +15,10 @@ fi
 
 local fn='inline_fn() {
   case $1 in
-    "w") tmux send -X select-word \; send -X other-end \; send -X copy-selection ;;
-    "y") tmux send -X copy-line ;;
-    "$") tmux send -X copy-end-of-line ;;
-    "q") exit 0 ;;
+    w|e) tmux send -X select-word \; send -X other-end \; send -X copy-selection ;;
+    y) tmux send -X copy-line ;;
+    $) tmux send -X copy-end-of-line ;;
+    q) exit 0 ;;
     *) exit 1 ;;
   esac
 }'
