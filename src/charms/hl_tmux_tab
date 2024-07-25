@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-set -euo pipefail
+set -eo pipefail
 
 if [[ -z "$TMUX" ]]; then
   print "This script must be run inside tmux"
