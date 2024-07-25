@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 
 declare files=`ls $ZSB_CHARM_ROOT_WORKSPACE`
 

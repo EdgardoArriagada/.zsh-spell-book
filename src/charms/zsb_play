@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
+set -eo pipefail
 
 # Play comes with 'sox' in macos
 if (( $ZSB_MACOS ))

@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
-set -o nounset
+set -euo pipefail
 
 local qs=`choose -n0 -m <<< _`
 

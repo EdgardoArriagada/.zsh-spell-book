@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
+set -eo pipefail
 
 if (( $ZSB_MACOS ))
   then bat $@

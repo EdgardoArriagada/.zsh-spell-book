@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 
 function getNormalUrlFromSshUrl() {
   local input=${1:4}

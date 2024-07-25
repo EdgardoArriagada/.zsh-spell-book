@@ -1,7 +1,5 @@
 #!/bin/bash
-set -o errexit
-set -o pipefail
-set -o nounset
+set -euo pipefail
 
 function handleShutdown() {
   printf "shutting down bisect...\n"

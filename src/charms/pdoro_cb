@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
+set -eo pipefail
 
 # phase is started | ended
 zparseopts -D -E -F -- \

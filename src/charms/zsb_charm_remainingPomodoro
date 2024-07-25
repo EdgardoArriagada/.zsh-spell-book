@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
+set -eo pipefail
 
 local result=`pdoro -r 2>&1` # capture both stdout and stderr
 

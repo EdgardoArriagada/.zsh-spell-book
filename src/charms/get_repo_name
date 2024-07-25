@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 
 
 local pathToDotGit=`git rev-parse --git-dir 2>/dev/null`

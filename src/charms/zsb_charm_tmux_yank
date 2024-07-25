@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-set -o errexit
-set -o pipefail
-set -o nounset
+set -euo pipefail
 
 # (tightly coupled with tmux config and nvim)
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
