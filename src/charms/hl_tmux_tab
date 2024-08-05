@@ -11,7 +11,7 @@ zparseopts -D -E -F -- \
   -id:=winId \
   || return 1
 
-local rename=$1
+local rename=$*
 
 local targetWin=""
 [[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
