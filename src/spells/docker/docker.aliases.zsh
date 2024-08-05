@@ -6,6 +6,7 @@ alias dkh="printAndRun 'docker --help'"
 alias dkc='docker container'
 alias dkch="printAndRun 'docker container --help'"
 alias dkr='docker container run'
+alias dkb='docker build'
 alias dkrm='docker container rm'
 alias dkl="printAndRun 'docker container ls'"
 alias dkll="printAndRun 'docker container ls -a'"
