@@ -9,8 +9,8 @@ gc() {
   fi
 
   if [[ -z "$1" ]]
-    then git commit --gpg-sign $noVerify || return 1
-    else git commit --gpg-sign -m "$*" $noVerify || return 1
+    then git commit ${(@z)ZSB_GIT_COMMIT_ARGS} $noVerify || return 1
+    else git commit ${(@z)ZSB_GIT_COMMIT_ARGS} -m "$*" $noVerify || return 1
   fi
 
   ${zsb}.gitStatus

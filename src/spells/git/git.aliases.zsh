@@ -1,6 +1,6 @@
 alias gs='${zsb}.gitStatus'
 alias pop='git stash pop'
-alias amend='git commit --amend --no-edit --gpg-sign'
+alias amend="git commit --amend --no-edit ${(@z)ZSB_GIT_COMMIT_ARGS}"
 alias glog="git log --color --graph --pretty=format:'%C(magenta)%h%C(reset) -%C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)' --abbrev-commit --branches"
 alias gsp='git status --porcelain=v2'
 
