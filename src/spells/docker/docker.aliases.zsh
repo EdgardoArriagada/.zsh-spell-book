@@ -27,13 +27,13 @@ alias dkil="printAndRun 'docker image ls'"
 alias dkrmi='docker image rm'
 alias dkirm='dkrmi'
 alias dkrmiall='docker rmi $(docker images -a -q)'
-alias dkirmall='dkrmiall'
 
 # Docker Volume
 alias dkv='docker volume'
 alias dkvh="printAndRun 'docker volume --help'"
 alias dkvl="printAndRun 'docker volume ls'"
 alias dkvrm="docker volume rm"
+alias dkvrmall='docker volume rm `docker volume ls -q`'
 
 # Docker Network
 alias dkip="copythis '172.17.0.1'"
