@@ -3,14 +3,14 @@ set -euo pipefail
 
 function handleShutdown() {
   printf "shutting down bisect...\n"
-  hl_tmux_tab --clear
   git bisect reset
+  hl_tmux_tab --clear
 }
 
 trap handleShutdown EXIT
 # trap shutdown as soon as it mets all
 # the requirements to declare handler
-hl_tmux_tab
+hl_tmux_tab BISECT
 
 git bisect start
 
