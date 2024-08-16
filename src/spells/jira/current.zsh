@@ -5,9 +5,11 @@ ${zsb}_createCurrentDir() {
 
   local parentTicketDir=`${zsb}.current.getDir`
 
-  [[ ! -d $parentTicketDir ]] && \
-    mkdir -p $parentTicketDir && \
-      (builtin cd $parentTicketDir && git init);
+  [[ -d $parentTicketDir ]] && return 0
+
+  mkdir -p $parentTicketDir
+  print "# $ZSB_CURRENT_LABEL" > $parentTicketDir/NOTES.md
+  (builtin cd $parentTicketDir && git init);
 
   return 0
 }
