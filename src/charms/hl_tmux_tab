@@ -16,7 +16,7 @@ local rename=$*
 local targetWin=""
 [[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
 
-local action="alert"
+local action="highlight"
 if [[ -n "$clear" ]]; then
   action="clear"
   tmux set automatic-rename
