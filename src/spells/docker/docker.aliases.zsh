@@ -56,8 +56,6 @@ alias dcod="printAndRun 'docker-compose down'"
 alias dcos="printAndRun 'docker-compose stop'"
 alias dcorm='docker-compose rm'
 alias dcok='docker-compose kill'
-alias dcou="printAndRun 'docker-compose up'"
-alias dcoud="printAndRun 'docker-compose up -d'"
 
 # Docker Machine
 alias dkm='docker-machine'
