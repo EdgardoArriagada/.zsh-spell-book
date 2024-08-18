@@ -17,10 +17,7 @@ local targetWin
 [[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
 
 local action
-if [[ -n "$clear" ]]
-  then action="clear"
-  else action="highlight"
-fi
+[[ -n "$clear" ]] && action="clear" || action="highlight"
 
 if [[ -n "$rename" && -z "$clear" ]]
   then tmux rename-window "$rename"
