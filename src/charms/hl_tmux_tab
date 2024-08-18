@@ -26,4 +26,4 @@ if [[ -n "$rename" && -z "$clear" ]]
   then tmux rename-window "$rename"
 fi
 
-tmux ${action}1 $targetWin \; ${action}2 $targetWin
+tmux $action $targetWin
