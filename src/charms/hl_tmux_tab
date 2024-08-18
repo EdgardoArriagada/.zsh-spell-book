@@ -11,14 +11,15 @@ zparseopts -D -E -F -- \
   -id:=winId \
   || return 1
 
-local rename=$*
+local action
+[[ -n "$clear" ]] && action="clear" || action="highlight"
 
 local targetWin
 [[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
 
-local action
-[[ -n "$clear" ]] && action="clear" || action="highlight"
+tmux $action $targetWin
 
+local rename=$*
 if [[ -n "$rename" && -z "$clear" ]]
   then tmux rename-window "$rename"
 fi
@@ -26,5 +27,3 @@ fi
 if [[ -n "$clear" ]]
   then tmux set automatic-rename
 fi
-
-tmux $action $targetWin
