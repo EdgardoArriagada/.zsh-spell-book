@@ -17,13 +17,15 @@ local action
 local targetWin
 [[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
 
-tmux $action $targetWin
+local cmd="tmux $action $targetWin"
 
 local rename=$*
 if [[ -n "$rename" && -z "$clear" ]]
-  then tmux rename-window "$rename"
+  then cmd+="\; rename-window '$rename'"
 fi
 
 if [[ -n "$clear" ]]
-  then tmux set automatic-rename
+  then cmd+="\; set automatic-rename"
 fi
+
+eval $cmd
