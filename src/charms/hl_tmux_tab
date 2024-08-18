@@ -8,16 +8,12 @@ fi
 
 zparseopts -D -E -F -- \
   -clear=clear \
-  -id:=winId \
   || return 1
 
 local action
 [[ -n "$clear" ]] && action="clear" || action="highlight"
 
-local targetWin
-[[ -n "$winId" ]] && targetWin="-t ${winId[1]}"
-
-local cmd="tmux $action $targetWin"
+local cmd="tmux $action"
 
 local rename=$*
 if [[ -n "$rename" && -z "$clear" ]]
