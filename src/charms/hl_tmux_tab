@@ -7,11 +7,15 @@ if [[ -z "$TMUX" ]]; then
 fi
 
 zparseopts -D -E -F -- \
+  t:=target \
   -clear=clear \
   || return 1
 
 local action
-[[ -n "$clear" ]] && action="clear" || action="highlight"
+if [[ -n "$clear" ]]
+  then action="set $target window-status-style fg='colour6',bg='#242933'"
+  else action="set $target window-status-style fg='colour3',bg='#242933'"
+fi
 
 local cmd="tmux $action"
 
