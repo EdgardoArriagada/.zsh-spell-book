@@ -18,15 +18,16 @@ local targetWin=""
 
 local action
 if [[ -n "$clear" ]]
-then
-  action="clear"
-  tmux set automatic-rename
-else
-  action="highlight"
+  then action="clear"
+  else action="highlight"
 fi
 
 if [[ -n "$rename" && -z "$clear" ]]
   then tmux rename-window "$rename"
+fi
+
+if [[ -n "$clear" ]]
+  then tmux set automatic-rename
 fi
 
 tmux $action $targetWin
