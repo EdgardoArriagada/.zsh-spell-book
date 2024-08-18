@@ -1,1 +1,1 @@
-${zsb}.tmux.getTarget() print -- "-t'`tmux display-message -p '#{window_id}'`'"
+${zsb}.tmux.getTarget() print -- "-t'`tmux display -p '#{window_id}'`'"
