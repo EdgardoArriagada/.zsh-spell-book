@@ -3,6 +3,7 @@ declare -gAr ZSH_VERSION_DIC=(
   [choose]='choose -v'
   [rust]='hasRust'
   [go]='hasGo'
+  [sqlc]='sqlc version'
 )
 
 version() {
