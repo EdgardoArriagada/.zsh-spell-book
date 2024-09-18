@@ -11,7 +11,7 @@ zparseopts -D -E -F -- \
   -clear=clear \
   || return 1
 
-# these are copied from `clear` and `highlight` aliases defined in tmux.conf
+# these are copied from `clear-highlight` and `highlight` aliases defined in tmux.conf
 local action
 if [[ -n "$clear" ]]
   then action="set $target window-status-style fg='colour6',bg='#242933'"
