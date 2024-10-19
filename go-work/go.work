@@ -1,0 +1,3 @@
+go 1.23
+
+use ./zsb_charm_tmux_urlopen
