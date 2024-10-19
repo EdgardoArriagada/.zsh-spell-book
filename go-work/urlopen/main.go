@@ -24,36 +24,42 @@ func openURL(url string) error {
 	return cmd.Run()
 }
 
-func main() {
+func parseArguments() []string {
 	if len(os.Args) > 1 {
 		// If command-line arguments are provided, use them
-		for _, url := range os.Args[1:] {
-			if err := openURL(url); err != nil {
-				fmt.Printf("Error opening URL %s: %v\n", url, err)
-			}
-		}
+		return os.Args[1:]
 	} else {
 		// If no arguments, check if there's piped input
 		stat, _ := os.Stdin.Stat()
 		if (stat.Mode() & os.ModeCharDevice) == 0 {
 			// Data is being piped to stdin
+			var urls []string
 			scanner := bufio.NewScanner(os.Stdin)
 			for scanner.Scan() {
 				url := strings.TrimSpace(scanner.Text())
 				if url != "" {
-					if err := openURL(url); err != nil {
-						fmt.Printf("Error opening URL %s: %v\n", url, err)
-					}
+					urls = append(urls, url)
 				}
 			}
 			if err := scanner.Err(); err != nil {
 				fmt.Printf("Error reading input: %v\n", err)
 			}
+			return urls
 		} else {
 			// No arguments and no piped input
 			fmt.Println("Usage: urlopen <url> [<url2> ...]")
 			fmt.Println("   or: echo <url> | urlopen")
 			os.Exit(1)
+		}
+	}
+	return nil
+}
+
+func main() {
+	args := parseArguments()
+	for _, url := range args {
+		if err := openURL(url); err != nil {
+			fmt.Printf("Error opening URL %s: %v\n", url, err)
 		}
 	}
 }
