@@ -1,3 +1,8 @@
+define build
+	(cd go-work && go build -o ./bin/$(1) ./$(1))
+endef
+
 build-urlopen:
-	(cd go-work && go build -o ./bin/urlopen ./urlopen)
+	@$(call build,"urlopen")
+
 
