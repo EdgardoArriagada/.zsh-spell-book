@@ -61,9 +61,9 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	for _, url := range args {
-		if err := openURL(url); err != nil {
-			fmt.Printf("Error opening URL %s: %v\n", url, err)
-		}
+	url := args[0]
+
+	if err := openURL(url); err != nil {
+		fmt.Printf("Error opening URL %s: %v\n", url, err)
 	}
 }
