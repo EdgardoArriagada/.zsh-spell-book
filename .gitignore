@@ -2,3 +2,4 @@
 /.env
 /logs
 /result.zsh
+/go-work/bin
