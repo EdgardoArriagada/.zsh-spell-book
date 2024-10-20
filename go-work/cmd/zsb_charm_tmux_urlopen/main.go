@@ -2,26 +2,10 @@ package main
 
 import (
 	"example.com/workspace/lib/args"
+	"example.com/workspace/lib/open"
 	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 )
-
-func openURL(url string) error {
-	var cmd *exec.Cmd
-
-	switch runtime.GOOS {
-	case "darwin":
-		cmd = exec.Command("open", url)
-	case "windows":
-		cmd = exec.Command("cmd", "/c", "start", url)
-	default: // Assume Unix-like
-		cmd = exec.Command("xdg-open", url)
-	}
-
-	return cmd.Run()
-}
 
 func main() {
 	parsedArgs, err := args.ParseArguments()
@@ -31,7 +15,7 @@ func main() {
 	}
 	url := parsedArgs[0]
 
-	if err := openURL(url); err != nil {
+	if err := open.Url(url); err != nil {
 		fmt.Printf("Error opening URL %s: %v\n", url, err)
 	}
 }

@@ -5,3 +5,4 @@ use (
 )
 
 replace example.com/workspace/lib/args => ./lib/args
+replace example.com/workspace/lib/open => ./lib/open
