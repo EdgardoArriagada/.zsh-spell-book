@@ -1,3 +1,7 @@
-go 1.23
+go 1.23.0
 
-use ./zsb_charm_tmux_urlopen
+use (
+ ./cmd/zsb_charm_tmux_urlopen
+)
+
+replace example.com/workspace/lib/args => ./lib/args
