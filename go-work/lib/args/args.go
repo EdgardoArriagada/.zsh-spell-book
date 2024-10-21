@@ -9,25 +9,25 @@ import (
 
 func parseArgsFromStdin() ([]string, error) {
 	stat, _ := os.Stdin.Stat()
-	if (stat.Mode() & os.ModeCharDevice) == 0 {
-		var args []string
-		scanner := bufio.NewScanner(os.Stdin)
-		for scanner.Scan() {
-			arg := strings.TrimSpace(scanner.Text())
-			if arg != "" {
-				args = append(args, arg)
-			}
-		}
-		if err := scanner.Err(); err != nil {
-			return nil, errors.New("Error: Reading input")
-		}
-		if len(args) == 0 {
-			return nil, errors.New("Error: Empty arguments")
-		}
-		return args, nil
-	} else {
+	if (stat.Mode() & os.ModeCharDevice) != 0 {
 		return nil, errors.New("Error: Empty arguments")
 	}
+
+	var args []string
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		arg := strings.TrimSpace(scanner.Text())
+		if arg != "" {
+			args = append(args, arg)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, errors.New("Error: Reading input")
+	}
+	if len(args) == 0 {
+		return nil, errors.New("Error: Empty arguments")
+	}
+	return args, nil
 }
 
 func ParseArguments() ([]string, error) {
