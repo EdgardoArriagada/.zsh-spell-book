@@ -2,10 +2,19 @@ define build
 	go build -o ./bin/$(1) ./cmd/$(1)
 endef
 
-build-urlopen:
-	(cd go-work && $(call build,"zsb_charm_tmux_urlopen"))
+define dev
+	ls ./{lib,cmd/$(1)}/**/*.go | entr -c $(call build,$(1))
+endef
 
+build-target:
+	(cd go-work && $(call build,$(TARGET)))
+
+dev-target:
+	(cd go-work && $(call dev,$(TARGET)))
+
+build-urlopen:
+	$(MAKE) TARGET=zsb_charm_tmux_urlopen build-target
 
 dev-urlopen:
-	(cd go-work && ls ./{lib,cmd/zsb_charm_tmux_urlopen}/**/*.go | entr -c $(call build,"zsb_charm_tmux_urlopen"))
+	$(MAKE) TARGET=zsb_charm_tmux_urlopen dev-target
 
