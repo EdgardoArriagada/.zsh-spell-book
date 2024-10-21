@@ -24,9 +24,6 @@ func parseArgsFromStdin() ([]string, error) {
 	if err := scanner.Err(); err != nil {
 		return nil, errors.New("Error: Reading input")
 	}
-	if len(args) == 0 {
-		return nil, errors.New("Error: Empty arguments")
-	}
 	return args, nil
 }
 
