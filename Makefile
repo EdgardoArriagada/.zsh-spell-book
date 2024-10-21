@@ -7,5 +7,5 @@ build-urlopen:
 
 
 dev-urlopen:
-	(cd go-work && ls ./cmd/**/*.go | entr -c $(call build,"zsb_charm_tmux_urlopen"))
+	(cd go-work && ls ./{lib,cmd/zsb_charm_tmux_urlopen}/**/*.go | entr -c $(call build,"zsb_charm_tmux_urlopen"))
 
