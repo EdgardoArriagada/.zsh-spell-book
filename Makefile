@@ -3,7 +3,7 @@ define build
 endef
 
 define dev
-	ls ./{lib,cmd/$(1)}/**/*.go | entr -c $(call build,$(1))
+	ls ./{lib,cmd}/**/*.go | entr -c $(call build,$(1))
 endef
 
 .build-target:
