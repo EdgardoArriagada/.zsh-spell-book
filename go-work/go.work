@@ -2,7 +2,7 @@ go 1.23.0
 
 use (
  ./cmd/zsb_charm_tmux_urlopen
- ./lib/args
+ ./lib/argsLib
  ./lib/open
 )
 

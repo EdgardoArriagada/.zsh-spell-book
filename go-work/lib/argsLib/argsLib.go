@@ -1,4 +1,4 @@
-package args
+package argsLib
 
 import (
 	"bufio"
@@ -29,7 +29,7 @@ func parseArgsFromStdin() ([]string, error) {
 	return args, nil
 }
 
-func ParseArguments() ([]string, error) {
+func Parse() ([]string, error) {
 	if len(os.Args) > 1 {
 		return os.Args[1:], nil
 	} else {
