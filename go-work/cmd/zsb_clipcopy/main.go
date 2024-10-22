@@ -10,7 +10,7 @@ import (
 	"example.com/workspace/lib/argsLib"
 )
 
-func clipcopy(arg string) error {
+func clipcopy(args *[]string) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
@@ -20,7 +20,7 @@ func clipcopy(arg string) error {
 		cmd = exec.Command("xclip", "-selection", "clipboard")
 	}
 
-	cmd.Stdin = strings.NewReader(arg)
+	cmd.Stdin = strings.NewReader(strings.Join(*args, "\n"))
 	return cmd.Run()
 }
 
@@ -31,5 +31,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	clipcopy(strings.Join(args, "\n"))
+	clipcopy(&args)
 }
