@@ -14,7 +14,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	url := args[0]
-
-	open.Url(url)
+	open.Url(args[0]) // first args is url
 }
