@@ -1,7 +1,0 @@
-#!/usr/bin/env zsh
-set -eo pipefail
-
-if (( $ZSB_MACOS ))
-  then open $@
-  else xdg-open $@
-fi
