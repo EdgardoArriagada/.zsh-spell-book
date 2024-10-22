@@ -1,1 +1,1 @@
-cpn() zsb_clipcopy <<< ${1##*/}
+cpn() zsb_clipcopy ${1##*/}

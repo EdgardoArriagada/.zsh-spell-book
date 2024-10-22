@@ -31,5 +31,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	clipcopy(args[0])
+	clipcopy(strings.Join(args, "\n"))
 }

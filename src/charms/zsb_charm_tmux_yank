@@ -7,7 +7,7 @@ set -euo pipefail
 local selection=`< /dev/stdin`
 
 if [[ -n "$selection" ]]; then
-  zsb_clipcopy <<< "$selection"
+  zsb_clipcopy "$selection"
   exit 0
 fi
 

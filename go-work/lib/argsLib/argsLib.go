@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"os"
-	"strings"
 )
 
 func parseArgsFromStdin() ([]string, error) {
@@ -17,7 +16,7 @@ func parseArgsFromStdin() ([]string, error) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		arg := strings.TrimSpace(scanner.Text())
+		arg := scanner.Text()
 		if arg != "" {
 			args = append(args, arg)
 		}
