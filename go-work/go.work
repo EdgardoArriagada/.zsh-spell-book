@@ -3,6 +3,7 @@ go 1.23.0
 use (
  ./cmd/zsb_charm_tmux_urlopen
  ./cmd/zsb_open
+ ./cmd/zsb_clipcopy
  ./lib/argsLib
  ./lib/open
 )

@@ -12,6 +12,8 @@ endef
 dev-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
 
-
 dev-zsh-open:
 	$(MAKE) TARGET=zsb_open .dev-target
+
+dev-zsb-clipcopy:
+	$(MAKE) TARGET=zsb_clipcopy .dev-target

@@ -1,7 +1,0 @@
-#!/usr/bin/env zsh
-set -eo pipefail
-
-if (( $ZSB_MACOS ))
-  then pbcopy < ${1:-/dev/stdin};
-  else xclip -selection clipboard <<< $@
-fi
