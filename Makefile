@@ -6,14 +6,8 @@ define dev
 	ls ./{lib,cmd}/**/*.go | entr -c $(call build,$(1))
 endef
 
-.build-target:
-	(cd go-work && $(call build,$(TARGET)))
-
 .dev-target:
 	(cd go-work && $(call dev,$(TARGET)))
-
-build-urlopen:
-	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
 
 dev-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
