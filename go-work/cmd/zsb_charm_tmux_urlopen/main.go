@@ -5,6 +5,7 @@ import (
 	"example.com/workspace/lib/open"
 	"fmt"
 	"os"
+	"regexp"
 )
 
 func main() {
@@ -14,9 +15,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	url := args[0]
+	url := extractFirstURL(args[0])
+	if url == "" {
+		fmt.Println("No valid URL found in the input.")
+		os.Exit(1)
+	}
 
 	if err := open.Url(url); err != nil {
 		fmt.Printf("Error opening URL %s: %v\n", url, err)
 	}
+}
+func extractFirstURL(text string) string {
+	// Regular expression to find URLs
+	re := regexp.MustCompile(`https?://[^\s]+`)
+	urls := re.FindStringSubmatch(text)
+	if len(urls) > 0 {
+		return urls[0]
+	}
+	return ""
 }
