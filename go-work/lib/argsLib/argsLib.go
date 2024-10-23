@@ -8,11 +8,15 @@ import (
 	"strings"
 )
 
+func isStdinEmpty() bool {
+	stat, _ := os.Stdin.Stat()
+	return (stat.Mode() & os.ModeCharDevice) != 0
+}
+
 func parseArgsFromStdin() ([]string, error) {
 	var args []string
 
-	stat, _ := os.Stdin.Stat()
-	if (stat.Mode() & os.ModeCharDevice) != 0 {
+	if isStdinEmpty() {
 		return args, nil
 	}
 
@@ -31,8 +35,7 @@ func parseArgsFromStdin() ([]string, error) {
 }
 
 func parseWholeStdin() (string, error) {
-	stat, _ := os.Stdin.Stat()
-	if (stat.Mode() & os.ModeCharDevice) != 0 {
+	if isStdinEmpty() {
 		return "", nil
 	}
 
