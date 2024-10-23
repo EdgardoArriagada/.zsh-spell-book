@@ -13,7 +13,7 @@ func isStdinEmpty() bool {
 	return (stat.Mode() & os.ModeCharDevice) != 0
 }
 
-func parseArgsFromStdin() ([]string, error) {
+func parseStdin() ([]string, error) {
 	var args []string
 
 	if isStdinEmpty() {
@@ -35,12 +35,13 @@ func parseArgsFromStdin() ([]string, error) {
 }
 
 func parseWholeStdin() (string, error) {
+	var input strings.Builder
+
 	if isStdinEmpty() {
-		return "", nil
+		return input.String(), nil
 	}
 
 	reader := bufio.NewReader(os.Stdin)
-	var input strings.Builder
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil && err != io.EOF {
@@ -59,7 +60,7 @@ func Parse() ([]string, error) {
 	if len(os.Args) > 1 {
 		return os.Args[1:], nil
 	} else {
-		return parseArgsFromStdin()
+		return parseStdin()
 	}
 }
 
