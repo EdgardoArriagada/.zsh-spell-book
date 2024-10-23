@@ -14,31 +14,31 @@ func isStdinEmpty() bool {
 }
 
 func parseStdin() ([]string, error) {
-	var args []string
+	var result []string
 
 	if isStdinEmpty() {
-		return args, nil
+		return result, nil
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		arg := scanner.Text()
 		if arg != "" {
-			args = append(args, arg)
+			result = append(result, arg)
 		}
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, errors.New("Error: Reading input")
 	}
 
-	return args, nil
+	return result, nil
 }
 
 func parseWholeStdin() (string, error) {
-	var input strings.Builder
+	var result strings.Builder
 
 	if isStdinEmpty() {
-		return input.String(), nil
+		return "", nil
 	}
 
 	reader := bufio.NewReader(os.Stdin)
@@ -47,13 +47,13 @@ func parseWholeStdin() (string, error) {
 		if err != nil && err != io.EOF {
 			return "", errors.New("Error: Reading input")
 		}
-		input.WriteString(line)
+		result.WriteString(line)
 		if err == io.EOF {
 			break
 		}
 	}
 
-	return input.String(), nil
+	return result.String(), nil
 }
 
 func Parse() ([]string, error) {
