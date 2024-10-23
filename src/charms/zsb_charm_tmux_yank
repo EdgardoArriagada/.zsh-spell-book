@@ -4,13 +4,6 @@ set -euo pipefail
 # (tightly coupled with tmux config and nvim)
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
 
-local selection=`< /dev/stdin`
-
-if [[ -n "$selection" ]]; then
-  zsb_clipcopy "$selection"
-  exit 0
-fi
-
 handle_input() {
   case $1 in
     w|e) tmux send -X select-word \; send -X other-end \; send -X copy-selection ;;
