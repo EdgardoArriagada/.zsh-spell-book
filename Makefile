@@ -16,14 +16,16 @@ endef
 .build-target:
 	(cd go-work && $(call build,$(TARGET)))
 
-build-zsb-clipcopy:
-	$(MAKE) TARGET=zsb_clipcopy .build-target
-
-dev-urlopen:
+dev-zsb-charm-tmux-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
-
-dev-zsh-open:
-	$(MAKE) TARGET=zsb_open .dev-target
 
 dev-zsb-clipcopy:
 	$(MAKE) TARGET=zsb_clipcopy .dev-target
+
+dev-zsb-open:
+	$(MAKE) TARGET=zsb_open .dev-target
+
+build:
+	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
+	$(MAKE) TARGET=zsb_clipcopy .build-target
+	$(MAKE) TARGET=zsb_open .build-target
