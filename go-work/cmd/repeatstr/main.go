@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -22,9 +23,9 @@ func main() {
 	}
 
 	word := args[1]
-	var result string
+	var builder strings.Builder
 	for i := 0; i < n; i++ {
-		result += word
+		builder.WriteString(word)
 	}
-	fmt.Println(result)
+	fmt.Println(builder.String())
 }
