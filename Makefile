@@ -16,6 +16,11 @@ endef
 .build-target:
 	(cd go-work && $(call build,$(TARGET)))
 
+# Setup
+
+dev-repeatstr:
+	$(MAKE) TARGET=repeatstr .dev-target
+
 dev-zsb-charm-tmux-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
 
@@ -25,11 +30,8 @@ dev-zsb-clipcopy:
 dev-zsb-open:
 	$(MAKE) TARGET=zsb_open .dev-target
 
-dev-repeatstr:
-	$(MAKE) TARGET=repeatstr .dev-target
-
 build:
+	$(MAKE) TARGET=repeatstr .build-target
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
 	$(MAKE) TARGET=zsb_clipcopy .build-target
 	$(MAKE) TARGET=zsb_open .build-target
-	$(MAKE) TARGET=repeatstr .build-target
