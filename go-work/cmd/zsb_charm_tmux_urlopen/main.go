@@ -1,11 +1,13 @@
 package main
 
 import (
-	"example.com/workspace/lib/argsLib"
-	"example.com/workspace/lib/open"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
+
+	"example.com/workspace/lib/argsLib"
+	"example.com/workspace/lib/open"
 )
 
 func main() {
@@ -15,9 +17,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	url := extractFirstURL(args[0])
-	if url == "" {
-		fmt.Println("No valid URL found in the input.")
+	url, err := extractFirstURL(args[0])
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -25,12 +27,11 @@ func main() {
 		fmt.Printf("Error opening URL %s: %v\n", url, err)
 	}
 }
-func extractFirstURL(text string) string {
-	// Regular expression to find URLs
+func extractFirstURL(text string) (string, error) {
 	re := regexp.MustCompile(`https?://[^\s"']+`)
 	urls := re.FindStringSubmatch(text)
-	if len(urls) > 0 {
-		return urls[0]
+	if len(urls) == 0 {
+		return "", errors.New("Error: No valid URL found in the input.")
 	}
-	return ""
+	return urls[0], nil
 }
