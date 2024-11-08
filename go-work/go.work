@@ -7,6 +7,8 @@ use (
 	./cmd/zsb_charm_tmux_urlopen
 	./cmd/zsb_clipcopy
 	./cmd/zsb_open
+
 	./lib/argsLib
+	./lib/git
 	./lib/open
 )
