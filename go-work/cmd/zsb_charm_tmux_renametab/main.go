@@ -19,11 +19,7 @@ func main() {
 	}
 
 	win_id := args[0]
-
-	var currentFilePath string
-	if len(args) > 1 {
-		currentFilePath = args[1]
-	}
+	currentFilePath := argsLib.ReadArg(&args, 1)
 
 	repoRoot, err := git.GetRepoRoot()
 
