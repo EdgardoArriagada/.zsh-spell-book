@@ -24,6 +24,9 @@ dev-repeatstr:
 dev-zsb-charm-tmux-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
 
+dev-zsb-charm-tmux-renametab:
+	$(MAKE) TARGET=zsb_charm_tmux_renametab .dev-target
+
 dev-zsb-clipcopy:
 	$(MAKE) TARGET=zsb_clipcopy .dev-target
 
@@ -32,6 +35,6 @@ dev-zsb-open:
 
 build:
 	$(MAKE) TARGET=repeatstr .build-target
-	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
+	$(MAKE) TARGET=zsb_charm_tmux_renametab .build-target
 	$(MAKE) TARGET=zsb_clipcopy .build-target
 	$(MAKE) TARGET=zsb_open .build-target
