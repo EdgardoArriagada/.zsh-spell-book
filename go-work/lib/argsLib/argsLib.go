@@ -71,3 +71,11 @@ func ParseWhole() (string, error) {
 		return parseWholeStdin()
 	}
 }
+
+func ReadArg(args *[]string, index int) string {
+	if len(*args) > index {
+		return (*args)[index]
+	}
+
+	return ""
+}

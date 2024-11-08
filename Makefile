@@ -18,8 +18,14 @@ endef
 
 # Setup
 
+dev-get-repo-name:
+	$(MAKE) TARGET=get_repo_name .dev-target
+
 dev-repeatstr:
 	$(MAKE) TARGET=repeatstr .dev-target
+
+dev-zsb-charm-tmux-renametab:
+	$(MAKE) TARGET=zsb_charm_tmux_renametab .dev-target
 
 dev-zsb-charm-tmux-urlopen:
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
@@ -31,7 +37,9 @@ dev-zsb-open:
 	$(MAKE) TARGET=zsb_open .dev-target
 
 build:
+	$(MAKE) TARGET=get_repo_name .build-target
 	$(MAKE) TARGET=repeatstr .build-target
+	$(MAKE) TARGET=zsb_charm_tmux_renametab .build-target
 	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
 	$(MAKE) TARGET=zsb_clipcopy .build-target
 	$(MAKE) TARGET=zsb_open .build-target
