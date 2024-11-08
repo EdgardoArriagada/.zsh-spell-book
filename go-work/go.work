@@ -1,9 +1,10 @@
 go 1.23.0
 
 use (
+	./cmd/get_repo_name
 	./cmd/repeatstr
-	./cmd/zsb_charm_tmux_urlopen
 	./cmd/zsb_charm_tmux_renametab
+	./cmd/zsb_charm_tmux_urlopen
 	./cmd/zsb_clipcopy
 	./cmd/zsb_open
 	./lib/argsLib
