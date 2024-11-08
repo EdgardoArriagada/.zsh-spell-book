@@ -1,31 +1,53 @@
 package main
 
 import (
-	"example.com/workspace/lib/argsLib"
 	"fmt"
 	"os"
-	"strconv"
+	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
 func main() {
-	args, err := argsLib.Parse()
-	if err != nil || len(args) < 2 {
-		fmt.Println(err)
-		os.Exit(1)
-
-	}
-
-	n, err := strconv.Atoi(args[0])
+	pathToDotGit, err := getGitDir()
 	if err != nil {
-		fmt.Println("First argument must be a number")
-		os.Exit(1)
+		return
 	}
 
-	word := args[1]
-	var builder strings.Builder
-	for i := 0; i < n; i++ {
-		builder.WriteString(word)
+	if pathToDotGit == ".git" {
+		fmt.Println(filepath.Base(getCurrentDir()))
+		return
 	}
-	fmt.Println(builder.String())
+
+	tail := filepath.Base(pathToDotGit)
+	if tail != ".git" {
+		fmt.Println(tail)
+		return
+	}
+
+	parentRootDir := filepath.Dir(pathToDotGit)
+	fmt.Println(filepath.Base(parentRootDir))
+}
+
+// getCurrentDir returns the path of the current working directory.
+func getCurrentDir() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting the current directory:", err)
+		os.Exit(1)
+	}
+	return dir
+}
+
+// getGitDir returns the .git directory path of the current git repository.
+func getGitDir() (string, error) {
+	cmd := exec.Command("git", "rev-parse", "--git-dir")
+	cmd.Stderr = nil // silencing errors, similar to '2>/dev/null'
+
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(string(output)), nil
 }
