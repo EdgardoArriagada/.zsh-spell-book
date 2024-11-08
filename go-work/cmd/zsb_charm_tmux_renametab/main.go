@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"example.com/workspace/lib/argsLib"
@@ -24,20 +25,17 @@ func main() {
 		currentFilePath = args[1]
 	}
 
-	if currentFilePath != "" {
-		repoRoot, err := git.GetRepoRoot()
-		if err != nil {
-			fmt.Println("Error getting git repo root:", err)
-			os.Exit(1)
-		}
+	repoRoot, err := git.GetRepoRoot()
 
-		if !strings.HasPrefix(currentFilePath, repoRoot) {
-			fmt.Println("Current file is not within the git repository")
-			os.Exit(1)
-		}
+	if err != nil {
+		os.Exit(1)
 	}
 
-	repoName, err := git.GetRepoName()
+	if currentFilePath != "" && !strings.HasPrefix(currentFilePath, repoRoot) {
+		os.Exit(1)
+	}
+
+	repoName := filepath.Base(repoRoot)
 
 	if err != nil {
 		os.Exit(1)
