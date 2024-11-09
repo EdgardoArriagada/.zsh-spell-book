@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	url, err := extractFirstURL(args.Get(0))
+	url, err := extractFirstURL(args.Args[0])
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

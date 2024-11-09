@@ -18,7 +18,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	win_id := args.Get(0)
+	win_id := args.Args[0]
 	currentFilePath := args.Get(1)
 
 	repoRoot, err := git.GetRepoRoot()

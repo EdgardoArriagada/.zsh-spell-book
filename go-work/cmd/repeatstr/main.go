@@ -16,13 +16,13 @@ func main() {
 
 	}
 
-	n, err := strconv.Atoi(args.Get(0))
+	n, err := strconv.Atoi(args.Args[0])
 	if err != nil {
 		fmt.Println("First argument must be a number")
 		os.Exit(1)
 	}
 
-	word := args.Get(1)
+	word := args.Args[1]
 	var builder strings.Builder
 	for i := 0; i < n; i++ {
 		builder.WriteString(word)
