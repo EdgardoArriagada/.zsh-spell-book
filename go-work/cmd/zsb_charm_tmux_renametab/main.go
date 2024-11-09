@@ -37,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cmd := exec.Command("tmux", "rename-window", "-t", win_id, fmt.Sprintf(" %s", repoName))
+	cmd := exec.Command("tmux", "rename-window", "-t", win_id, fmt.Sprintf("  %s", repoName))
 
 	cmd.Run()
 }
