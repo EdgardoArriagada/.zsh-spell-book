@@ -8,6 +8,22 @@ import (
 	"strings"
 )
 
+type ParsedArgs struct {
+	Args []string
+	Len  int
+}
+
+func (p *ParsedArgs) Get(index int) string {
+	if index < p.Len {
+		return p.Args[index]
+	}
+	return ""
+}
+
+type ParsedWhole struct {
+	Content string
+}
+
 func isStdinEmpty() bool {
 	stat, _ := os.Stdin.Stat()
 	return (stat.Mode() & os.ModeCharDevice) != 0
@@ -56,26 +72,30 @@ func parseWholeStdin() (string, error) {
 	return result.String(), nil
 }
 
-func Parse() ([]string, error) {
+func Parse(stdinFallback bool) (*ParsedArgs, error) {
+	var args []string
 	if len(os.Args) > 1 {
-		return os.Args[1:], nil
-	} else {
-		return parseStdin()
+		args = os.Args[1:]
+	} else if stdinFallback {
+		var err error
+		args, err = parseStdin()
+		if err != nil {
+			return nil, err
+		}
 	}
+	return &ParsedArgs{Args: args, Len: len(args)}, nil
 }
 
-func ParseWhole() (string, error) {
+func ParseWhole(stdinFallback bool) (*ParsedWhole, error) {
+	var content string
 	if len(os.Args) > 1 {
-		return strings.Join(os.Args[1:], "\n"), nil
-	} else {
-		return parseWholeStdin()
+		content = strings.Join(os.Args[1:], "\n")
+	} else if stdinFallback {
+		var err error
+		content, err = parseWholeStdin()
+		if err != nil {
+			return nil, err
+		}
 	}
-}
-
-func ReadArg(args *[]string, index int) string {
-	if len(*args) > index {
-		return (*args)[index]
-	}
-
-	return ""
+	return &ParsedWhole{Content: content}, nil
 }

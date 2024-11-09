@@ -12,14 +12,14 @@ import (
 )
 
 func main() {
-	args, err := argsLib.Parse()
-	if err != nil || len(args) == 0 {
+	args, err := argsLib.Parse(false)
+	if err != nil || args.Len == 0 {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	win_id := args[0]
-	currentFilePath := argsLib.ReadArg(&args, 1)
+	win_id := args.Args[0]
+	currentFilePath := args.Get(1)
 
 	repoRoot, err := git.GetRepoRoot()
 
