@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	args, err := argsLib.Parse()
+	args, err := argsLib.Parse(false)
 	if err != nil || args.Len < 2 {
 		fmt.Println(err)
 		os.Exit(1)
