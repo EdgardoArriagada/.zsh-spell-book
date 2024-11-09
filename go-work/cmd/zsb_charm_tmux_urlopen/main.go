@@ -12,12 +12,12 @@ import (
 
 func main() {
 	args, err := argsLib.Parse()
-	if err != nil || len(args) == 0 {
+	if err != nil || args.Len == 0 {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	url, err := extractFirstURL(args[0])
+	url, err := extractFirstURL(args.Get(0))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
