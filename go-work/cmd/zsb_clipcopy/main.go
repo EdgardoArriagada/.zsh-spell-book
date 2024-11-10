@@ -25,7 +25,7 @@ func clipcopy(arg *argsLib.ParsedWhole) error {
 }
 
 func main() {
-	arg, err := argsLib.ParseWhole(true)
+	arg, err := argsLib.ParseWholeWithStdin()
 	if err != nil || arg.Content == "" {
 		fmt.Println(err)
 		os.Exit(1)
