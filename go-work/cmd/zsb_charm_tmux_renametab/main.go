@@ -7,19 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"example.com/workspace/lib/argsLib"
+	"example.com/workspace/lib/args"
 	"example.com/workspace/lib/git"
 )
 
 func main() {
-	args, err := argsLib.Parse()
-	if err != nil || args.Len == 0 {
+	d, err := args.Parse()
+	if err != nil || d.Len == 0 {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	win_id := args.Args[0]
-	currentFilePath := args.Get(1)
+	win_id := d.Args[0]
+	currentFilePath := d.Get(1)
 
 	repoRoot, err := git.GetRepoRoot()
 

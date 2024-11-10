@@ -8,7 +8,7 @@ use (
 	./cmd/zsb_clipcopy
 	./cmd/zsb_open
 
-	./lib/argsLib
+	./lib/args
 	./lib/git
 	./lib/open
 )

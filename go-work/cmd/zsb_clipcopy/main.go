@@ -7,10 +7,10 @@ import (
 	"runtime"
 	"strings"
 
-	"example.com/workspace/lib/argsLib"
+	"example.com/workspace/lib/args"
 )
 
-func clipcopy(arg *argsLib.ParsedWhole) error {
+func clipcopy(arg *args.ParsedWhole) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
@@ -25,11 +25,11 @@ func clipcopy(arg *argsLib.ParsedWhole) error {
 }
 
 func main() {
-	arg, err := argsLib.ParseWholeWithStdin()
-	if err != nil || arg.Content == "" {
+	d, err := args.ParseWholeWithStdin()
+	if err != nil || d.Content == "" {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	clipcopy(arg)
+	clipcopy(d)
 }

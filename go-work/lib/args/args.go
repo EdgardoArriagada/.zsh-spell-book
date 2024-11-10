@@ -1,4 +1,4 @@
-package argsLib
+package args
 
 import (
 	"bufio"

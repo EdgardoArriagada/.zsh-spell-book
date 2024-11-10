@@ -6,18 +6,18 @@ import (
 	"os"
 	"regexp"
 
-	"example.com/workspace/lib/argsLib"
+	"example.com/workspace/lib/args"
 	"example.com/workspace/lib/open"
 )
 
 func main() {
-	args, err := argsLib.ParseWithStdin()
-	if err != nil || args.Len == 0 {
+	d, err := args.ParseWithStdin()
+	if err != nil || d.Len == 0 {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	url, err := extractFirstURL(args.Args[0])
+	url, err := extractFirstURL(d.Args[0])
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
