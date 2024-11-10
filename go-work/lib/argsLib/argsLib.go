@@ -72,19 +72,11 @@ func parseWholeStdin() (string, error) {
 	return result.String(), nil
 }
 
-func Parse() (*ParsedArgs, error) {
+func parse(stdinFallback bool) (*ParsedArgs, error) {
 	var args []string
 	if len(os.Args) > 1 {
 		args = os.Args[1:]
-	}
-	return &ParsedArgs{Args: args, Len: len(args)}, nil
-}
-
-func ParseWithStdin() (*ParsedArgs, error) {
-	var args []string
-	if len(os.Args) > 1 {
-		args = os.Args[1:]
-	} else {
+	} else if stdinFallback {
 		var err error
 		args, err = parseStdin()
 		if err != nil {
@@ -94,19 +86,11 @@ func ParseWithStdin() (*ParsedArgs, error) {
 	return &ParsedArgs{Args: args, Len: len(args)}, nil
 }
 
-func ParseWhole() (*ParsedWhole, error) {
+func parseWhole(stdinFallback bool) (*ParsedWhole, error) {
 	var content string
 	if len(os.Args) > 1 {
 		content = strings.Join(os.Args[1:], "\n")
-	}
-	return &ParsedWhole{Content: content}, nil
-}
-
-func ParseWholeWithStdin() (*ParsedWhole, error) {
-	var content string
-	if len(os.Args) > 1 {
-		content = strings.Join(os.Args[1:], "\n")
-	} else {
+	} else if stdinFallback {
 		var err error
 		content, err = parseWholeStdin()
 		if err != nil {
@@ -114,4 +98,20 @@ func ParseWholeWithStdin() (*ParsedWhole, error) {
 		}
 	}
 	return &ParsedWhole{Content: content}, nil
+}
+
+func Parse() (*ParsedArgs, error) {
+	return parse(false)
+}
+
+func ParseWithStdin() (*ParsedArgs, error) {
+	return parse(true)
+}
+
+func ParseWhole() (*ParsedWhole, error) {
+	return parseWhole(false)
+}
+
+func ParseWholeWithStdin() (*ParsedWhole, error) {
+	return parseWhole(true)
 }
