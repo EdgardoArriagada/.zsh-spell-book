@@ -10,7 +10,7 @@ import (
 	"example.com/workspace/lib/args"
 )
 
-func clipcopy(arg *args.ParsedWhole) error {
+func copyToClipboard(arg *args.ParsedWhole) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
@@ -31,5 +31,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	clipcopy(d)
+	copyToClipboard(d)
 }
