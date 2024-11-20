@@ -22,11 +22,9 @@ func main() {
 	currentFilePath := d.Get(1)
 
 	repoRoot, err := git.GetRepoRoot()
-
 	if err != nil {
 		os.Exit(1)
 	}
-
 	if currentFilePath != "" && !strings.HasPrefix(currentFilePath, repoRoot) {
 		os.Exit(1)
 	}
