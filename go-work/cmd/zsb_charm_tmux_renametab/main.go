@@ -18,7 +18,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	win_id := d.Args[0]
+	winId := d.Args[0]
 	currentFilePath := d.Get(1)
 
 	repoRoot, err := git.GetRepoRoot()
@@ -31,7 +31,7 @@ func main() {
 
 	tabname := fmt.Sprintf("  %s", filepath.Base(repoRoot))
 
-	cmd := exec.Command("tmux", "rename-window", "-t", win_id, tabname)
+	cmd := exec.Command("tmux", "rename-window", "-t", winId, tabname)
 
 	cmd.Run()
 }
