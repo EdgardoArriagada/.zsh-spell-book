@@ -20,7 +20,7 @@ tm() {
 
   tmux switch-client -t $session
 
-  local winCount=`tmux display-message -p '#{session_windows}'`
+  local winCount=`tmux display -p '#{session_windows}'`
   (( $winCount > 1 )) && tmux kill-window
 }
 
