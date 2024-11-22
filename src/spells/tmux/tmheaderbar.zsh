@@ -7,10 +7,10 @@ tmheaderbar() {
 # param $1: sessionName=`tmux display-message -p '#S'`
 # param $2: windowNumber=`tmux display-message -p '#I'`
 tmheaderbarFixed() {
-  local givenWindow=${1}:${2}
-  shift 2
+  local winId=$1
+  shift 1
 
-  tmux split-window -vb -p 6 -t ${givenWindow}.0 -P -F "#{pane_id}" \; \
-    send-keys -t ${givenWindow}.0 " printCentered \"${*}\" | less; exit " Enter \; \
-    select-pane -t ${givenWindow}.1
+  tmux split-window -vb -p 6 -t ${winId}.0 -P -F "#{pane_id}" \; \
+    send-keys -t ${winId}.0 " printCentered \"${*}\" | less; exit " Enter \; \
+    select-pane -t ${winId}.1
 }
