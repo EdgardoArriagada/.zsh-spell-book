@@ -11,7 +11,6 @@ tm() {
   fi
 
   local session=${1:?Error: session name is required.}
-
   if [[ "$session" = "`getLastActiveSessionName`" ]]
     then ${zsb}.throw 'You did not move.'
   fi
@@ -20,6 +19,9 @@ tm() {
   tmux new -s $session $changeDir -d 2>/dev/null
 
   tmux switch-client -t $session
+
+  local winCount=`tmux display-message -p '#{session_windows}'`
+  (( $winCount > 1 )) && tmux kill-window
 }
 
 _${zsb}.tm() {
