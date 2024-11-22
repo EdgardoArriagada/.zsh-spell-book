@@ -7,15 +7,17 @@ if [[ -z "$TMUX" ]]; then
 fi
 
 zparseopts -D -E -F -- \
-  t:=target \
   -clear=clear \
   || return 1
+
+local winId=$1
+shift 1
 
 # these are copied from `clear-highlight` and `highlight` aliases defined in tmux.conf
 local action
 if [[ -n "$clear" ]]
-  then action="set $target window-status-style fg='colour6',bg='#242933'"
-  else action="set $target window-status-style fg='colour3',bg='#242933'"
+  then action="set -t $winId window-status-style fg='colour6',bg='#242933'"
+  else action="set -t $winId window-status-style fg='colour3',bg='#242933'"
 fi
 
 local cmd="tmux $action"

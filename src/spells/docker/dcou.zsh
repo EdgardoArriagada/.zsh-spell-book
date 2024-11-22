@@ -5,16 +5,16 @@ dcou() {
   fi
 
   # export it so it can be used in shutDown
-  export target=`${zsb}.tmux.getTarget`
+  export winId=`${zsb}.tmux.getWinId`
 
   function shutDown() {
-    hl_tmux_tab $target --clear
+    hl_tmux_tab $winId --clear
   }
 
   TRAPINT() { shutDown }
   TRAPEXIT() { shutDown }
 
-  hl_tmux_tab $target
+  hl_tmux_tab $winId
 
   printAndRun "docker-compose up"
 }
