@@ -1,7 +1,8 @@
 ${zsb}.doesBranchesMatch() {
   local inputBranch=$1
   local branchesRegex=$2
-  ${zsb}.doesMatch $inputBranch "^${branchesRegex}$"
+
+  [[ $inputBranch =~ "^${branchesRegex}$" ]]
 }
 
 ${zsb}.isDefaultBranch() ${zsb}.doesBranchesMatch $1 $ZSB_GIT_DEFAULT_BRANCHES

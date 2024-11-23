@@ -19,12 +19,12 @@ ${zsb}.countdown.convertToSeconds() (
 
   ${this}.isShortTimeFormat() {
     local SHORT_TIME_REGEX='^[0-9]+[hHmMsS]$'
-    ${zsb}.doesMatch $inputTime $SHORT_TIME_REGEX
+    [[ $inputTime =~ $SHORT_TIME_REGEX ]]
   }
 
   ${this}.isTimeFormat() {
     local TIME_REGEX='^[0-5]?[0-9]:[0-5]?[0-9](:[0-5]?[0-9])?$'
-    ${zsb}.doesMatch $inputTime $TIME_REGEX
+    [[ $inputTime =~ $TIME_REGEX ]]
   }
 
   ${this}.setTotalSecondsFromShortTimeFormat() {

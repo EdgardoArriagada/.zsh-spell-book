@@ -1,7 +1,7 @@
 qa() (
   local file=${1:?Error: You must provide a file.}
 
-  ${zsb}.doesMatch "$file" "\.qa$" || ${zsb}.throw "File has to be a $(hl ".qa")"
+  [[ "$file" =~ "\.qa$" ]] || ${zsb}.throw "File has to be a $(hl ".qa")"
 
   local newFileName=$(echo "$file" | cut -d'.' -f'1' | tr -d -c a-zA-Z )
 

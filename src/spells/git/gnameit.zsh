@@ -9,7 +9,7 @@ gnameit() {
   [[ -z "$oldUrl" ]] &&
     ${zsb}.throw "Origin url not set."
 
-  ${zsb}.doesMatch "$oldUrl" "^http[s]:\/{2}.+@" &&
+  [[ "$oldUrl" =~ "^http[s]:\/{2}.+@" ]] &&
     ${zsb}.cancel "Username in url is already set.
     \r$(hl $oldUrl)"
 

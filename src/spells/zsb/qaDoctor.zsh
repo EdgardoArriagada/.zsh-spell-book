@@ -1,7 +1,7 @@
 qaDoctor() (
   local file=${1:?Error: You must provide a file.}
 
-  ${zsb}.doesMatch "$file" "\.qa$" || ${zsb}.throw "File has to be a $(hl ".qa")"
+  [[ "$file" =~ "\.qa$" ]] || ${zsb}.throw "File has to be a $(hl ".qa")"
 
   zmodload zsh/mapfile
   local fileLines=( "${(f)mapfile[$file]}" )
