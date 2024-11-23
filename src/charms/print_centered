@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+printf "%*s\n" $(((${#1}+${COLUMNS})/2)) "$1"

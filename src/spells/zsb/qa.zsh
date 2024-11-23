@@ -79,7 +79,7 @@ qa() (
 
   for i in {1..$numQuestions}; do
     color 246 `hr`
-    printCentered "[${i} / ${numQuestions}]"
+    print_centered "[${i} / ${numQuestions}]"
     print " "
     printf "${questions[$i]}\n"
     read -k1 -s
