@@ -3,7 +3,7 @@ repackage() (
   local this="$0"
 
   ${this}.validateNonDefaultBranch() {
-    ${zsb}.userWorkingOnDefaultBranch &&
+    ${zsb}.isUserOnDefaultBranch &&
       ${zsb}.throw "can't repackage in default branch, use `hl --aware` flag to do it anyway"
   }
 
@@ -37,7 +37,7 @@ hisIgnore repackage
 _${zsb}.repackage() {
   local aware
 
-  ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
+  ${zsb}.isUserOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
   _${zsb}.nonRepeatedListD $aware $ZSB_GIT_FORCE "`${zsb}.getNoVerifyProp`"
 }

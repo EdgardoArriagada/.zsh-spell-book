@@ -48,7 +48,7 @@ ${zsb}.updateGroup() (
   }
 
   ${this}.isEligibleForUpdate() {
-    ${zsb}.userWorkingOnDefaultBranch && ${zsb}.isRepoClean
+    ${zsb}.isUserOnDefaultBranch && ${zsb}.isRepoClean
   }
 
   ${this}.printHeader() <<< "[ $(hl `get_repo_name`) ($currentBranch) ${1}]"

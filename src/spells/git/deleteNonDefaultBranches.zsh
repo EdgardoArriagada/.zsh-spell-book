@@ -25,7 +25,7 @@ deleteNonDefaultBranches() (
   ${this}.assertRepoConditions() {
     ${zsb}.assertGitRepo
 
-    ${zsb}.userWorkingOnDefaultBranch ||
+    ${zsb}.isUserOnDefaultBranch ||
       ${zsb}.cancel 'You must run this command from a default branch'
   }
 

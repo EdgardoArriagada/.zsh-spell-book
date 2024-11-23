@@ -1,7 +1,7 @@
 gc() {
   zparseopts -D -E -F -- -aware=aware -no-verify=noVerify || return 1
 
-  ${zsb}.userWorkingOnDefaultBranch
+  ${zsb}.isUserOnDefaultBranch
   local isUserInDefaultBranch=$(( $? == 0 ))
 
   if (( $isUserInDefaultBranch )) && [[ -z "$aware" ]]; then
@@ -23,7 +23,7 @@ gc() {
 _${zsb}.gc() {
   local aware
 
-  ${zsb}.userWorkingOnDefaultBranch && aware=$ZSB_GIT_AWARE
+  ${zsb}.isUserOnDefaultBranch && aware=$ZSB_GIT_AWARE
 
   _${zsb}.nonRepeatedListD $aware "`${zsb}.getNoVerifyProp`"
 }

@@ -6,7 +6,7 @@ createPr() {
   ${zsb}.assertGitRepo
   local parentBranch=${1:="$(parentBranch)"}
 
-  if ${zsb}.userWorkingOnDefaultBranch; then
+  if ${zsb}.isUserOnDefaultBranch; then
     ${zsb}.throw "Can't create a pull request on a default branch, use `hl --aware` flag to do it anyway"
   fi
 
