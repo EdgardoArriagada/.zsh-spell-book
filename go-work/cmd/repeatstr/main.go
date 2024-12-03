@@ -13,7 +13,6 @@ func main() {
 	if err != nil || d.Len < 2 {
 		fmt.Println(err)
 		os.Exit(1)
-
 	}
 
 	n, err := strconv.Atoi(d.Args[0])
