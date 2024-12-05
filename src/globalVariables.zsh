@@ -44,7 +44,7 @@ declare -gAr ZSB_GIT_FILETYPE_TO_REGEX=(
   ['red-safe']='^.[MARCD\?]'
   ['red']='^.[MARCUD\?]'
   ['red-with-diff']='^.[MARCD]'
-  ['unmerged']='(^U)|(^.U)'
+  ['unmerged']='(^[U])|(^.[UA])'
 )
 
 # wcase -h
