@@ -19,21 +19,21 @@ func main() {
 		log.Fatalf("Usage: airbnb_calculator <csv_filename>")
 	}
 
-	filename := d.Args[1]
+	filename := d.Args[0]
 
 	// check if the file exists
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		log.Fatalf("File %s does not exist\n", filename)
 	}
 
-	filteredRecords, err := extractRecords(filename)
+	records, err := extractRecords(filename)
 	if err != nil {
 		log.Fatalf("Failed to extract records: %s", err)
 	}
 
 	outputFilename := getOutputFilename(filename)
 
-	err = writeToCsv(filteredRecords, outputFilename)
+	err = writeToCsv(records, outputFilename)
 	if err != nil {
 		log.Fatalf("Failed to write to CSV: %s", err)
 	}
@@ -59,7 +59,7 @@ func extractRecords(filename string) ([][]string, error) {
 	// Filter records that have data in the 2nd column
 	var filteredRecords [][]string
 	for _, record := range records {
-		if len(record) > 1 && record[1] != "" {
+		if len(record) > 1 {
 			filteredRecords = append(filteredRecords, record)
 		}
 	}
