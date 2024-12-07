@@ -9,6 +9,38 @@ import (
 	"path/filepath"
 )
 
+func main() {
+	d, err := args.Parse()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if d.Len < 1 {
+		log.Fatalf("Usage: airbnb_calculator <csv_filename>")
+	}
+
+	filename := d.Args[1]
+
+	// check if the file exists
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		log.Fatalf("File %s does not exist\n", filename)
+	}
+
+	filteredRecords, err := extractRecords(filename)
+	if err != nil {
+		log.Fatalf("Failed to extract records: %s", err)
+	}
+
+	outputFilename := getOutputFilename(filename)
+
+	err = writeToCsv(filteredRecords, outputFilename)
+	if err != nil {
+		log.Fatalf("Failed to write to CSV: %s", err)
+	}
+
+	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
+}
+
 func extractRecords(filename string) ([][]string, error) {
 	// Open the CSV file
 	file, err := os.Open(filename)
@@ -56,36 +88,4 @@ func writeToCsv(filteredRecords [][]string, outputFilename string) error {
 	}
 
 	return nil
-}
-
-func main() {
-	d, err := args.Parse()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if d.Len < 1 {
-		log.Fatalf("Usage: airbnb_calculator <csv_filename>")
-	}
-
-	filename := d.Args[1]
-
-	// check if the file exists
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		log.Fatalf("File %s does not exist\n", filename)
-	}
-
-	filteredRecords, err := extractRecords(filename)
-	if err != nil {
-		log.Fatalf("Failed to extract records: %s", err)
-	}
-
-	outputFilename := getOutputFilename(filename)
-
-	err = writeToCsv(filteredRecords, outputFilename)
-	if err != nil {
-		log.Fatalf("Failed to write to CSV: %s", err)
-	}
-
-	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
 }
