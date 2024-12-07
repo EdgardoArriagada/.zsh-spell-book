@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"example.com/workspace/lib/args"
 )
@@ -32,7 +34,10 @@ func main() {
 		log.Fatalf("Failed to extract records: %s", err)
 	}
 
-	records = processRecords(records)
+	records, err = processRecords(records)
+	if err != nil {
+		log.Fatalf("Failed to process records: %s", err)
+	}
 	fmt.Println("le records", records)
 
 	outputFilename := getOutputFilename(filename)
@@ -64,22 +69,42 @@ func getRecords(filename string) ([][]string, error) {
 }
 
 func findIndex(arr []string, name string) int {
-	montoIndex := -1
+	idx := -1
 	for i, header := range arr {
 		if header == name {
-			montoIndex = i
+			idx = i
 		}
 	}
-	return montoIndex
+	return idx
 }
 
-func processRecords(records [][]string) [][]string {
+func processRecords(records [][]string) ([][]string, error) {
 	headers := records[0]
-	montoIndex := findIndex(headers, "Monto")
+	montoIdx := findIndex(headers, "Monto")
 
-	fmt.Println("le montoIndex", montoIndex)
+	// Filter the records to remove any rows with an empty "Monto" value
+	var filteredRecords [][]string = nil
+	for _, record := range records[1:] {
+		if record[montoIdx] != "" {
+			filteredRecords = append(filteredRecords, record)
+		}
+	}
 
-	return records
+	// Sum the "Monto" values
+	var total = 0
+	for _, record := range filteredRecords {
+		var rawAmount = record[montoIdx]
+		rawAmount = strings.Split(rawAmount, ".")[0]
+		amount, err := strconv.Atoi(rawAmount)
+
+		if err != nil {
+			return nil, err
+		}
+		total += amount
+	}
+	fmt.Println("le total", total)
+
+	return records, nil
 }
 
 func getOutputFilename(filename string) string {
