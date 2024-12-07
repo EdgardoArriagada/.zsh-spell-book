@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/csv"
-	"example.com/workspace/lib/args"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+
+	"example.com/workspace/lib/args"
 )
 
 func main() {
@@ -30,6 +31,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to extract records: %s", err)
 	}
+
+	records = processRecords(records)
+	fmt.Println("le records", records)
 
 	outputFilename := getOutputFilename(filename)
 
@@ -57,6 +61,25 @@ func getRecords(filename string) ([][]string, error) {
 	}
 
 	return records, nil
+}
+
+func findIndex(arr []string, name string) int {
+	montoIndex := -1
+	for i, header := range arr {
+		if header == name {
+			montoIndex = i
+		}
+	}
+	return montoIndex
+}
+
+func processRecords(records [][]string) [][]string {
+	headers := records[0]
+	montoIndex := findIndex(headers, "Monto")
+
+	fmt.Println("le montoIndex", montoIndex)
+
+	return records
 }
 
 func getOutputFilename(filename string) string {
