@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+type ParsedCsv [][]string
+
 func main() {
 	d, err := args.Parse()
 	if err != nil {
@@ -41,7 +43,7 @@ func main() {
 	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
 }
 
-func extractRecords(filename string) ([][]string, error) {
+func extractRecords(filename string) (ParsedCsv, error) {
 	// Open the CSV file
 	file, err := os.Open(filename)
 	if err != nil {
@@ -57,7 +59,7 @@ func extractRecords(filename string) ([][]string, error) {
 	}
 
 	// Filter records that have data in the 2nd column
-	var filteredRecords [][]string
+	var filteredRecords ParsedCsv
 	for _, record := range records {
 		if len(record) > 1 {
 			filteredRecords = append(filteredRecords, record)
@@ -73,7 +75,7 @@ func getOutputFilename(filename string) string {
 	return newFilename
 }
 
-func writeToCsv(filteredRecords [][]string, outputFilename string) error {
+func writeToCsv(filteredRecords ParsedCsv, outputFilename string) error {
 	// Write the filtered records to the new CSV file
 	newFile, err := os.Create(outputFilename)
 	if err != nil {
