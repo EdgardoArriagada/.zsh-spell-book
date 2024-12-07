@@ -17,6 +17,8 @@ endef
 	(cd go-work && $(call build,$(TARGET)))
 
 # Setup
+dev-airbnb-calculator:
+	$(MAKE) TARGET=airbnb_calculator .dev-target
 
 dev-get-repo-name:
 	$(MAKE) TARGET=get_repo_name .dev-target
@@ -37,6 +39,7 @@ dev-zsb-open:
 	$(MAKE) TARGET=zsb_open .dev-target
 
 build:
+	$(MAKE) TARGET=airbnb_calculator .build-target
 	$(MAKE) TARGET=get_repo_name .build-target
 	$(MAKE) TARGET=repeatstr .build-target
 	$(MAKE) TARGET=zsb_charm_tmux_renametab .build-target
