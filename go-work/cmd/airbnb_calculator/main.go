@@ -38,7 +38,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to process records: %s", err)
 	}
-	fmt.Println("le records", records)
 
 	outputFilename := getOutputFilename(filename)
 
@@ -125,14 +124,22 @@ func processRecords(records [][]string) ([][]string, error) {
 			totalRow = append(totalRow, strconv.Itoa(total))
 		} else if i == nochesIdx {
 			totalRow = append(totalRow, strconv.Itoa(totalNights))
+		} else if i == 0 {
+			totalRow = append(totalRow, "Total:")
 		} else {
 			totalRow = append(totalRow, "")
 		}
 	}
+	// append headers at the top
+	var emptyRow []string
+	filteredRecords = append(filteredRecords, emptyRow)
+	copy(filteredRecords[1:], filteredRecords)
+	filteredRecords[0] = headers
 
-	records = append(records, totalRow)
-
-	return records, nil
+	// append total rows
+	filteredRecords = append(filteredRecords, totalRow)
+	fmt.Println("le filteredRecords", filteredRecords)
+	return filteredRecords, nil
 }
 
 func getOutputFilename(filename string) string {
