@@ -81,6 +81,10 @@ func findIndex(arr []string, name string) int {
 func processRecords(records [][]string) ([][]string, error) {
 	headers := records[0]
 	montoIdx := findIndex(headers, "Monto")
+	nochesIdx := findIndex(headers, "Noches")
+	if montoIdx == -1 || nochesIdx == -1 {
+		return nil, fmt.Errorf("Monto or Noches column not found in CSV file")
+	}
 
 	// Filter the records to remove any rows with an empty "Monto" value
 	var filteredRecords [][]string = nil
@@ -90,19 +94,43 @@ func processRecords(records [][]string) ([][]string, error) {
 		}
 	}
 
+	// Sum the "Noches" values
+	var totalNights = 0
+	for _, record := range filteredRecords {
+		nights, err := strconv.Atoi(record[nochesIdx])
+		if err != nil {
+			return nil, err
+		}
+
+		totalNights += nights
+	}
+
 	// Sum the "Monto" values
 	var total = 0
 	for _, record := range filteredRecords {
 		var rawAmount = record[montoIdx]
 		rawAmount = strings.Split(rawAmount, ".")[0]
-		amount, err := strconv.Atoi(rawAmount)
 
+		amount, err := strconv.Atoi(rawAmount)
 		if err != nil {
 			return nil, err
 		}
 		total += amount
 	}
-	fmt.Println("le total", total)
+
+	// add a new row with the total amount and nights under the corresponding headers
+	var totalRow []string
+	for i := range headers {
+		if i == montoIdx {
+			totalRow = append(totalRow, strconv.Itoa(total))
+		} else if i == nochesIdx {
+			totalRow = append(totalRow, strconv.Itoa(totalNights))
+		} else {
+			totalRow = append(totalRow, "")
+		}
+	}
+
+	records = append(records, totalRow)
 
 	return records, nil
 }
