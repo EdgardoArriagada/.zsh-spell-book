@@ -34,6 +34,13 @@ func extractRecords(filename string) ([][]string, error) {
 	return filteredRecords, nil
 }
 
+func getOutputFilename(filename string) string {
+	ext := filepath.Ext(filename)
+	name := filename[:len(filename)-len(ext)]
+	newFilename := name + "_filtered" + ext
+	return newFilename
+}
+
 func main() {
 	d, err := args.Parse()
 	if err != nil {
@@ -56,13 +63,10 @@ func main() {
 		log.Fatalf("Failed to extract records: %s", err)
 	}
 
-	// Create the new filename
-	ext := filepath.Ext(filename)
-	name := filename[:len(filename)-len(ext)]
-	newFilename := name + "_filtered" + ext
+	outputFilename := getOutputFilename(filename)
 
 	// Write the filtered records to the new CSV file
-	newFile, err := os.Create(newFilename)
+	newFile, err := os.Create(outputFilename)
 	if err != nil {
 		log.Fatalf("Failed to create file: %s", err)
 	}
@@ -74,5 +78,5 @@ func main() {
 		log.Fatalf("Failed to write CSV file: %s", err)
 	}
 
-	fmt.Printf("Filtered CSV file created: %s\n", newFilename)
+	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
 }
