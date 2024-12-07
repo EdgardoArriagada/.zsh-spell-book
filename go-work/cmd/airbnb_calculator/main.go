@@ -41,6 +41,23 @@ func getOutputFilename(filename string) string {
 	return newFilename
 }
 
+func writeToCsv(filteredRecords [][]string, outputFilename string) error {
+	// Write the filtered records to the new CSV file
+	newFile, err := os.Create(outputFilename)
+	if err != nil {
+		return err
+	}
+	defer newFile.Close()
+
+	writer := csv.NewWriter(newFile)
+	err = writer.WriteAll(filteredRecords)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func main() {
 	d, err := args.Parse()
 	if err != nil {
@@ -65,17 +82,9 @@ func main() {
 
 	outputFilename := getOutputFilename(filename)
 
-	// Write the filtered records to the new CSV file
-	newFile, err := os.Create(outputFilename)
+	err = writeToCsv(filteredRecords, outputFilename)
 	if err != nil {
-		log.Fatalf("Failed to create file: %s", err)
-	}
-	defer newFile.Close()
-
-	writer := csv.NewWriter(newFile)
-	err = writer.WriteAll(filteredRecords)
-	if err != nil {
-		log.Fatalf("Failed to write CSV file: %s", err)
+		log.Fatalf("Failed to write to CSV: %s", err)
 	}
 
 	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
