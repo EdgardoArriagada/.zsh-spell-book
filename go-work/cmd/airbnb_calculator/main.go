@@ -120,7 +120,7 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 	// add a new row with the total amount and nights under the corresponding headers
 	totalRow := make([]string, len(headers))
 	totalRow[0] = "Total:"
-	totalRow[montoIdx] = strconv.Itoa(total)
+	totalRow[montoIdx] = strconv.Itoa(total) + ".00"
 	totalRow[nochesIdx] = strconv.Itoa(totalNights)
 
 	// append headers at the top

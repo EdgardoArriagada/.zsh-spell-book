@@ -14,7 +14,7 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "1000.00", "2"},
 		{"2", "2000.00", "3"},
-		{"Total:", "3000", "5"},
+		{"Total:", "3000.00", "5"},
 	}
 	got, _ := ProcessRecords(records)
 	if !equal(got, expected) {
@@ -31,7 +31,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 	expected := [][]string{
 		{"ID", "Monto", "Noches"},
 		{"2", "2000.00", "3"},
-		{"Total:", "2000", "3"},
+		{"Total:", "2000.00", "3"},
 	}
 
 	got, _ := ProcessRecords(records)
