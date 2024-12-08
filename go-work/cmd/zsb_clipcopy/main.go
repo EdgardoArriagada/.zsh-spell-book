@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
 	"example.com/workspace/lib/args"
+	u "example.com/workspace/lib/utils"
 )
 
 func copyToClipboard(arg *args.ParsedWhole) error {
@@ -25,11 +24,7 @@ func copyToClipboard(arg *args.ParsedWhole) error {
 }
 
 func main() {
-	d, err := args.ParseWholeWithStdin()
-	if err != nil || d.Content == "" {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	d := u.Must(args.ParseWholeWithStdin())
 
 	copyToClipboard(d)
 }

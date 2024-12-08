@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -17,10 +16,7 @@ import (
 
 func main() {
 	d := u.Must(args.Parse())
-
-	if d.Len < 1 {
-		log.Fatalf("Usage: airbnb_calculator <csv_filename>")
-	}
+	u.Expect(d.Len == 1, "Usage: airbnb_calculator <csv_filename>")
 
 	filename := d.Args[0]
 

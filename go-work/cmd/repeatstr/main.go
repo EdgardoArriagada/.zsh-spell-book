@@ -1,25 +1,20 @@
 package main
 
 import (
-	"example.com/workspace/lib/args"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"example.com/workspace/lib/args"
+	u "example.com/workspace/lib/utils"
 )
 
 func main() {
-	d, err := args.Parse()
-	if err != nil || d.Len < 2 {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	d := u.Must(args.Parse())
+	u.Expect(d.Len == 2, "Usage: repeatstr <number> <word>")
 
 	n, err := strconv.Atoi(d.Args[0])
-	if err != nil {
-		fmt.Println("First argument must be a number")
-		os.Exit(1)
-	}
+	u.Expect(err == nil, "First argument must be a number")
 
 	word := d.Args[1]
 	var builder strings.Builder

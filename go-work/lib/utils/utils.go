@@ -14,6 +14,12 @@ func Must[T any](value T, err error) T {
 	return value
 }
 
+func Expect(result bool, msg string) {
+	if !result {
+		log.Fatalln(msg)
+	}
+}
+
 func Assert(err error) {
 	if err != nil {
 		log.Fatalln(err)

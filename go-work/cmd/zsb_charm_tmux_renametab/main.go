@@ -9,22 +9,18 @@ import (
 
 	"example.com/workspace/lib/args"
 	"example.com/workspace/lib/git"
+	u "example.com/workspace/lib/utils"
 )
 
 func main() {
-	d, err := args.Parse()
-	if err != nil || d.Len == 0 {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	d := u.Must(args.Parse())
+	u.Expect(d.Len == 1 || d.Len == 2, "Usage: zsb_charm_tmux_renametab <win_id> <current_file_path>")
 
 	winId := d.Args[0]
 	currentFilePath := d.Get(1)
 
-	repoRoot, err := git.GetRepoRoot()
-	if err != nil {
-		os.Exit(1)
-	}
+	repoRoot := u.Must(git.GetRepoRoot())
+
 	if currentFilePath != "" && !strings.HasPrefix(currentFilePath, repoRoot) {
 		os.Exit(1)
 	}
