@@ -3,13 +3,13 @@ qa() (
 
   [[ "$file" =~ "\.qa$" ]] || ${zsb}.throw "File has to be a $(hl ".qa")"
 
-  local newFileName=$(echo "$file" | cut -d'.' -f'1' | tr -d -c a-zA-Z )
+  local newFilename=$(echo "$file" | cut -d'.' -f'1' | tr -d -c a-zA-Z )
 
   integer fileVersion=$(echo "$file" | tr -d -c 0-9)
   [[ -z "fileVersion" ]] && fileVersion=0
   (( fileVersion++ ))
 
-  local resultFile="${newFileName}_${fileVersion}.qa"
+  local resultFile="${newFilename}_${fileVersion}.qa"
 
   if [[ -f $resultFile ]]; then
     ${zsb}.prompt "Do you want to delete $(hl $resultFile)? [Y/n]"

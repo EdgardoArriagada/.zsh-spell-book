@@ -3,10 +3,10 @@ set -eo pipefail
 
 local message=${1:?Error: Message is required.}
 local folderPath=${2:='default'}
-local logFileName=${3:=`date +%b-%d-%Y.log`}
+local logFilename=${3:=`date +%b-%d-%Y.log`}
 
 local logsPath=~/.zsh-spell-book/logs/$folderPath
 
 [[ ! -d $logsPath ]] && mkdir -p $logsPath
 
-printf "${message}\n" >> $logsPath/$logFileName
+printf "${message}\n" >> $logsPath/$logFilename

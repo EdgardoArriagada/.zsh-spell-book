@@ -1,14 +1,14 @@
 ${zsb}.pomodoro.viewPomodoroLogs() {
-  local fileName=$1
+  local filename=$1
   local fileOpenerProgram=$2
 
   # File format: mnt-dd-yyyy.log
-  local year=`cut -d '-' -f3 <<< $fileName | cut -d '.' -f1`
-  local month=`cut -d '-' -f 1 <<< $fileName`
+  local year=`cut -d '-' -f3 <<< $filename | cut -d '.' -f1`
+  local month=`cut -d '-' -f 1 <<< $filename`
 
   local logFolder=$ZSB_DIR/logs/pomodoro/$year/$month
 
-  local fullFilePath=$logFolder/$fileName
+  local fullFilePath=$logFolder/$filename
 
   if [[ ! -f $fullFilePath ]]
     then ${zsb}.cancel 'Pomodoro not found'

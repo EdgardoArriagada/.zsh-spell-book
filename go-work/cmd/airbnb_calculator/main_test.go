@@ -78,9 +78,9 @@ func TestProcessRecords_MissingNochesColumn(t *testing.T) {
 	}
 }
 
-func TestGetOutputFileName(t *testing.T) {
+func TestGetOutputFilename(t *testing.T) {
 	testCases := []struct {
-		fileName string
+		filename string
 		expected string
 	}{
 		{"airbnb_01_2024-01_2024.csv", "Jan.csv"},
@@ -98,16 +98,16 @@ func TestGetOutputFileName(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		got, _ := GetOutputFilename(tc.fileName)
+		got, _ := GetOutputFilename(tc.filename)
 		if got != tc.expected {
-			t.Errorf("GetOutputFilename(%v) = %v, expected %v", tc.fileName, got, tc.expected)
+			t.Errorf("GetOutputFilename(%v) = %v, expected %v", tc.filename, got, tc.expected)
 		}
 	}
 }
 
 func TestValidateFilename_WithValidFilename(t *testing.T) {
 	testCases := []struct {
-		fileName string
+		filename string
 	}{
 		{"airbnb_01_2024-01_2024.csv"},
 		{"airbnb_02_2024-02_2024.csv"},
@@ -115,7 +115,7 @@ func TestValidateFilename_WithValidFilename(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.fileName)
+		err := ValidateFilename(tc.filename)
 		if err != nil {
 			t.Errorf("Failed,  %v", err)
 		}
@@ -124,14 +124,14 @@ func TestValidateFilename_WithValidFilename(t *testing.T) {
 
 func TestValidateFilename_WithInvalidFilenameFormat(t *testing.T) {
 	testCases := []struct {
-		fileName string
+		filename string
 	}{
 		{"airbnb_01_2024.csv"},
 		{"02_2024-02_2024.csv"},
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.fileName)
+		err := ValidateFilename(tc.filename)
 		if err.Error() != "filename must be in the format airbnb_MM_YYYY-MM_YYYY" {
 			t.Errorf("Failed,  %v", err)
 		}
@@ -140,14 +140,14 @@ func TestValidateFilename_WithInvalidFilenameFormat(t *testing.T) {
 
 func TestValidateFilename_WithInvalidFilenameDates(t *testing.T) {
 	testCases := []struct {
-		fileName string
+		filename string
 	}{
 		{"airbnb_01_2024-01_2025.csv"},
 		{"airbnb_02_2024-12_2024.csv"},
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.fileName)
+		err := ValidateFilename(tc.filename)
 		if err.Error() != "months and years in the filename do not match" {
 			t.Errorf("Failed,  %v", err)
 		}

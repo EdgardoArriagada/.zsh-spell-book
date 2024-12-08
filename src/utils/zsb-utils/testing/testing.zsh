@@ -2,9 +2,9 @@ expect() { (( $1 == 0 )) && ${zsb}.pass "$it" || ${zsb}.fail "$it" }
 
 describe() {
   local testMessage="$1"
-  local fileName="${2##*/}"
+  local filename="${2##*/}"
 
-  echo "\n🌑 $testMessage $(hl $fileName)"
+  echo "\n🌑 $testMessage $(hl $filename)"
 }
 
 runTests() (
