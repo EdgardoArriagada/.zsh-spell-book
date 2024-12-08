@@ -184,12 +184,12 @@ func GetOutputFilename(filename string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	// Map month number to abbreviated month name
-	monthNames := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	if month < 1 || month > 12 {
 		return "", fmt.Errorf("Invalid month: %d", month)
 	}
+
+	// Map month number to abbreviated month name
+	monthNames := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	monthName := monthNames[month-1]
 
 	// Construct the new filename
