@@ -24,10 +24,10 @@ func main() {
 	u.AssertFileExists(filename)
 
 	records := u.Must(getRecords(filename))
-	records = u.Must(ProcessRecords(records))
+	records = u.Must(ProcessRecords(records[:]))
 	outputFilename := u.Must(GetOutputFilename(filename))
 
-	u.Assert(writeToCsv(records, outputFilename))
+	u.Assert(writeToCsv(records[:], outputFilename))
 
 	open.File(filename)
 	open.File(outputFilename)
@@ -76,7 +76,7 @@ func getRecords(filename string) ([][]string, error) {
 		return nil, err
 	}
 
-	return records, nil
+	return records[:], nil
 }
 
 func findIndex(arr []string, name string) int {
@@ -143,7 +143,7 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 
 	// append total rows
 	filteredRecords = append(filteredRecords, totalRow)
-	return filteredRecords, nil
+	return filteredRecords[:], nil
 }
 
 func GetOutputFilename(filename string) (string, error) {
