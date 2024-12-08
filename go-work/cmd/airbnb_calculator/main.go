@@ -34,7 +34,7 @@ func main() {
 		log.Fatalf("Failed to extract records: %s", err)
 	}
 
-	records, err = processRecords(records)
+	records, err = ProcessRecords(records)
 	if err != nil {
 		log.Fatalf("Failed to process records: %s", err)
 	}
@@ -77,7 +77,7 @@ func findIndex(arr []string, name string) int {
 	return idx
 }
 
-func processRecords(records [][]string) ([][]string, error) {
+func ProcessRecords(records [][]string) ([][]string, error) {
 	headers := records[0]
 	montoIdx := findIndex(headers, "Monto")
 	nochesIdx := findIndex(headers, "Noches")
@@ -131,7 +131,6 @@ func processRecords(records [][]string) ([][]string, error) {
 
 	// append total rows
 	filteredRecords = append(filteredRecords, totalRow)
-	fmt.Println("le filteredRecords", filteredRecords)
 	return filteredRecords, nil
 }
 
