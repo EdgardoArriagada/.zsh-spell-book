@@ -24,6 +24,12 @@ func main() {
 
 	filename := d.Args[0]
 
+	// validate the filename format
+	err = ValidateFilename(filename)
+	if err != nil {
+		log.Fatalf("Invalid filename format: %s", err)
+	}
+
 	// check if the file exists
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		log.Fatalf("File %s does not exist\n", filename)
@@ -50,6 +56,26 @@ func main() {
 	}
 
 	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
+}
+
+func ValidateFilename(filename string) error {
+	base := filepath.Base(filename)
+	ext := filepath.Ext(base)
+	name := base[:len(base)-len(ext)]
+
+	parts := strings.Split(name, "_")
+	if len(parts) != 3 {
+		return fmt.Errorf("filename must be in the format airbnb_MM_YYYY-MM_YYYY")
+	}
+
+	firstPart := parts[1]
+	secondPart := parts[2]
+
+	if firstPart != secondPart {
+		return fmt.Errorf("months and years in the filename do not match")
+	}
+
+	return nil
 }
 
 func getRecords(filename string) ([][]string, error) {
