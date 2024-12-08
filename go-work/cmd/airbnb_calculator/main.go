@@ -63,15 +63,15 @@ func ValidateFilename(filename string) error {
 	ext := filepath.Ext(base)
 	name := base[:len(base)-len(ext)]
 
-	parts := strings.Split(name, "_")
-	if len(parts) != 3 {
+	parts := strings.Split(name, "-")
+	if len(parts) != 2 {
 		return fmt.Errorf("filename must be in the format airbnb_MM_YYYY-MM_YYYY")
 	}
 
-	firstPart := parts[1]
-	secondPart := parts[2]
+	firstPart := parts[0]
+	secondPart := parts[1]
 
-	if firstPart != secondPart {
+	if firstPart != "airbnb_"+secondPart {
 		return fmt.Errorf("months and years in the filename do not match")
 	}
 

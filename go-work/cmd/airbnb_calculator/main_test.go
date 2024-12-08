@@ -105,6 +105,23 @@ func TestGetOutputFileName(t *testing.T) {
 	}
 }
 
+func TestValidateFilename_WithValidFilename(t *testing.T) {
+	testCases := []struct {
+		fileName string
+	}{
+		{"airbnb_01_2024-01_2024.csv"},
+		{"airbnb_02_2024-02_2024.csv"},
+		{"airbnb_03_2024-03_2024.csv"},
+	}
+
+	for _, tc := range testCases {
+		err := ValidateFilename(tc.fileName)
+		if err != nil {
+			t.Errorf("Failed,  %v", err)
+		}
+	}
+}
+
 func equal(a, b [][]string) bool {
 	if len(a) != len(b) {
 		return false
