@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -63,10 +64,16 @@ func ValidateFilename(filename string) error {
 	ext := filepath.Ext(base)
 	name := base[:len(base)-len(ext)]
 
-	parts := strings.Split(name, "-")
-	if len(parts) != 2 {
+	r, err := regexp.Compile(`^airbnb_\d{2}_\d{4}-\d{2}_\d{4}\.csv$`)
+	if err != nil {
+		return err
+	}
+
+	if !r.MatchString(base) {
 		return fmt.Errorf("filename must be in the format airbnb_MM_YYYY-MM_YYYY")
 	}
+
+	parts := strings.Split(name, "-")
 
 	firstPart := parts[0]
 	secondPart := parts[1]

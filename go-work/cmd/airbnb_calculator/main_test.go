@@ -122,6 +122,38 @@ func TestValidateFilename_WithValidFilename(t *testing.T) {
 	}
 }
 
+func TestValidateFilename_WithInvalidFilenameFormat(t *testing.T) {
+	testCases := []struct {
+		fileName string
+	}{
+		{"airbnb_01_2024.csv"},
+		{"02_2024-02_2024.csv"},
+	}
+
+	for _, tc := range testCases {
+		err := ValidateFilename(tc.fileName)
+		if err.Error() != "filename must be in the format airbnb_MM_YYYY-MM_YYYY" {
+			t.Errorf("Failed,  %v", err)
+		}
+	}
+}
+
+func TestValidateFilename_WithInvalidFilenameDates(t *testing.T) {
+	testCases := []struct {
+		fileName string
+	}{
+		{"airbnb_01_2024-01_2025.csv"},
+		{"airbnb_02_2024-12_2024.csv"},
+	}
+
+	for _, tc := range testCases {
+		err := ValidateFilename(tc.fileName)
+		if err.Error() != "months and years in the filename do not match" {
+			t.Errorf("Failed,  %v", err)
+		}
+	}
+}
+
 func equal(a, b [][]string) bool {
 	if len(a) != len(b) {
 		return false
