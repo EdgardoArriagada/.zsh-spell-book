@@ -146,6 +146,8 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 	return filteredRecords[:], nil
 }
 
+var monthNames = []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+
 func GetOutputFilename(filename string) (string, error) {
 	// Extract the base name without extension
 	base := filepath.Base(filename)
@@ -165,7 +167,6 @@ func GetOutputFilename(filename string) (string, error) {
 	}
 
 	// Map month number to abbreviated month name
-	monthNames := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	monthName := monthNames[month-1]
 
 	// Construct the new filename
