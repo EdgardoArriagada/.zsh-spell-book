@@ -78,6 +78,17 @@ func TestProcessRecords_MissingNochesColumn(t *testing.T) {
 	}
 }
 
+func TestGetOutputFileName(t *testing.T) {
+	fileName := "airbnb_11_2024-11_2024.csv"
+	expected := "Nov.csv"
+
+	got, _ := GetOutputFilename(fileName)
+
+	if got != expected {
+		t.Errorf("got %v, expected %v", got, expected)
+	}
+}
+
 func equal(a, b [][]string) bool {
 	if len(a) != len(b) {
 		return false

@@ -39,7 +39,10 @@ func main() {
 		log.Fatalf("Failed to process records: %s", err)
 	}
 
-	outputFilename := getOutputFilename(filename)
+	outputFilename, err := GetOutputFilename(filename)
+	if err != nil {
+		log.Fatalf("Failed to get output filename: %s", err)
+	}
 
 	err = writeToCsv(records, outputFilename)
 	if err != nil {
@@ -134,11 +137,31 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 	return filteredRecords, nil
 }
 
-func getOutputFilename(filename string) string {
-	ext := filepath.Ext(filename)
-	name := filename[:len(filename)-len(ext)]
-	newFilename := name + "_filtered" + ext
-	return newFilename
+func GetOutputFilename(filename string) (string, error) {
+	// Extract the base name without extension
+	base := filepath.Base(filename)
+	ext := filepath.Ext(base)
+	name := base[:len(base)-len(ext)]
+
+	parts := strings.Split(name, "_")
+	monthStr := parts[1]
+
+	// Convert month string to integer
+	month, err := strconv.Atoi(monthStr)
+	if err != nil {
+		return "", err
+	}
+
+	// Map month number to abbreviated month name
+	monthNames := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+	if month < 1 || month > 12 {
+		return "", fmt.Errorf("Invalid month: %d", month)
+	}
+	monthName := monthNames[month-1]
+
+	// Construct the new filename
+	newFilename := fmt.Sprintf("%s.csv", monthName)
+	return newFilename, nil
 }
 
 func writeToCsv(records [][]string, outputFilename string) error {
