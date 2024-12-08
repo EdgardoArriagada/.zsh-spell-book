@@ -12,4 +12,5 @@ use (
 	./lib/args
 	./lib/git
 	./lib/open
+	./lib/utils
 )

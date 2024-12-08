@@ -11,13 +11,11 @@ import (
 	"strings"
 
 	"example.com/workspace/lib/args"
+	u "example.com/workspace/lib/utils"
 )
 
 func main() {
-	d, err := args.Parse()
-	if err != nil {
-		log.Fatal(err)
-	}
+	d := u.Must(args.Parse())
 
 	if d.Len < 1 {
 		log.Fatalf("Usage: airbnb_calculator <csv_filename>")
@@ -25,36 +23,14 @@ func main() {
 
 	filename := d.Args[0]
 
-	// validate the filename format
-	err = ValidateFilename(filename)
-	if err != nil {
-		log.Fatalf("Invalid filename format: %s", err)
-	}
+	u.Assert(ValidateFilename(filename))
+	u.AssertFileExists(filename)
 
-	// check if the file exists
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		log.Fatalf("File %s does not exist\n", filename)
-	}
+	records := u.Must(getRecords(filename))
+	records = u.Must(ProcessRecords(records))
+	outputFilename := u.Must(GetOutputFilename(filename))
 
-	records, err := getRecords(filename)
-	if err != nil {
-		log.Fatalf("Failed to extract records: %s", err)
-	}
-
-	records, err = ProcessRecords(records)
-	if err != nil {
-		log.Fatalf("Failed to process records: %s", err)
-	}
-
-	outputFilename, err := GetOutputFilename(filename)
-	if err != nil {
-		log.Fatalf("Failed to get output filename: %s", err)
-	}
-
-	err = writeToCsv(records, outputFilename)
-	if err != nil {
-		log.Fatalf("Failed to write to CSV: %s", err)
-	}
+	u.Assert(writeToCsv(records, outputFilename))
 
 	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
 }
@@ -70,7 +46,7 @@ func ValidateFilename(filename string) error {
 	}
 
 	if !r.MatchString(base) {
-		return fmt.Errorf("filename must be in the format airbnb_MM_YYYY-MM_YYYY")
+		return fmt.Errorf("filename must be in the format airbnb_MM_YYYY-MM_YYYY.csv")
 	}
 
 	parts := strings.Split(name, "-")
