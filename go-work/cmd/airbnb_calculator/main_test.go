@@ -132,7 +132,7 @@ func TestValidateFilename_WithInvalidFilenameFormat(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := ValidateFilename(tc.filename)
-		if err.Error() != "filename must be in the format airbnb_MM_YYYY-MM_YYYY" {
+		if err.Error() != "filename must be in the format airbnb_MM_YYYY-MM_YYYY.csv" {
 			t.Errorf("Failed,  %v", err)
 		}
 	}
