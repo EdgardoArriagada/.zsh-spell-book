@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"example.com/workspace/lib/args"
+	"example.com/workspace/lib/open"
 	u "example.com/workspace/lib/utils"
 )
 
@@ -31,6 +32,9 @@ func main() {
 	outputFilename := u.Must(GetOutputFilename(filename))
 
 	u.Assert(writeToCsv(records, outputFilename))
+
+	open.File(filename)
+	open.File(outputFilename)
 
 	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
 }
