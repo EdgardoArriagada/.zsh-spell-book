@@ -79,10 +79,10 @@ func getRecords(filename string) ([][]string, error) {
 	return records[:], nil
 }
 
-func findIndex(arr []string, name string) int {
+func findIndex(arr []string, item string) int {
 	idx := -1
-	for i, header := range arr {
-		if header == name {
+	for i, current := range arr {
+		if current == item {
 			idx = i
 		}
 	}
