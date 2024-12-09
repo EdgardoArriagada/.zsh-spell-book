@@ -91,8 +91,8 @@ func findIndex(arr []string, name string) int {
 
 func ProcessRecords(records [][]string) ([][]string, error) {
 	headers := records[0]
-	montoIdx := findIndex(headers, "Monto")
-	nochesIdx := findIndex(headers, "Noches")
+	montoIdx := findIndex(headers[:], "Monto")
+	nochesIdx := findIndex(headers[:], "Noches")
 	if montoIdx == -1 || nochesIdx == -1 {
 		return nil, fmt.Errorf("Monto or Noches column not found in CSV file")
 	}
@@ -101,7 +101,7 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 	var filteredRecords [][]string = nil
 	for _, record := range records[1:] {
 		if record[montoIdx] != "" {
-			filteredRecords = append(filteredRecords, record)
+			filteredRecords = append(filteredRecords[:], record)
 		}
 	}
 
@@ -137,12 +137,12 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 
 	// append headers at the top
 	var emptyRow []string
-	filteredRecords = append(filteredRecords, emptyRow)
+	filteredRecords = append(filteredRecords[:], emptyRow)
 	copy(filteredRecords[1:], filteredRecords)
 	filteredRecords[0] = headers
 
 	// append total rows
-	filteredRecords = append(filteredRecords, totalRow)
+	filteredRecords = append(filteredRecords[:], totalRow)
 	return filteredRecords[:], nil
 }
 
@@ -183,7 +183,7 @@ func writeToCsv(records [][]string, outputFilename string) error {
 	defer newFile.Close()
 
 	writer := csv.NewWriter(newFile)
-	err = writer.WriteAll(records)
+	err = writer.WriteAll(records[:])
 	if err != nil {
 		return err
 	}
