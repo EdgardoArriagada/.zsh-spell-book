@@ -97,8 +97,8 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 		return nil, fmt.Errorf("Monto or Noches column not found in CSV file")
 	}
 
-	// Filter the records to remove any rows with an empty "Monto" value
-	filteredRecords := make([][]string, len(records)-1, len(headers))
+	lenRecordsWithoutHeaders := len(records) - 1
+	filteredRecords := make([][]string, lenRecordsWithoutHeaders)
 	i := 0
 	for _, record := range records[1:] {
 		if record[montoIdx] != "" {

@@ -28,6 +28,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"1", "", "2"},
 		{"2", "2000.00", "3"},
 		{"", "", ""},
+		{"", "", "10"},
 	}
 	expected := [][]string{
 		{"ID", "Monto", "Noches"},
