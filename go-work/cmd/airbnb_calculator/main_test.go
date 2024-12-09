@@ -27,6 +27,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "", "2"},
 		{"2", "2000.00", "3"},
+		{"", "", ""},
 	}
 	expected := [][]string{
 		{"ID", "Monto", "Noches"},
@@ -36,7 +37,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 
 	got, _ := ProcessRecords(records)
 	if !equal(got, expected) {
-		t.Errorf("ProcessRecords() = %v, expected %v", got, expected)
+		t.Errorf("got %v, expected %v", got, expected)
 	}
 }
 

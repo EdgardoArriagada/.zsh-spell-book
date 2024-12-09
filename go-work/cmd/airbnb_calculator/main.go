@@ -98,12 +98,15 @@ func ProcessRecords(records [][]string) ([][]string, error) {
 	}
 
 	// Filter the records to remove any rows with an empty "Monto" value
-	var filteredRecords [][]string = nil
+	filteredRecords := make([][]string, len(records)-1, len(headers))
+	i := 0
 	for _, record := range records[1:] {
 		if record[montoIdx] != "" {
-			filteredRecords = append(filteredRecords[:], record)
+			filteredRecords[i] = record
+			i++
 		}
 	}
+	filteredRecords = filteredRecords[:i]
 
 	// Sum the "Noches" values
 	var totalNights = 0
