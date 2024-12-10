@@ -32,7 +32,7 @@ func main() {
 	open.File(filename)
 	open.File(outputFilename)
 
-	fmt.Printf("Filtered CSV file created: %s\n", outputFilename)
+	fmt.Printf("Opening files '%s' and '%s'.\n", filename, outputFilename)
 }
 
 func ValidateFilename(filename string) error {
