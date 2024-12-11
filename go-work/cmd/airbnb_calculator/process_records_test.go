@@ -4,12 +4,10 @@ import (
 	"testing"
 )
 
-var month = 1
-var calculateIvaCallback = func(totalAmount int, totalNights int) float64 {
+var CALCULATE_IVA_CALLBACK = func(totalAmount int, totalNights int) float64 {
 	return 0.0
 }
-var year = 2023
-var avaluo_fiscal = 40_000_000
+var AVALUO_FISCAL = 40_000_000
 
 func TestProcessRecords_ValidRecords(t *testing.T) {
 	records := [][]string{
@@ -26,7 +24,7 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"Avaluo Fiscal:", "40000000"},
 		{"Iva:", "0.00"},
 	}
-	actual, _ := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
+	actual, _ := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual %v", expected, actual)
 	}
@@ -49,7 +47,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"Iva:", "0.00"},
 	}
 
-	actual, _ := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
+	actual, _ := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual: %v", expected, actual)
 	}
@@ -60,7 +58,7 @@ func TestProcessRecords_InvalidNochesValue(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "1000", "two"},
 	}
-	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
+	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 
 	if err == nil {
 		t.Errorf("ProcessRecords() error = %v, wantErr %v", err, true)
@@ -73,7 +71,7 @@ func TestProcessRecords_MissingMontoColumn(t *testing.T) {
 		{"1", "2"},
 	}
 
-	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
+	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 
 	if err.Error() != "Monto or Noches column not found in CSV file" {
 		t.Errorf("Test failed")
@@ -86,7 +84,7 @@ func TestProcessRecords_MissingNochesColumn(t *testing.T) {
 		{"1", "1000"},
 	}
 
-	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
+	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 
 	if err.Error() != "Monto or Noches column not found in CSV file" {
 		t.Errorf("Test failed")
