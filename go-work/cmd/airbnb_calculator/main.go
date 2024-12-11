@@ -19,7 +19,7 @@ func main() {
 
 	records := u.Must(getRecords(filename))
 	records = u.Must(ProcessRecords(records[:]))
-	outputFilename := u.Must(GetOutputFilename(filename))
+	outputFilename := GetOutputFilename(filename)
 
 	u.Assert(writeToCsv(records[:], outputFilename))
 

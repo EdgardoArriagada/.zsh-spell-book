@@ -2,35 +2,36 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 var monthNames = []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 
-func GetOutputFilename(filename string) (string, error) {
-	// Extract the base name without extension
-	base := filepath.Base(filename)
-	ext := filepath.Ext(base)
-	name := base[:len(base)-len(ext)]
+func GetMonthAndYearFromFilename(filename string) (int, int, string, error) {
+	parts1 := strings.Split(filename, "_")
+	parts := strings.Split(parts1[2], "-")
 
-	parts := strings.Split(name, "_")
 	monthStr := parts[1]
+	yearStr := parts[0]
 
-	// Convert month string to integer
 	month, err := strconv.Atoi(monthStr)
 	if err != nil {
-		return "", err
+		return 0, 0, "", err
 	}
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil {
+		return 0, 0, "", err
+	}
+
 	if month < 1 || month > 12 {
-		return "", fmt.Errorf("Invalid month: %d", month)
+		return 0, 0, "", fmt.Errorf("Invalid month: %d", month)
 	}
 
-	// Map month number to abbreviated month name
-	monthName := monthNames[month-1]
+	return month, year, monthNames[month-1], nil
+}
 
-	// Construct the new filename
-	newFilename := fmt.Sprintf("%s.csv", monthName)
-	return newFilename, nil
+func GetOutputFilename(monthName string) string {
+	return fmt.Sprintf("%s.csv", monthName)
 }
