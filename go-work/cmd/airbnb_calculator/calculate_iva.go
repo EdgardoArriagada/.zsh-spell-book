@@ -36,5 +36,9 @@ func CalculateIva(avaluo_fiscal int, total_income int, days int, month int, year
 
 	iva := base_imponible * 0.19
 
+	if iva < 0 {
+		return 0
+	}
+
 	return math.Ceil(iva)
 }

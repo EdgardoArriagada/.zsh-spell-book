@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ProcessRecords(records [][]string, month int, year int) ([][]string, error) {
+func ProcessRecords(records [][]string, avaluoFiscal int, month int, year int) ([][]string, error) {
 	headers := records[0]
 	montoIdx := findIndex(headers[:], "Monto")
 	nochesIdx := findIndex(headers[:], "Noches")
@@ -49,11 +49,7 @@ func ProcessRecords(records [][]string, month int, year int) ([][]string, error)
 		total += amount
 	}
 
-	// add a new row with the total amount and nights under the corresponding headers
-	totalRow := make([]string, len(headers))
-	totalRow[0] = "Total:"
-	totalRow[montoIdx] = strconv.Itoa(total) + ".00"
-	totalRow[nochesIdx] = strconv.Itoa(totalNights)
+	iva := CalculateIva(avaluoFiscal, total, totalNights, month, year)
 
 	// append headers at the top
 	var emptyRow []string
@@ -61,7 +57,16 @@ func ProcessRecords(records [][]string, month int, year int) ([][]string, error)
 	copy(filteredRecords[1:], filteredRecords)
 	filteredRecords[0] = headers
 
-	// append total rows
-	filteredRecords = append(filteredRecords[:], totalRow)
+	// Sum row
+	sumRow := make([]string, len(headers))
+	sumRow[0] = "Sum:"
+	sumRow[montoIdx] = strconv.Itoa(total) + ".00"
+	sumRow[nochesIdx] = strconv.Itoa(totalNights)
+	filteredRecords = append(filteredRecords[:], sumRow)
+
+	// Iva row
+	ivaRow := []string{"IVA:", strconv.FormatFloat(iva, 'f', 2, 64)}
+	filteredRecords = append(filteredRecords[:], ivaRow)
+
 	return filteredRecords[:], nil
 }
