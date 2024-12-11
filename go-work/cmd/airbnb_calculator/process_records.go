@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ProcessRecords(records [][]string, avaluoFiscal int, month int, year int) ([][]string, error) {
+func ProcessRecords(records [][]string, avaluoFiscal int, calculateIvaCallback func(totalAmount int, totalNights int) float64) ([][]string, error) {
 	headers := records[0]
 	montoIdx := findIndex(headers[:], "Monto")
 	nochesIdx := findIndex(headers[:], "Noches")
@@ -49,7 +49,7 @@ func ProcessRecords(records [][]string, avaluoFiscal int, month int, year int) (
 		total += amount
 	}
 
-	iva := CalculateIva(avaluoFiscal, total, totalNights, month, year)
+	iva := calculateIvaCallback(total, totalNights)
 
 	// append headers at the top
 	var emptyRow []string

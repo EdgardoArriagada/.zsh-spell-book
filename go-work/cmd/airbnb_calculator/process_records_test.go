@@ -5,6 +5,9 @@ import (
 )
 
 var month = 1
+var calculateIvaCallback = func(totalAmount int, totalNights int) float64 {
+	return 0.0
+}
 var year = 2023
 var avaluo_fiscal = 40_000_000
 
@@ -23,7 +26,7 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"Avaluo Fiscal:", "40000000"},
 		{"Iva:", "0.00"},
 	}
-	actual, _ := ProcessRecords(records, avaluo_fiscal, month, year)
+	actual, _ := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual %v", expected, actual)
 	}
@@ -46,7 +49,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"Iva:", "0.00"},
 	}
 
-	actual, _ := ProcessRecords(records, avaluo_fiscal, month, year)
+	actual, _ := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual: %v", expected, actual)
 	}
@@ -57,7 +60,7 @@ func TestProcessRecords_InvalidNochesValue(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "1000", "two"},
 	}
-	_, err := ProcessRecords(records, avaluo_fiscal, month, year)
+	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
 
 	if err == nil {
 		t.Errorf("ProcessRecords() error = %v, wantErr %v", err, true)
@@ -70,7 +73,7 @@ func TestProcessRecords_MissingMontoColumn(t *testing.T) {
 		{"1", "2"},
 	}
 
-	_, err := ProcessRecords(records, avaluo_fiscal, month, year)
+	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
 
 	if err.Error() != "Monto or Noches column not found in CSV file" {
 		t.Errorf("Test failed")
@@ -83,7 +86,7 @@ func TestProcessRecords_MissingNochesColumn(t *testing.T) {
 		{"1", "1000"},
 	}
 
-	_, err := ProcessRecords(records, avaluo_fiscal, month, year)
+	_, err := ProcessRecords(records, avaluo_fiscal, calculateIvaCallback)
 
 	if err.Error() != "Monto or Noches column not found in CSV file" {
 		t.Errorf("Test failed")

@@ -20,8 +20,14 @@ func main() {
 	u.AssertFileExists(filename)
 
 	month, year, monthName := u.Must3(GetDateData(filename))
+
 	records := u.Must(getRecords(filename))
-	records = u.Must(ProcessRecords(records[:], avaluoFiscal, month, year))
+
+	records = u.Must(ProcessRecords(records[:], avaluoFiscal, func(totalIncome, days int) float64 {
+		return CalculateIva(avaluoFiscal, totalIncome, days, month, year)
+	},
+	))
+
 	outputFilename := GetOutputFilename(monthName)
 
 	u.Assert(writeToCsv(records[:], outputFilename))
