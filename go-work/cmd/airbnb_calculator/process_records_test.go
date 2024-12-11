@@ -19,10 +19,12 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"1", "1000.00", "2"},
 		{"2", "2000.00", "3"},
 		{"Sum:", "3000.00", "5"},
+		{"Avaluo Fiscal:", "40000000"},
+		{"Iva:", "0.00"},
 	}
-	got, _ := ProcessRecords(records, avaluo_fiscal, month, year)
-	if !equal(got, expected) {
-		t.Errorf("ProcessRecords() = %v, expected %v", got, expected)
+	actual, _ := ProcessRecords(records, avaluo_fiscal, month, year)
+	if !equal(actual, expected) {
+		t.Errorf("\nexpected: %v\nactual %v", expected, actual)
 	}
 }
 
@@ -38,11 +40,13 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"2", "2000.00", "3"},
 		{"Sum:", "2000.00", "3"},
+		{"Avaluo Fiscal:", "40000000"},
+		{"Iva:", "0.00"},
 	}
 
-	got, _ := ProcessRecords(records, avaluo_fiscal, month, year)
-	if !equal(got, expected) {
-		t.Errorf("got %v, expected %v", got, expected)
+	actual, _ := ProcessRecords(records, avaluo_fiscal, month, year)
+	if !equal(actual, expected) {
+		t.Errorf("\nexpected: %v\nactual: %v", expected, actual)
 	}
 }
 

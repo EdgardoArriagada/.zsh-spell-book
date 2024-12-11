@@ -64,8 +64,13 @@ func ProcessRecords(records [][]string, avaluoFiscal int, month int, year int) (
 	sumRow[nochesIdx] = strconv.Itoa(totalNights)
 	filteredRecords = append(filteredRecords[:], sumRow)
 
+	// Avaluo Fiscal row
+	avaluoFiscalRow := []string{"Avaluo Fiscal:", strconv.Itoa(avaluoFiscal)}
+	filteredRecords = append(filteredRecords[:], avaluoFiscalRow)
+
 	// Iva row
-	ivaRow := []string{"IVA:", strconv.FormatFloat(iva, 'f', 2, 64)}
+	ivaStr := strconv.FormatFloat(iva, 'f', 2, 64)
+	ivaRow := []string{"Iva:", ivaStr}
 	filteredRecords = append(filteredRecords[:], ivaRow)
 
 	return filteredRecords[:], nil
