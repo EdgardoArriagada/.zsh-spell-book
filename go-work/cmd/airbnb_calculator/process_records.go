@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ProcessRecords(records [][]string) ([][]string, error) {
+func ProcessRecords(records [][]string, month int, year int) ([][]string, error) {
 	headers := records[0]
 	montoIdx := findIndex(headers[:], "Monto")
 	nochesIdx := findIndex(headers[:], "Noches")

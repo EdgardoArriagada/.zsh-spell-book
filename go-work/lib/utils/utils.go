@@ -14,6 +14,20 @@ func Must[T any](value T, err error) T {
 	return value
 }
 
+func Must2[T any, U any](vT T, vU U, err error) (T, U) {
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return vT, vU
+}
+
+func Must3[T any, U any, V any](vT T, vU U, vV V, err error) (T, U, V) {
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return vT, vU, vV
+}
+
 func Expect(result bool, msg string) {
 	if !result {
 		log.Fatalln(msg)

@@ -17,9 +17,10 @@ func main() {
 	u.Assert(ValidateFilename(filename))
 	u.AssertFileExists(filename)
 
+	month, year, monthName := u.Must3(GetDateData(filename))
 	records := u.Must(getRecords(filename))
-	records = u.Must(ProcessRecords(records[:]))
-	outputFilename := GetOutputFilename(filename)
+	records = u.Must(ProcessRecords(records[:], month, year))
+	outputFilename := GetOutputFilename(monthName)
 
 	u.Assert(writeToCsv(records[:], outputFilename))
 
