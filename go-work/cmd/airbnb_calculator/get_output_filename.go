@@ -8,7 +8,7 @@ import (
 
 var monthNames = []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 
-func GetMonthAndYearFromFilename(filename string) (int, int, string, error) {
+func GetDateData(filename string) (int, int, string, error) {
 	parts1 := strings.Split(filename, "_")
 	parts := strings.Split(parts1[2], "-")
 

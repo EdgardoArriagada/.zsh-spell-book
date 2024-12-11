@@ -22,7 +22,7 @@ func TestGetOutputFilename(t *testing.T) {
 	}
 }
 
-func TestGetMonthAndYearFromFilename(t *testing.T) {
+func TestGetDateData(t *testing.T) {
 	testCases := []struct {
 		filename string
 		expected string
@@ -32,7 +32,7 @@ func TestGetMonthAndYearFromFilename(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		month, year, monthName, _ := GetMonthAndYearFromFilename(tc.filename)
+		month, year, monthName, _ := GetDateData(tc.filename)
 		got := fmt.Sprintf("%d-%d-%s", month, year, monthName)
 		if got != tc.expected {
 			t.Errorf("GetOutputFilename(%v) = %v, expected %v", tc.filename, got, tc.expected)
