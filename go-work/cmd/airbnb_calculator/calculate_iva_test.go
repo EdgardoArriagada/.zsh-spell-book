@@ -5,14 +5,14 @@ import (
 )
 
 func TestCalculateIva_ShouldCalculate(t *testing.T) {
-	avaluo_fiscal := 56612271
+	avaluo_fiscal := 83_231_614
 	days := 10
-	total_income := 300000
+	total_income := 300_000
 
-	expected := 21171
+	expected := float64(7_294)
 	actual := CalculateIva(avaluo_fiscal, days, total_income)
 
 	if actual != expected {
-		t.Errorf("\nexpected: %d \nactual: %d", expected, actual)
+		t.Errorf("\nexpected: %f \nactual: %f", expected, actual)
 	}
 }
