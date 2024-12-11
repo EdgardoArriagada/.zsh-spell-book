@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 
 	"example.com/workspace/lib/args"
@@ -9,12 +10,17 @@ import (
 	u "example.com/workspace/lib/utils"
 )
 
+func cleanAvaluoFiscal(input string) string {
+	re := regexp.MustCompile(`[\$\. ]`)
+	return re.ReplaceAllString(input, "")
+}
+
 func main() {
 	d := u.Must(args.Parse())
 	u.Expect(d.Len == 2, "Usage: airbnb_calculator <csv_filename> <avaluo_fiscal>")
 
 	filename := d.Args[0]
-	avaluoFiscal := u.Must(strconv.Atoi(d.Args[1]))
+	avaluoFiscal := u.Must(strconv.Atoi(cleanAvaluoFiscal(d.Args[1])))
 
 	u.Assert(ValidateFilename(filename))
 	u.AssertFileExists(filename)
