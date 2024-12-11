@@ -37,7 +37,7 @@ func ProcessRecords(records [][]string, avaluoFiscal int, calculateIvaCallback f
 	}
 
 	// Sum the "Monto" values
-	var total = 0
+	var totalAmount = 0
 	for _, record := range filteredRecords {
 		var rawAmount = record[montoIdx]
 		rawAmount = strings.Split(rawAmount, ".")[0]
@@ -46,10 +46,10 @@ func ProcessRecords(records [][]string, avaluoFiscal int, calculateIvaCallback f
 		if err != nil {
 			return nil, err
 		}
-		total += amount
+		totalAmount += amount
 	}
 
-	iva := calculateIvaCallback(total, totalNights)
+	iva := calculateIvaCallback(totalAmount, totalNights)
 
 	// append headers at the top
 	var emptyRow []string
@@ -67,7 +67,7 @@ func ProcessRecords(records [][]string, avaluoFiscal int, calculateIvaCallback f
 	// Sum row
 	sumRow := make([]string, len(headers))
 	sumRow[0] = "Sum:"
-	sumRow[montoIdx] = strconv.Itoa(total) + ".00"
+	sumRow[montoIdx] = strconv.Itoa(totalAmount) + ".00"
 	sumRow[nochesIdx] = strconv.Itoa(totalNights)
 	filteredRecords = append(filteredRecords[:], sumRow)
 
