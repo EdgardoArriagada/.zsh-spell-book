@@ -57,6 +57,13 @@ func ProcessRecords(records [][]string, avaluoFiscal int, month int, year int) (
 	copy(filteredRecords[1:], filteredRecords)
 	filteredRecords[0] = headers
 
+	// append separator row
+	separatorRow := make([]string, len(headers))
+	for i := range separatorRow {
+		separatorRow[i] = "-------------"
+	}
+	filteredRecords = append(filteredRecords[:], separatorRow)
+
 	// Sum row
 	sumRow := make([]string, len(headers))
 	sumRow[0] = "Sum:"

@@ -18,6 +18,7 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "1000.00", "2"},
 		{"2", "2000.00", "3"},
+		{"-------------", "-------------", "-------------"},
 		{"Sum:", "3000.00", "5"},
 		{"Avaluo Fiscal:", "40000000"},
 		{"Iva:", "0.00"},
@@ -39,6 +40,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 	expected := [][]string{
 		{"ID", "Monto", "Noches"},
 		{"2", "2000.00", "3"},
+		{"-------------", "-------------", "-------------"},
 		{"Sum:", "2000.00", "3"},
 		{"Avaluo Fiscal:", "40000000"},
 		{"Iva:", "0.00"},
