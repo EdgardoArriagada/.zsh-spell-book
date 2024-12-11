@@ -19,12 +19,12 @@ func main() {
 	u.Assert(ValidateFilename(filename))
 	u.AssertFileExists(filename)
 
-	month, year, monthName := u.Must3(GetDateData(filename))
+	daysInMonth, monthName := u.Must2(GetDateData(filename))
 
 	records := u.Must(getRecords(filename))
 
-	records = u.Must(ProcessRecords(records[:], avaluoFiscal, func(totalIncome, days int) float64 {
-		return CalculateIva(avaluoFiscal, totalIncome, days, month, year)
+	records = u.Must(ProcessRecords(records[:], avaluoFiscal, func(totalIncome, totalNights int) float64 {
+		return CalculateIva(avaluoFiscal, totalIncome, totalNights, daysInMonth)
 	},
 	))
 

@@ -8,7 +8,7 @@ func TestCalculateIva_ShouldCalculate(t *testing.T) {
 	tests := []struct {
 		avaluoFiscal int
 		totalIncome  int
-		days         int
+		nights       int
 		month        int
 		year         int
 		expected     float64
@@ -21,7 +21,9 @@ func TestCalculateIva_ShouldCalculate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			actual := CalculateIva(tt.avaluoFiscal, tt.totalIncome, tt.days, tt.month, tt.year)
+			daysInMonth := getDaysInMonth(tt.month, tt.year)
+
+			actual := CalculateIva(tt.avaluoFiscal, tt.totalIncome, tt.nights, daysInMonth)
 			if actual != tt.expected {
 				t.Errorf("\nexpected: %f \nactual: %f", tt.expected, actual)
 			}

@@ -27,15 +27,15 @@ func TestGetDateData(t *testing.T) {
 		filename string
 		expected string
 	}{
-		{"airbnb_01_2024-01_2024.csv", "1-2024-Jan"},
-		{"airbnb_02_2027-02_2027.csv", "2-2027-Feb"},
+		{"airbnb_01_2024-01_2024.csv", "31-Jan"},
+		{"airbnb_02_2027-02_2027.csv", "28-Feb"},
 	}
 
 	for _, tc := range testCases {
-		month, year, monthName, _ := GetDateData(tc.filename)
-		got := fmt.Sprintf("%d-%d-%s", month, year, monthName)
+		daysInMonth, monthName, _ := GetDateData(tc.filename)
+		got := fmt.Sprintf("%d-%s", daysInMonth, monthName)
 		if got != tc.expected {
-			t.Errorf("GetOutputFilename(%v) = %v, expected %v", tc.filename, got, tc.expected)
+			t.Errorf("\nexpected: %v\nactual: %v", tc.expected, got)
 		}
 	}
 }
