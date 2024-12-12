@@ -11,10 +11,14 @@ define dev
 endef
 
 .dev-target:
-	(cd go-work && $(call dev,$(TARGET)))
+	@if [[ -n "$(TARGET)" ]]; then \
+		(cd go-work && $(call dev,$(TARGET))) \
+	fi
 
 .build-target:
-	(cd go-work && $(call build,$(TARGET)))
+	@if [[ -n "$(TARGET)" ]]; then \
+		(cd go-work && $(call build,$(TARGET))) \
+	fi
 
 dev:
 	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .dev-target
