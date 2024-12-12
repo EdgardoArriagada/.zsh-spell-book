@@ -16,11 +16,13 @@ endef
 .build-target:
 	(cd go-work && $(call build,$(TARGET)))
 
-# Setup
 dev:
 	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .dev-target
 
 build:
+	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .build-target
+
+build-all:
 	for target in $$(ls ./go-work/cmd); do \
 		$(MAKE) TARGET=$$target .build-target; \
 	done
