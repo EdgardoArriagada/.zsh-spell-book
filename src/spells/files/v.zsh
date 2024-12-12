@@ -25,7 +25,7 @@ ${zsb}.v() {
   fi
 
   case ${1:e:l} in
-    xlsx|csv|odt) ${0}.openCsv $1 ;;
+    xlsx|odt) ${0}.openCsv $1 ;;
 
     mp4|mkv|avi|mov|webm|flv|wmv) ${0}.openVideo $1 ;;
 
