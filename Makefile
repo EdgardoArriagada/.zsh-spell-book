@@ -17,26 +17,8 @@ endef
 	(cd go-work && $(call build,$(TARGET)))
 
 # Setup
-dev-airbnb-calculator:
-	$(MAKE) TARGET=airbnb_calculator .dev-target
-
-dev-get-repo-name:
-	$(MAKE) TARGET=get_repo_name .dev-target
-
-dev-repeatstr:
-	$(MAKE) TARGET=repeatstr .dev-target
-
-dev-zsb-charm-tmux-renametab:
-	$(MAKE) TARGET=zsb_charm_tmux_renametab .dev-target
-
-dev-zsb-charm-tmux-urlopen:
-	$(MAKE) TARGET=zsb_charm_tmux_urlopen .dev-target
-
-dev-zsb-clipcopy:
-	$(MAKE) TARGET=zsb_clipcopy .dev-target
-
-dev-zsb-open:
-	$(MAKE) TARGET=zsb_open .dev-target
+dev:
+	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .dev-target
 
 build:
 	$(MAKE) TARGET=airbnb_calculator .build-target
