@@ -10,21 +10,16 @@ define dev
 	ls ./{lib,cmd}/**/*.go | entr -c $(call build_dev,$(1))
 endef
 
-.dev-target:
+.run:
 	@if [[ -n "$(TARGET)" ]]; then \
-		(cd go-work && $(call dev,$(TARGET))) \
+		(cd go-work && $(call $(ACTION),$(TARGET))) \
 	fi
-
-.build-target:
-	@if [[ -n "$(TARGET)" ]]; then \
-		(cd go-work && $(call build,$(TARGET))) \
-	fi
-
-dev:
-	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .dev-target
 
 build:
-	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .build-target
+	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) ACTION='build' .run
+
+dev:
+	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) ACTION='dev' .run
 
 build-all:
 	for target in $$(ls ./go-work/cmd); do \
