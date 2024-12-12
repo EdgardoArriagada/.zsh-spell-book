@@ -15,13 +15,16 @@ endef
 		(cd go-work && $(call $(ACTION),$(TARGET))) \
 	fi
 
+.choose-target:
+	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .run
+
 build:
-	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) ACTION='build' .run
+	$(MAKE) ACTION='build' .choose-target
 
 dev:
-	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) ACTION='dev' .run
+	$(MAKE) ACTION='dev' .choose-target
 
 build-all:
 	for target in $$(ls ./go-work/cmd); do \
-		$(MAKE) TARGET=$$target .build-target; \
+		$(MAKE) TARGET=$$target ACTION='build' .run; \
 	done
