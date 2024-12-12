@@ -3,7 +3,7 @@ define build_dev
 endef
 
 define build
-	go build -ldflags "-s -w" -o ./bin/$(1) ./cmd/$(1)
+	go build -ldflags "-s -w" -o ./bin/$(1) ./cmd/$(1) && echo "$(1) ✅"
 endef
 
 define dev
