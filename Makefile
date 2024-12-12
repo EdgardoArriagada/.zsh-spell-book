@@ -21,10 +21,6 @@ dev:
 	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .dev-target
 
 build:
-	$(MAKE) TARGET=airbnb_calculator .build-target
-	$(MAKE) TARGET=get_repo_name .build-target
-	$(MAKE) TARGET=repeatstr .build-target
-	$(MAKE) TARGET=zsb_charm_tmux_renametab .build-target
-	$(MAKE) TARGET=zsb_charm_tmux_urlopen .build-target
-	$(MAKE) TARGET=zsb_clipcopy .build-target
-	$(MAKE) TARGET=zsb_open .build-target
+	for target in $$(ls ./go-work/cmd); do \
+		$(MAKE) TARGET=$$target .build-target; \
+	done
