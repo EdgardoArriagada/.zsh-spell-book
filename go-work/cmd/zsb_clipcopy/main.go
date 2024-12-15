@@ -9,7 +9,7 @@ import (
 	u "example.com/workspace/lib/utils"
 )
 
-func copyToClipboard(arg *args.ParsedWhole) error {
+func copyToClipboard(d *args.ParsedWhole) error {
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
@@ -19,7 +19,7 @@ func copyToClipboard(arg *args.ParsedWhole) error {
 		cmd = exec.Command("xclip", "-selection", "clipboard")
 	}
 
-	cmd.Stdin = strings.NewReader(arg.Content)
+	cmd.Stdin = strings.NewReader(d.Content)
 	return cmd.Run()
 }
 
