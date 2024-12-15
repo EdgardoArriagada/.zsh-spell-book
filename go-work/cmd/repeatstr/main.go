@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	d := u.Must(args.Parse())
+	d := u.Must1(args.Parse())
 	u.Expect(d.Len == 2, "Usage: repeatstr <number> <word>")
 
 	n, err := strconv.Atoi(d.Args[0])

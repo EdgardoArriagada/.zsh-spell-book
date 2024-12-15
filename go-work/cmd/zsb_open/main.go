@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("f") // prevent bug that erases the binary
-	d := u.Must(args.ParseWithStdin())
+	d := u.Must1(args.ParseWithStdin())
 	u.Expect(d.Len == 1, "Usage: zsb_open <url>")
 
 	open.Url(d.Args[0])

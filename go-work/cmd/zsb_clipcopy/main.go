@@ -24,7 +24,7 @@ func copyToClipboard(arg *args.ParsedWhole) error {
 }
 
 func main() {
-	d := u.Must(args.ParseWholeWithStdin())
+	d := u.Must1(args.ParseWholeWithStdin())
 
 	copyToClipboard(d)
 }

@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	d := u.Must(args.ParseWithStdin())
+	d := u.Must1(args.ParseWithStdin())
 	u.Expect(d.Len == 1, "Usage: zsb_charm_tmux_urlopen <url>")
 
-	url := u.Must(extractFirstURL(d.Args[0]))
+	url := u.Must1(extractFirstURL(d.Args[0]))
 	open.Url(url)
 }
 func extractFirstURL(text string) (string, error) {
