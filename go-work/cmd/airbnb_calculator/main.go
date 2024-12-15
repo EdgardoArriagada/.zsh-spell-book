@@ -15,7 +15,7 @@ func main() {
 	filename := d.Args[0]
 	avaluoFiscal := u.Must1(ParseAvaluoFiscal(d.Args[1]))
 
-	u.Assert(ValidateFilename(filename))
+	u.Must(ValidateFilename(filename))
 	u.AssertFileExists(filename)
 
 	daysInMonth, monthName := u.Must2(GetDateData(filename))
@@ -29,7 +29,7 @@ func main() {
 
 	outputFilename := GetOutputFilename(monthName)
 
-	u.Assert(writeToCsv(records[:], outputFilename))
+	u.Must(writeToCsv(records[:], outputFilename))
 
 	open.File(filename)
 	open.File(outputFilename)

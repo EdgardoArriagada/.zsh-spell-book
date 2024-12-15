@@ -5,8 +5,12 @@ import (
 	"os"
 )
 
-// Must1 is a helper function that takes a value of any type and an error.
-// If the error is nil, it returns the value; if the error is non-nil, it panics.
+func Must(err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
 func Must1[T any](value T, err error) T {
 	if err != nil {
 		log.Fatalln(err)
@@ -31,12 +35,6 @@ func Must3[T any, U any, V any](vT T, vU U, vV V, err error) (T, U, V) {
 func Expect(condition bool, errorMessage string) {
 	if !condition {
 		log.Fatalln(errorMessage)
-	}
-}
-
-func Assert(err error) {
-	if err != nil {
-		log.Fatalln(err)
 	}
 }
 
