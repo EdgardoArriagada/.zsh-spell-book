@@ -28,9 +28,9 @@ func Must3[T any, U any, V any](vT T, vU U, vV V, err error) (T, U, V) {
 	return vT, vU, vV
 }
 
-func Expect(result bool, msg string) {
-	if !result {
-		log.Fatalln(msg)
+func Expect(condition bool, errorMessage string) {
+	if !condition {
+		log.Fatalln(errorMessage)
 	}
 }
 
