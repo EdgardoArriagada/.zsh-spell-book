@@ -65,31 +65,34 @@ func TestProcessRecords_InvalidNochesValue(t *testing.T) {
 	}
 }
 
-func TestProcessRecords_MissingMontoColumn(t *testing.T) {
-	records := [][]string{
-		{"ID", "Noches"},
-		{"1", "2"},
+func TestProcessRecords_MissingColumns(t *testing.T) {
+	tests := []struct {
+		records  [][]string
+		expected string
+	}{
+		{
+			records: [][]string{
+				{"ID", "Noches"},
+				{"1", "2"},
+			},
+			expected: "item Monto not found in slice",
+		},
+		{
+			records: [][]string{
+				{"ID", "Monto"},
+				{"1", "1000"},
+			},
+			expected: "item Noches not found in slice",
+		},
 	}
 
-	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
-
-	if err.Error() != "item Monto not found in slice" {
-		t.Errorf("Test failed")
-	}
-}
-
-func TestProcessRecords_MissingNochesColumn(t *testing.T) {
-	records := [][]string{
-		{"ID", "Monto"},
-		{"1", "1000"},
-	}
-
-	expected := "item Noches not found in slice"
-
-	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
-
-	if err.Error() != expected {
-		t.Errorf("\nexpected: %v\nactual: %v", expected, err)
+	for _, tt := range tests {
+		t.Run("Missing a column", func(t *testing.T) {
+			_, err := ProcessRecords(tt.records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
+			if err.Error() != tt.expected {
+				t.Errorf("\nexpected: %v\nactual: %v", tt.expected, err)
+			}
+		})
 	}
 }
 
