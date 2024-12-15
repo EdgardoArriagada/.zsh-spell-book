@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
 
 func ProcessRecords(records [][]string, avaluoFiscal int, calculateIvaCallback func(totalAmount int, totalNights int) float64) ([][]string, error) {
 	headers := records[0]
-	montoIdx := findIndex(headers[:], "Monto")
-	nochesIdx := findIndex(headers[:], "Noches")
-	if montoIdx == -1 || nochesIdx == -1 {
-		return nil, fmt.Errorf("Monto or Noches column not found in CSV file")
+	montoIdx, err := findIndex(headers[:], "Monto")
+	if err != nil {
+		return nil, err
+	}
+	nochesIdx, err := findIndex(headers[:], "Noches")
+	if err != nil {
+		return nil, err
 	}
 
 	lenRecordsWithoutHeaders := len(records) - 1

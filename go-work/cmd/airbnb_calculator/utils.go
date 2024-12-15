@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"os"
 )
 
@@ -23,14 +24,19 @@ func getRecords(filename string) ([][]string, error) {
 	return records[:], nil
 }
 
-func findIndex(arr []string, item string) int {
+func findIndex(arr []string, item string) (int, error) {
 	idx := -1
 	for i, current := range arr {
 		if current == item {
 			idx = i
 		}
 	}
-	return idx
+
+	if idx == -1 {
+		return 0, fmt.Errorf("item %s not found in slice", item)
+	}
+
+	return idx, nil
 }
 
 func writeToCsv(records [][]string, outputFilename string) error {
