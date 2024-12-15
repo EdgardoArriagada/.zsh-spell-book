@@ -84,10 +84,12 @@ func TestProcessRecords_MissingNochesColumn(t *testing.T) {
 		{"1", "1000"},
 	}
 
+	expected := "item Noches not found in slice"
+
 	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 
-	if err.Error() != "Monto or Noches column not found in CSV file" {
-		t.Errorf("Test failed")
+	if err.Error() != expected {
+		t.Errorf("\nexpected: %v\nactual: %v", expected, err)
 	}
 }
 
