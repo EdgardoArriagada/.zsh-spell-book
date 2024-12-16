@@ -1,3 +1,4 @@
+
 define build_dev
 	go build -o ./bin/$(1) ./cmd/$(1)
 endef
@@ -11,18 +12,18 @@ define dev
 endef
 
 .run:
-	@if [[ -n "$(TARGET)" ]]; then \
-		(cd go-work && $(call $(ACTION),$(TARGET))) \
+	@if [[ -z "$(TARGET)" ]]; then \
+		TARGET=$$(ls ./go-work/cmd | fzf); \
+	fi; \
+	if [[ -n "$$TARGET" ]]; then \
+		(cd go-work && $(call $(ACTION),$$TARGET)); \
 	fi
 
-.choose-target:
-	$(MAKE) TARGET=$$(ls ./go-work/cmd | fzf) .run
-
 build:
-	$(MAKE) ACTION='build' .choose-target
+	$(MAKE) ACTION='build' .run
 
 dev:
-	$(MAKE) ACTION='dev' .choose-target
+	$(MAKE) ACTION='dev' .run
 
 build-all:
 	for target in $$(ls ./go-work/cmd); do \
