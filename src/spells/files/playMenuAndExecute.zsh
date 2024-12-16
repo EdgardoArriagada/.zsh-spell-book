@@ -15,7 +15,9 @@ ${zsb}.playMenuAndExecute() {
 }
 
 _${zsb}.playMenuAndExecute() {
-  local newCompletion=( `eval $1` )
+  local usedCompletion=( ${words[@]:1} )
+  local cmd="${@} ${usedCompletion}"
+  local newCompletion=( `eval ${cmd}` )
   _describe 'command' newCompletion
 }
 
@@ -31,7 +33,6 @@ __vgh_command='v'
 __vgh() ${zsb}.playMenuAndExecute $0 $__vgh_command $__vgh_dataGetter $@
 alias vgh='noglob __vgh'
 compdef "_${zsb}.playMenuAndExecute $__vgh_dataGetter" __vgh
-_${zsb}.nocompletion __vgh
 hisIgnore vgh
 
 __tigg_dataGetter='fd -t f'
@@ -46,7 +47,6 @@ __tiggh_command='tig'
 __tiggh() ${zsb}.playMenuAndExecute $0 $__tiggh_command $__tiggh_dataGetter $@
 alias tiggh='noglob __tiggh'
 compdef "_${zsb}.playMenuAndExecute $__tiggh_dataGetter" __tiggh
-_${zsb}.nocompletion __tiggh
 hisIgnore tiggh
 
 __cg_dataGetter='fd -t f'
@@ -56,11 +56,10 @@ alias cg='noglob __cg'
 compdef "_${zsb}.playMenuAndExecute $__cg_dataGetter" __cg
 hisIgnore cg
 
-__cgh_dataGetter='fd -t f --hidden --no-ignore'
+__cgh_dataGetter='fd -t f --hidden'
 __cgh_command='c'
 __cgh() ${zsb}.playMenuAndExecute $0 $__cgh_command $__cgh_dataGetter $@
 alias cgh='noglob __cgh'
-_${zsb}.nocompletion __cgh
 hisIgnore cgh
 
 __cdg_dataGetter='fd -t d'
@@ -75,7 +74,6 @@ __cdgh_command='cd'
 __cdgh() ${zsb}.playMenuAndExecute $0 $__cdgh_command $__cdgh_dataGetter $@
 alias cdgh='noglob __cdgh'
 compdef "_${zsb}.playMenuAndExecute $__cdgh_dataGetter" __cdgh
-_${zsb}.nocompletion __cdgh
 hisIgnore cdgh
 
 __cdd_dataGetter='dirs -p'
