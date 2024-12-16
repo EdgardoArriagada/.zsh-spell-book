@@ -19,8 +19,6 @@ _${zsb}.playMenuAndExecute() {
   _describe 'command' newCompletion
 }
 
-compdef _${zsb}.playMenuAndExecute ${zsb}.playMenuAndExecute
-
 __vg_dataGetter='fd -t f'
 __vg_command='v'
 __vg() ${zsb}.playMenuAndExecute $0 $__vg_command $__vg_dataGetter $@
@@ -28,10 +26,11 @@ alias vg='noglob __vg'
 compdef "_${zsb}.playMenuAndExecute $__vg_dataGetter" __vg
 hisIgnore vg
 
-__vgh_dataGetter='fd -t f --hidden --no-ignore'
+__vgh_dataGetter='fd -t f --hidden'
 __vgh_command='v'
 __vgh() ${zsb}.playMenuAndExecute $0 $__vgh_command $__vgh_dataGetter $@
 alias vgh='noglob __vgh'
+compdef "_${zsb}.playMenuAndExecute $__vgh_dataGetter" __vgh
 _${zsb}.nocompletion __vgh
 hisIgnore vgh
 
@@ -42,10 +41,11 @@ alias tigg='noglob __tigg'
 compdef "_${zsb}.playMenuAndExecute $__tigg_dataGetter" __tigg
 hisIgnore tigg
 
-__tiggh_dataGetter='fd -t f --hidden --no-ignore'
+__tiggh_dataGetter='fd -t f --hidden'
 __tiggh_command='tig'
 __tiggh() ${zsb}.playMenuAndExecute $0 $__tiggh_command $__tiggh_dataGetter $@
 alias tiggh='noglob __tiggh'
+compdef "_${zsb}.playMenuAndExecute $__tiggh_dataGetter" __tiggh
 _${zsb}.nocompletion __tiggh
 hisIgnore tiggh
 
@@ -74,6 +74,7 @@ __cdgh_dataGetter='fd -t d --hidden --no-ignore'
 __cdgh_command='cd'
 __cdgh() ${zsb}.playMenuAndExecute $0 $__cdgh_command $__cdgh_dataGetter $@
 alias cdgh='noglob __cdgh'
+compdef "_${zsb}.playMenuAndExecute $__cdgh_dataGetter" __cdgh
 _${zsb}.nocompletion __cdgh
 hisIgnore cdgh
 
