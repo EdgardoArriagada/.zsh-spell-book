@@ -69,19 +69,12 @@ alias cdg='noglob __cdg'
 compdef "_${zsb}.playMenuAndExecute $__cdg_dataGetter" __cdg
 hisIgnore cdg
 
-__cdgh_dataGetter='fd -t d --hidden --no-ignore'
+__cdgh_dataGetter='fd -t d --hidden'
 __cdgh_command='cd'
 __cdgh() ${zsb}.playMenuAndExecute $0 $__cdgh_command $__cdgh_dataGetter $@
 alias cdgh='noglob __cdgh'
 compdef "_${zsb}.playMenuAndExecute $__cdgh_dataGetter" __cdgh
 hisIgnore cdgh
-
-__cdd_dataGetter='dirs -p'
-__cdd_command='cd'
-__cdd() ${zsb}.playMenuAndExecute $0 $__cdd_command $__cdd_dataGetter $@
-alias cdd='noglob __cdd'
-compdef "_${zsb}.playMenuAndExecute $__cdd_dataGetter" __cdd
-hisIgnore cdd
 
 __cdp_dataGetter='fd'
 __cdp_command='cd'
