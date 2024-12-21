@@ -9,6 +9,12 @@ import (
 	u "example.com/workspace/lib/utils"
 )
 
+func main() {
+	d := u.Must1(args.ParseWholeWithStdin())
+
+	copyToClipboard(d)
+}
+
 func copyToClipboard(d *args.ParsedWhole) error {
 	var cmd *exec.Cmd
 
@@ -21,10 +27,4 @@ func copyToClipboard(d *args.ParsedWhole) error {
 
 	cmd.Stdin = strings.NewReader(d.Content)
 	return cmd.Run()
-}
-
-func main() {
-	d := u.Must1(args.ParseWholeWithStdin())
-
-	copyToClipboard(d)
 }

@@ -16,6 +16,7 @@ func main() {
 	url := u.Must1(extractFirstURL(d.Args[0]))
 	open.Url(url)
 }
+
 func extractFirstURL(text string) (string, error) {
 	re := regexp.MustCompile(`https?://[^\s"']+`)
 	urls := re.FindStringSubmatch(text)
