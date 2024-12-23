@@ -21,42 +21,42 @@ _${zsb}.playMenuAndExecute() {
   _describe 'command' newCompletion
 }
 
-__vg_dataGetter='fd -i -t f'
+__vg_dataGetter='fd -i -t f --full-path '
 __vg_command='v'
 __vg() ${zsb}.playMenuAndExecute $0 $__vg_command $__vg_dataGetter $@
 alias vg='noglob __vg'
 compdef "_${zsb}.playMenuAndExecute $__vg_dataGetter" __vg
 hisIgnore vg
 
-__vgh_dataGetter='fd -i -t f --hidden --no-ignore'
+__vgh_dataGetter='fd -i -t f --full-path --hidden --no-ignore'
 __vgh_command='v'
 __vgh() ${zsb}.playMenuAndExecute $0 $__vgh_command $__vgh_dataGetter $@
 alias vgh='noglob __vgh'
 compdef "_${zsb}.playMenuAndExecute $__vgh_dataGetter" __vgh
 hisIgnore vgh
 
-__tigg_dataGetter='fd -i -t f'
+__tigg_dataGetter='fd -i -t f --full-path'
 __tigg_command='tig'
 __tigg() ${zsb}.playMenuAndExecute $0 $__tigg_command $__tigg_dataGetter $@
 alias tigg='noglob __tigg'
 compdef "_${zsb}.playMenuAndExecute $__tigg_dataGetter" __tigg
 hisIgnore tigg
 
-__tiggh_dataGetter='fd -i -t f --hidden --no-ignore'
+__tiggh_dataGetter='fd -i -t f --full-path --hidden --no-ignore'
 __tiggh_command='tig'
 __tiggh() ${zsb}.playMenuAndExecute $0 $__tiggh_command $__tiggh_dataGetter $@
 alias tiggh='noglob __tiggh'
 compdef "_${zsb}.playMenuAndExecute $__tiggh_dataGetter" __tiggh
 hisIgnore tiggh
 
-__cg_dataGetter='fd -i -t f'
+__cg_dataGetter='fd -i -t f --full-path'
 __cg_command='c'
 __cg() ${zsb}.playMenuAndExecute $0 $__cg_command $__cg_dataGetter $@
 alias cg='noglob __cg'
 compdef "_${zsb}.playMenuAndExecute $__cg_dataGetter" __cg
 hisIgnore cg
 
-__cgh_dataGetter='fd -i -t f --hidden --no-ignore'
+__cgh_dataGetter='fd -i -t f --full-path --hidden --no-ignore'
 __cgh_command='c'
 __cgh() ${zsb}.playMenuAndExecute $0 $__cgh_command $__cgh_dataGetter $@
 alias cgh='noglob __cgh'
