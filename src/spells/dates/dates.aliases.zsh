@@ -1,1 +1,1 @@
-alias cpdate="zsb_clipcopy \`date +%b-%d-%Y\` && ${zsb}.success 'date copied to clipboard.'"
+alias cpdate="zsb_clipcopy \`date +%d-%m-%Y\` && ${zsb}.success \"\`hl $(date +%d-%m-%Y)\` copied to clipboard.\""
