@@ -49,7 +49,7 @@ ZSH_HIGHLIGHT_STYLES[path]='fg=blue'
 ZSH_HIGHLIGHT_STYLES[comment]='fg=cyan'
 
 ZSB_CURSOR_DEFAULT='\e[6 q'
-ZSB_CURSOR_VIM='\e[1 q'
+ZSB_CURSOR_VIM='\e[2 q'
 
 # Change cursor shape for different vi modes.
 function zle-keymap-select { [[ "$KEYMAP" = "vicmd" || "$1" = "block" ]] && printf $ZSB_CURSOR_VIM || printf $ZSB_CURSOR_DEFAULT; }
