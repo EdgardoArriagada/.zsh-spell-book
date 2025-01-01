@@ -16,12 +16,7 @@ ${zsb}.selectContainerAndExecute() {
   printAndRun $cmd
 }
 
-dkattach() {
-  ${zsb}.selectContainerAndExecute 'docker container attach {inputContainer}' $1
-}
-
-dkssh() {
-  ${zsb}.selectContainerAndExecute 'docker container exec -ti {inputContainer} sh' $1
-}
+dkattach() ${zsb}.selectContainerAndExecute 'docker container attach {inputContainer}' $1
+dkssh() ${zsb}.selectContainerAndExecute 'docker container exec -ti {inputContainer} sh' $1
 
 compdef "_${zsb}.singleCompC 'docker ps --format \"{{.Names}}\"'" dkattach dkssh
