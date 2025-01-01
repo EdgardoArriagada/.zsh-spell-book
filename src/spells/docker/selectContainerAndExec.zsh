@@ -1,26 +1,27 @@
-selectContainer() {
+${zsb}.selectContainerAndExecute() {
+  local rawCmd=$1
+  shift
+
   local inputContainer
   if [[ -z $1 ]]; then
     local runningContainers=$(docker ps --format "{{.Names}}")
-    [[ -z $runningContainers ]] && return 1
+    [[ -z $runningContainers ]] && ${zsb}.throw "No containers found"
 
     inputContainer=$(fzf <<< $runningContainers)
   else
     inputContainer=$1
   fi
-  <<< $inputContainer
+
+  local cmd=$(echo $rawCmd | sed "s/{inputContainer}/$inputContainer/g")
+  printAndRun $cmd
 }
 
 dkattach() {
-  local inputContainer=$(selectContainer $1)
-  [[ -z "$inputContainer" ]] && ${zsb}.throw "No container"
-  printAndRun "docker container attach $inputContainer"
+  ${zsb}.selectContainerAndExecute 'docker container attach {inputContainer}' $1
 }
 
 dkssh() {
-  local inputContainer=$(selectContainer $1)
-  [[ -z "$inputContainer" ]] && ${zsb}.throw "No container"
-  printAndRun "docker container exec -ti $inputContainer sh"
+  ${zsb}.selectContainerAndExecute 'docker container exec -ti {inputContainer} sh' $1
 }
 
 compdef "_${zsb}.singleCompC 'docker ps --format \"{{.Names}}\"'" dkattach dkssh
