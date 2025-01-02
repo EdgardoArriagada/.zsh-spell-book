@@ -3,9 +3,9 @@ ${zsb}.selectContainerAndExecute() {
   shift
 
   local inputContainer
-  if [[ -z $1 ]]; then
+  if [[ -z "$1" ]]; then
     local runningContainers=$(docker ps --format "{{.Names}}")
-    [[ -z $runningContainers ]] && ${zsb}.throw "No containers found"
+    [[ -z "$runningContainers" ]] && ${zsb}.throw "No containers found"
 
     inputContainer=$(fzf <<< $runningContainers)
   else
