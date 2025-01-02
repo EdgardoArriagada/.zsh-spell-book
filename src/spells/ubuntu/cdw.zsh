@@ -1,21 +1,25 @@
 ${zsb}.cdw_generic() {
     local project_dir=$1
-    if [[ -z "$2" ]]; then
-        local dir=$(ls $project_dir | fzf)
-        [[ -n "$dir" ]] && print -z "cdw $dir"
+    local project=$2
+    if [[ -z "$project" ]]; then
+      project=$(ls $project_dir | fzf)
+      [[ -n "$project" ]] && print -z "cdw $project"
     else
-        cds $project_dir/$2
+      cds $project_dir/$project
     fi
 }
 
 ${zsb}.tmw_generic() {
     local project_dir=$1
     local tmnum=$2
-    if [[ -z "$3" ]]; then
-        local dir=$(ls $project_dir | fzf)
-        [[ -n "$dir" ]] && print -z "tmw${tmnum} $dir"
+    local project=$3
+    if [[ -z "$project" ]]; then
+      project=$(ls $project_dir | fzf)
+      [[ -n "$project" ]] && print -z "tmw${tmnum} $project"
     else
-        tm ${3}-${tmnum} -c $project_dir/$3
+      local suffix=""
+      [[ -n "$tmnum" ]] && suffix="-${tmnum}"
+      tm ${project}${suffix} -c $project_dir/$project
     fi
 }
 
