@@ -1,5 +1,31 @@
+# ZSB_REPLACE_GIT_COMMIT_ARGS="foo:bar baz:quix"
+
+${zsb}.replaceGitArgs() {
+  local replacements=("${(s: :)ZSB_REPLACE_GIT_COMMIT_ARGS}")
+  local result=()
+
+  for arg in "$@"; do
+    local replaced=$arg
+    for replacement in "${replacements[@]}"; do
+      local from="${replacement%%:*}"
+      local to="${replacement##*:}"
+
+      if [[ "${arg:l}" == "${from:l}" ]]; then
+        replaced=$to
+      fi
+    done
+    result+=("$replaced")
+  done
+
+  <<< "${result[@]}"
+}
+
+
 gc() {
   zparseopts -D -E -F -- -aware=aware -no-verify=noVerify || return 1
+
+  args=`${zsb}.replaceGitArgs "$@"`
+  set -- $args
 
   ${zsb}.isUserOnDefaultBranch
   local isUserInDefaultBranch=$(( $? == 0 ))
