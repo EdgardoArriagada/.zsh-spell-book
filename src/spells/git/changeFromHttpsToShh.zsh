@@ -1,4 +1,7 @@
 changeFromHttpsToShh() {
+  ${zsb}.info 'Before'
+  git remote -v
+
   local username=`git config user.name`
   local reponame=`get_repo_name`
 
@@ -6,5 +9,8 @@ changeFromHttpsToShh() {
     ${zsb}.throw "Could not fetch reponame or username"
   fi
 
-  printAndRun "git remote set-url origin git@github.com:$username/$reponame"
+  git remote set-url origin git@github.com:$username/$reponame
+
+  ${zsb}.info 'After'
+  git remote -v
 }
