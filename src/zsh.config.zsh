@@ -22,6 +22,8 @@ bindkey -v
 export KEYTIMEOUT=1
 
 # completion
+fpath=(~/.zsh/completions $fpath)
+
 autoload -Uz compinit
 compinit
 
