@@ -2,7 +2,7 @@ ${zsb}.nodeReinstall() {
   local packageManager=$1
   local packageManagerLock=$2
 
-  zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall c=cacheClean || return 1
+  zparseopts -D -E -F -- l=keepLockFile n=keepNodeModules i=skipInstall f=cacheClean || return 1
 
   if [[ -n "$keepLockFile" ]]
     then iconize.skip "rm $packageManagerLock"
@@ -40,7 +40,7 @@ compdef "_${zsb}.nonRepeatedListD \
   '-l:Keep lock files' \
   '-n:Keep node modules' \
   '-i:Skip installation' \
-  '-c:Cache clean' \
+  '-f:Force Cache clean' \
   " ${zsb}.nodeReinstall
 
 alias npmreinstall="${zsb}.nodeReinstall npm package-lock.json"
