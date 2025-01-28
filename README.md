@@ -16,6 +16,8 @@
 
 1.- git clone ~/.zsh-spell-book
 
+1.1 (optional) init submodules with `git submodule update --init --recursive`
+
 2.- Bundle the project:
 
 ```
