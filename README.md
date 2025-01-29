@@ -17,6 +17,8 @@
 1.- git clone ~/.zsh-spell-book
 
 1.1 (optional) init submodules with `git submodule update --init --recursive`
+  _if it asks for password, try using `git submodule sync --recursive` first_
+
 
 2.- Bundle the project:
 
