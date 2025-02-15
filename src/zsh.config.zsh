@@ -98,6 +98,7 @@ edit-command() {
   print -r -- "$BUFFER" > "$temp_file"
   "$FCEDIT" "$temp_file"
   BUFFER=`< "$temp_file"`
+  zle zle-keymap-select
   rm -f "$temp_file"
 }
 
