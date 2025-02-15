@@ -93,6 +93,18 @@ bindkey -M viins '^o' clear-screen
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
 bindkey "^?" backward-delete-char # makes backspace work as normal when reentering to ins mode in the middle of the command
 
+edit-command() {
+  temp_file=`mktemp`
+  print -r -- "$BUFFER" > "$temp_file"
+  "$FCEDIT" "$temp_file"
+  BUFFER=`< "$temp_file"`
+  rm -f "$temp_file"
+}
+
+zle -N edit-command
+bindkey '^x' edit-command
+bindkey -M vicmd '^x' edit-command
+
 # Initialize hisignore with some stuff to ignore already
 declare ZSB_HISTORY_IGNORE=(
   'l[a,l,s,h,]*'
