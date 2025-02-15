@@ -96,7 +96,7 @@ bindkey "^?" backward-delete-char # makes backspace work as normal when reenteri
 edit-command() {
   temp_file=`mktemp`
   print -r -- "$BUFFER" > "$temp_file"
-  "$FCEDIT" "$temp_file"
+  nvim "+call cursor(1, $((CURSOR + 1)))" "$temp_file"
   BUFFER=`< "$temp_file"`
   zle zle-keymap-select
   rm -f "$temp_file"
