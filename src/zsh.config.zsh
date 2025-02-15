@@ -94,7 +94,7 @@ bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after en
 bindkey "^?" backward-delete-char # makes backspace work as normal when reentering to ins mode in the middle of the command
 
 edit-command() {
-  temp_file=`mktemp`
+  local temp_file=`mktemp`
   print -r -- "$BUFFER" > "$temp_file"
   nvim "+call cursor(1, $((CURSOR + 1)))" "$temp_file"
   BUFFER=`< "$temp_file"`
