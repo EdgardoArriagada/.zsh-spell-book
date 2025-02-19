@@ -16,10 +16,10 @@ func main() {
 	d := u.Must1(args.Parse())
 	u.Expect(d.Len == 2, "Usage: zsb_charm_tmux_renametab <win_id> <current_file_path>")
 
+	repoRoot := u.Must1(git.GetRepoRoot())
+
 	winId := d.Args[0]
 	currentFilePath := d.Args[1]
-
-	repoRoot := u.Must1(git.GetRepoRoot())
 
 	// if a file is given when opening neovim, make sure it is in the repo
 	if currentFilePath != "" && !strings.HasPrefix(currentFilePath, repoRoot) {
