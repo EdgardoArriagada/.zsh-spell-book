@@ -9,9 +9,7 @@ setopt INC_APPEND_HISTORY # Write to history as soon as input gets entered
 setopt INTERACTIVE_COMMENTS # Enable comments in interactive shells
 
 # Make completion smarter when pressing tab based on current input
-zstyle ':completion:*' matcher-list \
-    'm:{[:lower:]}={[:upper:]}' \
-    'l:|=* r:|=*'
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' '+l:|=*' '+r:|=*'
 
 # prevent unknown commands to be output to the history
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
