@@ -3,6 +3,6 @@ set -eo pipefail
 
 # Play comes with 'sox' in macos
 if (( $ZSB_MACOS ))
-  then play $1 >/dev/null 2>&1
+  then afplay $1 >/dev/null 2>&1
   else aplay $1 >/dev/null 2>&1
 fi
