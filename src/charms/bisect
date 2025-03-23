@@ -1,16 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+export winId=$(tmux display -p '#{window_id}')
+
 function handleShutdown() {
   printf "shutting down bisect...\n"
   git bisect reset
-  hl_tmux_tab --clear
+  hl_tmux_tab $winId --clear
 }
 
 trap handleShutdown EXIT
 # trap shutdown as soon as it mets all
 # the requirements to declare handler
-hl_tmux_tab BISECT
+
+hl_tmux_tab $winId BISECT
 
 git bisect start
 
