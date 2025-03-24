@@ -9,7 +9,7 @@ __createReactApp() {
   npm create vite@latest $projectName -- --template $template && \
     cd $projectName && \
     prettierHelper --init && \
-    alert -i 'face-cool' "Happy Hacking" && \
+    alert -i 'face-cool' "Initialized" && \
     return 0
 
   alert -i 'face-sad' 'Something went wrong'
