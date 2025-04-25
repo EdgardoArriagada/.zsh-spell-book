@@ -28,7 +28,5 @@ func main() {
 
 	tabname := fmt.Sprintf("  %s", filepath.Base(repoRoot))
 
-	cmd := exec.Command("tmux", "rename-window", "-t", winId, tabname)
-
-	cmd.Run()
+	exec.Command("tmux", "rename-window", "-t", winId, tabname).Run()
 }
