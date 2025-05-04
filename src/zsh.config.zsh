@@ -7,6 +7,7 @@ stty start '^-' stop '^-' # disables C-q
 
 setopt INC_APPEND_HISTORY # Write to history as soon as input gets entered
 setopt INTERACTIVE_COMMENTS # Enable comments in interactive shells
+setopt MENU_COMPLETE # Always show menu completely instead of waiting for a second <TAB> to show it
 
 # Make completion smarter when pressing tab based on current input
 zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}' '+l:|=*' '+r:|=*'
