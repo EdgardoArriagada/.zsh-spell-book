@@ -18,9 +18,11 @@ ${zsb}.stashListMenu() {
 
 ${zsb}.stashListMenu.show() git stash show -p "stash@{${1}}"
 ${zsb}.stashListMenu.apply() git stash apply "$1"
+${zsb}.stashListMenu.drop() git stash drop "stash@{${1}}"
 
 _${zsb}.nocompletion ${zsb}.stashListMenu
 
 alias show="${zsb}.stashListMenu '${zsb}.stashListMenu.show'"
 alias apply="${zsb}.stashListMenu '${zsb}.stashListMenu.apply'"
+alias drop="${zsb}.stashListMenu '${zsb}.stashListMenu.drop'"
 
