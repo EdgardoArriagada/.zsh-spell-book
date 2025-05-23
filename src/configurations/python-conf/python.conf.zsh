@@ -3,6 +3,6 @@ if [[ -d $HOME/.pyenv ]]; then
 
   ${zsb}.prepareLazyLoad \
     $ZSB_PYTHON_CONF_DIR/pyenv.init \
-    pyenv python3
+    pyenv python3 poetry pip
 fi
 
