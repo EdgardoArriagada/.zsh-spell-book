@@ -13,11 +13,11 @@ func main() {
 	d := u.Must1(args.ParseWithStdin())
 	u.Expect(d.Len == 1, "Usage: zsb_charm_tmux_urlopen <url>")
 
-	url := u.Must1(extractFirstURL(d.Args[0]))
+	url := u.Must1(ExtractFirstURL(d.Args[0]))
 	open.Url(url)
 }
 
-func extractFirstURL(text string) (string, error) {
+func ExtractFirstURL(text string) (string, error) {
 	re := regexp.MustCompile(`https?://[\w\-_\.%?/:+=&#%]+`)
 	urls := re.FindStringSubmatch(text)
 	if len(urls) == 0 {
