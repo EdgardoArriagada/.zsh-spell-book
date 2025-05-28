@@ -18,7 +18,7 @@ func main() {
 }
 
 func extractFirstURL(text string) (string, error) {
-	re := regexp.MustCompile(`https?://[^\s"']+`)
+	re := regexp.MustCompile(`https?://[\w\-_\.%?/:+=&#%]+`)
 	urls := re.FindStringSubmatch(text)
 	if len(urls) == 0 {
 		return "", errors.New("Error: No valid URL found in the input.")
