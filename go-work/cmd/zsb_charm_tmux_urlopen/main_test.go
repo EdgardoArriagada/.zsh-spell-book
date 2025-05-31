@@ -1,7 +1,9 @@
-package main
+package main_test
 
 import (
 	"testing"
+
+	"zsb_charm_tmux_urlopen"
 )
 
 func TestExtractFirstURL(t *testing.T) {
@@ -22,7 +24,7 @@ func TestExtractFirstURL(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result, _ := ExtractFirstURL(test.input)
+		result, _ := main.ExtractFirstURL(test.input)
 		if result != test.expected {
 			t.Errorf("For input '%s', expected '%s', but got '%s'", test.input, test.expected, result)
 		}
