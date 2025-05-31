@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"testing"
 )
 
@@ -24,7 +25,7 @@ func TestProcessRecords_ValidRecords(t *testing.T) {
 		{"Avaluo Fiscal:", "40000000"},
 		{"Iva:", "0.00"},
 	}
-	actual, _ := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
+	actual, _ := main.ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual %v", expected, actual)
 	}
@@ -47,7 +48,7 @@ func TestProcessRecords_EmptyMontoValue(t *testing.T) {
 		{"Iva:", "0.00"},
 	}
 
-	actual, _ := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
+	actual, _ := main.ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 	if !equal(actual, expected) {
 		t.Errorf("\nexpected: %v\nactual: %v", expected, actual)
 	}
@@ -58,7 +59,7 @@ func TestProcessRecords_InvalidNochesValue(t *testing.T) {
 		{"ID", "Monto", "Noches"},
 		{"1", "1000", "two"},
 	}
-	_, err := ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
+	_, err := main.ProcessRecords(records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 
 	if err == nil {
 		t.Errorf("ProcessRecords() error = %v, wantErr %v", err, true)
@@ -88,7 +89,7 @@ func TestProcessRecords_MissingColumns(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("Missing a column", func(t *testing.T) {
-			_, err := ProcessRecords(tt.records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
+			_, err := main.ProcessRecords(tt.records, AVALUO_FISCAL, CALCULATE_IVA_CALLBACK)
 			if err.Error() != tt.expected {
 				t.Errorf("\nexpected: %v\nactual: %v", tt.expected, err)
 			}

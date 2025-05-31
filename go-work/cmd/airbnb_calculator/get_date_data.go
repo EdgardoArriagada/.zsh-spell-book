@@ -24,7 +24,7 @@ var daysPerMonth = map[int]int{
 }
 
 // make sure Feb has 29 days for leap years
-func getDaysInMonth(month int, year int) int {
+func GetDaysInMonth(month int, year int) int {
 	if month == 2 && isLeapYear(year) {
 		return 29
 	}
@@ -56,7 +56,7 @@ func GetDateData(filename string) (int, string, error) {
 		return 0, "", fmt.Errorf("Invalid month: %d", month)
 	}
 
-	daysInMonth := getDaysInMonth(month, year)
+	daysInMonth := GetDaysInMonth(month, year)
 
 	return daysInMonth, monthNames[month-1], nil
 }

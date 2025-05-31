@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"fmt"
 	"testing"
 )
@@ -15,7 +16,7 @@ func TestGetDateData(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		daysInMonth, monthName, _ := GetDateData(tc.filename)
+		daysInMonth, monthName, _ := main.GetDateData(tc.filename)
 		actual := fmt.Sprintf("%d-%s", daysInMonth, monthName)
 		if actual != tc.expected {
 			t.Errorf("\nexpected: %v\nactual: %v", tc.expected, actual)

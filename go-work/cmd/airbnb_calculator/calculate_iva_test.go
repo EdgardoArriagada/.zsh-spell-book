@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"testing"
 )
 
@@ -21,9 +22,9 @@ func TestCalculateIva_ShouldCalculate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			daysInMonth := getDaysInMonth(tt.month, tt.year)
+			daysInMonth := main.GetDaysInMonth(tt.month, tt.year)
 
-			actual := CalculateIva(tt.avaluoFiscal, tt.totalIncome, tt.nights, daysInMonth)
+			actual := main.CalculateIva(tt.avaluoFiscal, tt.totalIncome, tt.nights, daysInMonth)
 			if actual != tt.expected {
 				t.Errorf("\nexpected: %f \nactual: %f", tt.expected, actual)
 			}

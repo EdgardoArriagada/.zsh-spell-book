@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func TestGetOutputFilename(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		got := GetOutputFilename(tc.monthName)
+		got := main.GetOutputFilename(tc.monthName)
 		if got != tc.expected {
 			t.Errorf("GetOutputFilename(%v) = %v, expected %v", tc.monthName, got, tc.expected)
 		}

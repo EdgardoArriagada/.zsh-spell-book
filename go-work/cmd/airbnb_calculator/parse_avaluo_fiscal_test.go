@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"testing"
 )
 
@@ -22,7 +23,7 @@ func TestParseAvaluoFiscal(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual, err := ParseAvaluoFiscal(test.input)
+		actual, err := main.ParseAvaluoFiscal(test.input)
 		if (err != nil) != test.hasError {
 			t.Errorf("ParseAvaluoFiscal(%q)\nexpected: %v\nactual: %v", test.input, test.hasError, err)
 			continue

@@ -1,6 +1,7 @@
-package main
+package main_test
 
 import (
+	"airbnb_calculator"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func TestValidateFilename_WithValidFilename(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.filename)
+		err := main.ValidateFilename(tc.filename)
 		if err != nil {
 			t.Errorf("Failed,  %v", err)
 		}
@@ -30,7 +31,7 @@ func TestValidateFilename_WithInvalidFilenameFormat(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.filename)
+		err := main.ValidateFilename(tc.filename)
 		if err.Error() != "filename must be in the format airbnb_MM_YYYY-MM_YYYY.csv" {
 			t.Errorf("Failed,  %v", err)
 		}
@@ -46,7 +47,7 @@ func TestValidateFilename_WithInvalidFilenameDates(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := ValidateFilename(tc.filename)
+		err := main.ValidateFilename(tc.filename)
 		if err.Error() != "months and years in the filename do not match" {
 			t.Errorf("Failed,  %v", err)
 		}
