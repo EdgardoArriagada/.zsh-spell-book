@@ -5,12 +5,10 @@
 deltaDays() {
   case $# in
     1)
-      # Single date provided - use provided date as date1, today as date2
-      local date2=`date +%s`
       local date1=`date -j -f '%Y-%m-%d' $1 +%s`
+      local date2=`date +%s`
       ;;
     2)
-      # Two dates provided - use original behavior
       local date1=`date -j -f '%Y-%m-%d' $1 +%s`
       local date2=`date -j -f '%Y-%m-%d' $2 +%s`
       ;;
