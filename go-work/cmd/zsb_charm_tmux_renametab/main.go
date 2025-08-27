@@ -19,10 +19,10 @@ func main() {
 	repoRoot := u.Must1(git.GetRepoRoot())
 
 	winId := d.Args[0]
-	currentFilePath := d.Args[1]
+	filePath := d.Args[1]
 
 	// if a file is given when opening neovim, make sure it is in the repo
-	if currentFilePath != "" && !strings.HasPrefix(currentFilePath, repoRoot) {
+	if filePath != "" && !strings.HasPrefix(filePath, repoRoot) {
 		os.Exit(1)
 	}
 
