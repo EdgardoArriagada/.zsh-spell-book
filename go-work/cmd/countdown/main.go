@@ -29,7 +29,7 @@ func main() {
 	go playNotificationSound()
 
 	// Show completion message
-	customTimeMessage := getCustomTimeMessage(totalSeconds)
+	customTimeMessage := GetCustomTimeMessage(totalSeconds)
 	currentTime := time.Now().Format("15:04:05")
 	fmt.Printf("The timer for %s was up at %s\n", customTimeMessage, currentTime)
 
@@ -38,12 +38,12 @@ func main() {
 
 func parseTimeInput(input string) int {
 	// Try short format first (e.g., 5m, 30s, 1h)
-	if seconds, ok := parseShortFormat(input); ok {
+	if seconds, ok := ParseShortFormat(input); ok {
 		return seconds
 	}
 
 	// Try time format (e.g., 05:30, 1:05:30)
-	if seconds, ok := parseTimeFormat(input); ok {
+	if seconds, ok := ParseTimeFormat(input); ok {
 		return seconds
 	}
 
@@ -56,7 +56,7 @@ func parseTimeInput(input string) int {
 	return 0
 }
 
-func parseShortFormat(input string) (int, bool) {
+func ParseShortFormat(input string) (int, bool) {
 	shortTimeRegex := regexp.MustCompile(`^([0-9]+)([hHmMsS])$`)
 	matches := shortTimeRegex.FindStringSubmatch(input)
 
@@ -82,7 +82,7 @@ func parseShortFormat(input string) (int, bool) {
 	}
 }
 
-func parseTimeFormat(input string) (int, bool) {
+func ParseTimeFormat(input string) (int, bool) {
 	timeRegex := regexp.MustCompile(`^([0-5]?[0-9]):([0-5]?[0-9])(?::([0-5]?[0-9]))?$`)
 	matches := timeRegex.FindStringSubmatch(input)
 
@@ -130,7 +130,7 @@ func validateSeconds(totalSeconds int) {
 
 func runCountdown(totalSeconds int) {
 	for i := totalSeconds; i > 0; i-- {
-		timeStr := formatTime(i)
+		timeStr := FormatTime(i)
 		fmt.Printf("\r⏳ %s   ", timeStr) // extra spaces keep output clean
 		time.Sleep(1 * time.Second)
 	}
@@ -139,7 +139,7 @@ func runCountdown(totalSeconds int) {
 	fmt.Print("\r")
 }
 
-func formatTime(totalSeconds int) string {
+func FormatTime(totalSeconds int) string {
 	hours := totalSeconds / 3600
 	minutes := (totalSeconds / 60) % 60
 	seconds := totalSeconds % 60
@@ -154,13 +154,13 @@ func formatTime(totalSeconds int) string {
 	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
-func getCustomTimeMessage(totalSeconds int) string {
+func GetCustomTimeMessage(totalSeconds int) string {
 	if totalSeconds == 1 {
 		return "1 second"
 	} else if totalSeconds < 60 {
 		return fmt.Sprintf("%d seconds", totalSeconds)
 	} else {
-		return formatTime(totalSeconds)
+		return FormatTime(totalSeconds)
 	}
 }
 

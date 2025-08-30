@@ -1,7 +1,9 @@
-package main
+package main_test
 
 import (
 	"testing"
+
+	main "countdown"
 )
 
 func TestParseShortFormat(t *testing.T) {
@@ -23,12 +25,12 @@ func TestParseShortFormat(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result, valid := parseShortFormat(test.input)
+		result, valid := main.ParseShortFormat(test.input)
 		if valid != test.valid {
-			t.Errorf("parseShortFormat(%q) validity = %v, want %v", test.input, valid, test.valid)
+			t.Errorf("ParseShortFormat(%q) validity = %v, want %v", test.input, valid, test.valid)
 		}
 		if valid && result != test.expected {
-			t.Errorf("parseShortFormat(%q) = %d, want %d", test.input, result, test.expected)
+			t.Errorf("ParseShortFormat(%q) = %d, want %d", test.input, result, test.expected)
 		}
 	}
 }
@@ -51,12 +53,12 @@ func TestParseTimeFormat(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result, valid := parseTimeFormat(test.input)
+		result, valid := main.ParseTimeFormat(test.input)
 		if valid != test.valid {
-			t.Errorf("parseTimeFormat(%q) validity = %v, want %v", test.input, valid, test.valid)
+			t.Errorf("ParseTimeFormat(%q) validity = %v, want %v", test.input, valid, test.valid)
 		}
 		if valid && result != test.expected {
-			t.Errorf("parseTimeFormat(%q) = %d, want %d", test.input, result, test.expected)
+			t.Errorf("ParseTimeFormat(%q) = %d, want %d", test.input, result, test.expected)
 		}
 	}
 }
@@ -76,9 +78,9 @@ func TestFormatTime(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := formatTime(test.input)
+		result := main.FormatTime(test.input)
 		if result != test.expected {
-			t.Errorf("formatTime(%d) = %q, want %q", test.input, result, test.expected)
+			t.Errorf("FormatTime(%d) = %q, want %q", test.input, result, test.expected)
 		}
 	}
 }
@@ -96,9 +98,9 @@ func TestGetCustomTimeMessage(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := getCustomTimeMessage(test.input)
+		result := main.GetCustomTimeMessage(test.input)
 		if result != test.expected {
-			t.Errorf("getCustomTimeMessage(%d) = %q, want %q", test.input, result, test.expected)
+			t.Errorf("GetCustomTimeMessage(%d) = %q, want %q", test.input, result, test.expected)
 		}
 	}
 }
