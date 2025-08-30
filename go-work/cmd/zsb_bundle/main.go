@@ -21,10 +21,6 @@ func main() {
 		zsb = "zsb"
 	}
 
-	// Remove existing files from zsbDir
-	removeFileIfExists(filepath.Join(zsbDir, "transpiled.zsh"))
-	removeFileIfExists(filepath.Join(zsbDir, "temp_transpilation.zsh"))
-
 	var content strings.Builder
 
 	// Add dynamic prefix function
