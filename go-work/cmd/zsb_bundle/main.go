@@ -32,19 +32,19 @@ func main() {
 	processFile(filepath.Join(zsbDir, "src/globalVariables.zsh"), &content)
 
 	// Process utils files
-	processGlobPattern(filepath.Join(zsbDir, "src/utils"), "**/*.zsh", &content)
+	processGlobPattern(filepath.Join(zsbDir, "src/utils"), &content)
 
 	// Process configuration files
-	processGlobPattern(filepath.Join(zsbDir, "src/configurations"), "**/*.zsh", &content)
+	processGlobPattern(filepath.Join(zsbDir, "src/configurations"), &content)
 
 	// Process spell files
-	processGlobPattern(filepath.Join(zsbDir, "src/spells"), "**/*.zsh", &content)
+	processGlobPattern(filepath.Join(zsbDir, "src/spells"), &content)
 
 	// Process temporary spell files
-	processGlobPattern(filepath.Join(zsbDir, "src/temp/spells"), "**/*.zsh", &content)
+	processGlobPattern(filepath.Join(zsbDir, "src/temp/spells"), &content)
 
 	// Process automatic calls
-	processGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"), "**/*.zsh", &content)
+	processGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"), &content)
 
 	// Apply text transformations
 	result := applyTransformations(content.String(), zsb, zsbDir)
@@ -78,7 +78,7 @@ func processFile(filename string, content *strings.Builder) {
 	content.WriteString("\n")
 }
 
-func processGlobPattern(basePath, pattern string, content *strings.Builder) {
+func processGlobPattern(basePath string, content *strings.Builder) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
