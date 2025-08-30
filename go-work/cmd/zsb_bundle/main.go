@@ -47,7 +47,7 @@ func main() {
 	processGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"), &content)
 
 	// Apply text transformations
-	result := applyTransformations(content.String(), zsb, zsbDir)
+	result := applyTransformations(zsb, zsbDir, &content)
 
 	// Write result to file in zsbDir
 	resultPath := filepath.Join(zsbDir, "result.zsh")
@@ -103,7 +103,8 @@ func processGlobPattern(basePath string, content *strings.Builder) {
 	}
 }
 
-func applyTransformations(input, zsb, zsbDir string) string {
+func applyTransformations(zsb, zsbDir string, content *strings.Builder) string {
+	input := content.String()
 	lines := strings.Split(input, "\n")
 	var result []string
 
