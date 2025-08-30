@@ -21,6 +21,8 @@ func main() {
 		zsb = "zsb"
 	}
 
+	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
+
 	var content strings.Builder
 
 	// Add dynamic prefix function
