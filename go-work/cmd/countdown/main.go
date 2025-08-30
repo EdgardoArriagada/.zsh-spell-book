@@ -167,17 +167,8 @@ func getCustomTimeMessage(totalSeconds int) string {
 }
 
 func playNotificationSound() {
-	soundFile := os.Getenv("ZSB_DIR") + "/src/media/sounds/xylofon.wav"
-	if _, err := os.Stat(soundFile); err == nil {
-		// Try to play sound using common audio players
-		players := []string{"afplay", "aplay", "paplay", "play"}
-		for _, player := range players {
-			if _, err := exec.LookPath(player); err == nil {
-				exec.Command(player, soundFile).Run()
-				break
-			}
-		}
-	}
+	soundFile := os.Getenv("HOME") + "/.zsh-spell-book/src/media/sounds/xylofon.wav"
+	exec.Command("afplay", soundFile).Run()
 }
 
 func showNotification(timeMessage string) {
