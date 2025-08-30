@@ -13,8 +13,7 @@ import (
 
 func main() {
 	// Get current working directory (equivalent to ZSB_DIR)
-	zsbDir, err := os.Getwd()
-	utils.Must(err)
+	zsbDir := os.Getenv("HOME") + "/.zsh-spell-book"
 
 	// Get zsb prefix from environment or default to 'zsb'
 	zsb := os.Getenv("zsb")
@@ -55,8 +54,7 @@ func main() {
 	result := applyTransformations(content.String(), zsb, zsbDir)
 
 	// Write result to file
-	err = os.WriteFile("result.zsh", []byte(result), 0644)
-	utils.Must(err)
+	utils.Must(os.WriteFile("result.zsh", []byte(result), 0644))
 
 	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
 }
@@ -89,7 +87,7 @@ func processGlobPattern(basePath, pattern string, content *strings.Builder) {
 		if err != nil {
 			return nil // Skip directories that don't exist
 		}
-		
+
 		if d.IsDir() {
 			return nil
 		}
@@ -98,10 +96,10 @@ func processGlobPattern(basePath, pattern string, content *strings.Builder) {
 		if strings.HasSuffix(path, ".zsh") {
 			processFile(path, content)
 		}
-		
+
 		return nil
 	})
-	
+
 	if err != nil {
 		// Directory doesn't exist, skip silently
 		return
