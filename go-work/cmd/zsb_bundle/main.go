@@ -37,16 +37,16 @@ func (b *Bundle) Write(data []byte) {
 	b.content.WriteString("\n")
 }
 
-// ProcessEnvFile processes the .env file if it exists
-func (b *Bundle) ProcessEnvFile() {
+// BundleEnvFile processes the .env file if it exists
+func (b *Bundle) BundleEnvFile() {
 	envFile := filepath.Join(b.zsbDir, ".env")
 	if _, err := os.Stat(envFile); err == nil {
-		b.ProcessFile(envFile)
+		b.BundleFile(envFile)
 	}
 }
 
-// ProcessFile processes a single file and adds its content to the bundle
-func (b *Bundle) ProcessFile(filename string) {
+// BundleFile processes a single file and adds its content to the bundle
+func (b *Bundle) BundleFile(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return // Skip files that don't exist
@@ -54,8 +54,8 @@ func (b *Bundle) ProcessFile(filename string) {
 	b.Write(data)
 }
 
-// ProcessGlobPattern processes all .zsh files in a directory recursively
-func (b *Bundle) ProcessGlobPattern(basePath string) {
+// BundleDir processes all .zsh files in a directory recursively
+func (b *Bundle) BundleDir(basePath string) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -68,7 +68,7 @@ func (b *Bundle) ProcessGlobPattern(basePath string) {
 
 		// Check if file matches .zsh extension
 		if strings.HasSuffix(path, ".zsh") {
-			b.ProcessFile(path)
+			b.BundleFile(path)
 		}
 
 		return nil
@@ -132,25 +132,25 @@ func main() {
 	// Add dynamic prefix function
 	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
 
-	// Process files in the specific order defined in bundle.zsh
-	bundler.ProcessEnvFile()
-	bundler.ProcessFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
-	bundler.ProcessFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
+	// Bundle files in the specific order defined in bundle.zsh
+	bundler.BundleEnvFile()
+	bundler.BundleFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
+	bundler.BundleFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
 
-	// Process utils files
-	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/utils"))
+	// Bundle utils files
+	bundler.BundleDir(filepath.Join(zsbDir, "src/utils"))
 
-	// Process configuration files
-	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/configurations"))
+	// Bundle configuration files
+	bundler.BundleDir(filepath.Join(zsbDir, "src/configurations"))
 
-	// Process spell files
-	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/spells"))
+	// Bundle spell files
+	bundler.BundleDir(filepath.Join(zsbDir, "src/spells"))
 
-	// Process temporary spell files
-	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/temp/spells"))
+	// Bundle temporary spell files
+	bundler.BundleDir(filepath.Join(zsbDir, "src/temp/spells"))
 
-	// Process automatic calls
-	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"))
+	// Bundle automatic calls
+	bundler.BundleDir(filepath.Join(zsbDir, "src/automatic-calls"))
 
 	// Apply text transformations
 	result := bundler.ApplyTransformations()
