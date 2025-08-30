@@ -11,76 +11,51 @@ import (
 	"example.com/workspace/lib/utils"
 )
 
-func main() {
-	// Get current working directory (equivalent to ZSB_DIR)
-	zsbDir := os.Getenv("HOME") + "/.zsh-spell-book"
-
-	// Get zsb prefix from environment or default to 'zsb'
-	zsb := os.Getenv("zsb")
-	if zsb == "" {
-		zsb = "zsb"
-	}
-
-	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
-
-	var content strings.Builder
-
-	// Add dynamic prefix function
-	content.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
-
-	// Process files in the specific order defined in bundle.zsh
-	processEnvFile(zsbDir, &content)
-	processFile(filepath.Join(zsbDir, "src/zsh.config.zsh"), &content)
-	processFile(filepath.Join(zsbDir, "src/globalVariables.zsh"), &content)
-
-	// Process utils files
-	processGlobPattern(filepath.Join(zsbDir, "src/utils"), &content)
-
-	// Process configuration files
-	processGlobPattern(filepath.Join(zsbDir, "src/configurations"), &content)
-
-	// Process spell files
-	processGlobPattern(filepath.Join(zsbDir, "src/spells"), &content)
-
-	// Process temporary spell files
-	processGlobPattern(filepath.Join(zsbDir, "src/temp/spells"), &content)
-
-	// Process automatic calls
-	processGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"), &content)
-
-	// Apply text transformations
-	result := applyTransformations(zsb, zsbDir, &content)
-
-	// Write result to file in zsbDir
-	resultPath := filepath.Join(zsbDir, "result.zsh")
-	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
-
-	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
+// Bundle represents the content builder for zsh spell book
+type Bundle struct {
+	content strings.Builder
+	zsb     string
+	zsbDir  string
 }
 
-func removeFileIfExists(filepath string) {
-	if _, err := os.Stat(filepath); err == nil {
-		os.Remove(filepath)
+// NewBundle creates a new Bundle instance
+func NewBundle(zsb, zsbDir string) *Bundle {
+	return &Bundle{
+		zsb:    zsb,
+		zsbDir: zsbDir,
 	}
 }
 
-func processEnvFile(zsbDir string, content *strings.Builder) {
-	envFile := filepath.Join(zsbDir, ".env")
+// WriteString writes a string to the bundle content
+func (b *Bundle) WriteString(s string) {
+	b.content.WriteString(s)
+}
+
+// Write writes bytes to the bundle content
+func (b *Bundle) Write(data []byte) {
+	b.content.Write(data)
+	b.content.WriteString("\n")
+}
+
+// ProcessEnvFile processes the .env file if it exists
+func (b *Bundle) ProcessEnvFile() {
+	envFile := filepath.Join(b.zsbDir, ".env")
 	if _, err := os.Stat(envFile); err == nil {
-		processFile(envFile, content)
+		b.ProcessFile(envFile)
 	}
 }
 
-func processFile(filename string, content *strings.Builder) {
+// ProcessFile processes a single file and adds its content to the bundle
+func (b *Bundle) ProcessFile(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return // Skip files that don't exist
 	}
-	content.Write(data)
-	content.WriteString("\n")
+	b.Write(data)
 }
 
-func processGlobPattern(basePath string, content *strings.Builder) {
+// ProcessGlobPattern processes all .zsh files in a directory recursively
+func (b *Bundle) ProcessGlobPattern(basePath string) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -93,7 +68,7 @@ func processGlobPattern(basePath string, content *strings.Builder) {
 
 		// Check if file matches .zsh extension
 		if strings.HasSuffix(path, ".zsh") {
-			processFile(path, content)
+			b.ProcessFile(path)
 		}
 
 		return nil
@@ -105,13 +80,14 @@ func processGlobPattern(basePath string, content *strings.Builder) {
 	}
 }
 
-func applyTransformations(zsb, zsbDir string, content *strings.Builder) string {
-	input := content.String()
+// ApplyTransformations applies text transformations and returns the final result
+func (b *Bundle) ApplyTransformations() string {
+	input := b.content.String()
 	lines := strings.Split(input, "\n")
 	var result []string
 
 	// Set ZSB_TEMP_DIR
-	zsbTempDir := filepath.Join(zsbDir, "src/temp")
+	zsbTempDir := filepath.Join(b.zsbDir, "src/temp")
 
 	for _, line := range lines {
 		// Remove comments (equivalent to sd '( |^)#.*' '')
@@ -119,8 +95,8 @@ func applyTransformations(zsb, zsbDir string, content *strings.Builder) string {
 		line = commentRegex.ReplaceAllString(line, "")
 
 		// Replace variables
-		line = strings.ReplaceAll(line, "${zsb}", zsb)
-		line = strings.ReplaceAll(line, "$ZSB_DIR", zsbDir)
+		line = strings.ReplaceAll(line, "${zsb}", b.zsb)
+		line = strings.ReplaceAll(line, "$ZSB_DIR", b.zsbDir)
 		line = strings.ReplaceAll(line, "$ZSB_TEMP_DIR", zsbTempDir)
 
 		// Remove leading spaces (equivalent to sd '^ *' '')
@@ -136,4 +112,58 @@ func applyTransformations(zsb, zsbDir string, content *strings.Builder) string {
 	}
 
 	return strings.Join(result, "\n")
+}
+
+func main() {
+	// Get current working directory (equivalent to ZSB_DIR)
+	zsbDir := os.Getenv("HOME") + "/.zsh-spell-book"
+
+	// Get zsb prefix from environment or default to 'zsb'
+	zsb := os.Getenv("zsb")
+	if zsb == "" {
+		zsb = "zsb"
+	}
+
+	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
+
+	// Create new Bundle instance
+	bundle := NewBundle(zsb, zsbDir)
+
+	// Add dynamic prefix function
+	bundle.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
+
+	// Process files in the specific order defined in bundle.zsh
+	bundle.ProcessEnvFile()
+	bundle.ProcessFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
+	bundle.ProcessFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
+
+	// Process utils files
+	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/utils"))
+
+	// Process configuration files
+	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/configurations"))
+
+	// Process spell files
+	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/spells"))
+
+	// Process temporary spell files
+	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/temp/spells"))
+
+	// Process automatic calls
+	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"))
+
+	// Apply text transformations
+	result := bundle.ApplyTransformations()
+
+	// Write result to file in zsbDir
+	resultPath := filepath.Join(zsbDir, "result.zsh")
+	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
+
+	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
+}
+
+func removeFileIfExists(filepath string) {
+	if _, err := os.Stat(filepath); err == nil {
+		os.Remove(filepath)
+	}
 }
