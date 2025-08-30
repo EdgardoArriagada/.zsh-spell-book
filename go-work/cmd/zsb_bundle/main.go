@@ -18,8 +18,8 @@ type Bundle struct {
 	zsbDir  string
 }
 
-// NewBundle creates a new Bundle instance
-func NewBundle(zsb, zsbDir string) *Bundle {
+// NewBundler creates a new Bundle instance
+func NewBundler(zsb, zsbDir string) *Bundle {
 	return &Bundle{
 		zsb:    zsb,
 		zsbDir: zsbDir,
@@ -127,33 +127,33 @@ func main() {
 	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
 
 	// Create new Bundle instance
-	bundle := NewBundle(zsb, zsbDir)
+	bundler := NewBundler(zsb, zsbDir)
 
 	// Add dynamic prefix function
-	bundle.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
+	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
 
 	// Process files in the specific order defined in bundle.zsh
-	bundle.ProcessEnvFile()
-	bundle.ProcessFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
-	bundle.ProcessFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
+	bundler.ProcessEnvFile()
+	bundler.ProcessFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
+	bundler.ProcessFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
 
 	// Process utils files
-	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/utils"))
+	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/utils"))
 
 	// Process configuration files
-	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/configurations"))
+	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/configurations"))
 
 	// Process spell files
-	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/spells"))
+	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/spells"))
 
 	// Process temporary spell files
-	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/temp/spells"))
+	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/temp/spells"))
 
 	// Process automatic calls
-	bundle.ProcessGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"))
+	bundler.ProcessGlobPattern(filepath.Join(zsbDir, "src/automatic-calls"))
 
 	// Apply text transformations
-	result := bundle.ApplyTransformations()
+	result := bundler.ApplyTransformations()
 
 	// Write result to file in zsbDir
 	resultPath := filepath.Join(zsbDir, "result.zsh")
