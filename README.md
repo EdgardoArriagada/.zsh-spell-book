@@ -20,11 +20,24 @@
   _if it asks for password, try using `git submodule sync --recursive` first_
 
 
-2.- Bundle the project:
+2.- install golang
 
+3.- build `zsb_bundle` script
+
+```sh
+make build
+
+# then select `zsb_bundle`
 ```
-source ~/.zsh-spell-book/bundle.zsh
+
+
+4.- Bundle the project:
+
+```sh
+zsb_bundle
 ```
+
+Note: Make sure you have the Go binaries in your PATH as described in the Configuring section below.
 
 3.- source the project
 
@@ -59,7 +72,7 @@ When developing new aliases and function, it is convenient to do the following m
 
 So you get refreshed code every time you open a new terminal
 
-When finished, bundle project again and change back `development.zsh` -> `result.zsh` in your `~/.zshrc`
+When finished, run `zsb_bundle` to bundle the project again and change back `development.zsh` -> `result.zsh` in your `~/.zshrc`
 
 ### Usage
 
