@@ -25,6 +25,15 @@ func main() {
 	totalSeconds := parseTimeInput(inputTime)
 	validateSeconds(totalSeconds)
 	runCountdown(totalSeconds)
+
+	go playNotificationSound()
+
+	// Show completion message
+	customTimeMessage := getCustomTimeMessage(totalSeconds)
+	currentTime := time.Now().Format("15:04:05")
+	fmt.Printf("The timer for %s was up at %s\n", customTimeMessage, currentTime)
+
+	showNotification(customTimeMessage)
 }
 
 func parseTimeInput(input string) int {
@@ -126,19 +135,8 @@ func runCountdown(totalSeconds int) {
 		time.Sleep(1 * time.Second)
 	}
 
-	// Clear the countdown line and show completion message
+	// Clear the countdown line
 	fmt.Print("\r")
-
-	// Play notification sound in background
-	go playNotificationSound()
-
-	// Show completion message
-	customTimeMessage := getCustomTimeMessage(totalSeconds)
-	currentTime := time.Now().Format("15:04:05")
-	fmt.Printf("The timer for %s was up at %s\n", customTimeMessage, currentTime)
-
-	// Show system notification
-	showNotification(customTimeMessage)
 }
 
 func formatTime(totalSeconds int) string {
