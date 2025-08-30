@@ -11,19 +11,19 @@ import (
 	"example.com/workspace/lib/utils"
 )
 
+var (
+	zsb    string
+	zsbDir = os.Getenv("HOME") + "/.zsh-spell-book"
+)
+
 // Bundle represents the content builder for zsh spell book
 type Bundle struct {
 	content strings.Builder
-	zsb     string
-	zsbDir  string
 }
 
 // NewBundler creates a new Bundle instance
-func NewBundler(zsb, zsbDir string) *Bundle {
-	return &Bundle{
-		zsb:    zsb,
-		zsbDir: zsbDir,
-	}
+func NewBundler() *Bundle {
+	return &Bundle{}
 }
 
 // WriteString writes a string to the bundle content
@@ -39,7 +39,7 @@ func (b *Bundle) Write(data []byte) {
 
 // BundleEnvFile processes the .env file if it exists
 func (b *Bundle) BundleEnvFile() {
-	envFile := filepath.Join(b.zsbDir, ".env")
+	envFile := filepath.Join(zsbDir, ".env")
 	if _, err := os.Stat(envFile); err == nil {
 		b.bundleFileAbsolute(envFile)
 	}
@@ -47,7 +47,7 @@ func (b *Bundle) BundleEnvFile() {
 
 // BundleFile processes a single file (relative to zsbDir) and adds its content to the bundle
 func (b *Bundle) BundleFile(filename string) {
-	fullPath := filepath.Join(b.zsbDir, filename)
+	fullPath := filepath.Join(zsbDir, filename)
 	b.bundleFileAbsolute(fullPath)
 }
 
@@ -62,7 +62,7 @@ func (b *Bundle) bundleFileAbsolute(filename string) {
 
 // BundleDir processes all .zsh files in a directory (relative to zsbDir) recursively
 func (b *Bundle) BundleDir(basePath string) {
-	fullPath := filepath.Join(b.zsbDir, basePath)
+	fullPath := filepath.Join(zsbDir, basePath)
 	b.bundleDirAbsolute(fullPath)
 }
 
@@ -99,7 +99,7 @@ func (b *Bundle) ApplyTransformations() string {
 	var result []string
 
 	// Set ZSB_TEMP_DIR
-	zsbTempDir := filepath.Join(b.zsbDir, "src/temp")
+	zsbTempDir := filepath.Join(zsbDir, "src/temp")
 
 	for _, line := range lines {
 		// Remove comments (equivalent to sd '( |^)#.*' '')
@@ -107,8 +107,8 @@ func (b *Bundle) ApplyTransformations() string {
 		line = commentRegex.ReplaceAllString(line, "")
 
 		// Replace variables
-		line = strings.ReplaceAll(line, "${zsb}", b.zsb)
-		line = strings.ReplaceAll(line, "$ZSB_DIR", b.zsbDir)
+		line = strings.ReplaceAll(line, "${zsb}", zsb)
+		line = strings.ReplaceAll(line, "$ZSB_DIR", zsbDir)
 		line = strings.ReplaceAll(line, "$ZSB_TEMP_DIR", zsbTempDir)
 
 		// Remove leading spaces (equivalent to sd '^ *' '')
@@ -133,17 +133,15 @@ func removeFileIfExists(filepath string) {
 }
 
 func main() {
-	zsbDir := os.Getenv("HOME") + "/.zsh-spell-book"
-
 	// Get zsb prefix from environment or default to 'zsb'
-	zsb := os.Getenv("zsb")
+	zsb = os.Getenv("zsb")
 	if zsb == "" {
 		zsb = "zsb"
 	}
 
 	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
 
-	bundler := NewBundler(zsb, zsbDir)
+	bundler := NewBundler()
 
 	// Add dynamic prefix function
 	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
