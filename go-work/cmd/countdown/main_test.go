@@ -39,14 +39,14 @@ func TestParseTimeFormat(t *testing.T) {
 		expected int
 		valid    bool
 	}{
-		{"05:30", 330, true},      // 5 minutes 30 seconds
-		{"1:05:30", 3930, true},   // 1 hour 5 minutes 30 seconds
-		{"00:01", 1, true},        // 1 second
-		{"59:59", 3599, true},     // 59 minutes 59 seconds
-		{"1:00:00", 3600, true},   // 1 hour
+		{"05:30", 330, true},    // 5 minutes 30 seconds
+		{"1:05:30", 3930, true}, // 1 hour 5 minutes 30 seconds
+		{"00:01", 1, true},      // 1 second
+		{"59:59", 3599, true},   // 59 minutes 59 seconds
+		{"1:00:00", 3600, true}, // 1 hour
 		{"invalid", 0, false},
-		{"60:00", 0, false},       // Invalid minutes
-		{"00:60", 0, false},       // Invalid seconds
+		{"60:00", 0, false}, // Invalid minutes
+		{"00:60", 0, false}, // Invalid seconds
 		{"", 0, false},
 	}
 
