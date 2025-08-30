@@ -8,6 +8,7 @@ use (
 	./cmd/zsb_clipcopy
 	./cmd/zsb_open
 	./cmd/airbnb_calculator
+	./cmd/countdown
 
 	./lib/args
 	./lib/git
