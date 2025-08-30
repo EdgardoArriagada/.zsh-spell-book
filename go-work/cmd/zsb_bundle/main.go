@@ -21,9 +21,9 @@ func main() {
 		zsb = "zsb"
 	}
 
-	// Remove existing files
-	removeFileIfExists("transpiled.zsh")
-	removeFileIfExists("temp_transpilation.zsh")
+	// Remove existing files from zsbDir
+	removeFileIfExists(filepath.Join(zsbDir, "transpiled.zsh"))
+	removeFileIfExists(filepath.Join(zsbDir, "temp_transpilation.zsh"))
 
 	var content strings.Builder
 
@@ -53,15 +53,16 @@ func main() {
 	// Apply text transformations
 	result := applyTransformations(content.String(), zsb, zsbDir)
 
-	// Write result to file
-	utils.Must(os.WriteFile("result.zsh", []byte(result), 0644))
+	// Write result to file in zsbDir
+	resultPath := filepath.Join(zsbDir, "result.zsh")
+	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
 
 	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
 }
 
-func removeFileIfExists(filename string) {
-	if _, err := os.Stat(filename); err == nil {
-		os.Remove(filename)
+func removeFileIfExists(filepath string) {
+	if _, err := os.Stat(filepath); err == nil {
+		os.Remove(filepath)
 	}
 }
 
