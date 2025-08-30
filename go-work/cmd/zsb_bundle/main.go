@@ -126,8 +126,13 @@ func (b *Bundle) ApplyTransformations() string {
 	return strings.Join(result, "\n")
 }
 
+func removeFileIfExists(filepath string) {
+	if _, err := os.Stat(filepath); err == nil {
+		os.Remove(filepath)
+	}
+}
+
 func main() {
-	// Get current working directory (equivalent to ZSB_DIR)
 	zsbDir := os.Getenv("HOME") + "/.zsh-spell-book"
 
 	// Get zsb prefix from environment or default to 'zsb'
@@ -138,44 +143,26 @@ func main() {
 
 	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
 
-	// Create new Bundle instance
 	bundler := NewBundler(zsb, zsbDir)
 
 	// Add dynamic prefix function
 	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
 
-	// Bundle files in the specific order defined in bundle.zsh
 	bundler.BundleEnvFile()
+
 	bundler.BundleFile("src/zsh.config.zsh")
 	bundler.BundleFile("src/globalVariables.zsh")
 
-	// Bundle utils files
 	bundler.BundleDir("src/utils")
-
-	// Bundle configuration files
 	bundler.BundleDir("src/configurations")
-
-	// Bundle spell files
 	bundler.BundleDir("src/spells")
-
-	// Bundle temporary spell files
 	bundler.BundleDir("src/temp/spells")
-
-	// Bundle automatic calls
 	bundler.BundleDir("src/automatic-calls")
 
-	// Apply text transformations
 	result := bundler.ApplyTransformations()
 
-	// Write result to file in zsbDir
 	resultPath := filepath.Join(zsbDir, "result.zsh")
 	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
 
 	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
-}
-
-func removeFileIfExists(filepath string) {
-	if _, err := os.Stat(filepath); err == nil {
-		os.Remove(filepath)
-	}
 }
