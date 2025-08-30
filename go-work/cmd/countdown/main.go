@@ -50,7 +50,7 @@ func parseTimeInput(input string) int {
 func parseShortFormat(input string) (int, bool) {
 	shortTimeRegex := regexp.MustCompile(`^([0-9]+)([hHmMsS])$`)
 	matches := shortTimeRegex.FindStringSubmatch(input)
-	
+
 	if len(matches) != 3 {
 		return 0, false
 	}
@@ -76,7 +76,7 @@ func parseShortFormat(input string) (int, bool) {
 func parseTimeFormat(input string) (int, bool) {
 	timeRegex := regexp.MustCompile(`^([0-5]?[0-9]):([0-5]?[0-9])(?::([0-5]?[0-9]))?$`)
 	matches := timeRegex.FindStringSubmatch(input)
-	
+
 	if len(matches) < 3 {
 		return 0, false
 	}
@@ -115,7 +115,7 @@ func parseTimeFormat(input string) (int, bool) {
 }
 
 func validateSeconds(totalSeconds int) {
-	u.Expect(totalSeconds > 0 && totalSeconds <= MaxSeconds, 
+	u.Expect(totalSeconds > 0 && totalSeconds <= MaxSeconds,
 		fmt.Sprintf("Bad argument.\nTry with (hh:)?mm:ss (min 1, max 59:59:59)\nOR {s : s ∈ Z and 1 ≤ s ≤ %d}\nOR ^n[hHmMsS]$ (min 1s, max 59h)", MaxSeconds))
 }
 
@@ -128,15 +128,15 @@ func runCountdown(totalSeconds int) {
 
 	// Clear the countdown line and show completion message
 	fmt.Print("\r")
-	
+
 	// Play notification sound in background
 	go playNotificationSound()
-	
+
 	// Show completion message
 	customTimeMessage := getCustomTimeMessage(totalSeconds)
 	currentTime := time.Now().Format("15:04:05")
 	fmt.Printf("✅ The timer for %s was up at %s\n", customTimeMessage, currentTime)
-	
+
 	// Show system notification
 	showNotification(customTimeMessage)
 }
@@ -152,7 +152,7 @@ func formatTime(totalSeconds int) string {
 		}
 		return fmt.Sprintf("%02d:%02d", minutes, seconds)
 	}
-	
+
 	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
@@ -182,14 +182,14 @@ func playNotificationSound() {
 
 func showNotification(timeMessage string) {
 	message := fmt.Sprintf("The timer for %s is over", timeMessage)
-	
+
 	// Try macOS notification
 	if _, err := exec.LookPath("osascript"); err == nil {
 		script := fmt.Sprintf(`display notification "%s" with title "Countdown Timer"`, message)
 		exec.Command("osascript", "-e", script).Run()
 		return
 	}
-	
+
 	// Try Linux notification
 	if _, err := exec.LookPath("notify-send"); err == nil {
 		exec.Command("notify-send", "Countdown Timer", message).Run()
