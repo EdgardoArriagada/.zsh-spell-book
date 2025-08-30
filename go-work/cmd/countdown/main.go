@@ -135,7 +135,7 @@ func runCountdown(totalSeconds int) {
 	// Show completion message
 	customTimeMessage := getCustomTimeMessage(totalSeconds)
 	currentTime := time.Now().Format("15:04:05")
-	fmt.Printf("✅ The timer for %s was up at %s\n", customTimeMessage, currentTime)
+	fmt.Printf("The timer for %s was up at %s\n", customTimeMessage, currentTime)
 
 	// Show system notification
 	showNotification(customTimeMessage)
@@ -176,7 +176,7 @@ func showNotification(timeMessage string) {
 
 	// Try macOS notification
 	if _, err := exec.LookPath("osascript"); err == nil {
-		script := fmt.Sprintf(`display notification "%s" with title "Countdown Timer"`, message)
+		script := fmt.Sprintf(`tell app "System Events" to display dialog "%s" buttons {"OK"} default button "OK"`, message)
 		exec.Command("osascript", "-e", script).Run()
 		return
 	}
