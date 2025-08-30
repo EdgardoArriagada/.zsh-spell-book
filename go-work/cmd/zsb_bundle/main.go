@@ -41,12 +41,18 @@ func (b *Bundle) Write(data []byte) {
 func (b *Bundle) BundleEnvFile() {
 	envFile := filepath.Join(b.zsbDir, ".env")
 	if _, err := os.Stat(envFile); err == nil {
-		b.BundleFile(envFile)
+		b.bundleFileAbsolute(envFile)
 	}
 }
 
-// BundleFile processes a single file and adds its content to the bundle
+// BundleFile processes a single file (relative to zsbDir) and adds its content to the bundle
 func (b *Bundle) BundleFile(filename string) {
+	fullPath := filepath.Join(b.zsbDir, filename)
+	b.bundleFileAbsolute(fullPath)
+}
+
+// bundleFileAbsolute processes a single file with absolute path and adds its content to the bundle
+func (b *Bundle) bundleFileAbsolute(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return // Skip files that don't exist
@@ -54,8 +60,14 @@ func (b *Bundle) BundleFile(filename string) {
 	b.Write(data)
 }
 
-// BundleDir processes all .zsh files in a directory recursively
+// BundleDir processes all .zsh files in a directory (relative to zsbDir) recursively
 func (b *Bundle) BundleDir(basePath string) {
+	fullPath := filepath.Join(b.zsbDir, basePath)
+	b.bundleDirAbsolute(fullPath)
+}
+
+// bundleDirAbsolute processes all .zsh files in a directory with absolute path recursively
+func (b *Bundle) bundleDirAbsolute(basePath string) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -68,7 +80,7 @@ func (b *Bundle) BundleDir(basePath string) {
 
 		// Check if file matches .zsh extension
 		if strings.HasSuffix(path, ".zsh") {
-			b.BundleFile(path)
+			b.bundleFileAbsolute(path)
 		}
 
 		return nil
@@ -134,23 +146,23 @@ func main() {
 
 	// Bundle files in the specific order defined in bundle.zsh
 	bundler.BundleEnvFile()
-	bundler.BundleFile(filepath.Join(zsbDir, "src/zsh.config.zsh"))
-	bundler.BundleFile(filepath.Join(zsbDir, "src/globalVariables.zsh"))
+	bundler.BundleFile("src/zsh.config.zsh")
+	bundler.BundleFile("src/globalVariables.zsh")
 
 	// Bundle utils files
-	bundler.BundleDir(filepath.Join(zsbDir, "src/utils"))
+	bundler.BundleDir("src/utils")
 
 	// Bundle configuration files
-	bundler.BundleDir(filepath.Join(zsbDir, "src/configurations"))
+	bundler.BundleDir("src/configurations")
 
 	// Bundle spell files
-	bundler.BundleDir(filepath.Join(zsbDir, "src/spells"))
+	bundler.BundleDir("src/spells")
 
 	// Bundle temporary spell files
-	bundler.BundleDir(filepath.Join(zsbDir, "src/temp/spells"))
+	bundler.BundleDir("src/temp/spells")
 
 	// Bundle automatic calls
-	bundler.BundleDir(filepath.Join(zsbDir, "src/automatic-calls"))
+	bundler.BundleDir("src/automatic-calls")
 
 	// Apply text transformations
 	result := bundler.ApplyTransformations()
