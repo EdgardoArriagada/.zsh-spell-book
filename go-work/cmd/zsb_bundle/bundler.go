@@ -29,14 +29,14 @@ func (b *Bundler) Write(data []byte) {
 	b.content.WriteString("\n")
 }
 
-// BundleFile processes a single file (relative to zsbDir) and adds its content to the bundle
-func (b *Bundler) BundleFile(filename string) {
+// LoadFile processes a single file (relative to zsbDir) and adds its content to the bundle
+func (b *Bundler) LoadFile(filename string) {
 	fullPath := filepath.Join(zsbDir, filename)
-	b.bundleFileAbsolute(fullPath)
+	b.appendFileContents(fullPath)
 }
 
-// bundleFileAbsolute processes a single file with absolute path and adds its content to the bundle
-func (b *Bundler) bundleFileAbsolute(filename string) {
+// appendFileContents processes a single file with absolute path and adds its content to the bundle
+func (b *Bundler) appendFileContents(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return // Skip files that don't exist
@@ -44,14 +44,14 @@ func (b *Bundler) bundleFileAbsolute(filename string) {
 	b.Write(data)
 }
 
-// BundleDir processes all .zsh files in a directory (relative to zsbDir) recursively
-func (b *Bundler) BundleDir(basePath string) {
+// LoadDir processes all .zsh files in a directory (relative to zsbDir) recursively
+func (b *Bundler) LoadDir(basePath string) {
 	fullPath := filepath.Join(zsbDir, basePath)
-	b.bundleDirAbsolute(fullPath)
+	b.appendDirContents(fullPath)
 }
 
-// bundleDirAbsolute processes all .zsh files in a directory with absolute path recursively
-func (b *Bundler) bundleDirAbsolute(basePath string) {
+// appendDirContents processes all .zsh files in a directory with absolute path recursively
+func (b *Bundler) appendDirContents(basePath string) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -64,7 +64,7 @@ func (b *Bundler) bundleDirAbsolute(basePath string) {
 
 		// Check if file matches .zsh extension
 		if strings.HasSuffix(path, ".zsh") {
-			b.bundleFileAbsolute(path)
+			b.appendFileContents(path)
 		}
 
 		return nil
@@ -76,8 +76,8 @@ func (b *Bundler) bundleDirAbsolute(basePath string) {
 	}
 }
 
-// ApplyTransformations applies text transformations and returns the final result
-func (b *Bundler) ApplyTransformations() string {
+// Bundle applies text transformations and returns the final result
+func (b *Bundler) Bundle() string {
 	input := b.content.String()
 	lines := strings.Split(input, "\n")
 	var result []string

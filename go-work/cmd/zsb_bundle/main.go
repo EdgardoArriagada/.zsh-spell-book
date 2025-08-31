@@ -25,17 +25,17 @@ func main() {
 	// Add dynamic prefix function
 	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
 
-	bundler.BundleFile(".env")
-	bundler.BundleFile("src/zsh.config.zsh")
-	bundler.BundleFile("src/globalVariables.zsh")
+	bundler.LoadFile(".env")
+	bundler.LoadFile("src/zsh.config.zsh")
+	bundler.LoadFile("src/globalVariables.zsh")
 
-	bundler.BundleDir("src/utils")
-	bundler.BundleDir("src/configurations")
-	bundler.BundleDir("src/spells")
-	bundler.BundleDir("src/temp/spells")
-	bundler.BundleDir("src/automatic-calls")
+	bundler.LoadDir("src/utils")
+	bundler.LoadDir("src/configurations")
+	bundler.LoadDir("src/spells")
+	bundler.LoadDir("src/temp/spells")
+	bundler.LoadDir("src/automatic-calls")
 
-	result := bundler.ApplyTransformations()
+	result := bundler.Bundle()
 
 	resultPath := filepath.Join(zsbDir, "result.zsh")
 	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
