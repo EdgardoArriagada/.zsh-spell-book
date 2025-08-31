@@ -26,7 +26,6 @@ dev:
 	$(MAKE) ACTION='dev' .run
 
 zsh-dev:
-	@echo "Starting zsh file watcher..."
 	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c ./go-work/bin/zsb_bundle
 
 build-all:
