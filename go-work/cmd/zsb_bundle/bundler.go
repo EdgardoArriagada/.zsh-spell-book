@@ -8,29 +8,29 @@ import (
 	"strings"
 )
 
-// Bundle represents the content builder for zsh spell book
-type Bundle struct {
+// Bundler represents the content builder for zsh spell book
+type Bundler struct {
 	content strings.Builder
 }
 
 // NewBundler creates a new Bundle instance
-func NewBundler() *Bundle {
-	return &Bundle{}
+func NewBundler() *Bundler {
+	return &Bundler{}
 }
 
 // WriteString writes a string to the bundle content
-func (b *Bundle) WriteString(s string) {
+func (b *Bundler) WriteString(s string) {
 	b.content.WriteString(s)
 }
 
 // Write writes bytes to the bundle content
-func (b *Bundle) Write(data []byte) {
+func (b *Bundler) Write(data []byte) {
 	b.content.Write(data)
 	b.content.WriteString("\n")
 }
 
 // BundleEnvFile processes the .env file if it exists
-func (b *Bundle) BundleEnvFile() {
+func (b *Bundler) BundleEnvFile() {
 	envFile := filepath.Join(zsbDir, ".env")
 	if _, err := os.Stat(envFile); err == nil {
 		b.bundleFileAbsolute(envFile)
@@ -38,13 +38,13 @@ func (b *Bundle) BundleEnvFile() {
 }
 
 // BundleFile processes a single file (relative to zsbDir) and adds its content to the bundle
-func (b *Bundle) BundleFile(filename string) {
+func (b *Bundler) BundleFile(filename string) {
 	fullPath := filepath.Join(zsbDir, filename)
 	b.bundleFileAbsolute(fullPath)
 }
 
 // bundleFileAbsolute processes a single file with absolute path and adds its content to the bundle
-func (b *Bundle) bundleFileAbsolute(filename string) {
+func (b *Bundler) bundleFileAbsolute(filename string) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return // Skip files that don't exist
@@ -53,13 +53,13 @@ func (b *Bundle) bundleFileAbsolute(filename string) {
 }
 
 // BundleDir processes all .zsh files in a directory (relative to zsbDir) recursively
-func (b *Bundle) BundleDir(basePath string) {
+func (b *Bundler) BundleDir(basePath string) {
 	fullPath := filepath.Join(zsbDir, basePath)
 	b.bundleDirAbsolute(fullPath)
 }
 
 // bundleDirAbsolute processes all .zsh files in a directory with absolute path recursively
-func (b *Bundle) bundleDirAbsolute(basePath string) {
+func (b *Bundler) bundleDirAbsolute(basePath string) {
 	// Walk through directory and find matching files
 	err := filepath.WalkDir(basePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -85,7 +85,7 @@ func (b *Bundle) bundleDirAbsolute(basePath string) {
 }
 
 // ApplyTransformations applies text transformations and returns the final result
-func (b *Bundle) ApplyTransformations() string {
+func (b *Bundler) ApplyTransformations() string {
 	input := b.content.String()
 	lines := strings.Split(input, "\n")
 	var result []string
