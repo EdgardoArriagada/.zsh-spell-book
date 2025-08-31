@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+var (
+	// Pre-compiled regular expressions for better performance
+	commentRegex      = regexp.MustCompile(`( |^)#.*`)
+	leadingSpaceRegex = regexp.MustCompile(`^ *`)
+)
+
 // Bundler represents the content builder for zsh spell book
 type Bundler struct {
 	content strings.Builder
@@ -15,7 +21,10 @@ type Bundler struct {
 
 // NewBundler creates a new Bundle instance
 func NewBundler() *Bundler {
-	return &Bundler{}
+	b := &Bundler{}
+	// Pre-allocate some capacity based on typical file sizes
+	b.content.Grow(64 * 1024) // Start with 64KB capacity
+	return b
 }
 
 // WriteString writes a string to the bundle content
@@ -26,7 +35,7 @@ func (b *Bundler) WriteString(s string) {
 // Write writes bytes to the bundle content
 func (b *Bundler) Write(data []byte) {
 	b.content.Write(data)
-	b.content.WriteString("\n")
+	b.content.WriteByte('\n') // More efficient than WriteString("\n")
 }
 
 // LoadFile processes a single file (relative to zsbDir) and adds its content to the bundle
@@ -80,32 +89,41 @@ func (b *Bundler) appendDirContents(basePath string) {
 func (b *Bundler) Bundle() string {
 	input := b.content.String()
 	lines := strings.Split(input, "\n")
-	var result []string
 
-	// Set ZSB_TEMP_DIR
+	// Use strings.Builder for result construction - more efficient than slice + Join
+	var result strings.Builder
+	// Pre-allocate capacity based on input size (estimate ~80% of original size after processing)
+	result.Grow(len(input) * 4 / 5)
+
+	// Set ZSB_TEMP_DIR once
 	zsbTempDir := filepath.Join(zsbDir, "src/temp")
 
-	for _, line := range lines {
-		// Remove comments (equivalent to sd '( |^)#.*' '')
-		commentRegex := regexp.MustCompile(`( |^)#.*`)
+	// Create a replacer for variable substitutions - more efficient for multiple replacements
+	replacer := strings.NewReplacer(
+		"${zsb}", zsb,
+		"$ZSB_DIR", zsbDir,
+		"$ZSB_TEMP_DIR", zsbTempDir,
+		"\\\n", "", // Also handle bash line breaks here
+	)
+
+	for i, line := range lines {
+		// Remove comments using pre-compiled regex
 		line = commentRegex.ReplaceAllString(line, "")
 
-		// Replace variables
-		line = strings.ReplaceAll(line, "${zsb}", zsb)
-		line = strings.ReplaceAll(line, "$ZSB_DIR", zsbDir)
-		line = strings.ReplaceAll(line, "$ZSB_TEMP_DIR", zsbTempDir)
+		// Apply all variable replacements in one pass
+		line = replacer.Replace(line)
 
-		// Remove leading spaces (equivalent to sd '^ *' '')
-		leadingSpaceRegex := regexp.MustCompile(`^ *`)
+		// Remove leading spaces using pre-compiled regex
 		line = leadingSpaceRegex.ReplaceAllString(line, "")
 
 		// Skip empty lines
 		if strings.TrimSpace(line) != "" {
-			// Remove bash line breaks (equivalent to sd '\\\n' '')
-			line = strings.ReplaceAll(line, "\\\n", "")
-			result = append(result, line)
+			if i > 0 && result.Len() > 0 {
+				result.WriteByte('\n')
+			}
+			result.WriteString(line)
 		}
 	}
 
-	return strings.Join(result, "\n")
+	return result.String()
 }
