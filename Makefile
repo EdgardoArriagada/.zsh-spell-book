@@ -27,7 +27,7 @@ dev:
 
 zsh-dev:
 	@echo "Starting zsh file watcher..."
-	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c zsb_bundle
+	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c ./go-work/bin/zsb_bundle
 
 build-all:
 	for target in $$(ls ./go-work/cmd); do \

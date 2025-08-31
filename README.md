@@ -15,10 +15,17 @@
 
 ### Installing
 
-1.- git clone ~/.zsh-spell-book
+1.- clone repository
 
-1.1 (optional) init submodules with `git submodule update --init --recursive`
-  _if it asks for password, try using `git submodule sync --recursive` first_
+```sh
+git clone ~/.zsh-spell-book
+```
+
+1.1 (optional) init submodules
+```sh
+# if it asks for password, try using `git submodule sync --recursive` first
+git submodule update --init --recursive
+```
 
 2.- build `zsb_bundle` script
 
@@ -28,22 +35,13 @@ make build
 # then select `zsb_bundle`
 ```
 
-3.-  Make sure you have the Go binaries in your PATH as described in the Configuring section below.
+3.- bundle the project
 
 ```sh
-# look for Configuring section to get full instructions
-export PATH=~/.zsh-spell-book/go-work/bin:$PATH
-```
-
-4.- Bundle the project:
-
-```sh
-zsb_bundle
+./go-work/bin/zsb_bundle
 ```
 
 5.- source the project
-
-Like this:
 
 ```shell
 echo "source ~/.zsh-spell-book/result.zsh" > ~/.zshrc
@@ -65,9 +63,9 @@ export PATH=~/.zsh-spell-book/go-work/bin:$PATH
 
 ### Development
 
-make any changes on a `*.zsh` file and run `zsb_bundle` to see the results
+make any changes on a `*.zsh` file and run `./go-work/bin/zsb_bundle` to see the results
 
-optionally, if you installed `entr`, you can make a live reload server by running the following make command
+(optional) if you installed `entr`, you can make a **live reload** server by running the following make command
 
 ``` ent
 make zsh-dev
@@ -75,7 +73,7 @@ make zsh-dev
 
 ### Debugging
 
-When a script you wrote is not working as expected, you can skip the `zsb_bundle` process to check if the bundler is messing things up
+When a script you wrote is not working as expected, you can try skipping the `zsb_bundle` process to check if the bundler is messing things up.
 to do that, modify the following lines in your `~/.zshrc` file:
 
 ```diff
