@@ -91,7 +91,7 @@ func (b *Bundler) Bundle() string {
 	// Pre-allocate capacity based on input size (estimate ~80% of original size after processing)
 	result.Grow(len(input) * 4 / 5)
 
-	replacer := strings.NewReplacer(
+	varReplacer := strings.NewReplacer(
 		"${zsb}", zsb,
 		"$ZSB_DIR", ZSB_DIR,
 		"$ZSB_TEMP_DIR", ZSB_TEMP_DIR,
@@ -102,7 +102,7 @@ func (b *Bundler) Bundle() string {
 		// Remove comments using pre-compiled regex
 		line = commentRegex.ReplaceAllString(line, "")
 
-		line = replacer.Replace(line)
+		line = varReplacer.Replace(line)
 		line = strings.TrimSpace(line)
 
 		// Skip empty lines
