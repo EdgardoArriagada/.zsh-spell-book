@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	// Pre-compiled regular expressions for better performance
 	commentRegex      = regexp.MustCompile(`( |^)#.*`)
 	leadingSpaceRegex = regexp.MustCompile(`^ *`)
 )
@@ -19,7 +18,6 @@ type Bundler struct {
 	content strings.Builder
 }
 
-// NewBundler creates a new Bundle instance
 func NewBundler() *Bundler {
 	b := &Bundler{}
 	// Pre-allocate some capacity based on typical file sizes
@@ -35,7 +33,7 @@ func (b *Bundler) WriteString(s string) {
 // Write writes bytes to the bundle content
 func (b *Bundler) Write(data []byte) {
 	b.content.Write(data)
-	b.content.WriteByte('\n') // More efficient than WriteString("\n")
+	b.content.WriteByte('\n')
 }
 
 // LoadFile processes a single file (relative to zsbDir) and adds its content to the bundle
@@ -53,7 +51,7 @@ func (b *Bundler) appendFileContents(filename string) {
 	b.Write(data)
 }
 
-// LoadDir processes all .zsh files in a directory (relative to zsbDir) recursively
+// LoadDir processes all .zsh files in a directory
 func (b *Bundler) LoadDir(basePath string) {
 	fullPath := filepath.Join(zsbDir, basePath)
 	b.appendDirContents(fullPath)
@@ -90,12 +88,10 @@ func (b *Bundler) Bundle() string {
 	input := b.content.String()
 	lines := strings.Split(input, "\n")
 
-	// Use strings.Builder for result construction - more efficient than slice + Join
 	var result strings.Builder
 	// Pre-allocate capacity based on input size (estimate ~80% of original size after processing)
 	result.Grow(len(input) * 4 / 5)
 
-	// Create a replacer for variable substitutions - more efficient for multiple replacements
 	replacer := strings.NewReplacer(
 		"${zsb}", zsb,
 		"$ZSB_DIR", zsbDir,
