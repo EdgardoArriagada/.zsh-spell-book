@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	zsb        string
-	zsbDir     = os.Getenv("HOME") + "/.zsh-spell-book"
-	zsbTempDir = filepath.Join(zsbDir, "src/temp")
+	zsb          string
+	ZSB_DIR      = os.Getenv("HOME") + "/.zsh-spell-book"
+	ZSB_TEMP_DIR = filepath.Join(ZSB_DIR, "src/temp")
 )
 
 func main() {
@@ -38,7 +38,7 @@ func main() {
 
 	result := bundler.Bundle()
 
-	resultPath := filepath.Join(zsbDir, "result.zsh")
+	resultPath := filepath.Join(ZSB_DIR, "result.zsh")
 	utils.Must(os.WriteFile(resultPath, []byte(result), 0644))
 
 	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")

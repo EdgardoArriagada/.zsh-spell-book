@@ -38,7 +38,7 @@ func (b *Bundler) Write(data []byte) {
 
 // LoadFile processes a single file (relative to zsbDir) and adds its content to the bundle
 func (b *Bundler) LoadFile(filename string) {
-	fullPath := filepath.Join(zsbDir, filename)
+	fullPath := filepath.Join(ZSB_DIR, filename)
 	b.appendFileContents(fullPath)
 }
 
@@ -53,7 +53,7 @@ func (b *Bundler) appendFileContents(filename string) {
 
 // LoadDir processes all .zsh files in a directory
 func (b *Bundler) LoadDir(basePath string) {
-	fullPath := filepath.Join(zsbDir, basePath)
+	fullPath := filepath.Join(ZSB_DIR, basePath)
 	b.appendDirContents(fullPath)
 }
 
@@ -94,8 +94,8 @@ func (b *Bundler) Bundle() string {
 
 	replacer := strings.NewReplacer(
 		"${zsb}", zsb,
-		"$ZSB_DIR", zsbDir,
-		"$ZSB_TEMP_DIR", zsbTempDir,
+		"$ZSB_DIR", ZSB_DIR,
+		"$ZSB_TEMP_DIR", ZSB_TEMP_DIR,
 		"\\\n", "", // Also handle bash line breaks here
 	)
 
