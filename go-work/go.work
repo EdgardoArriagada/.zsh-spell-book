@@ -9,6 +9,7 @@ use (
 	./cmd/zsb_open
 	./cmd/airbnb_calculator
 	./cmd/countdown
+	./cmd/zsb_bundle
 
 	./lib/args
 	./lib/git
