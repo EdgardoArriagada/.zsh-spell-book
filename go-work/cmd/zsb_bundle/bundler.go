@@ -106,12 +106,15 @@ func (b *Bundler) Bundle() string {
 		line = strings.TrimSpace(line)
 
 		// Skip empty lines
-		if line != "" {
-			if i > 0 && result.Len() > 0 {
-				result.WriteByte('\n')
-			}
-			result.WriteString(line)
+		if line == "" {
+			continue
 		}
+
+		if i > 0 && result.Len() > 0 {
+			result.WriteByte('\n')
+		}
+
+		result.WriteString(line)
 	}
 
 	return result.String()
