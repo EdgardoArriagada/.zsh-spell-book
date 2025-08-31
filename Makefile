@@ -25,6 +25,9 @@ build:
 dev:
 	$(MAKE) ACTION='dev' .run
 
+zsh-dev:
+	ls **/*.zsh | entr -c zsb_bundle
+
 build-all:
 	for target in $$(ls ./go-work/cmd); do \
 		$(MAKE) TARGET=$$target ACTION='build' .run; \

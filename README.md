@@ -9,8 +9,9 @@
 ### Prerequisites
 
 - zsh installed and configured as default shell
-- [sd](https://github.com/chmln/sd) for bundling
-- some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
+- [golang](https://go.dev/dl/) for bundling
+- (optional) some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
+- (optional) [entr](https://github.com/eradman/entr) for fast development
 
 ### Installing
 
@@ -19,10 +20,7 @@
 1.1 (optional) init submodules with `git submodule update --init --recursive`
   _if it asks for password, try using `git submodule sync --recursive` first_
 
-
-2.- install golang
-
-3.- build `zsb_bundle` script
+2.- build `zsb_bundle` script
 
 ```sh
 make build
@@ -30,6 +28,12 @@ make build
 # then select `zsb_bundle`
 ```
 
+3.-  Make sure you have the Go binaries in your PATH as described in the Configuring section below.
+
+```sh
+# look for Configuring section to get full instructions
+export PATH=~/.zsh-spell-book/go-work/bin:$PATH
+```
 
 4.- Bundle the project:
 
@@ -37,9 +41,7 @@ make build
 zsb_bundle
 ```
 
-Note: Make sure you have the Go binaries in your PATH as described in the Configuring section below.
-
-3.- source the project
+5.- source the project
 
 Like this:
 
@@ -63,16 +65,27 @@ export PATH=~/.zsh-spell-book/go-work/bin:$PATH
 
 ### Development
 
-When developing new aliases and function, it is convenient to do the following modification:
+make any changes on a `*.zsh` file and run `zsb_bundle` to see the results
+
+optionally, if you installed `entr`, you can make a live reload server by running the following make command
+
+``` ent
+make zsh-dev
+```
+
+### Debugging
+
+When a script you wrote is not working as expected, you can skip the `zsb_bundle` process to check if the bundler is messing things up
+to do that, modify the following lines in your `~/.zshrc` file:
 
 ```diff
 - source ~/.zsh-spell-book/result.zsh
-+ source ~/.zsh-spell-book/development.zsh
++ source ~/.zsh-spell-book/debug.zsh
 ```
 
 So you get refreshed code every time you open a new terminal
 
-When finished, run `zsb_bundle` to bundle the project again and change back `development.zsh` -> `result.zsh` in your `~/.zshrc`
+When finished, run `zsb_bundle` to bundle the project again and change back `debug.zsh` -> `result.zsh` in your `~/.zshrc`
 
 ### Usage
 
