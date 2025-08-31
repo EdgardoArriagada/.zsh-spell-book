@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	zsb    string
-	zsbDir = os.Getenv("HOME") + "/.zsh-spell-book"
+	zsb        string
+	zsbDir     = os.Getenv("HOME") + "/.zsh-spell-book"
+	zsbTempDir = filepath.Join(zsbDir, "src/temp")
 )
 
 func main() {

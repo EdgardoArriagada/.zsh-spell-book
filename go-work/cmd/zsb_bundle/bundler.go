@@ -95,9 +95,6 @@ func (b *Bundler) Bundle() string {
 	// Pre-allocate capacity based on input size (estimate ~80% of original size after processing)
 	result.Grow(len(input) * 4 / 5)
 
-	// Set ZSB_TEMP_DIR once
-	zsbTempDir := filepath.Join(zsbDir, "src/temp")
-
 	// Create a replacer for variable substitutions - more efficient for multiple replacements
 	replacer := strings.NewReplacer(
 		"${zsb}", zsb,
