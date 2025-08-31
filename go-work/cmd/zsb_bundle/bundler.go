@@ -98,7 +98,7 @@ func (b *Bundler) Bundle() string {
 		"\\\n", "", // Also handle bash line breaks here
 	)
 
-	for i, line := range lines {
+	for _, line := range lines {
 		// Remove comments using pre-compiled regex
 		line = commentRegex.ReplaceAllString(line, "")
 
@@ -110,12 +110,9 @@ func (b *Bundler) Bundle() string {
 			continue
 		}
 
-		if i > 0 && result.Len() > 0 {
-			result.WriteByte('\n')
-		}
-
+		result.WriteByte('\n')
 		result.WriteString(line)
 	}
 
-	return result.String()
+	return result.String()[1:] // Remove leading newline
 }
