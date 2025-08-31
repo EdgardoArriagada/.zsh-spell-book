@@ -29,14 +29,6 @@ func (b *Bundler) Write(data []byte) {
 	b.content.WriteString("\n")
 }
 
-// BundleEnvFile processes the .env file if it exists
-func (b *Bundler) BundleEnvFile() {
-	envFile := filepath.Join(zsbDir, ".env")
-	if _, err := os.Stat(envFile); err == nil {
-		b.bundleFileAbsolute(envFile)
-	}
-}
-
 // BundleFile processes a single file (relative to zsbDir) and adds its content to the bundle
 func (b *Bundler) BundleFile(filename string) {
 	fullPath := filepath.Join(zsbDir, filename)

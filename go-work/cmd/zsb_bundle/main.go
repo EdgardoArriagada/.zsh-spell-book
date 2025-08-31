@@ -25,8 +25,7 @@ func main() {
 	// Add dynamic prefix function
 	bundler.WriteString(fmt.Sprintf("%s.sourceFiles() for f in $*; do source $f; done\n", zsb))
 
-	bundler.BundleEnvFile()
-
+	bundler.BundleFile(".env")
 	bundler.BundleFile("src/zsh.config.zsh")
 	bundler.BundleFile("src/globalVariables.zsh")
 
