@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	commentRegex      = regexp.MustCompile(`( |^)#.*`)
-	leadingSpaceRegex = regexp.MustCompile(`^ *`)
+	commentRegex = regexp.MustCompile(`( |^)#.*`)
 )
 
 // Bundler represents the content builder for zsh spell book
@@ -103,14 +102,11 @@ func (b *Bundler) Bundle() string {
 		// Remove comments using pre-compiled regex
 		line = commentRegex.ReplaceAllString(line, "")
 
-		// Apply all variable replacements in one pass
 		line = replacer.Replace(line)
-
-		// Remove leading spaces using pre-compiled regex
-		line = leadingSpaceRegex.ReplaceAllString(line, "")
+		line = strings.TrimSpace(line)
 
 		// Skip empty lines
-		if strings.TrimSpace(line) != "" {
+		if line != "" {
 			if i > 0 && result.Len() > 0 {
 				result.WriteByte('\n')
 			}
