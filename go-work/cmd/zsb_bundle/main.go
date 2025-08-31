@@ -126,20 +126,12 @@ func (b *Bundle) ApplyTransformations() string {
 	return strings.Join(result, "\n")
 }
 
-func removeFileIfExists(filepath string) {
-	if _, err := os.Stat(filepath); err == nil {
-		os.Remove(filepath)
-	}
-}
-
 func main() {
 	// Get zsb prefix from environment or default to 'zsb'
 	zsb = os.Getenv("zsb")
 	if zsb == "" {
 		zsb = "zsb"
 	}
-
-	removeFileIfExists(filepath.Join(zsbDir, "result.zsh"))
 
 	bundler := NewBundler()
 
