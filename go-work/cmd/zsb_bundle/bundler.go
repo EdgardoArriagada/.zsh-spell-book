@@ -24,11 +24,6 @@ func NewBundler() *Bundler {
 	return b
 }
 
-// WriteString writes a string to the bundle content
-func (b *Bundler) WriteString(s string) {
-	b.content.WriteString(s)
-}
-
 // Write writes bytes to the bundle content
 func (b *Bundler) Write(data []byte) {
 	b.content.Write(data)

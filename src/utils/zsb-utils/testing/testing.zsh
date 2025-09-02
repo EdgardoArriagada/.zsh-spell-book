@@ -10,5 +10,5 @@ describe() {
 runTests() (
   : ${zsb:='zsb'}
   local testFiles=( $ZSB_DIR/src/__tests__/**/*.test.zsh )
-  ${zsb}.sourceFiles $testFiles
+  for f in $testFiles; do source $f; done
 )

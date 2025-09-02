@@ -5,7 +5,7 @@ ZSB_TEMP_DIR=$ZSB_DIR/src/temp
 # Dynamic prefix
 : ${zsb:='zsb'}
 
-${zsb}.sourceFiles() for f in $*; do source $f; done
+${zsb}.debug.sourceFiles() for f in $*; do source $f; done
 
 () {
   # Source environment variables
@@ -15,16 +15,18 @@ ${zsb}.sourceFiles() for f in $*; do source $f; done
   source $ZSB_DIR/src/globalVariables.zsh
 
   # Source files in this specific order
-  ${zsb}.sourceFiles $ZSB_DIR/src/utils/**/*.zsh
-  ${zsb}.sourceFiles $ZSB_DIR/src/configurations/**/*.zsh
-  ${zsb}.sourceFiles $ZSB_DIR/src/spells/**/*.zsh
+  ${zsb}.debug.sourceFiles $ZSB_DIR/src/utils/**/*.zsh
+  ${zsb}.debug.sourceFiles $ZSB_DIR/src/configurations/**/*.zsh
+  ${zsb}.debug.sourceFiles $ZSB_DIR/src/spells/**/*.zsh
 
   # Temporal Spells
   local tempSpells=( $ZSB_DIR/src/temp/spells**/*.zsh )>/dev/null 2>&1
-  [[ -n "$tempSpells" ]] && ${zsb}.sourceFiles $tempSpells
+  [[ -n "$tempSpells" ]] && ${zsb}.debug.sourceFiles $tempSpells
 
-  ${zsb}.sourceFiles $ZSB_DIR/src/automatic-calls/**/*.zsh
+  ${zsb}.debug.sourceFiles $ZSB_DIR/src/automatic-calls/**/*.zsh
 }
+
+unfunction ${zsb}.debug.sourceFiles
 
 print "               🕯️ 📜🪶\n"
 
