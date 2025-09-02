@@ -102,13 +102,13 @@ func (b *Bundler) Bundle() string {
 		// Remove comments using pre-compiled regex
 		line = commentRegex.ReplaceAllString(line, "")
 
-		line = varReplacer.Replace(line)
-		line = strings.TrimSpace(line)
-
 		// Skip empty lines
+		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
+
+		line = varReplacer.Replace(line)
 
 		result.WriteByte('\n')
 		result.WriteString(line)
