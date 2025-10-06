@@ -2,29 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os/exec"
 
 	"example.com/workspace/lib/args"
 	u "example.com/workspace/lib/utils"
 )
-
-// openFilesInTmux creates a new tmux tab with neovim in horizontal split
-// filename at the top pane and outputFilename at the bottom pane
-func openFilesInTmux(filename, outputFilename string) error {
-	// Create a new tmux window with the first file
-	cmd := exec.Command("tmux", "new-window", "nvim", filename)
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to create tmux window: %v", err)
-	}
-
-	// Split the window horizontally and open the second file in the bottom pane
-	cmd = exec.Command("tmux", "split-window", "-v", "nvim", outputFilename)
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to split tmux window: %v", err)
-	}
-
-	return nil
-}
 
 func main() {
 	d := u.Must1(args.Parse())
