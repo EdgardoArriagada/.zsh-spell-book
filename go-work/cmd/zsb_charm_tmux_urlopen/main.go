@@ -9,6 +9,8 @@ import (
 	u "example.com/workspace/lib/utils"
 )
 
+var urlRegexp = regexp.MustCompile(`https?://[\w\-_\.%?/:+=&#%]+`)
+
 func main() {
 	d := u.Must1(args.ParseWithStdin())
 	u.Expect(d.Len == 1, "Usage: zsb_charm_tmux_urlopen <url>")
@@ -18,8 +20,7 @@ func main() {
 }
 
 func ExtractFirstURL(text string) (string, error) {
-	re := regexp.MustCompile(`https?://[\w\-_\.%?/:+=&#%]+`)
-	urls := re.FindStringSubmatch(text)
+	urls := urlRegexp.FindStringSubmatch(text)
 	if len(urls) == 0 {
 		return "", errors.New("Error: No valid URL found in the input.")
 	}
