@@ -9,14 +9,28 @@ else
 fi
 
 ${zsb}.v() {
-  case ${1:e:l} in
-    xlsx|odt) ${0}.openCsv $1 ;;
+  local file="$1"
+  local line_num=""
 
-    mp4|mkv|avi|mov|webm|flv|wmv) ${0}.openVideo $1 ;;
+  # Check if input contains :line_number pattern
+  if [[ "$file" =~ ^(.+):([0-9]+)$ ]]; then
+    file="${match[1]}"
+    line_num="${match[2]}"
+  fi
 
-    pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg $1 ;;
+  case ${file:e:l} in
+    xlsx|odt) ${0}.openCsv "$file" ;;
 
-    *) nvim $1 && ${zsb}.tryGitStatus ;;
+    mp4|mkv|avi|mov|webm|flv|wmv) ${0}.openVideo "$file" ;;
+
+    pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg "$file" ;;
+
+    *)
+      if [[ -n "$line_num" ]]
+        then nvim +"$line_num" "$file" && ${zsb}.tryGitStatus
+        else nvim "$file" && ${zsb}.tryGitStatus
+      fi
+      ;;
   esac
 }
 
