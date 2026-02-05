@@ -9,6 +9,8 @@ else
 fi
 
 ${zsb}.v() {
+  [[ -z "$1" ]] && nvim && ${zsb}.tryGitStatus && return 0
+
   local file="$1"
   local line_num=""
 
