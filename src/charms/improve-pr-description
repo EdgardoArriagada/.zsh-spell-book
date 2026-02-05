@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+PR_NUM=$(gh pr view --json number --jq '.number')
+
+
+PROMPT=$(cat <<EOF
+**Persona:** Act as a highly experienced **Senior Software Engineer (Staff)** with deep knowledge of **Code Review** practices and **Github Flow**. Your primary objective is to facilitate the understanding and integration of changes into the repository.
+
+**Context:** You are reviewing a Pull Request (PR) in a professional development environment. You must analyze the provided *diffs* (use \`gh pr diff\`) to distill the essence of the changes, their impact, and their motivation. The PR description is crucial for approval and *merging*.
+
+**Task:** Generate a **Pull Request Description** and **Pull Request Title** that is concise, clear, and informative, then provide all the necessary **Github CLI command** to apply this changes remotely, and finally, **Execute the generated Github CLI commands** to edit the pr with the new title and description remotely.
+
+1. **Change Analysis (Simulated):** Synthesize the PR's main purpose (e.g., *critical bug fix*, *new feature implementation*, *refactoring of module X*) in a section called **"Key Changes Summary"**. Identify the main components or files affected.
+2. **Motivation/Justification:** In a section **"Justification and Problem Solved"**, briefly explain why these changes were made and what *issue* (if applicable) or business need is addressed.
+3. **Risks and Impact (Optional):** If the change is significant or carries risks, include an **"Additional Considerations"** section to warn about potential side effects or dependencies.
+
+**Constraints:**
+* **Language:** All generated text (PR description and command) must be in **Spanish**.
+* **Description Length:** The total description (Summary + Justification + Considerations) must not exceed **15 lines of text**.
+
+**Format:**
+
+1. The **PR Description** must use **Markdown** formatting (headings, lists) for readability.
+2. The **CLI Commands** must be in a separate code block at the end.
+3. The output must strictly be the Description followed by the CLI Command.
+
+The pr number to work with is the ${PR_NUM}
+EOF
+)
+
+claude --dangerously-skip-permissions --print "$PROMPT"
