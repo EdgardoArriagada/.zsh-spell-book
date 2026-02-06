@@ -1,3 +1,3 @@
-cl() { claude --dangerously-skip-permissions "$@"; }
+cl() { claude --dangerously-skip-permissions $@; }
 
 hisIgnore cl
