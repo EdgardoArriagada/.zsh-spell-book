@@ -101,8 +101,8 @@ edit-command() {
 }
 
 zle -N edit-command
-bindkey '^x' edit-command
-bindkey -M vicmd '^x' edit-command
+bindkey '^g' edit-command
+bindkey -M vicmd '^g' edit-command
 
 # Initialize hisignore with some stuff to ignore already
 declare ZSB_HISTORY_IGNORE=(
