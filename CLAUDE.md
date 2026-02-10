@@ -37,7 +37,7 @@ cd go-work && go test ./...               # Test everything
 
 2. **Go layer** (`go-work/`): CLI tools as separate modules under `go-work/cmd/`. Shared libraries in `go-work/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
 
-**Key Go commands:** `zsb_bundle` (the bundler), `gwt` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`, `zsb_charm_tmux_renametab`, `zsb_charm_tmux_urlopen`.
+**Key Go commands:** `zsb_bundle` (the bundler), `gitworktree` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`, `zsb_charm_tmux_renametab`, `zsb_charm_tmux_urlopen`.
 
 **Bundler flow:** `zsb_bundle` walks `src/`, concatenates all `.zsh` files respecting ordering, and outputs `result.zsh`. To debug without bundling, source `debug.zsh` instead.
 

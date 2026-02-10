@@ -1,15 +1,16 @@
 go 1.25.0
 
 use (
+	./cmd/airbnb_calculator
+	./cmd/countdown
 	./cmd/get_repo_name
+	./cmd/gitworktree
 	./cmd/repeatstr
+	./cmd/zsb_bundle
 	./cmd/zsb_charm_tmux_renametab
 	./cmd/zsb_charm_tmux_urlopen
 	./cmd/zsb_clipcopy
 	./cmd/zsb_open
-	./cmd/airbnb_calculator
-	./cmd/countdown
-	./cmd/zsb_bundle
 
 	./lib/args
 	./lib/git
