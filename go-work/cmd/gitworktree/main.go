@@ -261,10 +261,17 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
+			deletingCurrent := m.cursor == m.current
 			if err := deleteWorktree(m.worktrees[m.cursor].Path); err != nil {
 				m.err = err
 				m.mode = listMode
 				return m, nil
+			}
+			// If we deleted the current worktree, select main and quit
+			// so the shell cd's to a valid directory.
+			if deletingCurrent && len(m.worktrees) > 0 {
+				m.selected = m.worktrees[0].Path
+				return m, tea.Quit
 			}
 			wts, err := listWorktrees()
 			if err != nil {
