@@ -2,7 +2,7 @@ ${zsb}.cdw_generic() {
     local project_dir=$1
     local project=$2
     if [[ -z "$project" ]]; then
-      project=$(ls $project_dir | fzf)
+      project=$(ls $project_dir | rg -v '_gitworktree$' | fzf)
       [[ -n "$project" ]] && print -z "cdw $project"
     else
       cds $project_dir/$project
@@ -14,7 +14,7 @@ ${zsb}.tmw_generic() {
     local tmnum=$2
     local project=$3
     if [[ -z "$project" ]]; then
-      project=$(ls $project_dir | fzf)
+      project=$(ls $project_dir | rg -v '_gitworktree$' | fzf)
       [[ -n "$project" ]] && print -z "tmw${tmnum} $project"
     else
       local suffix=""
@@ -33,7 +33,7 @@ tmw2() { ${zsb}.tmw_generic ${ZSB_PROJECTS_DIR}2 2 $1 }
 tmw3() { ${zsb}.tmw_generic ${ZSB_PROJECTS_DIR}3 3 $1 }
 tmw4() { ${zsb}.tmw_generic ${ZSB_PROJECTS_DIR}4 4 $1 }
 
-compdef "_${zsb}.singleCompC 'ls $ZSB_PROJECTS_DIR'" cdw tmw
-compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}2'" cdw2 tmw2
-compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}3'" cdw3 tmw3
-compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}4'" cdw4 tmw4
+compdef "_${zsb}.singleCompC 'ls $ZSB_PROJECTS_DIR | rg -v _gitworktree\$'" cdw tmw
+compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}2 | rg -v _gitworktree\$'" cdw2 tmw2
+compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}3 | rg -v _gitworktree\$'" cdw3 tmw3
+compdef "_${zsb}.singleCompC 'ls ${ZSB_PROJECTS_DIR}4 | rg -v _gitworktree\$'" cdw4 tmw4
