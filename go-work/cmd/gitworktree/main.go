@@ -111,7 +111,7 @@ func listWorktrees() ([]Worktree, error) {
 func createWorktree(mainPath, branch string) error {
 	baseDir := WorktreeBaseDir(mainPath)
 	wtPath := filepath.Join(baseDir, branch)
-	out, err := exec.Command("git", "worktree", "add", wtPath, "-b", branch).CombinedOutput()
+	out, err := exec.Command("git", "worktree", "add", wtPath, "-b", branch, "develop").CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
 	}
