@@ -109,7 +109,8 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// If we deleted the current worktree, chdir to main
 			// so the process has a valid cwd.
 			if deletingCurrent && len(m.worktrees) > 0 {
-				os.Chdir(m.worktrees[0].Path)
+				m.fallbackPath = m.worktrees[0].Path
+				os.Chdir(m.fallbackPath)
 			}
 			wts, err := listWorktrees()
 			if err != nil {

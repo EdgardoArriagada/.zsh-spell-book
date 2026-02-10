@@ -24,13 +24,14 @@ const (
 )
 
 type model struct {
-	worktrees []Worktree
-	cursor    int
-	mode      mode
-	input     textinput.Model
-	selected  string
-	err       error
-	current   int // index of current worktree, -1 if none
+	worktrees    []Worktree
+	cursor       int
+	mode         mode
+	input        textinput.Model
+	selected     string
+	fallbackPath string // set when current worktree is deleted, so quit still cd's somewhere valid
+	err          error
+	current      int // index of current worktree, -1 if none
 }
 
 var (

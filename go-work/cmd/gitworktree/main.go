@@ -14,8 +14,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	if selected := m.(model).selected; selected != "" {
-		fmt.Print(selected)
+	mdl := m.(model)
+	if mdl.selected != "" {
+		fmt.Print(mdl.selected)
+		os.Exit(0)
+	}
+	if mdl.fallbackPath != "" {
+		fmt.Print(mdl.fallbackPath)
 		os.Exit(0)
 	}
 	os.Exit(1)
