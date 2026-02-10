@@ -273,11 +273,10 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.mode = listMode
 				return m, nil
 			}
-			// If we deleted the current worktree, select main and quit
-			// so the shell cd's to a valid directory.
+			// If we deleted the current worktree, chdir to main
+			// so the process has a valid cwd.
 			if deletingCurrent && len(m.worktrees) > 0 {
-				m.selected = m.worktrees[0].Path
-				return m, tea.Quit
+				os.Chdir(m.worktrees[0].Path)
 			}
 			wts, err := listWorktrees()
 			if err != nil {
