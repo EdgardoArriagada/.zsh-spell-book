@@ -131,12 +131,19 @@ func currentWorktreeIndex(worktrees []Worktree) int {
 	if err != nil {
 		return -1
 	}
+	return FindCurrentWorktree(worktrees, cwd)
+}
+
+func FindCurrentWorktree(worktrees []Worktree, cwd string) int {
+	best := -1
+	bestLen := 0
 	for i, wt := range worktrees {
-		if strings.HasPrefix(cwd, wt.Path) {
-			return i
+		if strings.HasPrefix(cwd, wt.Path) && len(wt.Path) > bestLen {
+			best = i
+			bestLen = len(wt.Path)
 		}
 	}
-	return -1
+	return best
 }
 
 func initialModel() model {

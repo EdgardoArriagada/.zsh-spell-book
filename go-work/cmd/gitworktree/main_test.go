@@ -99,6 +99,36 @@ func TestParseWorktreeList(t *testing.T) {
 	}
 }
 
+func TestFindCurrentWorktree(t *testing.T) {
+	worktrees := []gitworktree.Worktree{
+		{Path: "/home/user/repo"},
+		{Path: "/home/user/repo_gitworktree/feature"},
+		{Path: "/home/user/repo_gitworktree/bugfix"},
+	}
+
+	tests := []struct {
+		name   string
+		cwd    string
+		expect int
+	}{
+		{"matches main worktree", "/home/user/repo", 0},
+		{"matches main worktree subdir", "/home/user/repo/src", 0},
+		{"matches feature worktree", "/home/user/repo_gitworktree/feature", 1},
+		{"matches feature worktree subdir", "/home/user/repo_gitworktree/feature/src", 1},
+		{"matches bugfix worktree", "/home/user/repo_gitworktree/bugfix", 2},
+		{"no match", "/home/user/other", -1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := gitworktree.FindCurrentWorktree(worktrees, tt.cwd)
+			if got != tt.expect {
+				t.Errorf("FindCurrentWorktree(cwd=%q) = %d, want %d", tt.cwd, got, tt.expect)
+			}
+		})
+	}
+}
+
 func TestWorktreeBaseDir(t *testing.T) {
 	tests := []struct {
 		mainPath string
