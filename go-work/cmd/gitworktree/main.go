@@ -158,8 +158,14 @@ func initialModel() model {
 		cur = currentWorktreeIndex(wts)
 	}
 
+	cursor := 0
+	if cur > 0 {
+		cursor = cur
+	}
+
 	return model{
 		worktrees: wts,
+		cursor:    cursor,
 		err:       err,
 		input:     ti,
 		current:   cur,
