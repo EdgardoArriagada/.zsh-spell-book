@@ -104,6 +104,15 @@ zle -N edit-command
 bindkey '^g' edit-command
 bindkey -M vicmd '^g' edit-command
 
+gwt-widget() {
+  local dir
+  dir=$(gitworktree) && cd "$dir"
+  zle reset-prompt
+}
+zle -N gwt-widget
+
+bindkey -M viins '^t' gwt-widget
+
 # Initialize hisignore with some stuff to ignore already
 declare ZSB_HISTORY_IGNORE=(
   'l[a,l,s,h,]*'
