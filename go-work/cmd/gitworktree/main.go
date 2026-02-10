@@ -38,15 +38,28 @@ type model struct {
 }
 
 var (
+	cursorStyle lipgloss.Style
+	activeStyle lipgloss.Style
+	currentMark lipgloss.Style
+	dimStyle    lipgloss.Style
+	branchStyle lipgloss.Style
+	titleStyle  lipgloss.Style
+	promptStyle lipgloss.Style
+	errStyle    lipgloss.Style
+)
+
+func init() {
+	lipgloss.SetDefaultRenderer(lipgloss.NewRenderer(os.Stderr))
+
 	cursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Bold(true)
 	activeStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	currentMark = lipgloss.NewStyle().Foreground(lipgloss.Color("114"))
-	dimStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	dimStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 	branchStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("39"))
-	titleStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("99"))
+	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("99"))
 	promptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	errStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
-)
+	errStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+}
 
 // ParseWorktreeList parses the porcelain output of `git worktree list --porcelain`.
 func ParseWorktreeList(output string) []Worktree {
