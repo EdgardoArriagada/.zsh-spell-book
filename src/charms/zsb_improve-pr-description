@@ -30,4 +30,4 @@ The pr number to work with is the ${PR_NUM}
 EOF
 )
 
-claude --dangerously-skip-permissions --print "$PROMPT"
+claude --dangerously-skip-permissions --print "$PROMPT" --model sonnet
