@@ -1,3 +1,5 @@
 cl() { claude --dangerously-skip-permissions $@; }
 
-hisIgnore cl
+alias clp='cl --model opus --permission-mode plan'
+
+hisIgnore cl clp
