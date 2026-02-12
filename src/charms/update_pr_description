@@ -1,0 +1,68 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+echo "=> Fetching PR number..."
+PR_NUM=$(gh pr view --json number --jq '.number')
+echo "=> PR_NUM: ${PR_NUM}"
+
+echo "=> Fetching PR diff..."
+PR_DIFF=$(gh pr diff "$PR_NUM")
+echo "=> PR_DIFF length: ${#PR_DIFF} chars"
+
+echo "=> Fetching PR current title..."
+PR_CURRENT_TITLE=$(gh pr view "$PR_NUM" --json title --jq '.title')
+echo "=> PR_CURRENT_TITLE: ${PR_CURRENT_TITLE}"
+
+echo "=> Fetching PR commit messages..."
+PR_COMMITS=$(gh pr view "$PR_NUM" --json commits --jq '.commits[].messageHeadline')
+echo "=> PR_COMMITS:\n${PR_COMMITS}"
+
+PROMPT=$(cat <<EOF
+**Persona:** Act as a highly experienced **Senior Software Engineer (Staff)** with deep knowledge of **Code Review** practices and **Github Flow**. Your primary objective is to facilitate the understanding and integration of changes into the repository.
+
+**Context:** You are reviewing Pull Request #${PR_NUM}. Analyze the provided diff to distill the essence of the changes, their impact, and their motivation. The PR description is crucial for approval and merging.
+
+**Current PR title:** ${PR_CURRENT_TITLE}
+
+**Commit messages:**
+${PR_COMMITS}
+
+**Diff:**
+${PR_DIFF}
+
+**Task:** Generate a **Pull Request Description** and **Pull Request Title** based on the diff and commit messages above.
+
+1. **Change Analysis:** Synthesize the PR's main purpose (e.g., *critical bug fix*, *new feature implementation*, *refactoring of module X*) in a section called **"Key Changes Summary"**. Identify the main components or files affected.
+2. **Motivation/Justification:** In a section **"Justification and Problem Solved"**, briefly explain why these changes were made and what *issue* (if applicable) or business need is addressed.
+3. **Risks and Impact (Optional):** If the change is significant or carries risks, include an **"Additional Considerations"** section to warn about potential side effects or dependencies.
+
+**Constraints:**
+* **Language:** All generated text must be in **Spanish**.
+* **Description Length:** The total description (Summary + Justification + Considerations) must not exceed **15 lines of text**.
+* The **PR Description** must use **Markdown** formatting (headings, lists) for readability.
+
+**Output format:** You MUST respond with plain text only, no JSON, no markdown fences, no extra formatting.
+- The FIRST line must be the PR title in Spanish
+- ALL subsequent lines must be the PR description in Markdown format, in Spanish
+- Do NOT include any explanatory text before or after
+- Do NOT wrap the output in code blocks or quotes
+EOF
+)
+
+echo "=> Calling Claude to generate title and description..."
+CLAUDE_OUTPUT=$(claude --dangerously-skip-permissions --print "$PROMPT" --model sonnet)
+echo "=> Raw Claude output:\n${CLAUDE_OUTPUT}"
+
+PR_TITLE=$(echo "$CLAUDE_OUTPUT" | head -n 1)
+PR_DESCRIPTION=$(echo "$CLAUDE_OUTPUT" | tail -n +2)
+
+echo "=> Parsed PR_TITLE: ${PR_TITLE}"
+echo "=> Parsed PR_DESCRIPTION:\n${PR_DESCRIPTION}"
+
+echo "=> Updating PR #${PR_NUM}..."
+gh pr edit "$PR_NUM" \
+    --title "$PR_TITLE" \
+    --body "$PR_DESCRIPTION"
+
+echo "=> PR #${PR_NUM} updated successfully."
