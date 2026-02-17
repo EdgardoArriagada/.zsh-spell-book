@@ -10,10 +10,6 @@ echo "=> Fetching PR diff..."
 PR_DIFF=$(gh pr diff "$PR_NUM")
 echo "=> PR_DIFF length: ${#PR_DIFF} chars"
 
-echo "=> Fetching PR current title..."
-PR_CURRENT_TITLE=$(gh pr view "$PR_NUM" --json title --jq '.title')
-echo "=> PR_CURRENT_TITLE: ${PR_CURRENT_TITLE}"
-
 echo "=> Fetching PR commit messages..."
 PR_COMMITS=$(gh pr view "$PR_NUM" --json commits --jq '.commits[].messageHeadline')
 echo "=> PR_COMMITS:\n${PR_COMMITS}"
@@ -22,8 +18,6 @@ PROMPT=$(cat <<EOF
 **Persona:** Act as a highly experienced **Senior Software Engineer (Staff)** with deep knowledge of **Code Review** practices and **Github Flow**. Your primary objective is to facilitate the understanding and integration of changes into the repository.
 
 **Context:** You are reviewing Pull Request #${PR_NUM}. Analyze the provided diff to distill the essence of the changes, their impact, and their motivation. The PR description is crucial for approval and merging.
-
-**Current PR title:** ${PR_CURRENT_TITLE}
 
 **Commit messages:**
 ${PR_COMMITS}
