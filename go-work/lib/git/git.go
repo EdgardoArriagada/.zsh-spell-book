@@ -19,10 +19,22 @@ func GetRepoRoot() (string, error) {
 }
 
 func GetRepoName() (string, error) {
-	repoRoot, err := GetRepoRoot()
+	// Get remote origin URL
+	cmd := exec.Command("git", "remote", "get-url", "origin")
+	cmd.Stderr = nil // silencing errors, similar to '2>/dev/null'
+
+	output, err := cmd.Output()
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Base(repoRoot), nil
+	remoteURL := strings.TrimSpace(string(output))
+
+	// Extract base name from URL
+	baseName := filepath.Base(remoteURL)
+
+	// Remove .git extension if present
+	repoName := strings.TrimSuffix(baseName, ".git")
+
+	return repoName, nil
 }
