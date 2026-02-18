@@ -55,10 +55,21 @@ func listWorktrees() ([]Worktree, error) {
 	return ParseWorktreeList(string(out)), nil
 }
 
+func branchExists(branch string) bool {
+	err := exec.Command("git", "show-ref", "--verify", "--quiet", "refs/heads/"+branch).Run()
+	return err == nil
+}
+
 func createWorktree(mainPath, branch string) error {
 	baseDir := WorktreeBaseDir(mainPath)
 	wtPath := filepath.Join(baseDir, branch)
-	out, err := exec.Command("git", "worktree", "add", wtPath, "-b", branch, "develop").CombinedOutput()
+	var args []string
+	if branchExists(branch) {
+		args = []string{"worktree", "add", wtPath, branch}
+	} else {
+		args = []string{"worktree", "add", wtPath, "-b", branch, "develop"}
+	}
+	out, err := exec.Command("git", args...).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
 	}
