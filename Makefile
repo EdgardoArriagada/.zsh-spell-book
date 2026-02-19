@@ -32,3 +32,8 @@ build-all:
 	for target in $$(ls ./go-work/cmd); do \
 		$(MAKE) TARGET=$$target ACTION='build' .run; \
 	done
+
+test-all:
+	for module in $$(awk '/^\t\.\//{sub(/^\t\.\//, ""); print}' go-work/go.work); do \
+		(cd go-work/$$module && go test ./...) || exit 1; \
+	done
