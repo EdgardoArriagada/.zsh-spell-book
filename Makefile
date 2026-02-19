@@ -34,6 +34,4 @@ build-all:
 	done
 
 test-all:
-	for module in $$(awk '/^\t\.\//{sub(/^\t\.\//, ""); print}' go-work/go.work); do \
-		(cd go-work/$$module && go test ./...) || exit 1; \
-	done
+	cd go-work && go list -f '{{.Dir}}' -m | xargs -I{} sh -c 'cd "{}" && go test ./...'
