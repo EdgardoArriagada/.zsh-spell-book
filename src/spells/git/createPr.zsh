@@ -7,7 +7,7 @@ createPr() {
   local parentBranch=${1:="$(parentBranch)"}
 
   if ${zsb}.isUserOnDefaultBranch; then
-    ${zsb}.throw "Can't create a pull request on a default branch, use `hl --aware` flag to do it anyway"
+    ${zsb}.throw "Can't create a pull request on a default branch. Should you create a release branch instead?"
   fi
 
   [[ -z "$parentBranch" ]] && ${zsb}.throw "Couldn't retrieve parent branch info. Pass it manually"
