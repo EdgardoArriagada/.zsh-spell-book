@@ -8,7 +8,7 @@ A zsh configuration framework ("spell book") that organizes shell aliases/functi
 
 ## Build Commands
 
-All make targets run from the repo root. Go workspace is in `go-work/` (Go 1.25.0).
+All make targets run from the repo root. Go workspace is in `go-work/` (Go 1.26.0).
 
 ```sh
 make build                  # Build a Go command (interactive fzf selection)
