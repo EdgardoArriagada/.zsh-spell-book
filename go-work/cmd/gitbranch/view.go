@@ -46,7 +46,7 @@ func (m model) View() string {
 		var line string
 		switch {
 		case br.IsWorktree:
-			line = tui.WorktreeStyle.Render(br.Name) + tui.WorktreeStyle.Render(" ")
+			line = tui.WorktreeStyle.Render(br.Name) + tui.WorktreeStyle.Render()
 		case idx == m.current && idx == m.cursor:
 			line = tui.CurrentMark.Render(br.Name) + tui.CurrentMark.Render("  ●")
 		case idx == m.current:
