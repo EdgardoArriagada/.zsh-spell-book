@@ -160,6 +160,12 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.mode = tui.ListMode
 					return m, nil
 				}
+				for i, b := range m.branches {
+					if b.Name == switchTo {
+						m.current = i
+						break
+					}
+				}
 			}
 			if err := deleteBranch(m.branches[m.cursor].Name); err != nil {
 				if isUnmergedBranchError(err) {

@@ -74,7 +74,7 @@ func sortBranches(branches []Branch) []Branch {
 	return append(result, worktrees...)
 }
 
-func listBranches() ([]Branch, error) {
+var listBranches = func() ([]Branch, error) {
 	out, err := exec.Command("git", "branch", "--format=%(refname:short) %(HEAD)").Output()
 	if err != nil {
 		return nil, fmt.Errorf("git branch: %w", err)
@@ -94,7 +94,7 @@ func listBranches() ([]Branch, error) {
 	return sortBranches(branches), nil
 }
 
-func checkoutBranch(name string) error {
+var checkoutBranch = func(name string) error {
 	out, err := exec.Command("git", "checkout", name).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
@@ -102,7 +102,7 @@ func checkoutBranch(name string) error {
 	return nil
 }
 
-func createBranch(name string) error {
+var createBranch = func(name string) error {
 	out, err := exec.Command("git", "branch", name).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
@@ -110,7 +110,7 @@ func createBranch(name string) error {
 	return nil
 }
 
-func deleteBranch(name string) error {
+var deleteBranch = func(name string) error {
 	out, err := exec.Command("git", "branch", "-d", name).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
@@ -118,7 +118,7 @@ func deleteBranch(name string) error {
 	return nil
 }
 
-func forceDeleteBranch(name string) error {
+var forceDeleteBranch = func(name string) error {
 	out, err := exec.Command("git", "branch", "-D", name).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s", strings.TrimSpace(string(out)))

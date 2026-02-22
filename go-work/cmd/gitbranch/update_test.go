@@ -238,6 +238,70 @@ func TestViewportClampsOnWindowResize(t *testing.T) {
 	}
 }
 
+// --- Stale m.current fix: checkout updates m.current before entering ForceDeleteConfirmMode ---
+
+// TestCurrentUpdatedAfterCheckoutInDeleteFlow verifies that when deleting the current branch
+// fails with "not fully merged", m.current is updated to reflect the newly checked-out branch
+// before entering ForceDeleteConfirmMode. Without the fix, m.current stays stale (== cursor),
+// causing updateForceDelete to mis-identify wasCurrentBranch and land the cursor at 0 instead
+// of deletedIdx-1 after the force delete.
+func TestCurrentUpdatedAfterCheckoutInDeleteFlow(t *testing.T) {
+	origCheckout := checkoutBranch
+	checkoutBranch = func(_ string) error { return nil }
+	defer func() { checkoutBranch = origCheckout }()
+
+	origDelete := deleteBranch
+	deleteBranch = func(_ string) error {
+		return fmt.Errorf("error: The branch 'current' is not fully merged")
+	}
+	defer func() { deleteBranch = origDelete }()
+
+	origForce := forceDeleteBranch
+	forceDeleteBranch = func(_ string) error { return nil }
+	defer func() { forceDeleteBranch = origForce }()
+
+	origList := listBranches
+	listBranches = func() ([]Branch, error) {
+		return []Branch{
+			{Name: "main", IsCurrent: true},
+			{Name: "feat"},
+		}, nil
+	}
+	defer func() { listBranches = origList }()
+
+	// branches[2] ("current") is the current branch; cursor is also on it
+	brs := []Branch{
+		{Name: "main"},
+		{Name: "feat"},
+		{Name: "current", IsCurrent: true},
+	}
+	m := makeListModel(brs, 2, 2)
+	m.mode = tui.DeleteConfirmMode
+
+	// Confirm delete: checkout succeeds, deleteBranch fails → ForceDeleteConfirmMode
+	m = pressKey(m, "y")
+
+	if m.mode != tui.ForceDeleteConfirmMode {
+		t.Fatalf("mode after unmerged delete = %v, want ForceDeleteConfirmMode", m.mode)
+	}
+	// m.current must be updated to main (index 0) after checkout, not left stale at 2
+	if m.current != 0 {
+		t.Errorf("m.current after checkout = %d, want 0 (main); stale m.current not fixed", m.current)
+	}
+
+	// Confirm force delete
+	m = pressKey(m, "y")
+
+	if m.mode != tui.ListMode {
+		t.Fatalf("mode after force delete = %v, want ListMode", m.mode)
+	}
+	// cursor should be at deletedIdx-1 = 1, not 0
+	// (with stale m.current, wasCurrentBranch was wrongly true → cursor went to 0)
+	if m.cursor != 1 {
+		t.Errorf("cursor after force delete = %d, want 1 (deletedIdx-1); cursor misplaced", m.cursor)
+	}
+}
+
 // --- Branch name validation in add mode ---
 
 func TestAddModeRejectsInvalidBranch(t *testing.T) {
