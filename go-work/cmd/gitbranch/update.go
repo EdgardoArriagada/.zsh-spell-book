@@ -38,15 +38,27 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case "j", "down", "tab":
 		m.statusMsg = ""
 		if len(m.branches) > 0 {
-			m.cursor = (m.cursor + 1) % len(m.branches)
+			next := (m.cursor + 1) % len(m.branches)
+			for next != m.cursor && m.branches[next].IsWorktree {
+				next = (next + 1) % len(m.branches)
+			}
+			if !m.branches[next].IsWorktree {
+				m.cursor = next
+			}
 		}
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.branches) > 0 {
-			m.cursor = (m.cursor - 1 + len(m.branches)) % len(m.branches)
+			next := (m.cursor - 1 + len(m.branches)) % len(m.branches)
+			for next != m.cursor && m.branches[next].IsWorktree {
+				next = (next - 1 + len(m.branches)) % len(m.branches)
+			}
+			if !m.branches[next].IsWorktree {
+				m.cursor = next
+			}
 		}
 	case "enter":
-		if len(m.branches) > 0 {
+		if len(m.branches) > 0 && !m.branches[m.cursor].IsWorktree {
 			m.selected = m.branches[m.cursor].Name
 		}
 		return m, tea.Quit
@@ -62,6 +74,10 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if m.cursor == m.current && len(m.branches) == 1 {
 			m.statusMsg = "cannot delete the only branch"
+			break
+		}
+		if isDefaultBranch(m.branches[m.cursor].Name) {
+			m.statusMsg = "cannot delete default branch"
 			break
 		}
 		m.statusMsg = ""
@@ -126,7 +142,9 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
-			if m.cursor == m.current {
+			deletedIdx := m.cursor
+			wasCurrentBranch := m.cursor == m.current
+			if wasCurrentBranch {
 				switchTo := ""
 				for _, b := range m.branches {
 					if b.Name != m.branches[m.cursor].Name {
@@ -163,8 +181,10 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 					break
 				}
 			}
-			if m.cursor >= len(m.branches) {
-				m.cursor = len(m.branches) - 1
+			if wasCurrentBranch || deletedIdx == 0 {
+				m.cursor = 0
+			} else {
+				m.cursor = deletedIdx - 1
 			}
 			m.mode = tui.ListMode
 			m.err = nil
@@ -179,6 +199,8 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
+			deletedIdx := m.cursor
+			wasCurrentBranch := m.cursor == m.current
 			if err := forceDeleteBranch(m.branches[m.cursor].Name); err != nil {
 				m.err = err
 				m.mode = tui.ListMode
@@ -197,8 +219,10 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 					break
 				}
 			}
-			if m.cursor >= len(m.branches) {
-				m.cursor = len(m.branches) - 1
+			if wasCurrentBranch || deletedIdx == 0 {
+				m.cursor = 0
+			} else {
+				m.cursor = deletedIdx - 1
 			}
 			m.mode = tui.ListMode
 			m.err = nil

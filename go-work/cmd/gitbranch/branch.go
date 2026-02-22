@@ -8,18 +8,60 @@ import (
 
 var priorityBranches = []string{"master", "main", "develop"}
 
+func isDefaultBranch(name string) bool {
+	for _, d := range priorityBranches {
+		if name == d {
+			return true
+		}
+	}
+	return false
+}
+
+func worktreeBranchSet() map[string]bool {
+	out, err := exec.Command("git", "worktree", "list", "--porcelain").Output()
+	if err != nil {
+		return nil
+	}
+	set := map[string]bool{}
+	firstBlock := true
+	inBlock := false
+	for _, line := range strings.Split(string(out), "\n") {
+		if strings.HasPrefix(line, "worktree ") {
+			if firstBlock {
+				firstBlock = false
+				inBlock = true
+				continue
+			}
+			inBlock = true
+			continue
+		}
+		if line == "" {
+			inBlock = false
+			continue
+		}
+		if !firstBlock && inBlock && strings.HasPrefix(line, "branch refs/heads/") {
+			branch := strings.TrimPrefix(line, "branch refs/heads/")
+			set[branch] = true
+		}
+	}
+	return set
+}
+
 func sortBranches(branches []Branch) []Branch {
 	priority := map[string]int{}
 	for i, name := range priorityBranches {
 		priority[name] = i
 	}
 	defaults := make([]*Branch, len(priorityBranches))
-	var rest []Branch
+	var regular []Branch
+	var worktrees []Branch
 	for i := range branches {
-		if idx, ok := priority[branches[i].Name]; ok {
+		if branches[i].IsWorktree {
+			worktrees = append(worktrees, branches[i])
+		} else if idx, ok := priority[branches[i].Name]; ok {
 			defaults[idx] = &branches[i]
 		} else {
-			rest = append(rest, branches[i])
+			regular = append(regular, branches[i])
 		}
 	}
 	result := make([]Branch, 0, len(branches))
@@ -28,7 +70,8 @@ func sortBranches(branches []Branch) []Branch {
 			result = append(result, *b)
 		}
 	}
-	return append(result, rest...)
+	result = append(result, regular...)
+	return append(result, worktrees...)
 }
 
 func listBranches() ([]Branch, error) {
@@ -36,6 +79,7 @@ func listBranches() ([]Branch, error) {
 	if err != nil {
 		return nil, fmt.Errorf("git branch: %w", err)
 	}
+	worktrees := worktreeBranchSet()
 	var branches []Branch
 	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
 		if line == "" {
@@ -44,7 +88,8 @@ func listBranches() ([]Branch, error) {
 		parts := strings.SplitN(line, " ", 2)
 		name := parts[0]
 		isCurrent := len(parts) > 1 && parts[1] == "*"
-		branches = append(branches, Branch{Name: name, IsCurrent: isCurrent})
+		isWorktree := !isCurrent && worktrees[name]
+		branches = append(branches, Branch{Name: name, IsCurrent: isCurrent, IsWorktree: isWorktree})
 	}
 	return sortBranches(branches), nil
 }

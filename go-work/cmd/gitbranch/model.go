@@ -9,8 +9,9 @@ import (
 
 // Branch represents a single local git branch.
 type Branch struct {
-	Name      string
-	IsCurrent bool
+	Name       string
+	IsCurrent  bool
+	IsWorktree bool
 }
 
 type model struct {
