@@ -11,11 +11,12 @@ A zsh configuration framework ("spell book") that organizes shell aliases/functi
 All make targets run from the repo root. Go workspace is in `go-work/` (Go 1.26.0).
 
 ```sh
-make build                  # Build a Go command (interactive fzf selection)
-make TARGET=<name> build    # Build specific command (e.g., TARGET=zsb_bundle)
-make build-all              # Build all Go commands
-make dev                    # Live dev mode for Go (requires entr)
+make go-build               # Build a Go command (interactive fzf selection)
+make go-build <name>        # Build specific command (e.g., make go-build zsb_bundle)
+make go-build-all           # Build all Go commands
+make go-dev                 # Live dev mode for Go (requires entr)
 make zsh-dev                # Live reload on .zsh file changes (requires entr)
+make go-test-all            # Run all Go tests
 ```
 
 Binaries go to `go-work/bin/`. After building zsb_bundle: `./go-work/bin/zsb_bundle` regenerates `result.zsh`.
