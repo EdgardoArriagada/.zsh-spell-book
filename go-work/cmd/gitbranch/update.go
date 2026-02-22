@@ -1,8 +1,6 @@
 package main
 
 import (
-	"strings"
-
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
@@ -12,9 +10,10 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
-		m.height = ws.Height
+		m.vp.Height = ws.Height
 		m.input.SetWidth(ws.Width)
-		return m.clampViewport(), nil
+		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		return m, nil
 	}
 	switch m.mode {
 	case tui.AddMode:
@@ -47,7 +46,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = next
 			}
 		}
-		m = m.clampViewport()
+		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.branches) > 0 {
@@ -59,7 +58,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = next
 			}
 		}
-		m = m.clampViewport()
+		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
 	case "enter":
 		if len(m.branches) > 0 && m.branches[m.cursor].IsWorktree {
 			m.statusMsg = "worktree branches are not selectable"
@@ -104,7 +103,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.err = nil
 			return m, nil
 		case "enter":
-			branch := strings.TrimSpace(strings.ReplaceAll(m.input.Value(), "\n", ""))
+			branch := tui.ParseInputValue(m.input)
 			if branch == "" {
 				return m, nil
 			}

@@ -25,13 +25,13 @@ func (m model) View() string {
 	var s strings.Builder
 	s.WriteString(tui.TitleStyle.Render("  Git Branches") + "\n\n")
 
-	maxVis := m.maxVisible()
-	end := m.offset + maxVis
+	maxVis := m.vp.MaxVisible(len(m.branches))
+	end := m.vp.Offset + maxVis
 	if end > len(m.branches) {
 		end = len(m.branches)
 	}
-	for i, br := range m.branches[m.offset:end] {
-		idx := i + m.offset
+	for i, br := range m.branches[m.vp.Offset:end] {
+		idx := i + m.vp.Offset
 		if idx == firstWorktreeIdx {
 			s.WriteString("\n  " + tui.TitleStyle.Render("Worktree Branches") + "\n\n")
 		}

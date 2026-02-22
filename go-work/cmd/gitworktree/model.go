@@ -20,6 +20,7 @@ type model struct {
 	mode         tui.Mode
 	input        textarea.Model
 	width        int
+	vp           tui.Viewport
 	selected     string
 	fallbackPath string // set when current worktree is deleted, so quit still cd's somewhere valid
 	err          error
@@ -47,7 +48,7 @@ func initialModel() model {
 		err:       err,
 		input:     ti,
 		current:   cur,
-		width:     80,
+		width:     tui.DefaultWidth,
 	}
 }
 

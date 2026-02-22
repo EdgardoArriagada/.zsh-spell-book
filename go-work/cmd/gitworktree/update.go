@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
@@ -13,7 +12,9 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
+		m.vp.Height = ws.Height
 		m.input.SetWidth(ws.Width)
+		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
 		return m, nil
 	}
 	switch m.mode {
@@ -41,11 +42,13 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.worktrees) > 0 {
 			m.cursor = (m.cursor + 1) % len(m.worktrees)
 		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.worktrees) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.worktrees)) % len(m.worktrees)
 		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
 	case "enter":
 		if len(m.worktrees) > 0 {
 			m.selected = m.worktrees[m.cursor].Path
@@ -82,7 +85,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.err = nil
 			return m, nil
 		case "enter":
-			branch := strings.TrimSpace(strings.ReplaceAll(m.input.Value(), "\n", ""))
+			branch := tui.ParseInputValue(m.input)
 			if branch == "" {
 				return m, nil
 			}

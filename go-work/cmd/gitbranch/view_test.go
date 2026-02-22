@@ -17,8 +17,7 @@ func TestViewOnlyRendersVisibleBranches(t *testing.T) {
 		branches: brs,
 		cursor:   3,
 		current:  0,
-		height:   10,
-		offset:   2,
+		vp:       tui.Viewport{Height: 10, Offset: 2},
 		input:    ti,
 	}
 
@@ -112,8 +111,7 @@ func TestViewNoScrollWhenHeightZero(t *testing.T) {
 		branches: brs,
 		cursor:   0,
 		current:  0,
-		height:   0,
-		offset:   0,
+		vp:       tui.Viewport{Height: 0, Offset: 0},
 		input:    ti,
 	}
 

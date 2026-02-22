@@ -28,7 +28,7 @@ func makeListModelWithHeight(branches []Branch, cursor, current, height int) mod
 		mode:     tui.ListMode,
 		input:    ti,
 		current:  current,
-		height:   height,
+		vp:       tui.Viewport{Height: height},
 	}
 }
 
@@ -172,9 +172,9 @@ func TestViewportOffsetIncreasesWhenCursorMovesBelow(t *testing.T) {
 	if m.cursor != 4 {
 		t.Fatalf("cursor = %d, want 4", m.cursor)
 	}
-	maxVis := m.maxVisible()
-	if m.cursor < m.offset || m.cursor >= m.offset+maxVis {
-		t.Errorf("cursor %d not visible in viewport [%d, %d)", m.cursor, m.offset, m.offset+maxVis)
+	maxVis := m.vp.MaxVisible(len(m.branches))
+	if m.cursor < m.vp.Offset || m.cursor >= m.vp.Offset+maxVis {
+		t.Errorf("cursor %d not visible in viewport [%d, %d)", m.cursor, m.vp.Offset, m.vp.Offset+maxVis)
 	}
 }
 
@@ -182,15 +182,15 @@ func TestViewportOffsetDecreasesWhenCursorMovesAbove(t *testing.T) {
 	// cursor at top of a scrolled-down viewport; k should scroll up
 	brs := manyBranches(10)
 	m := makeListModelWithHeight(brs, 6, 0, 10) // cursor=6, maxVisible=4
-	m.offset = 6                                 // cursor at the very top of viewport
+	m.vp.Offset = 6                              // cursor at the very top of viewport
 
 	m = pressKey(m, "k") // cursor → 5, viewport must scroll up
 
 	if m.cursor != 5 {
 		t.Fatalf("cursor = %d, want 5", m.cursor)
 	}
-	if m.offset != 5 {
-		t.Errorf("offset = %d, want 5 (cursor now at top of viewport)", m.offset)
+	if m.vp.Offset != 5 {
+		t.Errorf("offset = %d, want 5 (cursor now at top of viewport)", m.vp.Offset)
 	}
 }
 
@@ -202,8 +202,8 @@ func TestViewportNoScrollWhenAllBranchesFit(t *testing.T) {
 	m = pressKey(m, "j")
 	m = pressKey(m, "j")
 
-	if m.offset != 0 {
-		t.Errorf("offset = %d, want 0 (3 branches fit in 14 visible rows)", m.offset)
+	if m.vp.Offset != 0 {
+		t.Errorf("offset = %d, want 0 (3 branches fit in 14 visible rows)", m.vp.Offset)
 	}
 }
 
@@ -211,15 +211,15 @@ func TestViewportWrapAroundResetsOffset(t *testing.T) {
 	// cursor at last item with scrolled viewport; j wraps to 0, offset must go to 0
 	brs := manyBranches(10)
 	m := makeListModelWithHeight(brs, 9, 0, 10) // cursor=9 (last), maxVisible=4
-	m.offset = 6                                 // viewport scrolled down
+	m.vp.Offset = 6                              // viewport scrolled down
 
 	m = pressKey(m, "j") // wraps to cursor=0
 
 	if m.cursor != 0 {
 		t.Fatalf("cursor = %d, want 0 (wrap around)", m.cursor)
 	}
-	if m.offset != 0 {
-		t.Errorf("offset = %d, want 0 after wrap to top", m.offset)
+	if m.vp.Offset != 0 {
+		t.Errorf("offset = %d, want 0 after wrap to top", m.vp.Offset)
 	}
 }
 
@@ -227,14 +227,14 @@ func TestViewportClampsOnWindowResize(t *testing.T) {
 	// cursor=8 in a large terminal; resize to small → offset must clamp so cursor stays visible
 	brs := manyBranches(10)
 	m := makeListModelWithHeight(brs, 8, 0, 20) // big terminal, cursor=8
-	m.offset = 0
+	m.vp.Offset = 0
 
 	updated, _ := m.Update(tea.WindowSizeMsg{Width: 80, Height: 10}) // maxVisible=4
 	m = updated.(model)
 
-	maxVis := m.maxVisible()
-	if m.cursor < m.offset || m.cursor >= m.offset+maxVis {
-		t.Errorf("cursor %d not visible in viewport [%d, %d) after resize", m.cursor, m.offset, m.offset+maxVis)
+	maxVis := m.vp.MaxVisible(len(m.branches))
+	if m.cursor < m.vp.Offset || m.cursor >= m.vp.Offset+maxVis {
+		t.Errorf("cursor %d not visible in viewport [%d, %d) after resize", m.cursor, m.vp.Offset, m.vp.Offset+maxVis)
 	}
 }
 

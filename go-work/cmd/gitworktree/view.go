@@ -18,9 +18,15 @@ func (m model) View() string {
 	var s strings.Builder
 	s.WriteString(tui.TitleStyle.Render("  Git Worktrees") + "\n\n")
 
-	for i, wt := range m.worktrees {
+	maxVis := m.vp.MaxVisible(len(m.worktrees))
+	end := m.vp.Offset + maxVis
+	if end > len(m.worktrees) {
+		end = len(m.worktrees)
+	}
+	for i, wt := range m.worktrees[m.vp.Offset:end] {
+		idx := i + m.vp.Offset
 		cursor := "   "
-		if i == m.cursor {
+		if idx == m.cursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 
@@ -35,11 +41,11 @@ func (m model) View() string {
 
 		var line string
 		switch {
-		case i == m.current && i == m.cursor:
+		case idx == m.current && idx == m.cursor:
 			line = tui.CurrentMark.Render(name) + branch + tui.CurrentMark.Render("  ●")
-		case i == m.current:
+		case idx == m.current:
 			line = tui.DimStyle.Render(name) + tui.DimStyle.Render(branch) + tui.CurrentMark.Render("  ●")
-		case i == m.cursor:
+		case idx == m.cursor:
 			line = tui.ActiveStyle.Render(name) + branch
 		default:
 			line = tui.DimStyle.Render(name) + tui.DimStyle.Render(branch)
