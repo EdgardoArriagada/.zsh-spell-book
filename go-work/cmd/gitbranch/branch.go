@@ -17,34 +17,27 @@ func isDefaultBranch(name string) bool {
 	return false
 }
 
+func parseWorktreeBranches(output string) map[string]bool {
+	set := map[string]bool{}
+	blockIdx := -1
+	for _, line := range strings.Split(output, "\n") {
+		if strings.HasPrefix(line, "worktree ") {
+			blockIdx++
+			continue
+		}
+		if blockIdx > 0 && strings.HasPrefix(line, "branch refs/heads/") {
+			set[strings.TrimPrefix(line, "branch refs/heads/")] = true
+		}
+	}
+	return set
+}
+
 func worktreeBranchSet() map[string]bool {
 	out, err := exec.Command("git", "worktree", "list", "--porcelain").Output()
 	if err != nil {
 		return nil
 	}
-	set := map[string]bool{}
-	firstBlock := true
-	inBlock := false
-	for _, line := range strings.Split(string(out), "\n") {
-		if strings.HasPrefix(line, "worktree ") {
-			if firstBlock {
-				firstBlock = false
-				inBlock = true
-				continue
-			}
-			inBlock = true
-			continue
-		}
-		if line == "" {
-			inBlock = false
-			continue
-		}
-		if !firstBlock && inBlock && strings.HasPrefix(line, "branch refs/heads/") {
-			branch := strings.TrimPrefix(line, "branch refs/heads/")
-			set[branch] = true
-		}
-	}
-	return set
+	return parseWorktreeBranches(string(out))
 }
 
 func sortBranches(branches []Branch) []Branch {
