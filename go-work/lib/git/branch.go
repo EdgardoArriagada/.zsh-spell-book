@@ -3,26 +3,15 @@ package git
 import (
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
-// ValidateBranchName returns an error if the branch name contains characters
-// that git-check-ref-format would reject.
+// ValidateBranchName returns an error if the branch name is rejected by git.
 func ValidateBranchName(branch string) error {
 	if branch == "" {
 		return fmt.Errorf("branch name cannot be empty")
 	}
-	banned := []string{" ", "~", "^", ":", "?", "*", "[", "\\", "..", "@{"}
-	for _, b := range banned {
-		if strings.Contains(branch, b) {
-			return fmt.Errorf("invalid branch name: contains %q", b)
-		}
-	}
-	if strings.HasPrefix(branch, "-") || strings.HasPrefix(branch, ".") {
-		return fmt.Errorf("invalid branch name: cannot start with %q", string(branch[0]))
-	}
-	if strings.HasSuffix(branch, ".") || strings.HasSuffix(branch, "/") || strings.HasSuffix(branch, ".lock") {
-		return fmt.Errorf("invalid branch name: invalid suffix")
+	if err := exec.Command("git", "check-ref-format", "--branch", branch).Run(); err != nil {
+		return fmt.Errorf("invalid branch name %q", branch)
 	}
 	return nil
 }

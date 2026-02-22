@@ -20,6 +20,7 @@ func TestValidateBranchName(t *testing.T) {
 		name   string
 		branch string
 	}{
+		{"empty", ""},
 		{"space", "my branch"},
 		{"tilde", "feat~1"},
 		{"caret", "feat^0"},
