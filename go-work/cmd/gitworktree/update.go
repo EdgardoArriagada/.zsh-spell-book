@@ -8,6 +8,11 @@ import (
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if ws, ok := msg.(tea.WindowSizeMsg); ok {
+		m.width = ws.Width
+		m.input.SetWidth(ws.Width)
+		return m, nil
+	}
 	switch m.mode {
 	case addMode:
 		return m.updateAdd(msg)
@@ -74,7 +79,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.err = nil
 			return m, nil
 		case "enter":
-			branch := strings.TrimSpace(m.input.Value())
+			branch := strings.TrimSpace(strings.ReplaceAll(m.input.Value(), "\n", ""))
 			if branch == "" {
 				return m, nil
 			}

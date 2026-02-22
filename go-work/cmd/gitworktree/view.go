@@ -52,7 +52,8 @@ func (m model) View() string {
 
 	switch m.mode {
 	case addMode:
-		s.WriteString("\n" + promptStyle.Render("  New branch: ") + m.input.View() + "\n")
+		s.WriteString("\n" + promptStyle.Render("  New branch") + "\n  ❱")
+		s.WriteString(m.input.View() + "\n")
 		if m.err != nil {
 			s.WriteString(errStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n")
 		}

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -28,7 +28,8 @@ type model struct {
 	worktrees    []Worktree
 	cursor       int
 	mode         mode
-	input        textinput.Model
+	input        textarea.Model
+	width        int
 	selected     string
 	fallbackPath string // set when current worktree is deleted, so quit still cd's somewhere valid
 	err          error
@@ -68,10 +69,13 @@ func init() {
 
 func initialModel() model {
 	wts, err := listWorktrees()
-	ti := textinput.New()
+	ti := textarea.New()
 	ti.Placeholder = "branch-name"
 	ti.CharLimit = 100
-	ti.Width = 40
+	ti.ShowLineNumbers = false
+	ti.SetHeight(3)
+	ti.SetWidth(80) // dynamically updated via WindowSizeMsg
+	ti.Prompt = "  "
 
 	cur := -1
 	if err == nil {
@@ -89,6 +93,7 @@ func initialModel() model {
 		err:       err,
 		input:     ti,
 		current:   cur,
+		width:     80,
 	}
 }
 

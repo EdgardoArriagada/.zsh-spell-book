@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 func makeListModel(worktrees []Worktree, cursor int) model {
-	ti := textinput.New()
+	ti := textarea.New()
 	return model{
 		worktrees: worktrees,
 		cursor:    cursor,
