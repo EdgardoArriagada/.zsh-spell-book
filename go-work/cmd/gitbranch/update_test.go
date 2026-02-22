@@ -302,6 +302,117 @@ func TestCurrentUpdatedAfterCheckoutInDeleteFlow(t *testing.T) {
 	}
 }
 
+// --- postDeleteRefresh helper ---
+
+func TestPostDeleteRefreshOnListError(t *testing.T) {
+	origList := listBranches
+	listBranches = func() ([]Branch, error) {
+		return nil, fmt.Errorf("git error")
+	}
+	defer func() { listBranches = origList }()
+
+	brs := threeBranches()
+	m := makeListModel(brs, 1, 0)
+	m.mode = tui.DeleteConfirmMode
+
+	result := postDeleteRefresh(m, 1, false)
+
+	if result.err == nil {
+		t.Error("expected err to be set on listBranches failure")
+	}
+	if result.mode != tui.ListMode {
+		t.Errorf("mode = %v, want ListMode", result.mode)
+	}
+}
+
+func TestPostDeleteRefreshCursorWasCurrentBranch(t *testing.T) {
+	origList := listBranches
+	listBranches = func() ([]Branch, error) {
+		return []Branch{
+			{Name: "main", IsCurrent: true},
+			{Name: "feat"},
+		}, nil
+	}
+	defer func() { listBranches = origList }()
+
+	brs := threeBranches()
+	m := makeListModel(brs, 2, 2)
+
+	result := postDeleteRefresh(m, 2, true)
+
+	if result.cursor != 0 {
+		t.Errorf("cursor = %d, want 0 when wasCurrentBranch=true", result.cursor)
+	}
+	if result.mode != tui.ListMode {
+		t.Errorf("mode = %v, want ListMode", result.mode)
+	}
+	if result.err != nil {
+		t.Errorf("err = %v, want nil", result.err)
+	}
+}
+
+func TestPostDeleteRefreshCursorDeletedAtZero(t *testing.T) {
+	origList := listBranches
+	listBranches = func() ([]Branch, error) {
+		return []Branch{
+			{Name: "feat", IsCurrent: true},
+			{Name: "fix"},
+		}, nil
+	}
+	defer func() { listBranches = origList }()
+
+	brs := threeBranches()
+	m := makeListModel(brs, 0, 1)
+
+	result := postDeleteRefresh(m, 0, false)
+
+	if result.cursor != 0 {
+		t.Errorf("cursor = %d, want 0 when deletedIdx=0", result.cursor)
+	}
+}
+
+func TestPostDeleteRefreshCursorNormal(t *testing.T) {
+	origList := listBranches
+	listBranches = func() ([]Branch, error) {
+		return []Branch{
+			{Name: "main", IsCurrent: true},
+			{Name: "feat"},
+		}, nil
+	}
+	defer func() { listBranches = origList }()
+
+	brs := threeBranches()
+	m := makeListModel(brs, 2, 0)
+
+	result := postDeleteRefresh(m, 2, false)
+
+	if result.cursor != 1 {
+		t.Errorf("cursor = %d, want 1 (deletedIdx-1)", result.cursor)
+	}
+}
+
+func TestPostDeleteRefreshUpdatesBranchesAndCurrent(t *testing.T) {
+	newBranches := []Branch{
+		{Name: "main", IsCurrent: true},
+		{Name: "feat"},
+	}
+	origList := listBranches
+	listBranches = func() ([]Branch, error) { return newBranches, nil }
+	defer func() { listBranches = origList }()
+
+	brs := threeBranches()
+	m := makeListModel(brs, 1, 0)
+
+	result := postDeleteRefresh(m, 1, false)
+
+	if len(result.branches) != 2 {
+		t.Errorf("branches len = %d, want 2", len(result.branches))
+	}
+	if result.current != 0 {
+		t.Errorf("current = %d, want 0 (main is IsCurrent)", result.current)
+	}
+}
+
 // --- Branch name validation in add mode ---
 
 func TestAddModeRejectsInvalidBranch(t *testing.T) {

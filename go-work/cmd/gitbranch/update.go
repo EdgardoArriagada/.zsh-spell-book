@@ -141,6 +141,32 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// postDeleteRefresh refreshes the branch list after a successful deletion,
+// updates m.current, repositions the cursor, and returns to ListMode.
+func postDeleteRefresh(m model, deletedIdx int, wasCurrentBranch bool) model {
+	branches, err := listBranches()
+	if err != nil {
+		m.err = err
+		m.mode = tui.ListMode
+		return m
+	}
+	m.branches = branches
+	for i, b := range branches {
+		if b.IsCurrent {
+			m.current = i
+			break
+		}
+	}
+	if wasCurrentBranch || deletedIdx == 0 {
+		m.cursor = 0
+	} else {
+		m.cursor = deletedIdx - 1
+	}
+	m.mode = tui.ListMode
+	m.err = nil
+	return m
+}
+
 func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
@@ -177,26 +203,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.mode = tui.ListMode
 				return m, nil
 			}
-			branches, err := listBranches()
-			if err != nil {
-				m.err = err
-				m.mode = tui.ListMode
-				return m, nil
-			}
-			m.branches = branches
-			for i, b := range branches {
-				if b.IsCurrent {
-					m.current = i
-					break
-				}
-			}
-			if wasCurrentBranch || deletedIdx == 0 {
-				m.cursor = 0
-			} else {
-				m.cursor = deletedIdx - 1
-			}
-			m.mode = tui.ListMode
-			m.err = nil
+			m = postDeleteRefresh(m, deletedIdx, wasCurrentBranch)
 		default:
 			m.mode = tui.ListMode
 		}
@@ -215,26 +222,7 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.mode = tui.ListMode
 				return m, nil
 			}
-			branches, err := listBranches()
-			if err != nil {
-				m.err = err
-				m.mode = tui.ListMode
-				return m, nil
-			}
-			m.branches = branches
-			for i, b := range branches {
-				if b.IsCurrent {
-					m.current = i
-					break
-				}
-			}
-			if wasCurrentBranch || deletedIdx == 0 {
-				m.cursor = 0
-			} else {
-				m.cursor = deletedIdx - 1
-			}
-			m.mode = tui.ListMode
-			m.err = nil
+			m = postDeleteRefresh(m, deletedIdx, wasCurrentBranch)
 		default:
 			m.mode = tui.ListMode
 		}
