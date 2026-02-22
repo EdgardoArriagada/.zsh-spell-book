@@ -13,6 +13,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateAdd(msg)
 	case deleteConfirmMode:
 		return m.updateDelete(msg)
+	case forceDeleteConfirmMode:
+		return m.updateForceDelete(msg)
 	default:
 		return m.updateList(msg)
 	}
@@ -27,12 +29,14 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case "q", "ctrl+c", "esc":
 		return m, tea.Quit
 	case "j", "down", "tab":
-		if m.cursor < len(m.worktrees)-1 {
-			m.cursor++
+		m.statusMsg = ""
+		if len(m.worktrees) > 0 {
+			m.cursor = (m.cursor + 1) % len(m.worktrees)
 		}
 	case "k", "up", "shift+tab":
-		if m.cursor > 0 {
-			m.cursor--
+		m.statusMsg = ""
+		if len(m.worktrees) > 0 {
+			m.cursor = (m.cursor - 1 + len(m.worktrees)) % len(m.worktrees)
 		}
 	case "enter":
 		if len(m.worktrees) > 0 {
@@ -43,9 +47,16 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.mode = addMode
 		m.input.SetValue("")
 		m.err = nil
+		m.statusMsg = ""
 		return m, m.input.Focus()
 	case "d":
-		if len(m.worktrees) > 0 && m.cursor != 0 {
+		if len(m.worktrees) == 0 {
+			break
+		}
+		if m.cursor == 0 {
+			m.statusMsg = "cannot delete main worktree"
+		} else {
+			m.statusMsg = ""
 			m.mode = deleteConfirmMode
 		}
 	}
@@ -65,6 +76,10 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			branch := strings.TrimSpace(m.input.Value())
 			if branch == "" {
+				return m, nil
+			}
+			if err := ValidateBranchName(branch); err != nil {
+				m.err = err
 				return m, nil
 			}
 			mainPath := m.worktrees[0].Path
@@ -102,12 +117,51 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "y", "Y":
 			deletingCurrent := m.cursor == m.current
 			if err := deleteWorktree(m.worktrees[m.cursor].Path); err != nil {
+				if isWorktreeDirtyError(err) {
+					m.mode = forceDeleteConfirmMode
+					m.err = nil
+					return m, nil
+				}
 				m.err = err
 				m.mode = listMode
 				return m, nil
 			}
 			// If we deleted the current worktree, chdir to main
 			// so the process has a valid cwd.
+			if deletingCurrent && len(m.worktrees) > 0 {
+				m.fallbackPath = m.worktrees[0].Path
+				os.Chdir(m.fallbackPath)
+			}
+			wts, err := listWorktrees()
+			if err != nil {
+				m.err = err
+				m.mode = listMode
+				return m, nil
+			}
+			m.worktrees = wts
+			m.current = currentWorktreeIndex(wts)
+			if m.cursor >= len(m.worktrees) {
+				m.cursor = len(m.worktrees) - 1
+			}
+			m.mode = listMode
+			m.err = nil
+		default:
+			m.mode = listMode
+		}
+	}
+	return m, nil
+}
+
+func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if km, ok := msg.(tea.KeyMsg); ok {
+		switch km.String() {
+		case "y", "Y":
+			deletingCurrent := m.cursor == m.current
+			if err := deleteWorktreeForce(m.worktrees[m.cursor].Path); err != nil {
+				m.err = err
+				m.mode = listMode
+				return m, nil
+			}
 			if deletingCurrent && len(m.worktrees) > 0 {
 				m.fallbackPath = m.worktrees[0].Path
 				os.Chdir(m.fallbackPath)

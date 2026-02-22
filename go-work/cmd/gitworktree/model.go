@@ -21,6 +21,7 @@ const (
 	listMode mode = iota
 	addMode
 	deleteConfirmMode
+	forceDeleteConfirmMode
 )
 
 type model struct {
@@ -31,7 +32,8 @@ type model struct {
 	selected     string
 	fallbackPath string // set when current worktree is deleted, so quit still cd's somewhere valid
 	err          error
-	current      int // index of current worktree, -1 if none
+	statusMsg    string // transient info message shown in list mode
+	current      int    // index of current worktree, -1 if none
 }
 
 var (

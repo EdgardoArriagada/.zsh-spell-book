@@ -53,8 +53,15 @@ func (m model) View() string {
 		s.WriteString("\n" + errStyle.Render(
 			fmt.Sprintf("Delete worktree %s [%s]? (y/n)", filepath.Base(wt.Path), wt.Branch),
 		) + "\n")
+	case forceDeleteConfirmMode:
+		wt := m.worktrees[m.cursor]
+		s.WriteString("\n" + errStyle.Render(
+			fmt.Sprintf("Worktree %s has uncommitted changes. Force delete? (y/n)", filepath.Base(wt.Path)),
+		) + "\n")
 	default:
-		if m.err != nil {
+		if m.statusMsg != "" {
+			s.WriteString("\n" + errStyle.Render(m.statusMsg) + "\n")
+		} else if m.err != nil {
 			s.WriteString("\n" + errStyle.Render(fmt.Sprintf("%v", m.err)) + "\n")
 		}
 	}
