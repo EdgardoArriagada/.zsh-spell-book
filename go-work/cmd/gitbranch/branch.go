@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -124,4 +125,47 @@ func isUnmergedBranchError(err error) bool {
 		return false
 	}
 	return strings.Contains(err.Error(), "is not fully merged")
+}
+
+// parseWorktreePaths returns the main worktree path and all linked worktree paths
+// from `git worktree list --porcelain` output.
+func parseWorktreePaths(output string) (main string, linked []string) {
+	blockIdx := -1
+	for _, line := range strings.Split(output, "\n") {
+		if strings.HasPrefix(line, "worktree ") {
+			blockIdx++
+			path := strings.TrimPrefix(line, "worktree ")
+			if blockIdx == 0 {
+				main = path
+			} else {
+				linked = append(linked, path)
+			}
+		}
+	}
+	return
+}
+
+// isLinkedWorktreeIn returns true if cwd is inside a linked (non-main) worktree.
+func isLinkedWorktreeIn(output, cwd string) bool {
+	_, linked := parseWorktreePaths(output)
+	for _, path := range linked {
+		if cwd == path || strings.HasPrefix(cwd, path+"/") {
+			return true
+		}
+	}
+	return false
+}
+
+// checkIsLinkedWorktree reports whether the current working directory is inside
+// a linked (non-main) git worktree.
+func checkIsLinkedWorktree() bool {
+	out, err := exec.Command("git", "worktree", "list", "--porcelain").Output()
+	if err != nil {
+		return false
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		return false
+	}
+	return isLinkedWorktreeIn(string(out), cwd)
 }

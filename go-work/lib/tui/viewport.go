@@ -5,8 +5,9 @@ const DefaultWidth      = 80 // fallback width before first WindowSizeMsg
 
 // Viewport tracks scrolling state for a list with more items than fit on screen.
 type Viewport struct {
-	Height int
-	Offset int
+	Height        int
+	Offset        int
+	ExtraOverhead int
 }
 
 // MaxVisible returns the number of items that fit in the terminal.
@@ -15,7 +16,7 @@ func (v Viewport) MaxVisible(totalItems int) int {
 	if v.Height == 0 {
 		return totalItems
 	}
-	n := v.Height - ViewportOverhead
+	n := v.Height - ViewportOverhead - v.ExtraOverhead
 	if n < 1 {
 		return 1
 	}

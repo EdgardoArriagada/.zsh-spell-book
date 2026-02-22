@@ -15,16 +15,17 @@ type Branch struct {
 }
 
 type model struct {
-	branches  []Branch
-	cursor    int
-	mode      tui.Mode
-	input     textarea.Model
-	width     int
-	vp        tui.Viewport
-	selected  string
-	err       error
-	statusMsg string // transient info message shown in list mode
-	current   int    // index of current branch, -1 if none
+	branches   []Branch
+	cursor     int
+	mode       tui.Mode
+	input      textarea.Model
+	width      int
+	vp         tui.Viewport
+	selected   string
+	err        error
+	statusMsg  string // transient info message shown in list mode
+	current    int    // index of current branch, -1 if none
+	inWorktree bool
 }
 
 func initialModel() model {
@@ -46,13 +47,21 @@ func initialModel() model {
 		cursor = cur
 	}
 
+	inWT := checkIsLinkedWorktree()
+	vp := tui.Viewport{}
+	if inWT {
+		vp.ExtraOverhead = 2
+	}
+
 	return model{
-		branches: branches,
-		cursor:   cursor,
-		err:      err,
-		input:    ti,
-		current:  cur,
-		width:    tui.DefaultWidth,
+		branches:   branches,
+		cursor:     cursor,
+		err:        err,
+		input:      ti,
+		current:    cur,
+		width:      tui.DefaultWidth,
+		inWorktree: inWT,
+		vp:         vp,
 	}
 }
 

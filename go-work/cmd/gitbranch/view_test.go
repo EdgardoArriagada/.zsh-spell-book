@@ -103,6 +103,36 @@ func TestViewFooterNoWorktreeHintWhenAbsent(t *testing.T) {
 	}
 }
 
+func TestViewWorktreeWarningBanner(t *testing.T) {
+	brs := []Branch{
+		{Name: "main", IsCurrent: true},
+		{Name: "feat"},
+	}
+	ti := tui.NewInput("branch-name")
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: true}
+
+	view := m.View()
+
+	if !strings.Contains(view, "worktree") {
+		t.Error("view should contain worktree warning when inWorktree=true")
+	}
+}
+
+func TestViewNoWorktreeWarningWhenNotInWorktree(t *testing.T) {
+	brs := []Branch{
+		{Name: "main", IsCurrent: true},
+		{Name: "feat"},
+	}
+	ti := tui.NewInput("branch-name")
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: false}
+
+	view := m.View()
+
+	if strings.Contains(view, "⚠") {
+		t.Error("view should not contain worktree warning when inWorktree=false")
+	}
+}
+
 func TestViewNoScrollWhenHeightZero(t *testing.T) {
 	// height=0 means "no terminal size received yet" → all branches must render
 	brs := manyBranches(5)

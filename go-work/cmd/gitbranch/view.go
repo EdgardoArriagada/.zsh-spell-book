@@ -24,6 +24,9 @@ func (m model) View() string {
 
 	var s strings.Builder
 	s.WriteString(tui.TitleStyle.Render("  Git Branches") + "\n\n")
+	if m.inWorktree {
+		s.WriteString(tui.WarnStyle.Render("  ⚠  You are inside a worktree — branch management here is not recommended") + "\n\n")
+	}
 
 	maxVis := m.vp.MaxVisible(len(m.branches))
 	end := m.vp.Offset + maxVis

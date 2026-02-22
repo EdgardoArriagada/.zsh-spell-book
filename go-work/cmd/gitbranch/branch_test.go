@@ -148,6 +148,80 @@ func TestSortBranches(t *testing.T) {
 	}
 }
 
+func TestParseWorktreePaths(t *testing.T) {
+	tests := []struct {
+		name       string
+		input      string
+		wantMain   string
+		wantLinked []string
+	}{
+		{
+			name:       "empty output",
+			input:      "",
+			wantMain:   "",
+			wantLinked: nil,
+		},
+		{
+			name:       "only main worktree",
+			input:      "worktree /repo\nHEAD abc123\nbranch refs/heads/main\n\n",
+			wantMain:   "/repo",
+			wantLinked: nil,
+		},
+		{
+			name:       "main + one linked worktree",
+			input:      "worktree /repo\nHEAD abc123\nbranch refs/heads/main\n\nworktree /repo/feat\nHEAD def456\nbranch refs/heads/feature\n\n",
+			wantMain:   "/repo",
+			wantLinked: []string{"/repo/feat"},
+		},
+		{
+			name:       "main + two linked worktrees",
+			input:      "worktree /repo\nHEAD abc\nbranch refs/heads/main\n\nworktree /repo/a\nHEAD bbb\nbranch refs/heads/feat-a\n\nworktree /repo/b\nHEAD ccc\nbranch refs/heads/feat-b\n\n",
+			wantMain:   "/repo",
+			wantLinked: []string{"/repo/a", "/repo/b"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotMain, gotLinked := parseWorktreePaths(tt.input)
+			if gotMain != tt.wantMain {
+				t.Errorf("main = %q, want %q", gotMain, tt.wantMain)
+			}
+			if len(gotLinked) != len(tt.wantLinked) {
+				t.Errorf("linked len = %d, want %d; got %v", len(gotLinked), len(tt.wantLinked), gotLinked)
+				return
+			}
+			for i, p := range tt.wantLinked {
+				if gotLinked[i] != p {
+					t.Errorf("linked[%d] = %q, want %q", i, gotLinked[i], p)
+				}
+			}
+		})
+	}
+}
+
+func TestIsLinkedWorktreeIn(t *testing.T) {
+	output := "worktree /repo\nHEAD abc\nbranch refs/heads/main\n\nworktree /repo/feat\nHEAD def\nbranch refs/heads/feature\n\n"
+	tests := []struct {
+		name   string
+		cwd    string
+		expect bool
+	}{
+		{"cwd is main worktree", "/repo", false},
+		{"cwd is subdirectory of main", "/repo/src", false},
+		{"cwd is linked worktree", "/repo/feat", true},
+		{"cwd is subdirectory of linked worktree", "/repo/feat/subdir", true},
+		{"cwd is outside all worktrees", "/other", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := isLinkedWorktreeIn(output, tt.cwd)
+			if got != tt.expect {
+				t.Errorf("isLinkedWorktreeIn(%q) = %v, want %v", tt.cwd, got, tt.expect)
+			}
+		})
+	}
+}
+
 func TestIsUnmergedBranchError(t *testing.T) {
 	tests := []struct {
 		err    error
