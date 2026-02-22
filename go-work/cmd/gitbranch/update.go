@@ -12,8 +12,9 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
+		m.height = ws.Height
 		m.input.SetWidth(ws.Width)
-		return m, nil
+		return m.clampViewport(), nil
 	}
 	switch m.mode {
 	case tui.AddMode:
@@ -46,6 +47,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = next
 			}
 		}
+		m = m.clampViewport()
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.branches) > 0 {
@@ -57,6 +59,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = next
 			}
 		}
+		m = m.clampViewport()
 	case "enter":
 		if len(m.branches) > 0 && !m.branches[m.cursor].IsWorktree {
 			m.selected = m.branches[m.cursor].Name

@@ -17,21 +17,27 @@ func (m model) View() string {
 	var s strings.Builder
 	s.WriteString(tui.TitleStyle.Render("  Git Branches") + "\n\n")
 
-	for i, br := range m.branches {
+	maxVis := m.maxVisible()
+	end := m.offset + maxVis
+	if end > len(m.branches) {
+		end = len(m.branches)
+	}
+	for i, br := range m.branches[m.offset:end] {
+		idx := i + m.offset
 		cursor := "   "
-		if i == m.cursor {
+		if idx == m.cursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 
 		var line string
 		switch {
 		case br.IsWorktree:
-			line = tui.WorktreeStyle.Render(br.Name) + tui.WorktreeStyle.Render(" ")
-		case i == m.current && i == m.cursor:
+			line = tui.WorktreeStyle.Render(br.Name) + tui.WorktreeStyle.Render(" ")
+		case idx == m.current && idx == m.cursor:
 			line = tui.CurrentMark.Render(br.Name) + tui.CurrentMark.Render("  ●")
-		case i == m.current:
+		case idx == m.current:
 			line = tui.DimStyle.Render(br.Name) + tui.CurrentMark.Render("  ●")
-		case i == m.cursor:
+		case idx == m.cursor:
 			line = tui.ActiveStyle.Render(br.Name)
 		default:
 			line = tui.DimStyle.Render(br.Name)
