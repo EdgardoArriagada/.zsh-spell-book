@@ -16,7 +16,7 @@ func (m model) View() string {
 	sep := tui.Sep()
 
 	var s strings.Builder
-	s.WriteString(tui.TitleStyle.Render("  Git Worktrees") + "\n\n")
+	s.WriteString(tui.Title("Git Worktrees"))
 
 	maxVis := m.vp.MaxVisible(len(m.worktrees))
 	end := m.vp.Offset + maxVis

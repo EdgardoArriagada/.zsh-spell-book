@@ -38,6 +38,10 @@ func init() {
 	KeyStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)  // yellow bold — key hints
 }
 
+func Title(text string) string {
+	return "\n" + TitleStyle.Render("  "+text) + "\n\n"
+}
+
 func Hint(key, desc string) string {
 	return KeyStyle.Render(key) + DimStyle.Render(" "+desc)
 }

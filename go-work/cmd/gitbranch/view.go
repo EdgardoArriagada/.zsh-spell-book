@@ -23,7 +23,7 @@ func (m model) View() string {
 	}
 
 	var s strings.Builder
-	s.WriteString(tui.TitleStyle.Render("  Git Branches") + "\n\n")
+	s.WriteString(tui.Title("Git Branches"))
 	if m.inWorktree {
 		s.WriteString(tui.WarnStyle.Render("  ⚠  You are inside a worktree — branch management here is not recommended") + "\n\n")
 	}
@@ -36,7 +36,7 @@ func (m model) View() string {
 	for i, br := range m.branches[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		if idx == firstWorktreeIdx {
-			s.WriteString("\n  " + tui.TitleStyle.Render("Worktree Branches") + "\n\n")
+			s.WriteString(tui.Title("Worktree Branches"))
 		}
 		cursor := "   "
 		if idx == m.cursor {
