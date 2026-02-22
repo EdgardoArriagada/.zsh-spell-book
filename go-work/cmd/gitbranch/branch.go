@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var priorityBranches = []string{"master", "main", "develop"}
+var priorityBranches = []string{"develop", "master", "main"}
 
 func isDefaultBranch(name string) bool {
 	for _, d := range priorityBranches {
