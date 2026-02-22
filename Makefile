@@ -1,23 +1,23 @@
 
-# Allow `make build <name>` or `make dev <name>` to skip fzf selection
-ifneq ($(filter $(firstword $(MAKECMDGOALS)),build dev),)
+# Allow `make go-build <name>` or `make go-dev <name>` to skip fzf selection
+ifneq ($(filter $(firstword $(MAKECMDGOALS)),go-build go-dev),)
   TARGET := $(word 2,$(MAKECMDGOALS))
   $(if $(TARGET),$(eval $(TARGET):;@:))
 endif
 
-define build_dev
+define go-build-dev-fn
 	go build -o ./bin/$(1) ./cmd/$(1)
 endef
 
-define build
+define go-build-fn
 	CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o ./bin/$(1) ./cmd/$(1) && echo "$(1) ✅"
 endef
 
-define dev
-	ls ./{lib,cmd}/**/*.go | entr -c $(call build_dev,$(1))
+define go-dev-fn
+	ls ./{lib,cmd}/**/*.go | entr -c $(call go-build-dev-fn,$(1))
 endef
 
-.run:
+.go-run:
 	@if [[ -z "$(TARGET)" ]]; then \
 		TARGET=$$(ls ./go-work/cmd | fzf); \
 	fi; \
@@ -25,19 +25,19 @@ endef
 		(cd go-work && $(call $(ACTION),$$TARGET)); \
 	fi
 
-build:
-	$(MAKE) ACTION='build' TARGET='$(TARGET)' .run
+go-build:
+	$(MAKE) ACTION='go-build-fn' TARGET='$(TARGET)' .go-run
 
-dev:
-	$(MAKE) ACTION='dev' TARGET='$(TARGET)' .run
+go-dev:
+	$(MAKE) ACTION='go-dev-fn' TARGET='$(TARGET)' .go-run
 
 zsh-dev:
 	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c ./go-work/bin/zsb_bundle
 
-build-all:
+go-build-all:
 	for target in $$(ls ./go-work/cmd); do \
-		$(MAKE) TARGET=$$target ACTION='build' .run; \
+		$(MAKE) TARGET=$$target ACTION='go-build-fn' .go-run; \
 	done
 
-test-all:
+go-test-all:
 	cd go-work && go list -f '{{.Dir}}' -m | xargs -I{} sh -c 'cd "{}" && go test ./...'
