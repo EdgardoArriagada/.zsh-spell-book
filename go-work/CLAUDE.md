@@ -1,0 +1,1 @@
+- don't build the binaries, I have a server that does that automatically on every change
