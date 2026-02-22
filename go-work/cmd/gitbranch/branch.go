@@ -33,14 +33,6 @@ func parseWorktreeBranches(output string) map[string]bool {
 	return set
 }
 
-func worktreeBranchSet() map[string]bool {
-	out, err := exec.Command("git", "worktree", "list", "--porcelain").Output()
-	if err != nil {
-		return nil
-	}
-	return parseWorktreeBranches(string(out))
-}
-
 func sortBranches(branches []Branch) []Branch {
 	priority := map[string]int{}
 	for i, name := range priorityBranches {
@@ -68,12 +60,13 @@ func sortBranches(branches []Branch) []Branch {
 	return append(result, worktrees...)
 }
 
-var listBranches = func() ([]Branch, error) {
+// listBranchesWithWTOutput parses branches using pre-fetched worktree porcelain output.
+func listBranchesWithWTOutput(wtOutput string) ([]Branch, error) {
 	out, err := exec.Command("git", "branch", "--format=%(refname:short) %(HEAD)").Output()
 	if err != nil {
 		return nil, fmt.Errorf("git branch: %w", err)
 	}
-	worktrees := worktreeBranchSet()
+	worktrees := parseWorktreeBranches(wtOutput)
 	var branches []Branch
 	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
 		if line == "" {
@@ -86,6 +79,11 @@ var listBranches = func() ([]Branch, error) {
 		branches = append(branches, Branch{Name: name, IsCurrent: isCurrent, IsWorktree: isWorktree})
 	}
 	return sortBranches(branches), nil
+}
+
+var listBranches = func() ([]Branch, error) {
+	out, _ := exec.Command("git", "worktree", "list", "--porcelain").Output()
+	return listBranchesWithWTOutput(string(out))
 }
 
 var checkoutBranch = func(name string) error {
@@ -156,16 +154,17 @@ func isLinkedWorktreeIn(output, cwd string) bool {
 	return false
 }
 
-// checkIsLinkedWorktree reports whether the current working directory is inside
-// a linked (non-main) git worktree.
-func checkIsLinkedWorktree() bool {
-	out, err := exec.Command("git", "worktree", "list", "--porcelain").Output()
+// initBranchData fetches all startup data with a single git worktree subprocess call.
+func initBranchData() (branches []Branch, inWorktree bool, err error) {
+	wtOut, _ := exec.Command("git", "worktree", "list", "--porcelain").Output()
+	wtOutput := string(wtOut)
+	branches, err = listBranchesWithWTOutput(wtOutput)
 	if err != nil {
-		return false
+		return
 	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		return false
+	cwd, cwdErr := os.Getwd()
+	if cwdErr == nil {
+		inWorktree = isLinkedWorktreeIn(wtOutput, cwd)
 	}
-	return isLinkedWorktreeIn(string(out), cwd)
+	return
 }

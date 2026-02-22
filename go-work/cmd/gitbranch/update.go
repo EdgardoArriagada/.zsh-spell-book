@@ -121,6 +121,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.branches = branches
+			m.firstWorktreeIdx = findFirstWorktreeIdx(branches)
 			for i, b := range branches {
 				if b.IsCurrent {
 					m.current = i
@@ -154,6 +155,7 @@ func postDeleteRefresh(m model, deletedIdx int, wasCurrentBranch bool) model {
 		return m
 	}
 	m.branches = branches
+	m.firstWorktreeIdx = findFirstWorktreeIdx(branches)
 	for i, b := range branches {
 		if b.IsCurrent {
 			m.current = i

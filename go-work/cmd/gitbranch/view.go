@@ -14,13 +14,7 @@ func (m model) View() string {
 
 	sep := tui.Sep()
 
-	firstWorktreeIdx := -1
-	for i, br := range m.branches {
-		if br.IsWorktree {
-			firstWorktreeIdx = i
-			break
-		}
-	}
+	firstWorktreeIdx := m.firstWorktreeIdx
 
 	var s strings.Builder
 	s.WriteString(tui.Title("Git Branches"))

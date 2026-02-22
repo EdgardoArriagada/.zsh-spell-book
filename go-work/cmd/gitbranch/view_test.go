@@ -14,11 +14,12 @@ func TestViewOnlyRendersVisibleBranches(t *testing.T) {
 	brs := manyBranches(10)
 	ti := tui.NewInput("branch-name")
 	m := model{
-		branches: brs,
-		cursor:   3,
-		current:  0,
-		vp:       tui.Viewport{Height: 10, Offset: 2},
-		input:    ti,
+		branches:         brs,
+		cursor:           3,
+		current:          0,
+		vp:               tui.Viewport{Height: 10, Offset: 2},
+		input:            ti,
+		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
 
 	view := m.View()
@@ -49,7 +50,7 @@ func TestViewShowsDividerBeforeWorktrees(t *testing.T) {
 		{Name: "feat-wt", IsWorktree: true},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -64,7 +65,7 @@ func TestViewNoDividerWithoutWorktrees(t *testing.T) {
 		{Name: "feat"},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -79,7 +80,7 @@ func TestViewFooterShowsWorktreeHintWhenPresent(t *testing.T) {
 		{Name: "feat-wt", IsWorktree: true},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -94,7 +95,7 @@ func TestViewFooterNoWorktreeHintWhenAbsent(t *testing.T) {
 		{Name: "feat"},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -109,7 +110,7 @@ func TestViewWorktreeWarningBanner(t *testing.T) {
 		{Name: "feat"},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: true}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: true, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -124,7 +125,7 @@ func TestViewNoWorktreeWarningWhenNotInWorktree(t *testing.T) {
 		{Name: "feat"},
 	}
 	ti := tui.NewInput("branch-name")
-	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: false}
+	m := model{branches: brs, cursor: 0, current: 0, input: ti, inWorktree: false, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
 	view := m.View()
 
@@ -138,11 +139,12 @@ func TestViewNoScrollWhenHeightZero(t *testing.T) {
 	brs := manyBranches(5)
 	ti := tui.NewInput("branch-name")
 	m := model{
-		branches: brs,
-		cursor:   0,
-		current:  0,
-		vp:       tui.Viewport{Height: 0, Offset: 0},
-		input:    ti,
+		branches:         brs,
+		cursor:           0,
+		current:          0,
+		vp:               tui.Viewport{Height: 0, Offset: 0},
+		input:            ti,
+		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
 
 	view := m.View()

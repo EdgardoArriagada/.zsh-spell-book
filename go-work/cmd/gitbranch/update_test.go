@@ -12,23 +12,25 @@ import (
 func makeListModel(branches []Branch, cursor, current int) model {
 	ti := tui.NewInput("branch-name")
 	return model{
-		branches: branches,
-		cursor:   cursor,
-		mode:     tui.ListMode,
-		input:    ti,
-		current:  current,
+		branches:         branches,
+		cursor:           cursor,
+		mode:             tui.ListMode,
+		input:            ti,
+		current:          current,
+		firstWorktreeIdx: findFirstWorktreeIdx(branches),
 	}
 }
 
 func makeListModelWithHeight(branches []Branch, cursor, current, height int) model {
 	ti := tui.NewInput("branch-name")
 	return model{
-		branches: branches,
-		cursor:   cursor,
-		mode:     tui.ListMode,
-		input:    ti,
-		current:  current,
-		vp:       tui.Viewport{Height: height},
+		branches:         branches,
+		cursor:           cursor,
+		mode:             tui.ListMode,
+		input:            ti,
+		current:          current,
+		vp:               tui.Viewport{Height: height},
+		firstWorktreeIdx: findFirstWorktreeIdx(branches),
 	}
 }
 
