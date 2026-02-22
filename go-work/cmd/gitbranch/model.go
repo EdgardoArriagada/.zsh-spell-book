@@ -14,7 +14,8 @@ type Branch struct {
 	IsWorktree bool
 }
 
-const viewportOverhead = 6 // title(2) + status/confirm(2) + footer(2)
+const viewportOverhead = 6  // title(2) + status/confirm(2) + footer(2)
+const defaultWidth      = 80 // fallback width before first WindowSizeMsg
 
 type model struct {
 	branches  []Branch
@@ -89,7 +90,7 @@ func initialModel() model {
 		err:      err,
 		input:    ti,
 		current:  cur,
-		width:    80,
+		width:    defaultWidth,
 	}
 }
 

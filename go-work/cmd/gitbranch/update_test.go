@@ -413,6 +413,33 @@ func TestPostDeleteRefreshUpdatesBranchesAndCurrent(t *testing.T) {
 	}
 }
 
+// --- Enter on worktree item ---
+
+// TestEnterOnWorktreeShowsStatusMsg verifies that pressing enter while the cursor
+// is on a worktree branch shows a statusMsg and does not quit the program.
+func TestEnterOnWorktreeShowsStatusMsg(t *testing.T) {
+	brs := []Branch{
+		{Name: "main", IsCurrent: true},
+		{Name: "feat-wt", IsWorktree: true},
+	}
+	// Force cursor onto the worktree entry (bypassing normal navigation guards)
+	m := makeListModel(brs, 1, 0)
+
+	enterMsg := tea.KeyMsg{Type: tea.KeyEnter}
+	updated, cmd := m.Update(enterMsg)
+	result := updated.(model)
+
+	if cmd != nil {
+		t.Error("expected nil cmd (no quit) when enter on worktree branch")
+	}
+	if result.statusMsg == "" {
+		t.Error("expected statusMsg to be set when enter on worktree branch")
+	}
+	if result.selected != "" {
+		t.Errorf("selected = %q, want empty when enter on worktree branch", result.selected)
+	}
+}
+
 // --- Branch name validation in add mode ---
 
 func TestAddModeRejectsInvalidBranch(t *testing.T) {

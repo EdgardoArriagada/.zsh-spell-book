@@ -61,7 +61,11 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m = m.clampViewport()
 	case "enter":
-		if len(m.branches) > 0 && !m.branches[m.cursor].IsWorktree {
+		if len(m.branches) > 0 && m.branches[m.cursor].IsWorktree {
+			m.statusMsg = "worktree branches are not selectable"
+			return m, nil
+		}
+		if len(m.branches) > 0 {
 			m.selected = m.branches[m.cursor].Name
 		}
 		return m, tea.Quit
