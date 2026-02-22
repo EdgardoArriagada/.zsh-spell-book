@@ -1,4 +1,10 @@
 
+# Allow `make build <name>` or `make dev <name>` to skip fzf selection
+ifneq ($(filter $(firstword $(MAKECMDGOALS)),build dev),)
+  TARGET := $(word 2,$(MAKECMDGOALS))
+  $(if $(TARGET),$(eval $(TARGET):;@:))
+endif
+
 define build_dev
 	go build -o ./bin/$(1) ./cmd/$(1)
 endef
@@ -20,10 +26,10 @@ endef
 	fi
 
 build:
-	$(MAKE) ACTION='build' .run
+	$(MAKE) ACTION='build' TARGET='$(TARGET)' .run
 
 dev:
-	$(MAKE) ACTION='dev' .run
+	$(MAKE) ACTION='dev' TARGET='$(TARGET)' .run
 
 zsh-dev:
 	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c ./go-work/bin/zsb_bundle
