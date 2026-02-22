@@ -60,12 +60,12 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.branches) == 0 {
 			break
 		}
-		if m.cursor == m.current {
-			m.statusMsg = "cannot delete current branch"
-		} else {
-			m.statusMsg = ""
-			m.mode = tui.DeleteConfirmMode
+		if m.cursor == m.current && len(m.branches) == 1 {
+			m.statusMsg = "cannot delete the only branch"
+			break
 		}
+		m.statusMsg = ""
+		m.mode = tui.DeleteConfirmMode
 	}
 	return m, nil
 }
@@ -126,6 +126,20 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
+			if m.cursor == m.current {
+				switchTo := ""
+				for _, b := range m.branches {
+					if b.Name != m.branches[m.cursor].Name {
+						switchTo = b.Name
+						break
+					}
+				}
+				if err := checkoutBranch(switchTo); err != nil {
+					m.err = err
+					m.mode = tui.ListMode
+					return m, nil
+				}
+			}
 			if err := deleteBranch(m.branches[m.cursor].Name); err != nil {
 				if isUnmergedBranchError(err) {
 					m.mode = tui.ForceDeleteConfirmMode

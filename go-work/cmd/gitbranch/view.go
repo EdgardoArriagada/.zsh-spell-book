@@ -47,9 +47,11 @@ func (m model) View() string {
 		}
 	case tui.DeleteConfirmMode:
 		br := m.branches[m.cursor]
-		s.WriteString("\n" + tui.WarnStyle.Render(
-			fmt.Sprintf("  Delete branch %s? (y/n)", br.Name),
-		) + "\n")
+		msg := fmt.Sprintf("  Delete branch %s? (y/n)", br.Name)
+		if m.cursor == m.current {
+			msg = fmt.Sprintf("  Switch away and delete branch %s? (y/n)", br.Name)
+		}
+		s.WriteString("\n" + tui.WarnStyle.Render(msg) + "\n")
 	case tui.ForceDeleteConfirmMode:
 		br := m.branches[m.cursor]
 		s.WriteString("\n" + tui.ErrStyle.Render(
