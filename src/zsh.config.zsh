@@ -113,6 +113,15 @@ zle -N gwt-widget
 
 bindkey -M viins '^t' gwt-widget
 
+gb-widget() {
+  local gb
+  gb=$(gitbranch) && git switch "$gb"
+  zle reset-prompt
+}
+zle -N gb-widget
+
+bindkey -M viins '^b' gb-widget
+
 # Initialize hisignore with some stuff to ignore already
 declare ZSB_HISTORY_IGNORE=(
   'l[a,l,s,h,]*'

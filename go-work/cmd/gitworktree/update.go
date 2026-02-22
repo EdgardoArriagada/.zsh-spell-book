@@ -4,6 +4,9 @@ import (
 	"os"
 	"strings"
 
+	gitlib "example.com/workspace/lib/git"
+	"example.com/workspace/lib/tui"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -14,11 +17,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	switch m.mode {
-	case addMode:
+	case tui.AddMode:
 		return m.updateAdd(msg)
-	case deleteConfirmMode:
+	case tui.DeleteConfirmMode:
 		return m.updateDelete(msg)
-	case forceDeleteConfirmMode:
+	case tui.ForceDeleteConfirmMode:
 		return m.updateForceDelete(msg)
 	default:
 		return m.updateList(msg)
@@ -49,7 +52,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	case "a":
-		m.mode = addMode
+		m.mode = tui.AddMode
 		m.input.SetValue("")
 		m.err = nil
 		m.statusMsg = ""
@@ -62,7 +65,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.statusMsg = "cannot delete main worktree"
 		} else {
 			m.statusMsg = ""
-			m.mode = deleteConfirmMode
+			m.mode = tui.DeleteConfirmMode
 		}
 	}
 	return m, nil
@@ -74,7 +77,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "esc":
-			m.mode = listMode
+			m.mode = tui.ListMode
 			m.input.Blur()
 			m.err = nil
 			return m, nil
@@ -83,7 +86,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if branch == "" {
 				return m, nil
 			}
-			if err := ValidateBranchName(branch); err != nil {
+			if err := gitlib.ValidateBranchName(branch); err != nil {
 				m.err = err
 				return m, nil
 			}
@@ -99,7 +102,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.worktrees = wts
 			m.current = currentWorktreeIndex(wts)
-			m.mode = listMode
+			m.mode = tui.ListMode
 			m.input.Blur()
 			m.err = nil
 			for i, wt := range wts {
@@ -123,12 +126,12 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			deletingCurrent := m.cursor == m.current
 			if err := deleteWorktree(m.worktrees[m.cursor].Path); err != nil {
 				if isWorktreeDirtyError(err) {
-					m.mode = forceDeleteConfirmMode
+					m.mode = tui.ForceDeleteConfirmMode
 					m.err = nil
 					return m, nil
 				}
 				m.err = err
-				m.mode = listMode
+				m.mode = tui.ListMode
 				return m, nil
 			}
 			// If we deleted the current worktree, chdir to main
@@ -140,7 +143,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			wts, err := listWorktrees()
 			if err != nil {
 				m.err = err
-				m.mode = listMode
+				m.mode = tui.ListMode
 				return m, nil
 			}
 			m.worktrees = wts
@@ -148,10 +151,10 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor >= len(m.worktrees) {
 				m.cursor = len(m.worktrees) - 1
 			}
-			m.mode = listMode
+			m.mode = tui.ListMode
 			m.err = nil
 		default:
-			m.mode = listMode
+			m.mode = tui.ListMode
 		}
 	}
 	return m, nil
@@ -164,7 +167,7 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			deletingCurrent := m.cursor == m.current
 			if err := deleteWorktreeForce(m.worktrees[m.cursor].Path); err != nil {
 				m.err = err
-				m.mode = listMode
+				m.mode = tui.ListMode
 				return m, nil
 			}
 			if deletingCurrent && len(m.worktrees) > 0 {
@@ -174,7 +177,7 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			wts, err := listWorktrees()
 			if err != nil {
 				m.err = err
-				m.mode = listMode
+				m.mode = tui.ListMode
 				return m, nil
 			}
 			m.worktrees = wts
@@ -182,10 +185,10 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor >= len(m.worktrees) {
 				m.cursor = len(m.worktrees) - 1
 			}
-			m.mode = listMode
+			m.mode = tui.ListMode
 			m.err = nil
 		default:
-			m.mode = listMode
+			m.mode = tui.ListMode
 		}
 	}
 	return m, nil

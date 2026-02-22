@@ -4,6 +4,7 @@ use (
 	./cmd/airbnb_calculator
 	./cmd/countdown
 	./cmd/get_repo_name
+	./cmd/gitbranch
 	./cmd/gitworktree
 	./cmd/repeatstr
 	./cmd/zsb_bundle
@@ -15,5 +16,6 @@ use (
 	./lib/args
 	./lib/git
 	./lib/open
+	./lib/tui
 	./lib/utils
 )

@@ -4,16 +4,18 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/charmbracelet/bubbles/textarea"
+	gitlib "example.com/workspace/lib/git"
+	"example.com/workspace/lib/tui"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 func makeListModel(worktrees []Worktree, cursor int) model {
-	ti := textarea.New()
+	ti := tui.NewInput("branch-name")
 	return model{
 		worktrees: worktrees,
 		cursor:    cursor,
-		mode:      listMode,
+		mode:      tui.ListMode,
 		input:     ti,
 		current:   0,
 	}
@@ -91,8 +93,8 @@ func TestDeleteMainShowsStatus(t *testing.T) {
 	wts := threeWorktrees()
 	m := makeListModel(wts, 0) // cursor on main (index 0)
 	m = pressKey(m, "d")
-	if m.mode != listMode {
-		t.Errorf("d on main: mode = %v, want listMode", m.mode)
+	if m.mode != tui.ListMode {
+		t.Errorf("d on main: mode = %v, want ListMode", m.mode)
 	}
 	if m.statusMsg == "" {
 		t.Error("d on main: statusMsg is empty, want a message")
@@ -103,8 +105,8 @@ func TestDeleteNonMainEntersConfirm(t *testing.T) {
 	wts := threeWorktrees()
 	m := makeListModel(wts, 1) // cursor on non-main
 	m = pressKey(m, "d")
-	if m.mode != deleteConfirmMode {
-		t.Errorf("d on non-main: mode = %v, want deleteConfirmMode", m.mode)
+	if m.mode != tui.DeleteConfirmMode {
+		t.Errorf("d on non-main: mode = %v, want DeleteConfirmMode", m.mode)
 	}
 }
 
@@ -126,7 +128,7 @@ func TestStatusMsgClearedOnNavigation(t *testing.T) {
 func TestForceDeleteModeOnDirtyError(t *testing.T) {
 	wts := threeWorktrees()
 	m := makeListModel(wts, 1)
-	m.mode = deleteConfirmMode
+	m.mode = tui.DeleteConfirmMode
 
 	// Simulate a failed delete with a dirty-worktree error by directly
 	// injecting the dirty error and the mode transition logic.
@@ -159,7 +161,7 @@ func TestIsWorktreeDirtyError(t *testing.T) {
 func TestAddModeRejectsInvalidBranch(t *testing.T) {
 	wts := threeWorktrees()
 	m := makeListModel(wts, 0)
-	m.mode = addMode
+	m.mode = tui.AddMode
 	var cmd tea.Cmd
 	m.input, cmd = m.input.Update(nil) // init
 	_ = cmd
@@ -172,8 +174,8 @@ func TestAddModeRejectsInvalidBranch(t *testing.T) {
 	if result.err == nil {
 		t.Error("expected error for invalid branch name with spaces, got nil")
 	}
-	if result.mode != addMode {
-		t.Errorf("mode = %v, want addMode (should stay in add mode on validation error)", result.mode)
+	if result.mode != tui.AddMode {
+		t.Errorf("mode = %v, want AddMode (should stay in add mode on validation error)", result.mode)
 	}
 }
 
@@ -181,10 +183,10 @@ func TestAddModeAcceptsValidBranch(t *testing.T) {
 	// This test verifies that a valid branch name passes validation.
 	// The actual git command will fail in tests (no repo), so we only check
 	// that the error is NOT a validation error.
-	if err := ValidateBranchName("feature/my-branch"); err != nil {
+	if err := gitlib.ValidateBranchName("feature/my-branch"); err != nil {
 		t.Errorf("ValidateBranchName(\"feature/my-branch\") = %v, want nil", err)
 	}
-	if err := ValidateBranchName("my invalid branch"); err == nil {
+	if err := gitlib.ValidateBranchName("my invalid branch"); err == nil {
 		t.Error("ValidateBranchName(\"my invalid branch\") expected error, got nil")
 	}
 }
