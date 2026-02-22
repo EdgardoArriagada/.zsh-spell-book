@@ -14,6 +14,14 @@ func (m model) View() string {
 
 	sep := tui.Sep()
 
+	firstWorktreeIdx := -1
+	for i, br := range m.branches {
+		if br.IsWorktree {
+			firstWorktreeIdx = i
+			break
+		}
+	}
+
 	var s strings.Builder
 	s.WriteString(tui.TitleStyle.Render("  Git Branches") + "\n\n")
 
@@ -24,6 +32,9 @@ func (m model) View() string {
 	}
 	for i, br := range m.branches[m.offset:end] {
 		idx := i + m.offset
+		if idx == firstWorktreeIdx {
+			s.WriteString("\n  " + tui.TitleStyle.Render("Worktree Branches") + "\n\n")
+		}
 		cursor := "   "
 		if idx == m.cursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
@@ -78,6 +89,9 @@ func (m model) View() string {
 		tui.Hint("a", "add") + sep +
 		tui.Hint("d", "delete") + sep +
 		tui.Hint("esc/q", "quit")
+	if firstWorktreeIdx >= 0 {
+		footer += sep + tui.Hint("wt", "checked out elsewhere")
+	}
 	s.WriteString("\n" + footer + "\n")
 	return s.String()
 }
