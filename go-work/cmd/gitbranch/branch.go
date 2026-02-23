@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	gitlib "example.com/workspace/lib/git"
 )
 
 var priorityBranches = []string{"develop", "master", "main"}
@@ -16,21 +18,6 @@ func isDefaultBranch(name string) bool {
 		}
 	}
 	return false
-}
-
-func parseWorktreeBranches(output string) map[string]bool {
-	set := map[string]bool{}
-	blockIdx := -1
-	for _, line := range strings.Split(output, "\n") {
-		if strings.HasPrefix(line, "worktree ") {
-			blockIdx++
-			continue
-		}
-		if blockIdx > 0 && strings.HasPrefix(line, "branch refs/heads/") {
-			set[strings.TrimPrefix(line, "branch refs/heads/")] = true
-		}
-	}
-	return set
 }
 
 func sortBranches(branches []Branch) []Branch {
@@ -60,13 +47,18 @@ func sortBranches(branches []Branch) []Branch {
 	return append(result, worktrees...)
 }
 
-// listBranchesWithWTOutput parses branches using pre-fetched worktree porcelain output.
-func listBranchesWithWTOutput(wtOutput string) ([]Branch, error) {
+// listBranchesWithWorktrees parses branches using pre-fetched worktree data.
+func listBranchesWithWorktrees(wts []gitlib.Worktree) ([]Branch, error) {
 	out, err := exec.Command("git", "branch", "--format=%(refname:short) %(HEAD)").Output()
 	if err != nil {
 		return nil, fmt.Errorf("git branch: %w", err)
 	}
-	worktrees := parseWorktreeBranches(wtOutput)
+	worktreeSet := map[string]bool{}
+	for i := 1; i < len(wts); i++ {
+		if wts[i].Branch != "" && wts[i].Branch != "(detached)" {
+			worktreeSet[wts[i].Branch] = true
+		}
+	}
 	var branches []Branch
 	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
 		if line == "" {
@@ -75,7 +67,7 @@ func listBranchesWithWTOutput(wtOutput string) ([]Branch, error) {
 		parts := strings.SplitN(line, " ", 2)
 		name := parts[0]
 		isCurrent := len(parts) > 1 && parts[1] == "*"
-		isWorktree := !isCurrent && worktrees[name]
+		isWorktree := !isCurrent && worktreeSet[name]
 		branches = append(branches, Branch{Name: name, IsCurrent: isCurrent, IsWorktree: isWorktree})
 	}
 	return sortBranches(branches), nil
@@ -83,7 +75,7 @@ func listBranchesWithWTOutput(wtOutput string) ([]Branch, error) {
 
 var listBranches = func() ([]Branch, error) {
 	out, _ := exec.Command("git", "worktree", "list", "--porcelain").Output()
-	return listBranchesWithWTOutput(string(out))
+	return listBranchesWithWorktrees(gitlib.ParseWorktreeList(string(out)))
 }
 
 var checkoutBranch = func(name string) error {
@@ -125,46 +117,17 @@ func isUnmergedBranchError(err error) bool {
 	return strings.Contains(err.Error(), "is not fully merged")
 }
 
-// parseWorktreePaths returns the main worktree path and all linked worktree paths
-// from `git worktree list --porcelain` output.
-func parseWorktreePaths(output string) (main string, linked []string) {
-	blockIdx := -1
-	for _, line := range strings.Split(output, "\n") {
-		if strings.HasPrefix(line, "worktree ") {
-			blockIdx++
-			path := strings.TrimPrefix(line, "worktree ")
-			if blockIdx == 0 {
-				main = path
-			} else {
-				linked = append(linked, path)
-			}
-		}
-	}
-	return
-}
-
-// isLinkedWorktreeIn returns true if cwd is inside a linked (non-main) worktree.
-func isLinkedWorktreeIn(output, cwd string) bool {
-	_, linked := parseWorktreePaths(output)
-	for _, path := range linked {
-		if cwd == path || strings.HasPrefix(cwd, path+"/") {
-			return true
-		}
-	}
-	return false
-}
-
 // initBranchData fetches all startup data with a single git worktree subprocess call.
 func initBranchData() (branches []Branch, inWorktree bool, err error) {
 	wtOut, _ := exec.Command("git", "worktree", "list", "--porcelain").Output()
-	wtOutput := string(wtOut)
-	branches, err = listBranchesWithWTOutput(wtOutput)
+	wts := gitlib.ParseWorktreeList(string(wtOut))
+	branches, err = listBranchesWithWorktrees(wts)
 	if err != nil {
 		return
 	}
 	cwd, cwdErr := os.Getwd()
 	if cwdErr == nil {
-		inWorktree = isLinkedWorktreeIn(wtOutput, cwd)
+		inWorktree = gitlib.FindCurrentWorktree(wts, cwd) > 0
 	}
 	return
 }

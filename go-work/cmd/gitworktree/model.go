@@ -7,13 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// Worktree represents a single git worktree.
-type Worktree struct {
-	Path   string
-	Branch string
-	IsBare bool
-}
-
 type model struct {
 	worktrees    []Worktree
 	cursor       int
