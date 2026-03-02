@@ -49,6 +49,16 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = (m.cursor - 1 + len(m.worktrees)) % len(m.worktrees)
 		}
 		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
+	case "g":
+		m.statusMsg = ""
+		m.cursor = 0
+		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
+	case "G":
+		m.statusMsg = ""
+		if len(m.worktrees) > 0 {
+			m.cursor = len(m.worktrees) - 1
+		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.worktrees))
 	case "enter":
 		if len(m.worktrees) > 0 {
 			m.selected = m.worktrees[m.cursor].Path

@@ -59,6 +59,22 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+	case "g":
+		m.statusMsg = ""
+		m.cursor = 0
+		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+	case "G":
+		m.statusMsg = ""
+		if len(m.branches) > 0 {
+			last := len(m.branches) - 1
+			if m.firstWorktreeIdx >= 0 {
+				last = m.firstWorktreeIdx - 1
+			}
+			if last >= 0 {
+				m.cursor = last
+			}
+		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
 	case "enter":
 		if len(m.branches) > 0 && m.branches[m.cursor].IsWorktree {
 			m.statusMsg = "worktree branches are not selectable"
