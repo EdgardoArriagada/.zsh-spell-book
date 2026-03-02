@@ -79,8 +79,7 @@ func (m model) View() string {
 		}
 	}
 
-	footer := "  " + tui.Hint("j/k", "navigate") + sep +
-		tui.Hint("g/G", "top/bottom") + sep +
+	footer := "  " + tui.Hint("↑/↓", "navigate") + sep +
 		tui.Hint("enter", "select") + sep +
 		tui.Hint("a", "add") + sep +
 		tui.Hint("d", "delete") + sep +
