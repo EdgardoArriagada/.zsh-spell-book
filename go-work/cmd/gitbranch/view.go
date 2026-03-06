@@ -84,20 +84,20 @@ func (m model) View() string {
 			fmt.Sprintf("  %s is not fully merged — force delete? (y/n)", target.Name),
 		) + "\n")
 	case tui.SearchMode:
-		s.WriteString("\n  " + m.searchInput.View() + "\n")
+		s.WriteString(tui.RenderSearchInput(m.searchInput))
 	default:
 		if m.statusMsg != "" {
 			s.WriteString("\n" + tui.StatusStyle.Render("  "+m.statusMsg) + "\n")
 		} else if m.err != nil {
 			s.WriteString("\n" + tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n")
-		} else if term := m.searchInput.Value(); term != "" {
-			s.WriteString("\n" + tui.DimStyle.Render("  / "+term) + "\n")
+		} else {
+			s.WriteString(tui.RenderActiveFilterHint(m.searchInput))
 		}
 	}
 
 	var footer string
 	if m.mode == tui.SearchMode {
-		footer = "  " + tui.Hint("enter", "confirm") + sep + tui.Hint("esc", "clear")
+		footer = tui.SearchFooter()
 	} else {
 		footer = "  " + tui.Hint("↑/↓", "navigate") + sep +
 			tui.Hint("enter", "select") + sep +

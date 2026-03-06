@@ -41,14 +41,6 @@ func findFirstWorktreeIdx(branches []Branch) int {
 	return -1
 }
 
-func branchNames(branches []Branch) []string {
-	names := make([]string, len(branches))
-	for i, br := range branches {
-		names[i] = br.Name
-	}
-	return names
-}
-
 func applyBranchFilter(branches []Branch, term string) []Branch {
 	if term == "" {
 		return branches
@@ -60,12 +52,7 @@ func applyBranchFilter(branches []Branch, term string) []Branch {
 			candidates = append(candidates, br)
 		}
 	}
-	indices := tui.FuzzyFilter(term, branchNames(candidates))
-	result := make([]Branch, len(indices))
-	for i, idx := range indices {
-		result[i] = candidates[idx]
-	}
-	return result
+	return tui.ApplyFilter(candidates, term, func(b Branch) string { return b.Name })
 }
 
 func initialModel() model {

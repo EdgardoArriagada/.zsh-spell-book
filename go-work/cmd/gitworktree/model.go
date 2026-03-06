@@ -26,21 +26,8 @@ type model struct {
 	current      int    // index of current worktree in worktrees, -1 if none
 }
 
-func worktreeNames(wts []Worktree) []string {
-	names := make([]string, len(wts))
-	for i, wt := range wts {
-		names[i] = filepath.Base(wt.Path)
-	}
-	return names
-}
-
 func applyWorktreeFilter(wts []Worktree, term string) []Worktree {
-	indices := tui.FuzzyFilter(term, worktreeNames(wts))
-	result := make([]Worktree, len(indices))
-	for i, idx := range indices {
-		result[i] = wts[idx]
-	}
-	return result
+	return tui.ApplyFilter(wts, term, func(wt Worktree) string { return filepath.Base(wt.Path) })
 }
 
 func initialModel() model {

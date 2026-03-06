@@ -19,3 +19,18 @@ func FuzzyFilter(term string, targets []string) []int {
 	}
 	return idx
 }
+
+// ApplyFilter returns items filtered and ranked by FuzzyFilter using key as the string projection.
+// If term is empty, returns all items in order.
+func ApplyFilter[T any](items []T, term string, key func(T) string) []T {
+	keys := make([]string, len(items))
+	for i, item := range items {
+		keys[i] = key(item)
+	}
+	indices := FuzzyFilter(term, keys)
+	result := make([]T, len(indices))
+	for i, idx := range indices {
+		result[i] = items[idx]
+	}
+	return result
+}
