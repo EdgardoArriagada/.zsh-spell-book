@@ -50,10 +50,20 @@ func branchNames(branches []Branch) []string {
 }
 
 func applyBranchFilter(branches []Branch, term string) []Branch {
-	indices := tui.FuzzyFilter(term, branchNames(branches))
+	if term == "" {
+		return branches
+	}
+	// Only search non-worktree branches
+	var candidates []Branch
+	for _, br := range branches {
+		if !br.IsWorktree {
+			candidates = append(candidates, br)
+		}
+	}
+	indices := tui.FuzzyFilter(term, branchNames(candidates))
 	result := make([]Branch, len(indices))
 	for i, idx := range indices {
-		result[i] = branches[idx]
+		result[i] = candidates[idx]
 	}
 	return result
 }
