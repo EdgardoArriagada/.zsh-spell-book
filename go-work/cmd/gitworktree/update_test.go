@@ -14,6 +14,7 @@ func makeListModel(worktrees []Worktree, cursor int) model {
 	ti := tui.NewInput("branch-name")
 	return model{
 		worktrees: worktrees,
+		filtered:  worktrees,
 		cursor:    cursor,
 		mode:      tui.ListMode,
 		input:     ti,

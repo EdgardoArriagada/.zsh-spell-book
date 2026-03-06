@@ -7,4 +7,5 @@ const (
 	AddMode
 	DeleteConfirmMode
 	ForceDeleteConfirmMode
+	SearchMode
 )

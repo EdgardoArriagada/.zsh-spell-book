@@ -12,7 +12,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = ws.Width
 		m.vp.Height = ws.Height
 		m.input.SetWidth(ws.Width)
-		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
 		return m, nil
 	}
 	switch m.mode {
@@ -22,6 +22,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.updateDelete(msg)
 	case tui.ForceDeleteConfirmMode:
 		return m.updateForceDelete(msg)
+	case tui.SearchMode:
+		return m.updateSearch(msg)
 	default:
 		return m.updateList(msg)
 	}
@@ -32,56 +34,82 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if !ok {
 		return m, nil
 	}
+	filterActive := m.searchInput.Value() != ""
 	switch km.String() {
 	case "q", "ctrl+c", "esc":
 		return m, tea.Quit
+	case "/":
+		m.mode = tui.SearchMode
+		m.statusMsg = ""
+		return m, m.searchInput.Focus()
 	case "j", "down", "tab":
 		m.statusMsg = ""
-		if len(m.branches) > 0 {
-			next := (m.cursor + 1) % len(m.branches)
-			for next != m.cursor && m.branches[next].IsWorktree {
-				next = (next + 1) % len(m.branches)
-			}
-			if !m.branches[next].IsWorktree {
-				m.cursor = next
+		if len(m.filtered) > 0 {
+			if filterActive {
+				m.cursor = (m.cursor + 1) % len(m.filtered)
+			} else {
+				next := (m.cursor + 1) % len(m.filtered)
+				for next != m.cursor && m.filtered[next].IsWorktree {
+					next = (next + 1) % len(m.filtered)
+				}
+				if !m.filtered[next].IsWorktree {
+					m.cursor = next
+				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
-		if len(m.branches) > 0 {
-			next := (m.cursor - 1 + len(m.branches)) % len(m.branches)
-			for next != m.cursor && m.branches[next].IsWorktree {
-				next = (next - 1 + len(m.branches)) % len(m.branches)
-			}
-			if !m.branches[next].IsWorktree {
-				m.cursor = next
+		if len(m.filtered) > 0 {
+			if filterActive {
+				m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
+			} else {
+				next := (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
+				for next != m.cursor && m.filtered[next].IsWorktree {
+					next = (next - 1 + len(m.filtered)) % len(m.filtered)
+				}
+				if !m.filtered[next].IsWorktree {
+					m.cursor = next
+				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
 	case "g":
 		m.statusMsg = ""
 		m.cursor = 0
-		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
 	case "G":
 		m.statusMsg = ""
-		if len(m.branches) > 0 {
-			last := len(m.branches) - 1
-			if m.firstWorktreeIdx >= 0 {
-				last = m.firstWorktreeIdx - 1
-			}
-			if last >= 0 {
-				m.cursor = last
+		if len(m.filtered) > 0 {
+			if filterActive {
+				m.cursor = len(m.filtered) - 1
+			} else {
+				last := len(m.filtered) - 1
+				// find last index before worktree section
+				lastWorktree := -1
+				for i, br := range m.filtered {
+					if br.IsWorktree {
+						if lastWorktree < 0 {
+							lastWorktree = i
+						}
+					}
+				}
+				if lastWorktree >= 0 {
+					last = lastWorktree - 1
+				}
+				if last >= 0 {
+					m.cursor = last
+				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.branches))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
 	case "enter":
-		if len(m.branches) > 0 && m.branches[m.cursor].IsWorktree {
+		if len(m.filtered) > 0 && m.filtered[m.cursor].IsWorktree {
 			m.statusMsg = "worktree branches are not selectable"
 			return m, nil
 		}
-		if len(m.branches) > 0 {
-			m.selected = m.branches[m.cursor].Name
+		if len(m.filtered) > 0 {
+			m.selected = m.filtered[m.cursor].Name
 		}
 		return m, tea.Quit
 	case "a":
@@ -91,14 +119,19 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.statusMsg = ""
 		return m, m.input.Focus()
 	case "d":
-		if len(m.branches) == 0 {
+		if len(m.filtered) == 0 {
 			break
 		}
-		if m.cursor == m.current && len(m.branches) == 1 {
+		br := m.filtered[m.cursor]
+		currentName := ""
+		if m.current >= 0 && m.current < len(m.branches) {
+			currentName = m.branches[m.current].Name
+		}
+		if br.Name == currentName && len(m.branches) == 1 {
 			m.statusMsg = "cannot delete the only branch"
 			break
 		}
-		if isDefaultBranch(m.branches[m.cursor].Name) {
+		if isDefaultBranch(br.Name) {
 			m.statusMsg = "cannot delete default branch"
 			break
 		}
@@ -106,6 +139,33 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.mode = tui.DeleteConfirmMode
 	}
 	return m, nil
+}
+
+func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if km, ok := msg.(tea.KeyMsg); ok {
+		switch km.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		case "esc":
+			m.searchInput.Blur()
+			m.searchInput.SetValue("")
+			m.filtered = m.branches
+			m.cursor = 0
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+			m.mode = tui.ListMode
+			return m, nil
+		case "enter":
+			m.searchInput.Blur()
+			m.mode = tui.ListMode
+			return m, nil
+		}
+	}
+	var cmd tea.Cmd
+	m.searchInput, cmd = m.searchInput.Update(msg)
+	m.filtered = applyBranchFilter(m.branches, m.searchInput.Value())
+	m.cursor = 0
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+	return m, cmd
 }
 
 func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -144,10 +204,11 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 					break
 				}
 			}
+			m.filtered = applyBranchFilter(branches, m.searchInput.Value())
 			m.mode = tui.ListMode
 			m.input.Blur()
 			m.err = nil
-			for i, b := range branches {
+			for i, b := range m.filtered {
 				if b.Name == branch {
 					m.cursor = i
 					break
@@ -178,10 +239,14 @@ func postDeleteRefresh(m model, deletedIdx int, wasCurrentBranch bool) model {
 			break
 		}
 	}
+	m.filtered = applyBranchFilter(branches, m.searchInput.Value())
 	if wasCurrentBranch || deletedIdx == 0 {
 		m.cursor = 0
 	} else {
 		m.cursor = deletedIdx - 1
+	}
+	if m.cursor >= len(m.filtered) {
+		m.cursor = max(0, len(m.filtered)-1)
 	}
 	m.mode = tui.ListMode
 	m.err = nil
@@ -192,12 +257,20 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
-			deletedIdx := m.cursor
-			wasCurrentBranch := m.cursor == m.current
+			if len(m.filtered) == 0 {
+				m.mode = tui.ListMode
+				return m, nil
+			}
+			br := m.filtered[m.cursor]
+			currentName := ""
+			if m.current >= 0 && m.current < len(m.branches) {
+				currentName = m.branches[m.current].Name
+			}
+			wasCurrentBranch := br.Name == currentName
 			if wasCurrentBranch {
 				switchTo := ""
 				for _, b := range m.branches {
-					if b.Name != m.branches[m.cursor].Name {
+					if b.Name != br.Name {
 						switchTo = b.Name
 						break
 					}
@@ -214,7 +287,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 			}
-			if err := deleteBranch(m.branches[m.cursor].Name); err != nil {
+			if err := deleteBranch(br.Name); err != nil {
 				if isUnmergedBranchError(err) {
 					m.mode = tui.ForceDeleteConfirmMode
 					m.err = nil
@@ -224,7 +297,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.mode = tui.ListMode
 				return m, nil
 			}
-			m = postDeleteRefresh(m, deletedIdx, wasCurrentBranch)
+			m = postDeleteRefresh(m, m.cursor, wasCurrentBranch)
 		default:
 			m.mode = tui.ListMode
 		}
@@ -236,17 +309,26 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
-			deletedIdx := m.cursor
-			wasCurrentBranch := m.cursor == m.current
-			if err := forceDeleteBranch(m.branches[m.cursor].Name); err != nil {
+			if len(m.filtered) == 0 {
+				m.mode = tui.ListMode
+				return m, nil
+			}
+			br := m.filtered[m.cursor]
+			currentName := ""
+			if m.current >= 0 && m.current < len(m.branches) {
+				currentName = m.branches[m.current].Name
+			}
+			wasCurrentBranch := br.Name == currentName
+			if err := forceDeleteBranch(br.Name); err != nil {
 				m.err = err
 				m.mode = tui.ListMode
 				return m, nil
 			}
-			m = postDeleteRefresh(m, deletedIdx, wasCurrentBranch)
+			m = postDeleteRefresh(m, m.cursor, wasCurrentBranch)
 		default:
 			m.mode = tui.ListMode
 		}
 	}
 	return m, nil
 }
+

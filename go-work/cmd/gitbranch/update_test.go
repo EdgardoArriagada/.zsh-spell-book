@@ -13,6 +13,7 @@ func makeListModel(branches []Branch, cursor, current int) model {
 	ti := tui.NewInput("branch-name")
 	return model{
 		branches:         branches,
+		filtered:         branches,
 		cursor:           cursor,
 		mode:             tui.ListMode,
 		input:            ti,
@@ -25,6 +26,7 @@ func makeListModelWithHeight(branches []Branch, cursor, current, height int) mod
 	ti := tui.NewInput("branch-name")
 	return model{
 		branches:         branches,
+		filtered:         branches,
 		cursor:           cursor,
 		mode:             tui.ListMode,
 		input:            ti,
