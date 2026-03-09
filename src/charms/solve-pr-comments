@@ -9,10 +9,10 @@ console.log("=> Fetching PR number...");
 const prNum = parseInt((await $`gh pr view --json number --jq '.number'`.text()).trim());
 console.log(`=> PR #${prNum}`);
 
-console.log("=> Fetching unresolved review threads...");
+console.log("=> Fetching unresolved review threads and general comments...");
 const [owner, repoName] = repo.split("/");
 
-const threadsResult = await $`gh api graphql -f query=${`
+const result = await $`gh api graphql -f query=${`
   query($owner: String!, $repo: String!, $pr: Int!) {
     repository(owner: $owner, name: $repo) {
       pullRequest(number: $pr) {
@@ -31,60 +31,147 @@ const threadsResult = await $`gh api graphql -f query=${`
             }
           }
         }
+        comments(first: 100) {
+          nodes {
+            body
+            author { login }
+            createdAt
+          }
+        }
       }
     }
   }
 `} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
 
-const unresolvedThreads = (
-  threadsResult.data.repository.pullRequest.reviewThreads.nodes as any[]
-).filter((t) => !t.isResolved && !t.isOutdated);
+const pr = result.data.repository.pullRequest;
 
-const threadCount = unresolvedThreads.length;
+type ReviewThreadItem = {
+  kind: "thread";
+  path: string;
+  line: string;
+  comments: string;
+};
 
-if (threadCount === 0) {
-  console.log("=> No unresolved review comments found. Nothing to do.");
+type GeneralCommentItem = {
+  kind: "comment";
+  comments: string;
+};
+
+type Item = ReviewThreadItem | GeneralCommentItem;
+
+const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as any[])
+  .filter((t) => !t.isResolved && !t.isOutdated)
+  .map((t) => ({
+    kind: "thread" as const,
+    path: t.path,
+    line: t.line ?? "N/A",
+    comments: (t.comments.nodes as any[])
+      .map((c: any) => `**${c.author.login}:** ${c.body}`)
+      .join("\n"),
+  }));
+
+const generalComments: Item[] = (pr.comments.nodes as any[]).map((c) => ({
+  kind: "comment" as const,
+  comments: `**${c.author.login}:** ${c.body}`,
+}));
+
+const items: Item[] = [...unresolvedThreads, ...generalComments];
+const total = items.length;
+
+if (total === 0) {
+  console.log("=> No review comments found. Nothing to do.");
   process.exit(0);
 }
 
-console.log(`=> Found ${threadCount} unresolved review thread(s).`);
+console.log(
+  `=> Found ${unresolvedThreads.length} unresolved review thread(s) and ${generalComments.length} general comment(s).`
+);
 
 console.log("=> Fetching PR diff...");
 const prDiff = await $`gh pr diff ${prNum}`.text();
 
-for (let i = 0; i < threadCount; i++) {
-  const thread = unresolvedThreads[i];
-  const filePath: string = thread.path;
-  const lineNum: string = thread.line ?? "N/A";
-  const comments: string = (thread.comments.nodes as any[])
-    .map((c) => `**${c.author.login}:** ${c.body}`)
-    .join("\n");
+async function askUser(question: string): Promise<string> {
+  process.stdout.write(question);
+  return new Promise<string>((resolve) => {
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+    process.stdin.once("data", (data) => {
+      process.stdin.pause();
+      resolve((data as string).trim().toLowerCase());
+    });
+  });
+}
+
+async function runClaude(prompt: string): Promise<void> {
+  const proc = Bun.spawn(
+    [
+      "claude",
+      "--dangerously-skip-permissions",
+      "--print",
+      prompt,
+      "--model",
+      "sonnet",
+      "--allowedTools",
+      "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep",
+    ],
+    { stdout: "pipe", stderr: "inherit" }
+  );
+
+  const reader = proc.stdout.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) console.log(`  ${line}`);
+  }
+  if (buffer) console.log(`  ${buffer}`);
+
+  await proc.exited;
+}
+
+for (let i = 0; i < total; i++) {
+  const item = items[i];
 
   console.log("");
   console.log("============================================");
-  console.log(`=> [${i + 1}/${threadCount}] Processing thread on ${filePath}:${lineNum}`);
-  console.log("=> Comments:");
-  console.log(comments);
-  console.log("============================================");
 
-  let fileContent = "";
-  const file = Bun.file(filePath);
-  if (await file.exists()) {
-    fileContent = await file.text();
-  }
+  let prompt: string;
 
-  const prompt = `# Role
+  if (item.kind === "thread") {
+    console.log(`=> [${i + 1}/${total}] Inline thread on ${item.path}:${item.line}`);
+    console.log("=> Comments:");
+    console.log(item.comments);
+    console.log("============================================");
+
+    const answer = await askUser("=> Resolve this thread? [Y/n] ");
+    if (answer === "n" || answer === "no") {
+      console.log("=> Skipped.");
+      continue;
+    }
+
+    let fileContent = "";
+    const file = Bun.file(item.path);
+    if (await file.exists()) {
+      fileContent = await file.text();
+    }
+
+    prompt = `# Role
 You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
 
 # Context
 You are resolving code review feedback on Pull Request #${prNum} in the repository ${repo}.
 
 ## Review Thread
-- **File:** ${filePath}
-- **Line:** ${lineNum}
+- **File:** ${item.path}
+- **Line:** ${item.line}
 
 ### Reviewer Comments
-${comments}
+${item.comments}
 
 ### Current File Content
 \`\`\`
@@ -115,41 +202,60 @@ Implement a robust engineering solution based on the feedback received from the 
 # Output Format
 1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
 2. **Code Fix:** Apply the necessary changes to the codebase.`;
+  } else {
+    console.log(`=> [${i + 1}/${total}] General PR comment`);
+    console.log("=> Comment:");
+    console.log(item.comments);
+    console.log("============================================");
 
-  const proc = Bun.spawn(
-    [
-      "claude",
-      "--dangerously-skip-permissions",
-      "--print",
-      prompt,
-      "--model",
-      "sonnet",
-      "--allowedTools",
-      "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep",
-    ],
-    { stdout: "pipe", stderr: "inherit" }
-  );
+    const answer = await askUser("=> Address this comment? [Y/n] ");
+    if (answer === "n" || answer === "no") {
+      console.log("=> Skipped.");
+      continue;
+    }
 
-  const reader = proc.stdout.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
+    prompt = `# Role
+You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-    for (const line of lines) console.log(`  ${line}`);
+# Context
+You are resolving general PR feedback on Pull Request #${prNum} in the repository ${repo}.
+This comment is not tied to a specific file or line — it is a high-level review comment about the PR as a whole.
+
+### Reviewer Comment
+${item.comments}
+
+### Relevant PR Diff
+${prDiff}
+
+# Task
+Implement a robust engineering solution based on the feedback received from the review comment.
+
+## Analysis & Resolution Steps
+1. **Analyze the Claim:** Examine the feedback in the context of the codebase and the diff.
+2. **Critically Evaluate (Mandatory):**
+   - **Verify Validity:** Do not assume the comment is factually correct. Challenge the premise.
+   - **Check Constraints:** Ensure the suggested change does not violate existing logic or introduce regressions.
+3. **Determine the Solution:**
+   - If the issue is valid, identify the **root cause** and which file(s) need to change.
+   - **Solve, Don't Just Obey:** If the comment suggests a specific implementation that is suboptimal, insecure, or hacky, ignore the suggestion and implement the **industry-standard best practice**.
+   - If the comment is invalid or already addressed, explain why and skip the change.
+4. **Implement:** Apply the specific code changes to the codebase.
+
+# Constraints
+- Prioritize code stability and system integrity over blind compliance to the reviewer's specific instructions.
+- Only modify the file(s) relevant to the feedback. Do not refactor unrelated code.
+
+# Output Format
+1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
+2. **Code Fix:** Apply the necessary changes to the codebase.`;
   }
-  if (buffer) console.log(`  ${buffer}`);
 
-  await proc.exited;
+  await runClaude(prompt);
 
   console.log("");
-  console.log(`=> Done with thread [${i + 1}/${threadCount}].`);
+  console.log(`=> Done with item [${i + 1}/${total}].`);
 }
 
 console.log("");
-console.log(`=> All ${threadCount} review thread(s) processed.`);
+console.log(`=> All ${total} item(s) processed.`);
 console.log("=> Review the changes and commit when ready.");
