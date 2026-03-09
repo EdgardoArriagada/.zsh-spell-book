@@ -1,0 +1,155 @@
+#!/usr/bin/env bun
+
+import { $ } from "bun";
+
+const repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
+console.log(`=> Repo: ${repo}`);
+
+console.log("=> Fetching PR number...");
+const prNum = parseInt((await $`gh pr view --json number --jq '.number'`.text()).trim());
+console.log(`=> PR #${prNum}`);
+
+console.log("=> Fetching unresolved review threads...");
+const [owner, repoName] = repo.split("/");
+
+const threadsResult = await $`gh api graphql -f query=${`
+  query($owner: String!, $repo: String!, $pr: Int!) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $pr) {
+        reviewThreads(first: 100) {
+          nodes {
+            isResolved
+            isOutdated
+            path
+            line
+            comments(first: 10) {
+              nodes {
+                body
+                author { login }
+                createdAt
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
+
+const unresolvedThreads = (
+  threadsResult.data.repository.pullRequest.reviewThreads.nodes as any[]
+).filter((t) => !t.isResolved && !t.isOutdated);
+
+const threadCount = unresolvedThreads.length;
+
+if (threadCount === 0) {
+  console.log("=> No unresolved review comments found. Nothing to do.");
+  process.exit(0);
+}
+
+console.log(`=> Found ${threadCount} unresolved review thread(s).`);
+
+console.log("=> Fetching PR diff...");
+const prDiff = await $`gh pr diff ${prNum}`.text();
+
+for (let i = 0; i < threadCount; i++) {
+  const thread = unresolvedThreads[i];
+  const filePath: string = thread.path;
+  const lineNum: string = thread.line ?? "N/A";
+  const comments: string = (thread.comments.nodes as any[])
+    .map((c) => `**${c.author.login}:** ${c.body}`)
+    .join("\n");
+
+  console.log("");
+  console.log("============================================");
+  console.log(`=> [${i + 1}/${threadCount}] Processing thread on ${filePath}:${lineNum}`);
+  console.log("=> Comments:");
+  console.log(comments);
+  console.log("============================================");
+
+  let fileContent = "";
+  const file = Bun.file(filePath);
+  if (await file.exists()) {
+    fileContent = await file.text();
+  }
+
+  const prompt = `# Role
+You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
+
+# Context
+You are resolving code review feedback on Pull Request #${prNum} in the repository ${repo}.
+
+## Review Thread
+- **File:** ${filePath}
+- **Line:** ${lineNum}
+
+### Reviewer Comments
+${comments}
+
+### Current File Content
+\`\`\`
+${fileContent}
+\`\`\`
+
+### Relevant PR Diff
+${prDiff}
+
+# Task
+Implement a robust engineering solution based on the feedback received from the review comment.
+
+## Analysis & Resolution Steps
+1. **Analyze the Claim:** Examine the feedback in the context of the codebase and the diff.
+2. **Critically Evaluate (Mandatory):**
+   - **Verify Validity:** Do not assume the comment is factually correct. Challenge the premise.
+   - **Check Constraints:** Ensure the suggested change does not violate existing logic or introduce regressions.
+3. **Determine the Solution:**
+   - If the issue is valid, identify the **root cause**.
+   - **Solve, Don't Just Obey:** If the comment suggests a specific implementation that is suboptimal, insecure, or hacky, ignore the suggestion and implement the **industry-standard best practice**.
+   - If the comment is invalid or already addressed, explain why and skip the change.
+4. **Implement:** Apply the specific code changes to the codebase.
+
+# Constraints
+- Prioritize code stability and system integrity over blind compliance to the reviewer's specific instructions.
+- Only modify the file(s) relevant to the feedback. Do not refactor unrelated code.
+
+# Output Format
+1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
+2. **Code Fix:** Apply the necessary changes to the codebase.`;
+
+  const proc = Bun.spawn(
+    [
+      "claude",
+      "--dangerously-skip-permissions",
+      "--print",
+      prompt,
+      "--model",
+      "sonnet",
+      "--allowedTools",
+      "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep",
+    ],
+    { stdout: "pipe", stderr: "inherit" }
+  );
+
+  const reader = proc.stdout.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) console.log(`  ${line}`);
+  }
+  if (buffer) console.log(`  ${buffer}`);
+
+  await proc.exited;
+
+  console.log("");
+  console.log(`=> Done with thread [${i + 1}/${threadCount}].`);
+}
+
+console.log("");
+console.log(`=> All ${threadCount} review thread(s) processed.`);
+console.log("=> Review the changes and commit when ready.");
