@@ -4,8 +4,17 @@ import { $ } from "bun";
 
 // --- Constants ---
 
-const CLAUDE_ALLOWED_TOOLS =
-  "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep";
+const CLAUDE_ALLOWED_TOOLS = [
+  "Read",
+  "Edit",
+  "Write",
+  "Bash(git diff:*)",
+  "Bash(git log:*)",
+  "Bash(git status:*)",
+  "Grep",
+].join(",");
+
+const SEPARATOR = "=".repeat(44);
 
 // --- Types ---
 
@@ -43,22 +52,21 @@ type GeneralCommentItem = {
 
 type Item = ReviewThreadItem | GeneralCommentItem;
 
-// --- Helpers ---
+type PRContext = {
+  num: number;
+  repo: string;
+  diff: string;
+};
 
-function isSkipped(answer: string): boolean {
-  return answer === "n" || answer === "no";
-}
+// --- Helpers ---
 
 async function confirmUser(question: string): Promise<boolean> {
   process.stdout.write(question);
-  return new Promise<boolean>((resolve) => {
-    process.stdin.resume();
-    process.stdin.setEncoding("utf8");
-    process.stdin.once("data", (data) => {
-      process.stdin.pause();
-      resolve(!isSkipped((data as string).trim().toLowerCase()));
-    });
-  });
+  for await (const line of console) {
+    const answer = line.trim().toLowerCase();
+    return answer !== "n" && answer !== "no";
+  }
+  return true;
 }
 
 async function runClaude(prompt: string): Promise<void> {
@@ -87,7 +95,7 @@ async function runClaude(prompt: string): Promise<void> {
 
   await proc.exited;
   if (proc.exitCode !== 0) {
-    console.log(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
+    console.warn(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
   }
 }
 
@@ -127,7 +135,7 @@ Implement a robust engineering solution based on the feedback received from the 
 2. **Code Fix:** Apply the necessary changes to the codebase.`;
 }
 
-async function resolveThreadOnGitHub(threadId: string): Promise<void> {
+async function resolveThreadOnGitHub(threadId: string): Promise<boolean> {
   try {
     const result = await $`gh api graphql -f query=${`
       mutation($threadId: ID!) {
@@ -138,43 +146,22 @@ async function resolveThreadOnGitHub(threadId: string): Promise<void> {
         }
       }
     `} -f threadId=${threadId}`.json();
-    if (result.data?.resolveReviewThread?.thread?.isResolved) {
-      console.log("=> Thread marked as resolved on GitHub.");
-    } else {
-      console.log("=> Warning: could not resolve thread on GitHub.");
-    }
-  } catch (err) {
-    console.log(`=> Warning: failed to resolve thread on GitHub: ${err}`);
+    return result.data?.resolveReviewThread?.thread?.isResolved === true;
+  } catch {
+    return false;
   }
 }
 
-async function processThread(
-  item: ReviewThreadItem,
-  index: number,
-  total: number,
-  prNum: number,
-  repo: string,
-  prDiff: string
-): Promise<void> {
-  const locationLabel = item.line != null ? `${item.path}:${item.line}` : item.path;
-  console.log(`=> [${index + 1}/${total}] Thread on ${locationLabel}`);
-  console.log("=> Comments:");
-  console.log(item.comments);
-  console.log("============================================");
+async function buildContext(item: Item, ctx: PRContext): Promise<string> {
+  if (item.kind === "thread") {
+    const file = Bun.file(item.path);
+    const fileContent = (await file.exists()) ? await file.text() : "";
+    const fileDiff = extractFileDiff(ctx.diff, item.path);
+    const lineContext = item.line != null
+      ? `**Line:** ${item.line}`
+      : `**Scope:** Entire file (no specific line)`;
 
-  if (!await confirmUser("=> Resolve this thread? [Y/n] ")) {
-    console.log("=> Skipped.");
-    return;
-  }
-
-  const file = Bun.file(item.path);
-  const fileContent = (await file.exists()) ? await file.text() : "";
-  const fileDiff = extractFileDiff(prDiff, item.path);
-  const lineContext = item.line != null
-    ? `**Line:** ${item.line}`
-    : `**Scope:** Entire file (no specific line)`;
-
-  const contextBlock = `You are resolving code review feedback on Pull Request #${prNum} in the repository ${repo}.
+    return `You are resolving code review feedback on Pull Request #${ctx.num} in the repository ${ctx.repo}.
 
 ## Review Thread
 - **File:** ${item.path}
@@ -190,59 +177,48 @@ ${fileContent}
 
 ### Relevant PR Diff
 ${fileDiff}`;
-
-  await runClaude(buildPrompt(contextBlock));
-
-  if (await confirmUser("=> Mark this thread as resolved on GitHub? [Y/n] ")) {
-    await resolveThreadOnGitHub(item.id);
-  }
-}
-
-async function processGeneralComment(
-  item: GeneralCommentItem,
-  index: number,
-  total: number,
-  prNum: number,
-  repo: string,
-  prDiff: string
-): Promise<void> {
-  console.log(`=> [${index + 1}/${total}] General PR comment`);
-  console.log("=> Comment:");
-  console.log(item.comments);
-  console.log("============================================");
-
-  if (!await confirmUser("=> Address this comment? [Y/n] ")) {
-    console.log("=> Skipped.");
-    return;
   }
 
-  const contextBlock = `You are resolving general PR feedback on Pull Request #${prNum} in the repository ${repo}.
+  return `You are resolving general PR feedback on Pull Request #${ctx.num} in the repository ${ctx.repo}.
 This comment is not tied to a specific file or line — it is a high-level review comment about the PR as a whole.
 
 ### Reviewer Comment
 ${item.comments}
 
 ### Relevant PR Diff
-${prDiff}`;
-
-  await runClaude(buildPrompt(contextBlock));
+${ctx.diff}`;
 }
 
-async function processItem(
-  item: Item,
-  index: number,
-  total: number,
-  prNum: number,
-  repo: string,
-  prDiff: string
-): Promise<void> {
+async function processItem(item: Item, index: number, total: number, ctx: PRContext): Promise<void> {
   console.log();
-  console.log("============================================");
+  console.log(SEPARATOR);
+
+  const label = item.kind === "thread"
+    ? `Thread on ${item.line != null ? `${item.path}:${item.line}` : item.path}`
+    : "General PR comment";
+
+  console.log(`=> [${index + 1}/${total}] ${label}`);
+  console.log(item.kind === "thread" ? "=> Comments:" : "=> Comment:");
+  console.log(item.comments);
+  console.log(SEPARATOR);
+
+  const actionLabel = item.kind === "thread" ? "Resolve this thread" : "Address this comment";
+  if (!await confirmUser(`=> ${actionLabel}? [Y/n] `)) {
+    console.log("=> Skipped.");
+    return;
+  }
+
+  await runClaude(buildPrompt(await buildContext(item, ctx)));
 
   if (item.kind === "thread") {
-    await processThread(item, index, total, prNum, repo, prDiff);
-  } else {
-    await processGeneralComment(item, index, total, prNum, repo, prDiff);
+    if (await confirmUser("=> Mark this thread as resolved on GitHub? [Y/n] ")) {
+      const resolved = await resolveThreadOnGitHub(item.id);
+      if (resolved) {
+        console.log("=> Thread marked as resolved on GitHub.");
+      } else {
+        console.warn("=> Warning: could not resolve thread on GitHub.");
+      }
+    }
   }
 
   console.log();
@@ -251,122 +227,129 @@ async function processItem(
 
 // --- Main ---
 
-let repo: string;
-try {
-  repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
-} catch {
-  console.error("=> Error: could not determine repo. Are you inside a GitHub repository?");
-  process.exit(1);
-}
-console.log(`=> Repo: ${repo}`);
+async function main(): Promise<void> {
+  let repo: string;
+  try {
+    repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
+  } catch {
+    console.error("=> Error: could not determine repo. Are you inside a GitHub repository?");
+    process.exit(1);
+  }
+  console.log(`=> Repo: ${repo}`);
 
-console.log("=> Fetching PR number...");
-let prNum: number;
-try {
-  const raw = (await $`gh pr view --json number --jq '.number'`.text()).trim();
-  prNum = parseInt(raw);
-  if (!Number.isFinite(prNum) || prNum <= 0) throw new Error("invalid PR number");
-} catch {
-  console.error(
-    "=> Error: could not parse a valid PR number from `gh pr view`.\n" +
-    "   Make sure you are on a branch with an open PR and that `gh auth status` is authenticated."
-  );
-  process.exit(1);
-}
-console.log(`=> PR #${prNum}`);
+  console.log("=> Fetching PR number...");
+  let prNum: number;
+  try {
+    const raw = (await $`gh pr view --json number --jq '.number'`.text()).trim();
+    prNum = parseInt(raw);
+    if (!Number.isFinite(prNum) || prNum <= 0) throw new Error("invalid PR number");
+  } catch {
+    console.error(
+      "=> Error: could not parse a valid PR number from `gh pr view`.\n" +
+      "   Make sure you are on a branch with an open PR and that `gh auth status` is authenticated."
+    );
+    process.exit(1);
+  }
+  console.log(`=> PR #${prNum}`);
 
-console.log("=> Fetching unresolved review threads and general comments...");
-const [owner, repoName] = repo.split("/");
+  console.log("=> Fetching unresolved review threads and general comments...");
+  const [owner, repoName] = repo.split("/");
 
-const threadsResult = await $`gh api graphql -f query=${`
-  query($owner: String!, $repo: String!, $pr: Int!) {
-    repository(owner: $owner, name: $repo) {
-      pullRequest(number: $pr) {
-        reviewThreads(first: 100) {
-          pageInfo { hasNextPage }
-          nodes {
-            id
-            isResolved
-            isOutdated
-            path
-            line
-            originalLine
-            comments(first: 10) {
-              pageInfo { hasNextPage }
-              nodes {
-                body
-                author { login }
-                createdAt
+  const threadsResult = await $`gh api graphql -f query=${`
+    query($owner: String!, $repo: String!, $pr: Int!) {
+      repository(owner: $owner, name: $repo) {
+        pullRequest(number: $pr) {
+          reviewThreads(first: 100) {
+            pageInfo { hasNextPage }
+            nodes {
+              id
+              isResolved
+              isOutdated
+              path
+              line
+              originalLine
+              comments(first: 10) {
+                pageInfo { hasNextPage }
+                nodes {
+                  body
+                  author { login }
+                  createdAt
+                }
               }
             }
           }
-        }
-        comments(first: 100) {
-          nodes {
-            body
-            author { login }
-            createdAt
+          comments(first: 100) {
+            nodes {
+              body
+              author { login }
+              createdAt
+            }
           }
         }
       }
     }
+  `} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
+
+  if (threadsResult.errors?.length) {
+    console.error("=> GraphQL error fetching review threads:");
+    for (const e of threadsResult.errors) console.error("  ", e.message);
+    process.exit(1);
   }
-`} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
 
-if (threadsResult.errors?.length) {
-  console.error("=> GraphQL error fetching review threads:");
-  for (const e of threadsResult.errors) console.error("  ", e.message);
-  process.exit(1);
-}
+  const pr = threadsResult.data.repository.pullRequest;
 
-const pr = threadsResult.data.repository.pullRequest;
-
-if (pr.reviewThreads.pageInfo.hasNextPage) {
-  console.warn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
-}
-
-for (const thread of pr.reviewThreads.nodes as RawThread[]) {
-  if (thread.comments.pageInfo.hasNextPage) {
-    console.warn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
+  if (pr.reviewThreads.pageInfo.hasNextPage) {
+    console.warn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
   }
-}
 
-const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as RawThread[])
-  .filter((t) => !t.isResolved && !t.isOutdated)
-  .map((t) => ({
-    kind: "thread" as const,
-    id: t.id,
-    path: t.path,
-    line: t.line ?? t.originalLine ?? null,
-    comments: t.comments.nodes
-      .map((c) => `**${c.author.login}:** ${c.body}`)
-      .join("\n"),
+  for (const thread of pr.reviewThreads.nodes as RawThread[]) {
+    if (thread.comments.pageInfo.hasNextPage) {
+      console.warn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
+    }
+  }
+
+  const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as RawThread[])
+    .filter((t) => !t.isResolved && !t.isOutdated)
+    .map((t) => ({
+      kind: "thread" as const,
+      id: t.id,
+      path: t.path,
+      line: t.line ?? t.originalLine ?? null,
+      comments: t.comments.nodes
+        .map((c) => `**${c.author.login}:** ${c.body}`)
+        .join("\n"),
+    }));
+
+  const generalComments: Item[] = (pr.comments.nodes as RawComment[]).map((c) => ({
+    kind: "comment" as const,
+    comments: `**${c.author.login}:** ${c.body}`,
   }));
 
-const generalComments: Item[] = (pr.comments.nodes as RawComment[]).map((c) => ({
-  kind: "comment" as const,
-  comments: `**${c.author.login}:** ${c.body}`,
-}));
+  const items: Item[] = [...unresolvedThreads, ...generalComments];
 
-const items: Item[] = [...unresolvedThreads, ...generalComments];
-const total = items.length;
+  if (items.length === 0) {
+    console.log("=> No review comments found. Nothing to do.");
+    process.exit(0);
+  }
 
-if (total === 0) {
-  console.log("=> No review comments found. Nothing to do.");
-  process.exit(0);
+  console.log(
+    `=> Found ${unresolvedThreads.length} unresolved review thread(s) and ${generalComments.length} general comment(s).`
+  );
+
+  console.log("=> Fetching PR diff...");
+  const ctx: PRContext = {
+    num: prNum,
+    repo,
+    diff: await $`gh pr diff ${prNum}`.text(),
+  };
+
+  for (let i = 0; i < items.length; i++) {
+    await processItem(items[i], i, items.length, ctx);
+  }
+
+  console.log();
+  console.log(`=> All ${items.length} item(s) processed.`);
+  console.log("=> Review the changes and commit when ready.");
 }
 
-console.log(
-  `=> Found ${unresolvedThreads.length} unresolved review thread(s) and ${generalComments.length} general comment(s).`
-);
-
-console.log("=> Fetching PR diff...");
-const prDiff = await $`gh pr diff ${prNum}`.text();
-
-for (let i = 0; i < total; i++) {
-  await processItem(items[i], i, total, prNum, repo, prDiff);
-}
-
-console.log();
-console.log(`=> All ${total} item(s) processed.`);
-console.log("=> Review the changes and commit when ready.");
+main();
