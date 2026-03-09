@@ -16,9 +16,12 @@ let prNum: number;
 try {
   const raw = (await $`gh pr view --json number --jq '.number'`.text()).trim();
   prNum = parseInt(raw);
-  if (isNaN(prNum)) throw new Error("parsed NaN");
+  if (!Number.isFinite(prNum) || prNum <= 0) throw new Error("invalid PR number");
 } catch {
-  console.error("=> Error: could not find a PR for the current branch. Make sure you're on a PR branch and `gh pr view` works.");
+  console.error(
+    "=> Error: could not parse a valid PR number from `gh pr view`.\n" +
+    "   Make sure you are on a branch with an open PR and that `gh auth status` is authenticated."
+  );
   process.exit(1);
 }
 console.log(`=> PR #${prNum}`);
