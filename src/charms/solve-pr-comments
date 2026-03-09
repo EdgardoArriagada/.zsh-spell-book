@@ -38,6 +38,7 @@ const threadsResult = await $`gh api graphql -f query=${`
             isOutdated
             path
             line
+            originalLine
             comments(first: 10) {
               pageInfo { hasNextPage }
               nodes {
@@ -82,7 +83,7 @@ type ReviewThreadItem = {
   kind: "thread";
   id: string;
   path: string;
-  line: string;
+  line: number | null;
   comments: string;
 };
 
@@ -99,7 +100,7 @@ const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as any[])
     kind: "thread" as const,
     id: t.id,
     path: t.path,
-    line: t.line ?? "N/A",
+    line: t.line ?? t.originalLine ?? null,
     comments: (t.comments.nodes as any[])
       .map((c: any) => `**${c.author.login}:** ${c.body}`)
       .join("\n"),
@@ -182,7 +183,8 @@ for (let i = 0; i < total; i++) {
   let prompt: string;
 
   if (item.kind === "thread") {
-    console.log(`=> [${i + 1}/${total}] Inline thread on ${item.path}:${item.line}`);
+    const locationLabel = item.line != null ? `${item.path}:${item.line}` : item.path;
+    console.log(`=> [${i + 1}/${total}] Thread on ${locationLabel}`);
     console.log("=> Comments:");
     console.log(item.comments);
     console.log("============================================");
@@ -201,6 +203,10 @@ for (let i = 0; i < total; i++) {
 
     const fileDiff = extractFileDiff(prDiff, item.path);
 
+    const lineContext = item.line != null
+      ? `**Line:** ${item.line}`
+      : `**Scope:** Entire file (no specific line)`;
+
     prompt = `# Role
 You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
 
@@ -209,7 +215,7 @@ You are resolving code review feedback on Pull Request #${prNum} in the reposito
 
 ## Review Thread
 - **File:** ${item.path}
-- **Line:** ${item.line}
+- ${lineContext}
 
 ### Reviewer Comments
 ${item.comments}
