@@ -2,17 +2,31 @@
 
 import { $ } from "bun";
 
-const repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
+let repo: string;
+try {
+  repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
+} catch {
+  console.error("=> Error: could not determine repo. Are you inside a GitHub repository?");
+  process.exit(1);
+}
 console.log(`=> Repo: ${repo}`);
 
 console.log("=> Fetching PR number...");
-const prNum = parseInt((await $`gh pr view --json number --jq '.number'`.text()).trim());
+let prNum: number;
+try {
+  const raw = (await $`gh pr view --json number --jq '.number'`.text()).trim();
+  prNum = parseInt(raw);
+  if (isNaN(prNum)) throw new Error("parsed NaN");
+} catch {
+  console.error("=> Error: could not find a PR for the current branch. Make sure you're on a PR branch and `gh pr view` works.");
+  process.exit(1);
+}
 console.log(`=> PR #${prNum}`);
 
 console.log("=> Fetching unresolved review threads and general comments...");
 const [owner, repoName] = repo.split("/");
 
-const result = await $`gh api graphql -f query=${`
+const threadsResult = await $`gh api graphql -f query=${`
   query($owner: String!, $repo: String!, $pr: Int!) {
     repository(owner: $owner, name: $repo) {
       pullRequest(number: $pr) {
@@ -44,7 +58,13 @@ const result = await $`gh api graphql -f query=${`
   }
 `} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
 
-const pr = result.data.repository.pullRequest;
+if (threadsResult.errors?.length) {
+  console.error("=> GraphQL error fetching review threads:");
+  for (const e of threadsResult.errors) console.error("  ", e.message);
+  process.exit(1);
+}
+
+const pr = threadsResult.data.repository.pullRequest;
 
 type ReviewThreadItem = {
   kind: "thread";
@@ -135,6 +155,9 @@ async function runClaude(prompt: string): Promise<void> {
   if (buffer) console.log(`  ${buffer}`);
 
   await proc.exited;
+  if (proc.exitCode !== 0) {
+    console.log(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
+  }
 }
 
 function extractFileDiff(fullDiff: string, filePath: string): string {
