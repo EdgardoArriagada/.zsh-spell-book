@@ -140,14 +140,9 @@ async function runClaude(prompt: string): Promise<void> {
     { stdout: "pipe", stderr: "inherit" }
   );
 
-  const reader = proc.stdout.getReader();
-  const decoder = new TextDecoder();
   let buffer = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
+  for await (const chunk of proc.stdout) {
+    buffer += Buffer.from(chunk).toString("utf8");
     const lines = buffer.split("\n");
     buffer = lines.pop() ?? "";
     for (const line of lines) console.log(`  ${line}`);
