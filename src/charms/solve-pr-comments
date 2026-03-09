@@ -134,6 +134,12 @@ async function runClaude(prompt: string): Promise<void> {
   await proc.exited;
 }
 
+function extractFileDiff(fullDiff: string, filePath: string): string {
+  const sections = fullDiff.split(/(?=^diff --git )/m);
+  const match = sections.find((s) => s.includes(`b/${filePath}`));
+  return match ?? `(no diff found for ${filePath})`;
+}
+
 for (let i = 0; i < total; i++) {
   const item = items[i];
 
@@ -160,6 +166,8 @@ for (let i = 0; i < total; i++) {
       fileContent = await file.text();
     }
 
+    const fileDiff = extractFileDiff(prDiff, item.path);
+
     prompt = `# Role
 You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
 
@@ -179,7 +187,7 @@ ${fileContent}
 \`\`\`
 
 ### Relevant PR Diff
-${prDiff}
+${fileDiff}
 
 # Task
 Implement a robust engineering solution based on the feedback received from the review comment.
