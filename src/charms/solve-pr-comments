@@ -18,6 +18,7 @@ const result = await $`gh api graphql -f query=${`
       pullRequest(number: $pr) {
         reviewThreads(first: 100) {
           nodes {
+            id
             isResolved
             isOutdated
             path
@@ -47,6 +48,7 @@ const pr = result.data.repository.pullRequest;
 
 type ReviewThreadItem = {
   kind: "thread";
+  id: string;
   path: string;
   line: string;
   comments: string;
@@ -63,6 +65,7 @@ const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as any[])
   .filter((t) => !t.isResolved && !t.isOutdated)
   .map((t) => ({
     kind: "thread" as const,
+    id: t.id,
     path: t.path,
     line: t.line ?? "N/A",
     comments: (t.comments.nodes as any[])
@@ -259,6 +262,30 @@ Implement a robust engineering solution based on the feedback received from the 
   }
 
   await runClaude(prompt);
+
+  if (item.kind === "thread") {
+    const resolveAnswer = await askUser("=> Mark this thread as resolved on GitHub? [Y/n] ");
+    if (resolveAnswer !== "n" && resolveAnswer !== "no") {
+      try {
+        const resolveResult = await $`gh api graphql -f query=${`
+          mutation($threadId: ID!) {
+            resolveReviewThread(input: { threadId: $threadId }) {
+              thread {
+                isResolved
+              }
+            }
+          }
+        `} -f threadId=${item.id}`.json();
+        if (resolveResult.data?.resolveReviewThread?.thread?.isResolved) {
+          console.log("=> Thread marked as resolved on GitHub.");
+        } else {
+          console.log("=> Warning: could not resolve thread on GitHub.");
+        }
+      } catch (err) {
+        console.log(`=> Warning: failed to resolve thread on GitHub: ${err}`);
+      }
+    }
+  }
 
   console.log("");
   console.log(`=> Done with item [${i + 1}/${total}].`);
