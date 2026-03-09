@@ -31,6 +31,7 @@ const threadsResult = await $`gh api graphql -f query=${`
     repository(owner: $owner, name: $repo) {
       pullRequest(number: $pr) {
         reviewThreads(first: 100) {
+          pageInfo { hasNextPage }
           nodes {
             id
             isResolved
@@ -38,6 +39,7 @@ const threadsResult = await $`gh api graphql -f query=${`
             path
             line
             comments(first: 10) {
+              pageInfo { hasNextPage }
               nodes {
                 body
                 author { login }
@@ -65,6 +67,16 @@ if (threadsResult.errors?.length) {
 }
 
 const pr = threadsResult.data.repository.pullRequest;
+
+if (pr.reviewThreads.pageInfo.hasNextPage) {
+  console.warn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
+}
+
+for (const thread of pr.reviewThreads.nodes as any[]) {
+  if (thread.comments.pageInfo.hasNextPage) {
+    console.warn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
+  }
+}
 
 type ReviewThreadItem = {
   kind: "thread";
