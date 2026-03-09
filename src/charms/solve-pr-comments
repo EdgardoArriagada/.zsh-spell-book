@@ -2,6 +2,255 @@
 
 import { $ } from "bun";
 
+// --- Constants ---
+
+const CLAUDE_ALLOWED_TOOLS =
+  "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep";
+
+// --- Types ---
+
+interface RawComment {
+  body: string;
+  author: { login: string };
+  createdAt: string;
+}
+
+interface RawThread {
+  id: string;
+  isResolved: boolean;
+  isOutdated: boolean;
+  path: string;
+  line: number | null;
+  originalLine: number | null;
+  comments: {
+    pageInfo: { hasNextPage: boolean };
+    nodes: RawComment[];
+  };
+}
+
+type ReviewThreadItem = {
+  kind: "thread";
+  id: string;
+  path: string;
+  line: number | null;
+  comments: string;
+};
+
+type GeneralCommentItem = {
+  kind: "comment";
+  comments: string;
+};
+
+type Item = ReviewThreadItem | GeneralCommentItem;
+
+// --- Helpers ---
+
+function isSkipped(answer: string): boolean {
+  return answer === "n" || answer === "no";
+}
+
+async function confirmUser(question: string): Promise<boolean> {
+  process.stdout.write(question);
+  return new Promise<boolean>((resolve) => {
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+    process.stdin.once("data", (data) => {
+      process.stdin.pause();
+      resolve(!isSkipped((data as string).trim().toLowerCase()));
+    });
+  });
+}
+
+async function runClaude(prompt: string): Promise<void> {
+  const proc = Bun.spawn(
+    [
+      "claude",
+      "--dangerously-skip-permissions",
+      "--print",
+      prompt,
+      "--model",
+      "sonnet",
+      "--allowedTools",
+      CLAUDE_ALLOWED_TOOLS,
+    ],
+    { stdout: "pipe", stderr: "inherit" }
+  );
+
+  let buffer = "";
+  for await (const chunk of proc.stdout) {
+    buffer += Buffer.from(chunk).toString("utf8");
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) console.log(`  ${line}`);
+  }
+  if (buffer) console.log(`  ${buffer}`);
+
+  await proc.exited;
+  if (proc.exitCode !== 0) {
+    console.log(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
+  }
+}
+
+function extractFileDiff(fullDiff: string, filePath: string): string {
+  const sections = fullDiff.split(/(?=^diff --git )/m);
+  const match = sections.find((s) => s.includes(`b/${filePath}`));
+  return match ?? `(no diff found for ${filePath})`;
+}
+
+function buildPrompt(contextBlock: string): string {
+  return `# Role
+You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
+
+# Context
+${contextBlock}
+
+# Task
+Implement a robust engineering solution based on the feedback received from the review comment.
+
+## Analysis & Resolution Steps
+1. **Analyze the Claim:** Examine the feedback in the context of the codebase and the diff.
+2. **Critically Evaluate (Mandatory):**
+   - **Verify Validity:** Do not assume the comment is factually correct. Challenge the premise.
+   - **Check Constraints:** Ensure the suggested change does not violate existing logic or introduce regressions.
+3. **Determine the Solution:**
+   - If the issue is valid, identify the **root cause** and which file(s) need to change.
+   - **Solve, Don't Just Obey:** If the comment suggests a specific implementation that is suboptimal, insecure, or hacky, ignore the suggestion and implement the **industry-standard best practice**.
+   - If the comment is invalid or already addressed, explain why and skip the change.
+4. **Implement:** Apply the specific code changes to the codebase.
+
+# Constraints
+- Prioritize code stability and system integrity over blind compliance to the reviewer's specific instructions.
+- Only modify the file(s) relevant to the feedback. Do not refactor unrelated code.
+
+# Output Format
+1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
+2. **Code Fix:** Apply the necessary changes to the codebase.`;
+}
+
+async function resolveThreadOnGitHub(threadId: string): Promise<void> {
+  try {
+    const result = await $`gh api graphql -f query=${`
+      mutation($threadId: ID!) {
+        resolveReviewThread(input: { threadId: $threadId }) {
+          thread {
+            isResolved
+          }
+        }
+      }
+    `} -f threadId=${threadId}`.json();
+    if (result.data?.resolveReviewThread?.thread?.isResolved) {
+      console.log("=> Thread marked as resolved on GitHub.");
+    } else {
+      console.log("=> Warning: could not resolve thread on GitHub.");
+    }
+  } catch (err) {
+    console.log(`=> Warning: failed to resolve thread on GitHub: ${err}`);
+  }
+}
+
+async function processThread(
+  item: ReviewThreadItem,
+  index: number,
+  total: number,
+  prNum: number,
+  repo: string,
+  prDiff: string
+): Promise<void> {
+  const locationLabel = item.line != null ? `${item.path}:${item.line}` : item.path;
+  console.log(`=> [${index + 1}/${total}] Thread on ${locationLabel}`);
+  console.log("=> Comments:");
+  console.log(item.comments);
+  console.log("============================================");
+
+  if (!await confirmUser("=> Resolve this thread? [Y/n] ")) {
+    console.log("=> Skipped.");
+    return;
+  }
+
+  const file = Bun.file(item.path);
+  const fileContent = (await file.exists()) ? await file.text() : "";
+  const fileDiff = extractFileDiff(prDiff, item.path);
+  const lineContext = item.line != null
+    ? `**Line:** ${item.line}`
+    : `**Scope:** Entire file (no specific line)`;
+
+  const contextBlock = `You are resolving code review feedback on Pull Request #${prNum} in the repository ${repo}.
+
+## Review Thread
+- **File:** ${item.path}
+- ${lineContext}
+
+### Reviewer Comments
+${item.comments}
+
+### Current File Content
+\`\`\`
+${fileContent}
+\`\`\`
+
+### Relevant PR Diff
+${fileDiff}`;
+
+  await runClaude(buildPrompt(contextBlock));
+
+  if (await confirmUser("=> Mark this thread as resolved on GitHub? [Y/n] ")) {
+    await resolveThreadOnGitHub(item.id);
+  }
+}
+
+async function processGeneralComment(
+  item: GeneralCommentItem,
+  index: number,
+  total: number,
+  prNum: number,
+  repo: string,
+  prDiff: string
+): Promise<void> {
+  console.log(`=> [${index + 1}/${total}] General PR comment`);
+  console.log("=> Comment:");
+  console.log(item.comments);
+  console.log("============================================");
+
+  if (!await confirmUser("=> Address this comment? [Y/n] ")) {
+    console.log("=> Skipped.");
+    return;
+  }
+
+  const contextBlock = `You are resolving general PR feedback on Pull Request #${prNum} in the repository ${repo}.
+This comment is not tied to a specific file or line — it is a high-level review comment about the PR as a whole.
+
+### Reviewer Comment
+${item.comments}
+
+### Relevant PR Diff
+${prDiff}`;
+
+  await runClaude(buildPrompt(contextBlock));
+}
+
+async function processItem(
+  item: Item,
+  index: number,
+  total: number,
+  prNum: number,
+  repo: string,
+  prDiff: string
+): Promise<void> {
+  console.log();
+  console.log("============================================");
+
+  if (item.kind === "thread") {
+    await processThread(item, index, total, prNum, repo, prDiff);
+  } else {
+    await processGeneralComment(item, index, total, prNum, repo, prDiff);
+  }
+
+  console.log();
+  console.log(`=> Done with item [${index + 1}/${total}].`);
+}
+
+// --- Main ---
+
 let repo: string;
 try {
   repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
@@ -76,40 +325,25 @@ if (pr.reviewThreads.pageInfo.hasNextPage) {
   console.warn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
 }
 
-for (const thread of pr.reviewThreads.nodes as any[]) {
+for (const thread of pr.reviewThreads.nodes as RawThread[]) {
   if (thread.comments.pageInfo.hasNextPage) {
     console.warn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
   }
 }
 
-type ReviewThreadItem = {
-  kind: "thread";
-  id: string;
-  path: string;
-  line: number | null;
-  comments: string;
-};
-
-type GeneralCommentItem = {
-  kind: "comment";
-  comments: string;
-};
-
-type Item = ReviewThreadItem | GeneralCommentItem;
-
-const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as any[])
+const unresolvedThreads: Item[] = (pr.reviewThreads.nodes as RawThread[])
   .filter((t) => !t.isResolved && !t.isOutdated)
   .map((t) => ({
     kind: "thread" as const,
     id: t.id,
     path: t.path,
     line: t.line ?? t.originalLine ?? null,
-    comments: (t.comments.nodes as any[])
-      .map((c: any) => `**${c.author.login}:** ${c.body}`)
+    comments: t.comments.nodes
+      .map((c) => `**${c.author.login}:** ${c.body}`)
       .join("\n"),
   }));
 
-const generalComments: Item[] = (pr.comments.nodes as any[]).map((c) => ({
+const generalComments: Item[] = (pr.comments.nodes as RawComment[]).map((c) => ({
   kind: "comment" as const,
   comments: `**${c.author.login}:** ${c.body}`,
 }));
@@ -129,207 +363,10 @@ console.log(
 console.log("=> Fetching PR diff...");
 const prDiff = await $`gh pr diff ${prNum}`.text();
 
-async function askUser(question: string): Promise<string> {
-  process.stdout.write(question);
-  return new Promise<string>((resolve) => {
-    process.stdin.resume();
-    process.stdin.setEncoding("utf8");
-    process.stdin.once("data", (data) => {
-      process.stdin.pause();
-      resolve((data as string).trim().toLowerCase());
-    });
-  });
-}
-
-async function runClaude(prompt: string): Promise<void> {
-  const proc = Bun.spawn(
-    [
-      "claude",
-      "--dangerously-skip-permissions",
-      "--print",
-      prompt,
-      "--model",
-      "sonnet",
-      "--allowedTools",
-      "Read,Edit,Write,Bash(git diff:*),Bash(git log:*),Bash(git status:*),Grep",
-    ],
-    { stdout: "pipe", stderr: "inherit" }
-  );
-
-  let buffer = "";
-  for await (const chunk of proc.stdout) {
-    buffer += Buffer.from(chunk).toString("utf8");
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-    for (const line of lines) console.log(`  ${line}`);
-  }
-  if (buffer) console.log(`  ${buffer}`);
-
-  await proc.exited;
-  if (proc.exitCode !== 0) {
-    console.log(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
-  }
-}
-
-function extractFileDiff(fullDiff: string, filePath: string): string {
-  const sections = fullDiff.split(/(?=^diff --git )/m);
-  const match = sections.find((s) => s.includes(`b/${filePath}`));
-  return match ?? `(no diff found for ${filePath})`;
-}
-
 for (let i = 0; i < total; i++) {
-  const item = items[i];
-
-  console.log("");
-  console.log("============================================");
-
-  let prompt: string;
-
-  if (item.kind === "thread") {
-    const locationLabel = item.line != null ? `${item.path}:${item.line}` : item.path;
-    console.log(`=> [${i + 1}/${total}] Thread on ${locationLabel}`);
-    console.log("=> Comments:");
-    console.log(item.comments);
-    console.log("============================================");
-
-    const answer = await askUser("=> Resolve this thread? [Y/n] ");
-    if (answer === "n" || answer === "no") {
-      console.log("=> Skipped.");
-      continue;
-    }
-
-    let fileContent = "";
-    const file = Bun.file(item.path);
-    if (await file.exists()) {
-      fileContent = await file.text();
-    }
-
-    const fileDiff = extractFileDiff(prDiff, item.path);
-
-    const lineContext = item.line != null
-      ? `**Line:** ${item.line}`
-      : `**Scope:** Entire file (no specific line)`;
-
-    prompt = `# Role
-You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
-
-# Context
-You are resolving code review feedback on Pull Request #${prNum} in the repository ${repo}.
-
-## Review Thread
-- **File:** ${item.path}
-- ${lineContext}
-
-### Reviewer Comments
-${item.comments}
-
-### Current File Content
-\`\`\`
-${fileContent}
-\`\`\`
-
-### Relevant PR Diff
-${fileDiff}
-
-# Task
-Implement a robust engineering solution based on the feedback received from the review comment.
-
-## Analysis & Resolution Steps
-1. **Analyze the Claim:** Examine the feedback in the context of the codebase and the diff.
-2. **Critically Evaluate (Mandatory):**
-   - **Verify Validity:** Do not assume the comment is factually correct. Challenge the premise.
-   - **Check Constraints:** Ensure the suggested change does not violate existing logic or introduce regressions.
-3. **Determine the Solution:**
-   - If the issue is valid, identify the **root cause**.
-   - **Solve, Don't Just Obey:** If the comment suggests a specific implementation that is suboptimal, insecure, or hacky, ignore the suggestion and implement the **industry-standard best practice**.
-   - If the comment is invalid or already addressed, explain why and skip the change.
-4. **Implement:** Apply the specific code changes to the codebase.
-
-# Constraints
-- Prioritize code stability and system integrity over blind compliance to the reviewer's specific instructions.
-- Only modify the file(s) relevant to the feedback. Do not refactor unrelated code.
-
-# Output Format
-1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
-2. **Code Fix:** Apply the necessary changes to the codebase.`;
-  } else {
-    console.log(`=> [${i + 1}/${total}] General PR comment`);
-    console.log("=> Comment:");
-    console.log(item.comments);
-    console.log("============================================");
-
-    const answer = await askUser("=> Address this comment? [Y/n] ");
-    if (answer === "n" || answer === "no") {
-      console.log("=> Skipped.");
-      continue;
-    }
-
-    prompt = `# Role
-You are an expert Senior Staff Software Engineer. You possess deep expertise in automated code refactoring, software architecture, and root cause analysis.
-
-# Context
-You are resolving general PR feedback on Pull Request #${prNum} in the repository ${repo}.
-This comment is not tied to a specific file or line — it is a high-level review comment about the PR as a whole.
-
-### Reviewer Comment
-${item.comments}
-
-### Relevant PR Diff
-${prDiff}
-
-# Task
-Implement a robust engineering solution based on the feedback received from the review comment.
-
-## Analysis & Resolution Steps
-1. **Analyze the Claim:** Examine the feedback in the context of the codebase and the diff.
-2. **Critically Evaluate (Mandatory):**
-   - **Verify Validity:** Do not assume the comment is factually correct. Challenge the premise.
-   - **Check Constraints:** Ensure the suggested change does not violate existing logic or introduce regressions.
-3. **Determine the Solution:**
-   - If the issue is valid, identify the **root cause** and which file(s) need to change.
-   - **Solve, Don't Just Obey:** If the comment suggests a specific implementation that is suboptimal, insecure, or hacky, ignore the suggestion and implement the **industry-standard best practice**.
-   - If the comment is invalid or already addressed, explain why and skip the change.
-4. **Implement:** Apply the specific code changes to the codebase.
-
-# Constraints
-- Prioritize code stability and system integrity over blind compliance to the reviewer's specific instructions.
-- Only modify the file(s) relevant to the feedback. Do not refactor unrelated code.
-
-# Output Format
-1. **Logic Verification:** A brief analysis (2-3 lines) explaining whether the comment was valid and why you chose the specific solution.
-2. **Code Fix:** Apply the necessary changes to the codebase.`;
-  }
-
-  await runClaude(prompt);
-
-  if (item.kind === "thread") {
-    const resolveAnswer = await askUser("=> Mark this thread as resolved on GitHub? [Y/n] ");
-    if (resolveAnswer !== "n" && resolveAnswer !== "no") {
-      try {
-        const resolveResult = await $`gh api graphql -f query=${`
-          mutation($threadId: ID!) {
-            resolveReviewThread(input: { threadId: $threadId }) {
-              thread {
-                isResolved
-              }
-            }
-          }
-        `} -f threadId=${item.id}`.json();
-        if (resolveResult.data?.resolveReviewThread?.thread?.isResolved) {
-          console.log("=> Thread marked as resolved on GitHub.");
-        } else {
-          console.log("=> Warning: could not resolve thread on GitHub.");
-        }
-      } catch (err) {
-        console.log(`=> Warning: failed to resolve thread on GitHub: ${err}`);
-      }
-    }
-  }
-
-  console.log("");
-  console.log(`=> Done with item [${i + 1}/${total}].`);
+  await processItem(items[i], i, total, prNum, repo, prDiff);
 }
 
-console.log("");
+console.log();
 console.log(`=> All ${total} item(s) processed.`);
 console.log("=> Review the changes and commit when ready.");
