@@ -12,10 +12,11 @@ if [[ ! -f $filename ]]
 fi
 
 function loadFile() {
-  # cargo
-  export PATH=$PATH:~/.cargo/bin
-  # fnm
-  eval "$(fnm env --use-on-cd)"
+  case ${1:e} in
+    rs) export PATH=$PATH:~/.cargo/bin ;;
+    js|ts|jsx|tsx|mjs|cjs) eval "$(fnm env --use-on-cd)" ;;
+    py) eval "$(pyenv init -)"; $(poetry env activate) ;;
+  esac
 
   case $# in
     1) nvim $1 ;;
