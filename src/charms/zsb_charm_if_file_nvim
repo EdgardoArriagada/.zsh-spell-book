@@ -23,15 +23,14 @@ function loadFile() {
   esac
 }
 
-local linesCount=$((${#lines} - 1))
-local cursorLine=${lines[$linesCount]}
+local lastLine=${lines[-2]}
 
-if [[ -f "$cursorLine" ]]
+if [[ -f "$lastLine" ]]
   then loadFile $filename; exit 0
 fi
 
 # get number out of first number until ':' in a line using param expansion
-local lineNumber=${cursorLine%%:*}
+local lineNumber=${lastLine%%:*}
 
 # check if number is valid
 [[ $lineNumber != <-> ]] && exit 1
