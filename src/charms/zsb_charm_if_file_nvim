@@ -4,7 +4,8 @@ set -euo pipefail
 # (tightly coupled with tmux config, ripgrep, and nvim)
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
 
-local filename=${*%%§*}
+local lines=("${(@f)*}")
+local filename=${lines[1]}
 
 if [[ ! -f $filename ]]
   then exit 1
@@ -22,7 +23,8 @@ function loadFile() {
   esac
 }
 
-local cursorLine=${*##*§}
+local linesCount=$((${#lines} - 1))
+local cursorLine=${lines[$linesCount]}
 
 if [[ -f "$cursorLine" ]]
   then loadFile $filename; exit 0
