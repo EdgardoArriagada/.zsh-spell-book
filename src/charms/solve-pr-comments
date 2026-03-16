@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
+import * as readline from "readline";
 
 // --- Constants ---
 
@@ -60,13 +61,15 @@ type PRContext = {
 
 // --- Helpers ---
 
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
 async function confirmUser(question: string): Promise<boolean> {
-  process.stdout.write(question);
-  for await (const line of console) {
-    const answer = line.trim().toLowerCase();
-    return answer !== "n" && answer !== "no";
-  }
-  return true;
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      const a = answer.trim().toLowerCase();
+      resolve(a !== "n" && a !== "no");
+    });
+  });
 }
 
 async function runClaude(prompt: string): Promise<void> {
@@ -81,7 +84,7 @@ async function runClaude(prompt: string): Promise<void> {
       "--allowedTools",
       CLAUDE_ALLOWED_TOOLS,
     ],
-    { stdout: "pipe", stderr: "inherit" }
+    { stdout: "pipe", stderr: "inherit", stdin: "ignore" }
   );
 
   let buffer = "";
@@ -350,6 +353,7 @@ async function main(): Promise<void> {
   console.log();
   console.log(`=> All ${items.length} item(s) processed.`);
   console.log("=> Review the changes and commit when ready.");
+  rl.close();
 }
 
 main();
