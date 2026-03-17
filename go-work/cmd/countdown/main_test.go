@@ -104,3 +104,57 @@ func TestGetCustomTimeMessage(t *testing.T) {
 		}
 	}
 }
+
+func TestParseArgs(t *testing.T) {
+	tests := []struct {
+		name            string
+		args            []string
+		wantPositionals []string
+		wantMessage     string
+	}{
+		{"flag before positional", []string{"-m", "Take a break!", "5m"}, []string{"5m"}, "Take a break!"},
+		{"flag after positional", []string{"5m", "-m", "Take a break!"}, []string{"5m"}, "Take a break!"},
+		{"long flag before positional", []string{"--message", "Go drink water", "5m"}, []string{"5m"}, "Go drink water"},
+		{"long flag after positional", []string{"5m", "--message", "Go drink water"}, []string{"5m"}, "Go drink water"},
+		{"no flag", []string{"5m"}, []string{"5m"}, ""},
+		{"flag between two positionals", []string{"5m", "-m", "hello", "extra"}, []string{"5m", "extra"}, "hello"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			positionals, message := main.ParseArgs(test.args)
+			if message != test.wantMessage {
+				t.Errorf("message = %q, want %q", message, test.wantMessage)
+			}
+			if len(positionals) != len(test.wantPositionals) {
+				t.Errorf("positionals = %v, want %v", positionals, test.wantPositionals)
+				return
+			}
+			for i, p := range positionals {
+				if p != test.wantPositionals[i] {
+					t.Errorf("positionals[%d] = %q, want %q", i, p, test.wantPositionals[i])
+				}
+			}
+		})
+	}
+}
+
+func TestBuildNotificationMessage(t *testing.T) {
+	tests := []struct {
+		timeMessage    string
+		customMessage  string
+		expected       string
+	}{
+		{"30 seconds", "", "The timer for 30 seconds is over"},
+		{"01:00", "", "The timer for 01:00 is over"},
+		{"30 seconds", "Take a break!", "Take a break!"},
+		{"01:00", "Go drink water", "Go drink water"},
+	}
+
+	for _, test := range tests {
+		result := main.BuildNotificationMessage(test.timeMessage, test.customMessage)
+		if result != test.expected {
+			t.Errorf("BuildNotificationMessage(%q, %q) = %q, want %q", test.timeMessage, test.customMessage, result, test.expected)
+		}
+	}
+}

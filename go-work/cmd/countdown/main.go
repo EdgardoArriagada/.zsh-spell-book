@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"example.com/workspace/lib/args"
 	u "example.com/workspace/lib/utils"
 )
 
@@ -17,11 +17,31 @@ const (
 	MaxSeconds = 215999 // 59:59:59 in seconds
 )
 
-func main() {
-	d := u.Must1(args.Parse())
-	u.Expect(d.Len == 1, "Usage: countdown <time>\n  Examples:\n    countdown 30      (30 seconds)\n    countdown 5m      (5 minutes)\n    countdown 1h      (1 hour)\n    countdown 05:30   (5 minutes 30 seconds)\n    countdown 1:05:30 (1 hour 5 minutes 30 seconds)")
+// ParseArgs parses os.Args-style input, allowing flags anywhere among positional args.
+func ParseArgs(args []string) (positionals []string, message string) {
+	fs := flag.NewFlagSet("countdown", flag.ExitOnError)
+	const usage = "custom alert message"
+	fs.StringVar(&message, "m", "", usage+" (shorthand)")
+	fs.StringVar(&message, "message", "", usage)
 
-	inputTime := d.Args[0]
+	for len(args) > 0 {
+		fs.Parse(args)
+		remaining := fs.Args()
+		if len(remaining) == 0 {
+			break
+		}
+		positionals = append(positionals, remaining[0])
+		args = remaining[1:]
+	}
+	return positionals, message
+}
+
+func main() {
+	positionals, customMessage := ParseArgs(os.Args[1:])
+
+	u.Expect(len(positionals) == 1, "Usage: countdown <time>\n  Examples:\n    countdown 30      (30 seconds)\n    countdown 5m      (5 minutes)\n    countdown 1h      (1 hour)\n    countdown 05:30   (5 minutes 30 seconds)\n    countdown 1:05:30 (1 hour 5 minutes 30 seconds)")
+
+	inputTime := positionals[0]
 	totalSeconds := parseTimeInput(inputTime)
 	validateSeconds(totalSeconds)
 	runCountdown(totalSeconds)
@@ -29,11 +49,12 @@ func main() {
 	go playNotificationSound()
 
 	// Show completion message
-	customTimeMessage := GetCustomTimeMessage(totalSeconds)
+	timeMessage := GetCustomTimeMessage(totalSeconds)
 	currentTime := time.Now().Format("15:04:05")
-	fmt.Printf("The timer for %s was up at %s\n", customTimeMessage, currentTime)
+	fmt.Printf("The timer for %s was up at %s\n", timeMessage, currentTime)
 
-	showNotification(customTimeMessage)
+	notificationMsg := BuildNotificationMessage(timeMessage, customMessage)
+	showNotification(notificationMsg)
 }
 
 func parseTimeInput(input string) int {
@@ -169,8 +190,14 @@ func playNotificationSound() {
 	exec.Command("afplay", soundFile).Run()
 }
 
-func showNotification(timeMessage string) {
-	message := fmt.Sprintf("The timer for %s is over", timeMessage)
+func BuildNotificationMessage(timeMessage, customMessage string) string {
+	if customMessage != "" {
+		return customMessage
+	}
+	return fmt.Sprintf("The timer for %s is over", timeMessage)
+}
+
+func showNotification(message string) {
 
 	// Try macOS notification
 	if _, err := exec.LookPath("osascript"); err == nil {
