@@ -38,10 +38,10 @@ struct ContextWindow {
 #[derive(Deserialize, Default)]
 struct Cost {
     session_cost_usd: Option<f64>,
-    #[allow(dead_code)]
-    total_lines_added: Option<i64>,
-    #[allow(dead_code)]
-    total_lines_removed: Option<i64>,
+    input_tokens: Option<u64>,
+    output_tokens: Option<u64>,
+    cache_read_tokens: Option<u64>,
+    cache_creation_tokens: Option<u64>,
 }
 
 #[derive(Deserialize, Default)]
@@ -225,7 +225,7 @@ fn build_line1(input: &StatusInput) -> String {
 fn build_line2(input: &StatusInput) -> String {
     let mut segments = Vec::new();
 
-    // Segment 1: model name (coral bg, dark fg)
+    // Segment 1: model (BLUE bg, DARK fg)
     let model_name = input
         .model
         .as_ref()
@@ -238,36 +238,57 @@ fn build_line2(input: &StatusInput) -> String {
         content: format!(" \u{f444} {model_name} "),
     });
 
-    // Segment 2: context tokens + cost (lavender bg, dark fg)
-    let ctx = input.context_window.as_ref();
+    // Segment 2: input · output · cache tokens (GREEN bg, DARK fg)
     let cost = input.cost.as_ref();
-
-    // Resolve token counts: prefer explicit fields, fall back to percentage estimate
-    let (used_tokens, max_tokens) = ctx
-        .and_then(|c| c.current_tokens.zip(c.max_tokens))
-        .or_else(|| {
-            ctx.and_then(|c| c.used_percentage).map(|pct| {
-                let max: u64 = 200_000;
-                let used = (pct / 100.0 * max as f64) as u64;
-                (used, max)
-            })
-        })
-        .unwrap_or((0, 0));
-
-    let cost_usd = cost.and_then(|c| c.session_cost_usd);
-
-    if used_tokens > 0 || cost_usd.is_some() {
-        let mut info = format_k(used_tokens);
-        if let Some(usd) = cost_usd {
-            info.push_str(&format!(" \u{00b7} ${usd:.2}"));
+    let input_tok = cost.and_then(|c| c.input_tokens);
+    let output_tok = cost.and_then(|c| c.output_tokens);
+    let cache_tok = cost.and_then(|c| {
+        match (c.cache_read_tokens, c.cache_creation_tokens) {
+            (Some(r), Some(w)) => Some(r + w),
+            (Some(r), None) => Some(r),
+            (None, Some(w)) => Some(w),
+            _ => None,
         }
-        if max_tokens > used_tokens {
-            info.push_str(&format!(" {} left", format_k(max_tokens - used_tokens)));
+    });
+
+    if input_tok.is_some() || output_tok.is_some() || cache_tok.is_some() {
+        let mut parts: Vec<String> = Vec::new();
+        if let Some(t) = input_tok {
+            parts.push(format!("\u{f019} {}", format_k(t)));   // fa-download  = input
+        }
+        if let Some(t) = output_tok {
+            parts.push(format!("\u{f093} {}", format_k(t)));   // fa-upload    = output
+        }
+        if let Some(t) = cache_tok {
+            parts.push(format!("\u{f1c0} {}", format_k(t)));   // fa-database  = cache
         }
         segments.push(Segment {
             bg_color: GREEN,
             fg_color: DARK,
-            content: format!(" \u{f0d6} {info} "),
+            content: format!(" {} ", parts.join("  ")),
+        });
+    }
+
+    // Segment 3: total I+O · session cost (DARK bg, GOLDEN fg)
+    let total = match (input_tok, output_tok) {
+        (Some(i), Some(o)) => Some(i + o),
+        (Some(i), None) | (None, Some(i)) => Some(i),
+        _ => None,
+    };
+    let cost_usd = cost.and_then(|c| c.session_cost_usd);
+
+    if total.is_some() || cost_usd.is_some() {
+        let mut parts: Vec<String> = Vec::new();
+        if let Some(t) = total {
+            parts.push(format!("\u{f080} {}", format_k(t)));   // fa-bar-chart = total
+        }
+        if let Some(usd) = cost_usd {
+            parts.push(format!("\u{f0d6} ${usd:.2}"));         // fa-money     = cost
+        }
+        segments.push(Segment {
+            bg_color: DARK,
+            fg_color: GOLDEN,
+            content: format!(" {} ", parts.join("  ")),
         });
     }
 
