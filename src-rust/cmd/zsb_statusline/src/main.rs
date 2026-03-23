@@ -28,19 +28,24 @@ struct ModelInfo {
 }
 
 #[derive(Deserialize, Default)]
+struct CurrentUsage {
+    input_tokens: Option<u64>,
+    output_tokens: Option<u64>,
+    cache_creation_input_tokens: Option<u64>,
+    cache_read_input_tokens: Option<u64>,
+}
+
+#[derive(Deserialize, Default)]
 struct ContextWindow {
     used_percentage: Option<f64>,
     current_tokens: Option<u64>,
     max_tokens: Option<u64>,
+    current_usage: Option<CurrentUsage>,
 }
 
 #[derive(Deserialize, Default)]
 struct Cost {
-    session_cost_usd: Option<f64>,
-    input_tokens: Option<u64>,
-    output_tokens: Option<u64>,
-    cache_read_tokens: Option<u64>,
-    cache_creation_tokens: Option<u64>,
+    total_cost_usd: Option<f64>,
 }
 
 #[derive(Deserialize, Default)]
@@ -225,11 +230,11 @@ fn build_line2(input: &StatusInput) -> String {
     });
 
     // Segment 2: input · output · cache tokens (GREEN bg, DARK fg)
-    let cost = input.cost.as_ref();
-    let input_tok = cost.and_then(|c| c.input_tokens);
-    let output_tok = cost.and_then(|c| c.output_tokens);
-    let cache_tok = cost.and_then(|c| {
-        match (c.cache_read_tokens, c.cache_creation_tokens) {
+    let usage = input.context_window.as_ref().and_then(|c| c.current_usage.as_ref());
+    let input_tok = usage.and_then(|u| u.input_tokens);
+    let output_tok = usage.and_then(|u| u.output_tokens);
+    let cache_tok = usage.and_then(|u| {
+        match (u.cache_read_input_tokens, u.cache_creation_input_tokens) {
             (Some(r), Some(w)) => Some(r + w),
             (Some(r), None) => Some(r),
             (None, Some(w)) => Some(w),
@@ -261,7 +266,7 @@ fn build_line2(input: &StatusInput) -> String {
         (Some(i), None) | (None, Some(i)) => Some(i),
         _ => None,
     };
-    let cost_usd = cost.and_then(|c| c.session_cost_usd);
+    let cost_usd = input.cost.as_ref().and_then(|c| c.total_cost_usd);
 
     if total.is_some() || cost_usd.is_some() {
         let mut parts: Vec<String> = Vec::new();
