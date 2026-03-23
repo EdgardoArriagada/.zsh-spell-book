@@ -3,22 +3,22 @@ use std::process::Command;
 
 use serde::Deserialize;
 
-// ── Color palette (Nordic — AlexvZyl/nordic.nvim) ─────────────────────────────
-const DARK: (u8, u8, u8) = (46, 52, 64);       // gray1        #2E3440
-const GOLDEN: (u8, u8, u8) = (235, 203, 139);  // yellow.base  #EBCB8B
-const BLUE: (u8, u8, u8) = (129, 161, 193);    // blue1        #81A1C1
-const GREEN: (u8, u8, u8) = (163, 190, 140);   // green.base   #A3BE8C
-const RED: (u8, u8, u8) = (191, 97, 106);      // red.base     #BF616A
+// ── Color palette (Nordic — 256-color approximations) ─────────────────────────
+const DARK: u8 = 236;    // #303030 ≈ #2E3440
+const GOLDEN: u8 = 222;  // #FFD787 ≈ #EBCB8B
+const BLUE: u8 = 110;    // #87AFD7 ≈ #81A1C1
+const GREEN: u8 = 150;   // #AFD787 ≈ #A3BE8C
+const RED: u8 = 131;     // #AF5F5F ≈ #BF616A
 
 const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow
 const RESET: &str = "\x1b[0m";
 
-fn fg((r, g, b): (u8, u8, u8)) -> String {
-    format!("\x1b[38;2;{r};{g};{b}m")
+fn fg(n: u8) -> String {
+    format!("\x1b[38;5;{n}m")
 }
 
-fn bg((r, g, b): (u8, u8, u8)) -> String {
-    format!("\x1b[48;2;{r};{g};{b}m")
+fn bg(n: u8) -> String {
+    format!("\x1b[48;5;{n}m")
 }
 
 // ── Input structs ──────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ fn resolve_pct(input: &StatusInput) -> Option<f64> {
     })
 }
 
-fn bar_color(pct: f64) -> (u8, u8, u8) {
+fn bar_color(pct: f64) -> u8 {
     if pct >= 85.0 {
         RED
     } else if pct >= 70.0 {
@@ -136,8 +136,8 @@ fn format_k(n: u64) -> String {
 // ── Segment rendering ──────────────────────────────────────────────────────────
 
 struct Segment {
-    bg_color: (u8, u8, u8),
-    fg_color: (u8, u8, u8),
+    bg_color: u8,
+    fg_color: u8,
     content: String,
 }
 
