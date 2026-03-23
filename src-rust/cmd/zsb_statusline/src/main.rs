@@ -11,7 +11,6 @@ const GREEN: (u8, u8, u8) = (163, 190, 140);   // green.base   #A3BE8C
 const RED: (u8, u8, u8) = (191, 97, 106);      // red.base     #BF616A
 
 const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow
-const SEP_LEFT: &str = "\u{e0b2}";  // powerline filled left arrow
 const RESET: &str = "\x1b[0m";
 
 fn fg((r, g, b): (u8, u8, u8)) -> String {
@@ -104,24 +103,6 @@ fn shorten_model(name: &str) -> String {
         (Some(t), None) => t,
         _ => name.to_string(),
     }
-}
-
-/// Strips ANSI escapes to count visible terminal columns (Nerd Font glyphs = 1 cell).
-fn visible_len(s: &str) -> usize {
-    let mut len = 0;
-    let mut chars = s.chars().peekable();
-    while let Some(c) = chars.next() {
-        if c == '\x1b' {
-            for next in chars.by_ref() {
-                if next == 'm' {
-                    break;
-                }
-            }
-        } else {
-            len += 1;
-        }
-    }
-    len
 }
 
 /// Resolve context usage as a percentage (0–100).
@@ -225,6 +206,11 @@ fn build_line1(input: &StatusInput) -> String {
 fn build_line2(input: &StatusInput) -> String {
     let mut segments = Vec::new();
 
+    // Segment 0: progress bar on the LEFT (bordered box style)
+    if let Some(pct) = resolve_pct(input) {
+        segments.push(build_progress_segment(pct));
+    }
+
     // Segment 1: model (BLUE bg, DARK fg)
     let model_name = input
         .model
@@ -295,24 +281,20 @@ fn build_line2(input: &StatusInput) -> String {
     render_line(&segments)
 }
 
-/// Right-aligned powerline segment: SEP_LEFT + colored bar + percentage.
-fn build_progress_bar(pct: f64) -> String {
+/// Left-side progress bar segment: block fill style, no box-drawing borders.
+fn build_progress_segment(pct: f64) -> Segment {
     const BAR_WIDTH: usize = 10;
     let filled = ((pct / 100.0) * BAR_WIDTH as f64).round() as usize;
     let filled = filled.min(BAR_WIDTH);
-    let bar = format!(
-        "{}{}",
-        "\u{2588}".repeat(filled),
-        "\u{2591}".repeat(BAR_WIDTH - filled),
-    );
     let color = bar_color(pct);
-    format!(
-        "{}{SEP_LEFT}{}{} {bar} {:.0}% {RESET}",
-        fg(color),
-        bg(color),
-        fg(DARK),
-        pct,
-    )
+    let bars: String = (0..BAR_WIDTH)
+        .map(|i| if i < filled { '\u{2588}' } else { '\u{2591}' })
+        .collect();
+    Segment {
+        bg_color: DARK,
+        fg_color: color,
+        content: format!(" {bars} {pct:.0}% "),
+    }
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────────
@@ -325,21 +307,8 @@ fn main() {
 
     let input: StatusInput = serde_json::from_str(&raw).unwrap_or_default();
 
-    let width: usize = std::env::var("COLUMNS")
-        .ok()
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(120);
-
     let line1 = build_line1(&input);
-    let line2_left = build_line2(&input);
-
-    let line2 = if let Some(pct) = resolve_pct(&input) {
-        let right = build_progress_bar(pct);
-        let pad = width.saturating_sub(visible_len(&line2_left) + visible_len(&right));
-        format!("{line2_left}{}{right}", " ".repeat(pad))
-    } else {
-        line2_left
-    };
+    let line2 = build_line2(&input);
 
     println!("{line1}");
     print!("{line2}");
