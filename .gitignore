@@ -3,3 +3,5 @@
 /logs
 /result.zsh
 /src-go/bin
+/src-rust/bin
+/src-rust/target

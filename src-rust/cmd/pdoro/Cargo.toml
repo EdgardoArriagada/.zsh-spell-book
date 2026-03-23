@@ -1,0 +1,8 @@
+[package]
+name = "pdoro"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.4.12", features = ["derive"]}
+daemonize = "0.5.0"

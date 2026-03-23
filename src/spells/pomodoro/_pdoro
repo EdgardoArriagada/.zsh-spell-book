@@ -1,0 +1,72 @@
+#compdef pdoro
+
+_pdoro() {
+  local -a start_group=(
+    + '(time)'
+    {-t,--time}'[time duration of session]: :->time'
+    + '(callback)'
+    {-c,--callback-with-args}'[callback program with args]: :->callback'
+  )
+
+  local -a single_use_group=(
+    + '(single-use)'
+    '(: * -)'{-r,--remaining}'[remaining duration of session]'
+    '(: * -)'{-s,--start-server}'[start pdoro server]'
+    '(: * -)'--halt-counter'[halt counter]'
+    '(: * -)'{-p,--pause-resume-counter}'[pause or resume counter]'
+    '(: * -)'{-i,--is-counter-running}'[check if counter is running]'
+    '(: * -)'{-h,--help}'[show help]'
+    '(: * -)'{-v,--version}'[show version]'
+    '(: * -)'--is-valid-time'[validate time duration]: :->is_time'
+  )
+
+  case $state in
+      time|is_time)
+        _values 'flags' 25m
+        ;;
+      callback) ;;
+  esac
+
+  local -a start_group_keys=( $(_pdoro_argkeysof start_group) )
+
+  local -a result
+
+  for word in ${words[@]}; do
+    result=(${start_group[@]})
+    if _pdoro_does_array_contains start_group_keys $word
+      then break # we using start_group, skip single_use_group
+    fi
+    result+=(${single_use_group[@]})
+  done
+
+  _arguments -C -s -S : $result
+}
+
+_pdoro_argkeysof() {
+  local -a group=(${(P)1})
+  local -a result
+
+  for entry in ${group[@]}; do
+    if [[ "$entry" =~ '^\-' ]] # is arg
+      then result+=(${entry%%\[*}) # get key only
+    fi
+  done
+
+  print -rl -- ${result[@]}
+}
+
+_pdoro_does_array_contains() {
+  local -a array=(${(P)1})
+  local input=$2
+
+  for entry in ${array[@]}; do
+    if [[ "$entry" == "$input" ]]
+      then return 0
+    fi
+  done
+
+  return 1
+}
+
+
+_pdoro $@
