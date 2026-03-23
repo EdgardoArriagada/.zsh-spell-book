@@ -10,7 +10,6 @@ use (
 	./cmd/zsb_bundle
 	./cmd/zsb_charm_tmux_renametab
 	./cmd/zsb_charm_tmux_urlopen
-	./cmd/zsb_open
 
 	./lib/args
 	./lib/git

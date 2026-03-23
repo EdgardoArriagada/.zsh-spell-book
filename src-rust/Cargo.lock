@@ -211,3 +211,7 @@ dependencies = [
 [[package]]
 name = "zsb_clipcopy"
 version = "0.1.0"
+
+[[package]]
+name = "zsb_open"
+version = "0.1.0"
