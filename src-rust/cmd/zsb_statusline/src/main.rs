@@ -4,12 +4,14 @@ use std::process::Command;
 use serde::Deserialize;
 
 // ── Color palette (Nordic — AlexvZyl/nordic.nvim) ─────────────────────────────
-const DARK: (u8, u8, u8) = (46, 52, 64);       // gray1      #2E3440
-const GOLDEN: (u8, u8, u8) = (235, 203, 139);  // yellow.base #EBCB8B
-const BLUE: (u8, u8, u8) = (129, 161, 193);    // blue1       #81A1C1
-const GREEN: (u8, u8, u8) = (163, 190, 140);   // green.base  #A3BE8C
+const DARK: (u8, u8, u8) = (46, 52, 64);       // gray1        #2E3440
+const GOLDEN: (u8, u8, u8) = (235, 203, 139);  // yellow.base  #EBCB8B
+const BLUE: (u8, u8, u8) = (129, 161, 193);    // blue1        #81A1C1
+const GREEN: (u8, u8, u8) = (163, 190, 140);   // green.base   #A3BE8C
+const RED: (u8, u8, u8) = (191, 97, 106);      // red.base     #BF616A
 
-const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow ("")
+const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow
+const SEP_LEFT: &str = "\u{e0b2}";  // powerline filled left arrow
 const RESET: &str = "\x1b[0m";
 
 fn fg((r, g, b): (u8, u8, u8)) -> String {
@@ -101,6 +103,44 @@ fn shorten_model(name: &str) -> String {
         (Some(t), Some(v)) => format!("{t} {v}"),
         (Some(t), None) => t,
         _ => name.to_string(),
+    }
+}
+
+/// Strips ANSI escapes to count visible terminal columns (Nerd Font glyphs = 1 cell).
+fn visible_len(s: &str) -> usize {
+    let mut len = 0;
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '\x1b' {
+            for next in chars.by_ref() {
+                if next == 'm' {
+                    break;
+                }
+            }
+        } else {
+            len += 1;
+        }
+    }
+    len
+}
+
+/// Resolve context usage as a percentage (0–100).
+fn resolve_pct(input: &StatusInput) -> Option<f64> {
+    let ctx = input.context_window.as_ref()?;
+    ctx.used_percentage.or_else(|| {
+        let used = ctx.current_tokens?;
+        let max = ctx.max_tokens.filter(|&m| m > 0)?;
+        Some(used as f64 / max as f64 * 100.0)
+    })
+}
+
+fn bar_color(pct: f64) -> (u8, u8, u8) {
+    if pct >= 85.0 {
+        RED
+    } else if pct >= 70.0 {
+        GOLDEN
+    } else {
+        GREEN
     }
 }
 
@@ -234,6 +274,26 @@ fn build_line2(input: &StatusInput) -> String {
     render_line(&segments)
 }
 
+/// Right-aligned powerline segment: SEP_LEFT + colored bar + percentage.
+fn build_progress_bar(pct: f64) -> String {
+    const BAR_WIDTH: usize = 10;
+    let filled = ((pct / 100.0) * BAR_WIDTH as f64).round() as usize;
+    let filled = filled.min(BAR_WIDTH);
+    let bar = format!(
+        "{}{}",
+        "\u{2588}".repeat(filled),
+        "\u{2591}".repeat(BAR_WIDTH - filled),
+    );
+    let color = bar_color(pct);
+    format!(
+        "{}{SEP_LEFT}{}{} {bar} {:.0}% {RESET}",
+        fg(color),
+        bg(color),
+        fg(DARK),
+        pct,
+    )
+}
+
 // ── Main ───────────────────────────────────────────────────────────────────────
 
 fn main() {
@@ -244,8 +304,21 @@ fn main() {
 
     let input: StatusInput = serde_json::from_str(&raw).unwrap_or_default();
 
+    let width: usize = std::env::var("COLUMNS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(120);
+
     let line1 = build_line1(&input);
-    let line2 = build_line2(&input);
+    let line2_left = build_line2(&input);
+
+    let line2 = if let Some(pct) = resolve_pct(&input) {
+        let right = build_progress_bar(pct);
+        let pad = width.saturating_sub(visible_len(&line2_left) + visible_len(&right));
+        format!("{line2_left}{}{right}", " ".repeat(pad))
+    } else {
+        line2_left
+    };
 
     println!("{line1}");
     print!("{line2}");
