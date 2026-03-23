@@ -6,7 +6,6 @@ use (
 	./cmd/get_repo_name
 	./cmd/gitbranch
 	./cmd/gitworktree
-	./cmd/repeatstr
 	./cmd/zsb_bundle
 	./cmd/zsb_charm_tmux_renametab
 	./cmd/zsb_charm_tmux_urlopen
