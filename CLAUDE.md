@@ -8,7 +8,7 @@ A zsh configuration framework ("spell book") that organizes shell aliases/functi
 
 ## Build Commands
 
-All make targets run from the repo root. Go workspace is in `go-work/` (Go 1.26.0).
+All make targets run from the repo root. Go workspace is in `src-go/` (Go 1.26.0).
 
 ```sh
 make go-build               # Build a Go command (interactive fzf selection)
@@ -19,15 +19,15 @@ make zsh-dev                # Live reload on .zsh file changes (requires entr)
 make go-test-all            # Run all Go tests
 ```
 
-Binaries go to `go-work/bin/`. After building zsb_bundle: `./go-work/bin/zsb_bundle` regenerates `result.zsh`.
+Binaries go to `src-go/bin/`. After building zsb_bundle: `./src-go/bin/zsb_bundle` regenerates `result.zsh`.
 
 ## Testing
 
 Go tests use standard `go test` with table-driven patterns:
 
 ```sh
-cd go-work && go test ./cmd/<name>/...    # Test a specific command
-cd go-work && go test ./...               # Test everything
+cd src-go && go test ./cmd/<name>/...    # Test a specific command
+cd src-go && go test ./...               # Test everything
 ```
 
 ## Architecture
@@ -36,7 +36,7 @@ cd go-work && go test ./...               # Test everything
 
 1. **Zsh layer** (`src/`): Modular shell scripts organized by category in `src/spells/` (git, docker, files, tmux, etc.). `src/utils/` has shared zsh helpers. `src/automatic-calls/` runs on shell init. `src/globalVariables.zsh` defines shared constants (colors, git branch patterns, file type regexes).
 
-2. **Go layer** (`go-work/`): CLI tools as separate modules under `go-work/cmd/`. Shared libraries in `go-work/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
+2. **Go layer** (`src-go/`): CLI tools as separate modules under `src-go/cmd/`. Shared libraries in `src-go/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
 
 **Key Go commands:** `zsb_bundle` (the bundler), `gitworktree` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`, `zsb_charm_tmux_renametab`, `zsb_charm_tmux_urlopen`.
 
@@ -44,8 +44,8 @@ cd go-work && go test ./...               # Test everything
 
 ## Conventions
 
-- Go modules follow one-command-per-directory pattern in `go-work/cmd/`
-- Shared Go code goes in `go-work/lib/`
+- Go modules follow one-command-per-directory pattern in `src-go/cmd/`
+- Shared Go code goes in `src-go/lib/`
 - New shell spells go in `src/spells/<category>/` as individual `.zsh` files
 - Temporary/local shell config goes in `src/temp/` (gitignored)
 - Environment config: copy `.env.example` to `.env`

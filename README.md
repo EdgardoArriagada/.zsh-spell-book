@@ -38,7 +38,7 @@ make build
 3.- bundle the project
 
 ```sh
-./go-work/bin/zsb_bundle
+./src-go/bin/zsb_bundle
 ```
 
 5.- source the project
@@ -58,12 +58,12 @@ then, in ~/temp/.zshenv paste the following depending on your OS
 ZSB_MACOS=1 # only on MacOS
 
 export PATH=~/.zsh-spell-book/src/charms:$PATH
-export PATH=~/.zsh-spell-book/go-work/bin:$PATH
+export PATH=~/.zsh-spell-book/src-go/bin:$PATH
 ```
 
 ### Development
 
-make any changes on a `*.zsh` file and run `./go-work/bin/zsb_bundle` to see the results
+make any changes on a `*.zsh` file and run `./src-go/bin/zsb_bundle` to see the results
 
 (optional) if you installed `entr`, you can make a **live reload** server by running the following make command
 

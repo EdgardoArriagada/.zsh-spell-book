@@ -19,10 +19,10 @@ endef
 
 .go-run:
 	@if [[ -z "$(TARGET)" ]]; then \
-		TARGET=$$(ls ./go-work/cmd | fzf); \
+		TARGET=$$(ls ./src-go/cmd | fzf); \
 	fi; \
 	if [[ -n "$$TARGET" ]]; then \
-		(cd go-work && $(call $(ACTION),$$TARGET)); \
+		(cd src-go && $(call $(ACTION),$$TARGET)); \
 	fi
 
 go-build:
@@ -32,12 +32,12 @@ go-dev:
 	$(MAKE) ACTION='go-dev-fn' TARGET='$(TARGET)' .go-run
 
 zsh-dev:
-	@find . -name "*.zsh" -not -path "./go-work/*" | entr -c ./go-work/bin/zsb_bundle
+	@find . -name "*.zsh" -not -path "./src-go/*" | entr -c ./src-go/bin/zsb_bundle
 
 go-build-all:
-	for target in $$(ls ./go-work/cmd); do \
+	for target in $$(ls ./src-go/cmd); do \
 		$(MAKE) TARGET=$$target ACTION='go-build-fn' .go-run; \
 	done
 
 go-test-all:
-	cd go-work && go list -f '{{.Dir}}' -m | xargs -I{} sh -c 'cd "{}" && go test ./...'
+	cd src-go && go list -f '{{.Dir}}' -m | xargs -I{} sh -c 'cd "{}" && go test ./...'

@@ -2,4 +2,4 @@
 /.env
 /logs
 /result.zsh
-/go-work/bin
+/src-go/bin
