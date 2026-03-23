@@ -7,6 +7,7 @@ use serde::Deserialize;
 const DARK: u8 = 236;    // #303030 ≈ #2E3440
 const GOLDEN: u8 = 222;  // #FFD787 ≈ #EBCB8B
 const BLUE: u8 = 110;    // #87AFD7 ≈ #81A1C1
+const PURPLE: u8 = 140;  // #AF87D7 ≈ #B48EAD
 const GREEN: u8 = 150;   // #AFD787 ≈ #A3BE8C
 const RED: u8 = 131;     // #AF5F5F ≈ #BF616A
 
@@ -224,7 +225,7 @@ fn build_line2(input: &StatusInput) -> String {
         .map(shorten_model)
         .unwrap_or_else(|| "Claude".to_string());
     segments.push(Segment {
-        bg_color: BLUE,
+        bg_color: PURPLE,
         fg_color: DARK,
         content: format!(" \u{f444} {model_name} "),
     });
