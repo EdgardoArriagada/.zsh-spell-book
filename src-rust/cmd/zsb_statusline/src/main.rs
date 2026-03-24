@@ -1,4 +1,4 @@
-use std::io::{self, Read};
+use std::io::{self, BufWriter, Read, Write};
 use std::process::Command;
 
 use serde::Deserialize;
@@ -14,12 +14,29 @@ const RED: u8 = 131;     // #AF5F5F ≈ #BF616A
 const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow
 const RESET: &str = "\x1b[0m";
 
-fn fg(n: u8) -> String {
-    format!("\x1b[38;5;{n}m")
+// Pre-computed ANSI escape sequences — avoids String allocation on every call.
+fn fg(n: u8) -> &'static str {
+    match n {
+        DARK   => "\x1b[38;5;236m",
+        GOLDEN => "\x1b[38;5;222m",
+        BLUE   => "\x1b[38;5;110m",
+        PURPLE => "\x1b[38;5;140m",
+        GREEN  => "\x1b[38;5;150m",
+        RED    => "\x1b[38;5;131m",
+        _      => "",
+    }
 }
 
-fn bg(n: u8) -> String {
-    format!("\x1b[48;5;{n}m")
+fn bg(n: u8) -> &'static str {
+    match n {
+        DARK   => "\x1b[48;5;236m",
+        GOLDEN => "\x1b[48;5;222m",
+        BLUE   => "\x1b[48;5;110m",
+        PURPLE => "\x1b[48;5;140m",
+        GREEN  => "\x1b[48;5;150m",
+        RED    => "\x1b[48;5;131m",
+        _      => "",
+    }
 }
 
 // ── Input structs ──────────────────────────────────────────────────────────────
@@ -65,24 +82,36 @@ struct StatusInput {
 
 // ── Git helpers ────────────────────────────────────────────────────────────────
 
-fn git_branch(cwd: &str) -> Option<String> {
-    Command::new("git")
-        .args(["-C", cwd, "rev-parse", "--abbrev-ref", "HEAD"])
+/// Single subprocess returning (branch_name, is_dirty).
+/// Replaces the previous git_branch + git_is_dirty two-call pattern.
+fn git_info(cwd: &str) -> (Option<String>, bool) {
+    let Ok(output) = Command::new("git")
+        .args(["-C", cwd, "status", "--porcelain", "--branch"])
         .output()
-        .ok()
-        .filter(|o| o.status.success())
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-        .filter(|s| !s.is_empty() && s != "HEAD")
-}
+    else {
+        return (None, false);
+    };
+    if !output.status.success() {
+        return (None, false);
+    }
 
-fn git_is_dirty(cwd: &str) -> bool {
-    Command::new("git")
-        .args(["-C", cwd, "status", "--porcelain"])
-        .output()
-        .ok()
-        .filter(|o| o.status.success())
-        .map(|o| !o.stdout.is_empty())
-        .unwrap_or(false)
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut lines = stdout.lines();
+
+    // First line: "## main...origin/main", "## main", or "## HEAD (no branch)"
+    let branch = lines.next().and_then(|header| {
+        let name = header.strip_prefix("## ")?;
+        let name = name.split("...").next().unwrap_or(name).trim();
+        if name.is_empty() || name.starts_with("HEAD") {
+            None
+        } else {
+            Some(name.to_string())
+        }
+    });
+
+    // Any remaining lines mean the working tree is dirty.
+    let dirty = lines.next().is_some();
+    (branch, dirty)
 }
 
 // ── Formatting helpers ─────────────────────────────────────────────────────────
@@ -94,17 +123,20 @@ fn project_name(cwd: &str) -> &str {
         .unwrap_or(cwd)
 }
 
+fn capitalize(s: &str) -> String {
+    let mut chars = s.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+    }
+}
+
 /// "claude-sonnet-4-6" → "Sonnet 4", "claude-opus-4-6" → "Opus 4"
 fn shorten_model(name: &str) -> String {
-    let parts: Vec<&str> = name.split('-').collect();
-    let model_type = parts.get(1).map(|p| {
-        let mut c = p.chars();
-        match c.next() {
-            None => p.to_string(),
-            Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
-        }
-    });
-    match (model_type, parts.get(2)) {
+    let mut iter = name.split('-').skip(1); // skip "claude"
+    let model_type = iter.next().map(capitalize);
+    let version = iter.next();
+    match (model_type, version) {
         (Some(t), Some(v)) => format!("{t} {v}"),
         (Some(t), None) => t,
         _ => name.to_string(),
@@ -155,21 +187,21 @@ fn render_line(segments: &[Segment]) -> String {
     let mut out = String::new();
     for (i, seg) in segments.iter().enumerate() {
         if i == 0 {
-            out.push_str(&bg(seg.bg_color));
-            out.push_str(&fg(seg.fg_color));
+            out.push_str(bg(seg.bg_color));
+            out.push_str(fg(seg.fg_color));
         } else {
             let prev_bg = segments[i - 1].bg_color;
-            out.push_str(&bg(seg.bg_color));
-            out.push_str(&fg(prev_bg));
+            out.push_str(bg(seg.bg_color));
+            out.push_str(fg(prev_bg));
             out.push_str(SEP_RIGHT);
-            out.push_str(&fg(seg.fg_color));
+            out.push_str(fg(seg.fg_color));
         }
         out.push_str(&seg.content);
     }
     // Trailing separator (fg = last segment's bg, bg = terminal default)
     let last_bg = segments.last().unwrap().bg_color;
     out.push_str(RESET);
-    out.push_str(&fg(last_bg));
+    out.push_str(fg(last_bg));
     out.push_str(SEP_RIGHT);
     out.push_str(RESET);
     out
@@ -188,21 +220,23 @@ fn build_line1(input: &StatusInput) -> String {
         content: format!(" \u{e5fc} {project} "),
     });
 
-    // Segment 2: git branch with dirty indicator (coral bg, dark fg)
+    // Segment 2: git branch with dirty indicator — single git subprocess.
     let cwd = input.cwd.as_deref().unwrap_or(".");
+    let (git_branch, dirty) = git_info(cwd);
+
     let branch = input
         .worktree
         .as_ref()
         .and_then(|w| w.branch.as_deref())
         .map(str::to_string)
-        .or_else(|| git_branch(cwd));
+        .or(git_branch);
 
     if let Some(branch) = branch {
-        let dirty = if git_is_dirty(cwd) { " \u{00b1}" } else { "" };
+        let dirty_indicator = if dirty { " \u{00b1}" } else { "" };
         segments.push(Segment {
             bg_color: BLUE,
             fg_color: DARK,
-            content: format!(" \u{e0a0} {branch}{dirty} "),
+            content: format!(" \u{e0a0} {branch}{dirty_indicator} "),
         });
     }
 
@@ -217,7 +251,7 @@ fn build_line2(input: &StatusInput) -> String {
         segments.push(build_progress_segment(pct));
     }
 
-    // Segment 1: model (BLUE bg, DARK fg)
+    // Segment 1: model (PURPLE bg, DARK fg)
     let model_name = input
         .model
         .as_ref()
@@ -316,6 +350,8 @@ fn main() {
     let line1 = build_line1(&input);
     let line2 = build_line2(&input);
 
-    println!("{line1}");
-    print!("{line2}");
+    let stdout = io::stdout();
+    let mut out = BufWriter::new(stdout.lock());
+    let _ = writeln!(out, "{line1}");
+    let _ = write!(out, "{line2}");
 }
