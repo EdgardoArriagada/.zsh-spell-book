@@ -1,0 +1,8 @@
+[package]
+name = "zsb_charm_tmux_urlopen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+open = "5.3.3"
+regex = "1.12.3"
