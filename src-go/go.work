@@ -7,8 +7,6 @@ use (
 	./cmd/gitbranch
 	./cmd/gitworktree
 	./cmd/zsb_bundle
-	./cmd/zsb_charm_tmux_renametab
-
 	./lib/args
 	./lib/git
 	./lib/open

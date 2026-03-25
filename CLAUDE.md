@@ -45,9 +45,9 @@ cd src-go && go test ./...               # Test everything
 
 3. **Rust layer** (`src-rust/`): CLI tools as crates under `src-rust/cmd/`. Uses Cargo workspace. Shared libraries go in `src-rust/lib/`.
 
-**Key Go commands:** `zsb_bundle` (the bundler), `gitworktree` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`, `zsb_charm_tmux_renametab`, `zsb_charm_tmux_urlopen`.
+**Key Go commands:** `zsb_bundle` (the bundler), `gitworktree` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`.
 
-**Key Rust commands:** `wcase` (text case transformation), `pdoro` (pomodoro daemon).
+**Key Rust commands:** `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
 
 **Bundler flow:** `zsb_bundle` walks `src/`, concatenates all `.zsh` files respecting ordering, and outputs `result.zsh`. To debug without bundling, source `debug.zsh` instead.
 
