@@ -45,7 +45,10 @@ EOF
 )
 
 echo "=> Calling Claude to generate title and description..."
-CLAUDE_OUTPUT=$(claude --dangerously-skip-permissions --print "$PROMPT" --model sonnet)
+CLAUDE_OUTPUT=$(claude --dangerously-skip-permissions --print "$PROMPT" --model sonnet \
+  --tools "" --output-format stream-json --verbose 2>/dev/null \
+  | grep '"type":"assistant"' | tail -1 \
+  | jq -r '.message.content[] | select(.type == "text") | .text')
 echo "=> Raw Claude output:\n${CLAUDE_OUTPUT}"
 
 PR_TITLE=$(echo "$CLAUDE_OUTPUT" | head -n 1)
