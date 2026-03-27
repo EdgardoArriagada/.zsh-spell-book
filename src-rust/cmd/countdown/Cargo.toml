@@ -1,9 +1,8 @@
 [package]
-name = "pdoro"
+name = "countdown"
 version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.4.12", features = ["derive"]}
-daemonize = "0.5.0"
+clap = { version = "4.4.12", features = ["derive"] }
 zsb_time = { path = "../../lib/zsb_time" }

@@ -2,8 +2,6 @@ go 1.26.0
 
 use (
 	./cmd/airbnb_calculator
-	./cmd/countdown
-	./cmd/get_repo_name
 	./cmd/gitbranch
 	./cmd/gitworktree
 	./cmd/zsb_bundle
