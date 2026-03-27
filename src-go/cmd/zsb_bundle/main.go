@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"example.com/workspace/lib/utils"
@@ -37,6 +38,7 @@ func main() {
 	result := bundler.Bundle()
 
 	utils.Must(os.WriteFile(RESULT_FILEPATH, []byte(result), 0644))
+	exec.Command("zsh", "-c", "zcompile "+RESULT_FILEPATH).Run()
 
 	fmt.Println("ℨ𝔰𝔥 𝔖𝔭𝔢𝔩𝔩𝔟𝔬𝔬𝔨 bundled!!")
 }
