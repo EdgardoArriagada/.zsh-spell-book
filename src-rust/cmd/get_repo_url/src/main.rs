@@ -3,9 +3,22 @@ use std::process::{self, Command};
 fn ssh_to_https(url: &str) -> String {
     // e.g. git@github.com:user/repo.git -> https://github.com/user/repo
     let without_prefix = url.strip_prefix("git@").unwrap_or(url);
-    let normalized = without_prefix.replacen(':', "/", 1);
-    let without_git = normalized.strip_suffix(".git").unwrap_or(&normalized);
-    format!("https://{}", without_git)
+    // Split host from path at ':'
+    let (host, path) = without_prefix
+        .split_once(':')
+        .unwrap_or((without_prefix, ""));
+    // Normalize SSH host aliases like github.com-emu -> github.com
+    let host = if let Some(base) = host.strip_prefix("github.com-") {
+        if !base.is_empty() {
+            "github.com"
+        } else {
+            host
+        }
+    } else {
+        host
+    };
+    let without_git = path.strip_suffix(".git").unwrap_or(path);
+    format!("https://{}/{}", host, without_git)
 }
 
 fn main() {
@@ -53,6 +66,14 @@ mod tests {
         assert_eq!(
             ssh_to_https("git@github.com:org/suborg/repo.git"),
             "https://github.com/org/suborg/repo"
+        );
+    }
+
+    #[test]
+    fn ssh_host_alias() {
+        assert_eq!(
+            ssh_to_https("git@github.com-foo:mycompany/myrepo.git"),
+            "https://github.com/mycompany/myrepo"
         );
     }
 }
