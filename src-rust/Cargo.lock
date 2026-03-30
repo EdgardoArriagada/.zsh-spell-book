@@ -394,20 +394,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "zsb_claude_statusline"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "zsb_clipcopy"
 version = "0.1.0"
 
 [[package]]
 name = "zsb_open"
 version = "0.1.0"
-
-[[package]]
-name = "zsb_statusline"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
 
 [[package]]
 name = "zsb_time"
