@@ -30,7 +30,7 @@ ${zsb}.v() {
     pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg "$file" ;;
 
     *)
-      nvim ${line_num:++"$line_num"} "$file" && ${zsb}.tryGitStatus
+      nvim ${line_num:+"+$line_num"} "$file" && ${zsb}.tryGitStatus
       ;;
   esac
 }
