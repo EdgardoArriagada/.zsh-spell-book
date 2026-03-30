@@ -14,7 +14,7 @@ ${zsb}.v() {
   fi
 
   local file="$1"
-  local line_num=""
+  local line_num
 
   # Check if input contains :line_number pattern
   if [[ "$file" =~ ^(.+):([0-9]+)$ ]]; then
@@ -30,10 +30,7 @@ ${zsb}.v() {
     pdf|jpg|png|gif|webp|tiff|psd|raw|bmp|heif|jpeg|svg) ${0}.openImg "$file" ;;
 
     *)
-      if [[ -n "$line_num" ]]
-        then nvim +"$line_num" "$file" && ${zsb}.tryGitStatus
-        else nvim "$file" && ${zsb}.tryGitStatus
-      fi
+      nvim ${line_num:++"$line_num"} "$file" && ${zsb}.tryGitStatus
       ;;
   esac
 }
