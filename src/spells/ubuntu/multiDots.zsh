@@ -1,8 +1,8 @@
-..() { builtin cd .. && ls }
-...() { builtin cd ../.. && ls }
-....() { builtin cd ../../.. && ls }
-.....() { builtin cd ../../../.. && ls }
-......() { builtin cd ../../../../.. && ls }
-.......() { builtin cd ../../../../../.. && ls }
+..() { builtin cd .. && lsd; }
+...() { builtin cd ../.. && lsd; }
+....() { builtin cd ../../.. && lsd; }
+.....() { builtin cd ../../../.. && lsd; }
+......() { builtin cd ../../../../.. && lsd; }
+.......() { builtin cd ../../../../../.. && lsd; }
 
 hisIgnore '..'
