@@ -4,12 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
-)
-
-var (
-	commentRegex = regexp.MustCompile(`( |^)#.*`)
 )
 
 // Bundler represents the content builder for zsh spell book
@@ -18,10 +13,7 @@ type Bundler struct {
 }
 
 func NewBundler() *Bundler {
-	b := &Bundler{}
-	// Pre-allocate some capacity based on typical file sizes
-	b.content.Grow(64 * 1024) // Start with 64KB capacity
-	return b
+	return &Bundler{}
 }
 
 // Write writes bytes to the bundle content
@@ -77,37 +69,12 @@ func (b *Bundler) appendDirContents(basePath string) {
 	}
 }
 
-// Bundle applies text transformations and returns the final result
+// Bundle applies variable replacements and returns the final result
 func (b *Bundler) Bundle() string {
-	input := b.content.String()
-	lines := strings.Split(input, "\n")
-
-	var result strings.Builder
-	// Pre-allocate capacity based on input size (estimate ~80% of original size after processing)
-	result.Grow(len(input) * 4 / 5)
-
-	varReplacer := strings.NewReplacer(
+	replacer := strings.NewReplacer(
 		"${zsb}", zsb,
 		"$ZSB_DIR", ZSB_DIR,
 		"$ZSB_TEMP_DIR", ZSB_TEMP_DIR,
-		"\\\n", "", // Also handle bash line breaks here
 	)
-
-	for _, line := range lines {
-		// Remove comments using pre-compiled regex
-		line = commentRegex.ReplaceAllString(line, "")
-
-		// Skip empty lines
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-
-		line = varReplacer.Replace(line)
-
-		result.WriteByte('\n')
-		result.WriteString(line)
-	}
-
-	return result.String()[1:] // Remove leading newline
+	return replacer.Replace(b.content.String())
 }
