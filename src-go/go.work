@@ -4,7 +4,6 @@ use (
 	./cmd/airbnb_calculator
 	./cmd/gitbranch
 	./cmd/gitworktree
-	./cmd/zsb_bundle
 	./lib/args
 	./lib/git
 	./lib/open

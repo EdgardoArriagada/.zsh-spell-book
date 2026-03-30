@@ -24,7 +24,7 @@ make rust-dev               # Live dev mode for Rust (requires entr)
 make rust-test-all          # Run all Rust tests
 ```
 
-Binaries go to `src-go/bin/` (Go) and `src-rust/bin/` (Rust). After building zsb_bundle: `./src-go/bin/zsb_bundle` regenerates `result.zsh`.
+Binaries go to `src-go/bin/` (Go) and `src-rust/bin/` (Rust). After building zsb_bundle: `./src-rust/bin/zsb_bundle` regenerates `result.zsh`.
 
 ## Testing
 
@@ -45,9 +45,9 @@ cd src-go && go test ./...               # Test everything
 
 3. **Rust layer** (`src-rust/`): CLI tools as crates under `src-rust/cmd/`. Uses Cargo workspace. Shared libraries go in `src-rust/lib/`.
 
-**Key Go commands:** `zsb_bundle` (the bundler), `gitworktree` (git worktree TUI using Bubble Tea), `countdown`, `airbnb_calculator`, `repeatstr`, `get_repo_name`, `zsb_clipcopy`, `zsb_open`.
+**Key Go commands:** `gitworktree` (git worktree TUI using Bubble Tea), `airbnb_calculator`.
 
-**Key Rust commands:** `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
+**Key Rust commands:** `zsb_bundle` (the bundler), `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
 
 **Bundler flow:** `zsb_bundle` walks `src/`, concatenates all `.zsh` files respecting ordering, and outputs `result.zsh`. To debug without bundling, source `debug.zsh` instead.
 

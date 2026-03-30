@@ -32,7 +32,7 @@ go-dev:
 	$(MAKE) ACTION='go-dev-fn' TARGET='$(TARGET)' .go-run
 
 zsh-dev:
-	@find . -name "*.zsh" -not -path "./src-go/*" | entr -c ./src-go/bin/zsb_bundle
+	@find . -name "*.zsh" -not -path "./src-go/*" | entr -c ./src-rust/bin/zsb_bundle
 
 go-build-all:
 	for target in $$(ls ./src-go/cmd); do \

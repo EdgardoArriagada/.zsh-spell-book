@@ -9,7 +9,7 @@
 ### Prerequisites
 
 - zsh installed and configured as default shell
-- [golang](https://go.dev/dl/) for bundling
+- [rust](https://www.rust-lang.org/tools/install) for bundling
 - (optional) some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
 - (optional) [entr](https://github.com/eradman/entr) for fast development
 
@@ -30,15 +30,13 @@ git submodule update --init --recursive
 2.- build `zsb_bundle` script
 
 ```sh
-make build
-
-# then select `zsb_bundle`
+make rust-build zsb_bundle
 ```
 
 3.- bundle the project
 
 ```sh
-./src-go/bin/zsb_bundle
+./src-rust/bin/zsb_bundle
 ```
 
 5.- source the project
@@ -63,7 +61,7 @@ export PATH=~/.zsh-spell-book/src-go/bin:$PATH
 
 ### Development
 
-make any changes on a `*.zsh` file and run `./src-go/bin/zsb_bundle` to see the results
+make any changes on a `*.zsh` file and run `./src-rust/bin/zsb_bundle` to see the results
 
 (optional) if you installed `entr`, you can make a **live reload** server by running the following make command
 
@@ -83,7 +81,7 @@ to do that, modify the following lines in your `~/.zshrc` file:
 
 So you get refreshed code every time you open a new terminal
 
-When finished, run `zsb_bundle` to bundle the project again and change back `debug.zsh` -> `result.zsh` in your `~/.zshrc`
+When finished, run `./src-rust/bin/zsb_bundle` to bundle the project again and change back `debug.zsh` -> `result.zsh` in your `~/.zshrc`
 
 ### Usage
 
