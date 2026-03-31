@@ -9,6 +9,7 @@ const GOLDEN: u8 = 222;  // #FFD787 ≈ #EBCB8B
 const BLUE: u8 = 110;    // #87AFD7 ≈ #81A1C1
 const PURPLE: u8 = 140;  // #AF87D7 ≈ #B48EAD
 const GREEN: u8 = 150;   // #AFD787 ≈ #A3BE8C
+const ORANGE: u8 = 173;  // #D7875F ≈ #D08770
 const RED: u8 = 131;     // #AF5F5F ≈ #BF616A
 
 const SEP_RIGHT: &str = "\u{e0b0}"; // powerline filled right arrow
@@ -22,6 +23,7 @@ fn fg(n: u8) -> &'static str {
         BLUE   => "\x1b[38;5;110m",
         PURPLE => "\x1b[38;5;140m",
         GREEN  => "\x1b[38;5;150m",
+        ORANGE => "\x1b[38;5;173m",
         RED    => "\x1b[38;5;131m",
         _      => "",
     }
@@ -34,6 +36,7 @@ fn bg(n: u8) -> &'static str {
         BLUE   => "\x1b[48;5;110m",
         PURPLE => "\x1b[48;5;140m",
         GREEN  => "\x1b[48;5;150m",
+        ORANGE => "\x1b[48;5;173m",
         RED    => "\x1b[48;5;131m",
         _      => "",
     }
@@ -143,23 +146,28 @@ fn shorten_model(name: &str) -> String {
     }
 }
 
-/// Resolve context usage as a percentage (0–100).
+/// Resolve context usage as a percentage (0–100). Defaults to 0 when context
+/// window is present but percentage/tokens are not yet populated.
 fn resolve_pct(input: &StatusInput) -> Option<f64> {
     let ctx = input.context_window.as_ref()?;
-    ctx.used_percentage.or_else(|| {
+    Some(ctx.used_percentage.or_else(|| {
         let used = ctx.current_tokens?;
         let max = ctx.max_tokens.filter(|&m| m > 0)?;
         Some(used as f64 / max as f64 * 100.0)
-    })
+    }).unwrap_or(0.0))
 }
 
 fn bar_color(pct: f64) -> u8 {
-    if pct >= 85.0 {
-        RED
-    } else if pct >= 70.0 {
-        GOLDEN
-    } else {
+    if pct == 0.0 {
+        BLUE
+    } else if pct < 35.0 {
         GREEN
+    } else if pct < 70.0 {
+        GOLDEN
+    } else if pct < 85.0 {
+        ORANGE
+    } else {
+        RED
     }
 }
 
@@ -266,8 +274,8 @@ fn build_line2(input: &StatusInput) -> String {
 
     // Segment 2: input · output · cache tokens (GREEN bg, DARK fg)
     let usage = input.context_window.as_ref().and_then(|c| c.current_usage.as_ref());
-    let input_tok = usage.and_then(|u| u.input_tokens);
-    let output_tok = usage.and_then(|u| u.output_tokens);
+    let input_tok = usage.and_then(|u| u.input_tokens).unwrap_or(0);
+    let output_tok = usage.and_then(|u| u.output_tokens).unwrap_or(0);
     let cache_tok = usage.and_then(|u| {
         match (u.cache_read_input_tokens, u.cache_creation_input_tokens) {
             (Some(r), Some(w)) => Some(r + w),
@@ -275,42 +283,27 @@ fn build_line2(input: &StatusInput) -> String {
             (None, Some(w)) => Some(w),
             _ => None,
         }
+    }).unwrap_or(0);
+
+    segments.push(Segment {
+        bg_color: GREEN,
+        fg_color: DARK,
+        content: format!(
+            " \u{f019} {}  \u{f093} {}  \u{f1c0} {} ",
+            format_k(input_tok),
+            format_k(output_tok),
+            format_k(cache_tok),
+        ),
     });
 
-    if input_tok.is_some() || output_tok.is_some() || cache_tok.is_some() {
-        let mut parts: Vec<String> = Vec::new();
-        if let Some(t) = input_tok {
-            parts.push(format!("\u{f019} {}", format_k(t)));   // fa-download  = input
-        }
-        if let Some(t) = output_tok {
-            parts.push(format!("\u{f093} {}", format_k(t)));   // fa-upload    = output
-        }
-        if let Some(t) = cache_tok {
-            parts.push(format!("\u{f1c0} {}", format_k(t)));   // fa-database  = cache
-        }
-        segments.push(Segment {
-            bg_color: GREEN,
-            fg_color: DARK,
-            content: format!(" {} ", parts.join("  ")),
-        });
-    }
-
     // Segment 3: total I+O · session cost (DARK bg, GOLDEN fg)
-    let total = match (input_tok, output_tok) {
-        (Some(i), Some(o)) => Some(i + o),
-        (Some(i), None) | (None, Some(i)) => Some(i),
-        _ => None,
-    };
-    let cost_usd = input.cost.as_ref().and_then(|c| c.total_cost_usd);
+    let total = input_tok + output_tok;
+    let cost_usd = input.cost.as_ref().and_then(|c| c.total_cost_usd).unwrap_or(0.0);
 
-    if total.is_some() || cost_usd.is_some() {
+    {
         let mut parts: Vec<String> = Vec::new();
-        if let Some(t) = total {
-            parts.push(format!("\u{f080} {}", format_k(t)));   // fa-bar-chart = total
-        }
-        if let Some(usd) = cost_usd {
-            parts.push(format!("\u{f0d6} ${usd:.2}"));         // fa-money     = cost
-        }
+        parts.push(format!("\u{f080} {}", format_k(total)));   // fa-bar-chart = total
+        parts.push(format!("\u{f0d6} ${cost_usd:.2}"));        // fa-money     = cost
         segments.push(Segment {
             bg_color: DARK,
             fg_color: GOLDEN,
@@ -354,4 +347,42 @@ fn main() {
     let mut out = BufWriter::new(stdout.lock());
     let _ = writeln!(out, "{line1}");
     let _ = write!(out, "{line2}");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bar_color_blue_at_zero() {
+        assert_eq!(bar_color(0.0), BLUE);
+    }
+
+    #[test]
+    fn bar_color_green_low_usage() {
+        assert_eq!(bar_color(0.1), GREEN);
+        assert_eq!(bar_color(20.0), GREEN);
+        assert_eq!(bar_color(34.9), GREEN);
+    }
+
+    #[test]
+    fn bar_color_golden_mid_usage() {
+        assert_eq!(bar_color(35.0), GOLDEN);
+        assert_eq!(bar_color(50.0), GOLDEN);
+        assert_eq!(bar_color(69.9), GOLDEN);
+    }
+
+    #[test]
+    fn bar_color_orange_high_usage() {
+        assert_eq!(bar_color(70.0), ORANGE);
+        assert_eq!(bar_color(80.0), ORANGE);
+        assert_eq!(bar_color(84.9), ORANGE);
+    }
+
+    #[test]
+    fn bar_color_red_critical() {
+        assert_eq!(bar_color(85.0), RED);
+        assert_eq!(bar_color(95.0), RED);
+        assert_eq!(bar_color(100.0), RED);
+    }
 }
