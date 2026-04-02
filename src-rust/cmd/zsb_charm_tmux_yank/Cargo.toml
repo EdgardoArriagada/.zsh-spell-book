@@ -1,0 +1,4 @@
+[package]
+name = "zsb_charm_tmux_yank"
+version = "0.1.0"
+edition = "2021"

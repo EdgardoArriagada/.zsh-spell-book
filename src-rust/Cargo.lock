@@ -397,6 +397,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "zsb_charm_tmux_yank"
+version = "0.1.0"
+
+[[package]]
 name = "zsb_claude_statusline"
 version = "0.1.0"
 dependencies = [
