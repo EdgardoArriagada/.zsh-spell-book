@@ -115,7 +115,7 @@ fn compile_history_ignore(content: String) -> String {
     let static_export = format!("export HISTORY_IGNORE=\"({joined})\"");
 
     // 3. Strip dynamic machinery
-    let declare_re = Regex::new(r"(?m)^declare ZSB_HISTORY_IGNORE=\(\)\n").unwrap();
+    let declare_re = Regex::new(r"(?m)^declare ZSB_HISTORY_IGNORE=\(\).*\n").unwrap();
     let mut result = declare_re.replace(&content, "").to_string();
 
     let func_re = Regex::new(r"(?m)^hisIgnore\(\).*\n").unwrap();
@@ -185,15 +185,15 @@ mod tests {
     #[test]
     fn test_compile_history_ignore() {
         let input = r#"# some config
-declare ZSB_HISTORY_IGNORE=()
+declare ZSB_HISTORY_IGNORE=() # zsb_bundle: exact match, do not modify
 
-hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
+hisIgnore() ZSB_HISTORY_IGNORE+=( $@ ) # zsb_bundle: exact match, do not modify
 
 hisIgnore 'l[a,l,s,h,]*' 'neofetch'
 hisIgnore gs pop
 hisIgnore 'ga .'
 
-export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})"
+export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})" # zsb_bundle: exact match, do not modify
 "#;
         let result = compile_history_ignore(input.to_string());
 

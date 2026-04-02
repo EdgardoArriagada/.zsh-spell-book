@@ -122,9 +122,9 @@ zle -N gb-widget
 
 bindkey -M viins '^b' gb-widget
 
-declare ZSB_HISTORY_IGNORE=()
+declare ZSB_HISTORY_IGNORE=() # zsb_bundle: exact match, do not modify
 
-hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
+hisIgnore() ZSB_HISTORY_IGNORE+=( $@ ) # zsb_bundle: exact match, do not modify
 
 hisIgnore 'l[a,l,s,h,]*' 'neofetch' ' *' 'l'
 
