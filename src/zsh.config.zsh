@@ -122,15 +122,11 @@ zle -N gb-widget
 
 bindkey -M viins '^b' gb-widget
 
-# Initialize hisignore with some stuff to ignore already
-declare ZSB_HISTORY_IGNORE=(
-  'l[a,l,s,h,]*'
-  'neofetch'
-  ' *'
-  'l'
-)
+declare ZSB_HISTORY_IGNORE=()
 
 hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
+
+hisIgnore 'l[a,l,s,h,]*' 'neofetch' ' *' 'l'
 
 # the following line should be applied as an automatic call
 # export HISTORY_IGNORE="(${(j:|:)ZSB_HISTORY_IGNORE})"

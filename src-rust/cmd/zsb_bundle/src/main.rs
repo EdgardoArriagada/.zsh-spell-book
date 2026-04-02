@@ -103,31 +103,19 @@ fn parse_hisignore_args(args_str: &str) -> Vec<String> {
 fn compile_history_ignore(content: String) -> String {
     let mut patterns: Vec<String> = Vec::new();
 
-    // 1. Extract seed patterns from `declare ZSB_HISTORY_IGNORE=(...)`
-    let declare_re =
-        Regex::new(r"(?ms)^declare ZSB_HISTORY_IGNORE=\(\s*\n(.*?)\)").unwrap();
-    if let Some(caps) = declare_re.captures(&content) {
-        let block = &caps[1];
-        for line in block.lines() {
-            let trimmed = line.trim().trim_matches('\'');
-            if !trimmed.is_empty() {
-                patterns.push(trimmed.to_string());
-            }
-        }
-    }
-
-    // 2. Extract patterns from all `hisIgnore ...` calls
+    // 1. Extract patterns from all `hisIgnore ...` calls
     let call_re = Regex::new(r"(?m)^hisIgnore (.+)$").unwrap();
     for caps in call_re.captures_iter(&content) {
         let args = parse_hisignore_args(&caps[1]);
         patterns.extend(args);
     }
 
-    // 3. Build the static export line
+    // 2. Build the static export line
     let joined = patterns.join("|");
     let static_export = format!("export HISTORY_IGNORE=\"({joined})\"");
 
-    // 4. Strip dynamic machinery
+    // 3. Strip dynamic machinery
+    let declare_re = Regex::new(r"(?m)^declare ZSB_HISTORY_IGNORE=\(\)\n").unwrap();
     let mut result = declare_re.replace(&content, "").to_string();
 
     let func_re = Regex::new(r"(?m)^hisIgnore\(\).*\n").unwrap();
@@ -197,13 +185,11 @@ mod tests {
     #[test]
     fn test_compile_history_ignore() {
         let input = r#"# some config
-declare ZSB_HISTORY_IGNORE=(
-  'l[a,l,s,h,]*'
-  'neofetch'
-)
+declare ZSB_HISTORY_IGNORE=()
 
 hisIgnore() ZSB_HISTORY_IGNORE+=( $@ )
 
+hisIgnore 'l[a,l,s,h,]*' 'neofetch'
 hisIgnore gs pop
 hisIgnore 'ga .'
 
