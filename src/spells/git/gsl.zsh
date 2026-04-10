@@ -8,7 +8,7 @@ gsl() {
     return 0
   fi
 
-  git stash list | c -p -l ruby -
+  git stash list | zsb_cat -p -l ruby -
 }
 
 hisIgnore gsl 'gsl --clear'
