@@ -1,3 +1,2 @@
 alias a="alert"
-alias ad="alert 'DONE'"
-
+alias ad="say done; alert 'DONE'"
