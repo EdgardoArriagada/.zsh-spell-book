@@ -9,8 +9,7 @@ hisIgnore gs pop amend glog gsp
 alias gst='git status'
 alias gf='spinner git fetch'
 alias gsh='git show'
-alias prv='gh pr view --web'
-alias vpr='prv'
+alias vpr='gh pr view --web'
 alias guu="ggl && gf"
 
 hisIgnore gf gsh prv vpr
