@@ -33,7 +33,7 @@ func createWorktree(mainPath, branch string) error {
 	baseDir := WorktreeBaseDir(mainPath)
 	wtPath := filepath.Join(baseDir, branch)
 	var args []string
-	if gitlib.BranchExists(branch) {
+	if gitlib.BranchExists(branch) || gitlib.RemoteBranchExists(branch) {
 		args = []string{"worktree", "add", wtPath, branch}
 	} else {
 		args = []string{"worktree", "add", wtPath, "-b", branch, "develop"}
