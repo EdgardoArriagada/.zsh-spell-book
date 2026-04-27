@@ -50,7 +50,7 @@ _${zsb}.page() {
 compdef _${zsb}.page ${zsb}.page
 
 alias cdnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && cds $ZSB_NOTEBOOK_DIR"
-alias vnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && nvim $ZSB_NOTEBOOK_DIR"
+alias vnotebook="${zsb}.assertIsSet 'ZSB_NOTEBOOK_DIR' && builtin cd $ZSB_NOTEBOOK_DIR && nvim && ${zsb}.gitStatus"
 alias page="${zsb}.page nvim"
 alias p="${zsb}.page nvim"
 alias cpage="${zsb}.page zsb_cat"
