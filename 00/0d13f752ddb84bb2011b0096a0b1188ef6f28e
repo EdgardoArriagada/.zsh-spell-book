@@ -1,0 +1,25 @@
+src/charms/solve-pr-comments
+  s_57f577497477cb::t_245145fae9aa3d 169-235
+  s_57f577497477cb::t_c006158499fa5a 121,123,130,140,145,151,153,156-158,160
+  s_57f577497477cb::t_48316002476cf0 433-434,441,446
+  s_57f577497477cb::t_4ba7bf3b211e2b 470,475-477,480,492-493
+  s_57f577497477cb::t_e988fbd5ec33f5 18-24,27-72
+  s_57f577497477cb::t_ffb391522e22b7 322-323,329-337,341,345,348-349,351,355,357,363
+  s_57f577497477cb::t_5d4516a23c9c78 373,376,378,385,391-392,394
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "000d13f752ddb84bb2011b0096a0b1188ef6f28e",
+  "prompts": {},
+  "sessions": {
+    "s_57f577497477cb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7f4183ca-3df4-48cb-99a8-a64340e39513",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
