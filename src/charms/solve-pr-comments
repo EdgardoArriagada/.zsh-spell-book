@@ -15,7 +15,61 @@ const CLAUDE_ALLOWED_TOOLS = [
   "Grep",
 ].join(",");
 
+const CLAUDE_COMMIT_ALLOWED_TOOLS = [
+  "Bash(git diff:*)",
+  "Bash(git log:*)",
+  "Bash(git status:*)",
+  "Bash(git commit:*)",
+].join(",");
+
 const SEPARATOR = "=".repeat(44);
+
+// --- Colors (Nordic palette via Bun.color) ---
+
+const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
+
+function ansi(hex: string): string {
+  return Bun.color(hex, "ansi") ?? "";
+}
+
+const C = {
+  header: ansi("#88C0D0"),  // blue2 — frost
+  success: ansi("#A3BE8C"), // green
+  warn: ansi("#EBCB8B"),    // yellow
+  error: ansi("#BF616A"),   // red
+  info: ansi("#60728A"),    // gray5 — dim
+  prompt: ansi("#D08770"),  // orange
+  label: ansi("#B48EAD"),   // magenta
+};
+
+function paint(color: string, text: string): string {
+  return `${color}${text}${RESET}`;
+}
+
+function logHeader(text: string): void {
+  console.log(paint(C.header + BOLD, text));
+}
+
+function logInfo(text: string): void {
+  console.log(paint(C.info, text));
+}
+
+function logSuccess(text: string): void {
+  console.log(paint(C.success, text));
+}
+
+function logWarn(text: string): void {
+  console.warn(paint(C.warn, text));
+}
+
+function logError(text: string): void {
+  console.error(paint(C.error, text));
+}
+
+function logSeparator(): void {
+  console.log(paint(C.info, SEPARATOR));
+}
 
 // --- Types ---
 
@@ -64,15 +118,16 @@ type PRContext = {
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 async function confirmUser(question: string): Promise<boolean> {
+  const colored = paint(C.prompt, question);
   return new Promise((resolve) => {
-    rl.question(question, (answer) => {
+    rl.question(colored, (answer) => {
       const a = answer.trim().toLowerCase();
       resolve(a !== "n" && a !== "no");
     });
   });
 }
 
-async function runClaude(prompt: string): Promise<void> {
+async function runClaude(prompt: string, allowedTools: string = CLAUDE_ALLOWED_TOOLS): Promise<number> {
   const proc = Bun.spawn(
     [
       "claude",
@@ -82,30 +137,100 @@ async function runClaude(prompt: string): Promise<void> {
       "--model",
       "sonnet",
       "--allowedTools",
-      CLAUDE_ALLOWED_TOOLS,
+      allowedTools,
     ],
     { stdout: "pipe", stderr: "inherit", stdin: "ignore" }
   );
 
+  const indent = paint(C.info, "  ");
   let buffer = "";
   for await (const chunk of proc.stdout) {
     buffer += Buffer.from(chunk).toString("utf8");
     const lines = buffer.split("\n");
     buffer = lines.pop() ?? "";
-    for (const line of lines) console.log(`  ${line}`);
+    for (const line of lines) console.log(`${indent}${line}`);
   }
-  if (buffer) console.log(`  ${buffer}`);
+  if (buffer) console.log(`${indent}${buffer}`);
 
   await proc.exited;
-  if (proc.exitCode !== 0) {
-    console.warn(`=> Warning: Claude exited with code ${proc.exitCode} for this thread. Changes may be incomplete.`);
+  const code = proc.exitCode ?? 0;
+  if (code !== 0) {
+    logWarn(`=> Warning: Claude exited with code ${code}. Changes may be incomplete.`);
   }
+  return code;
 }
 
 function extractFileDiff(fullDiff: string, filePath: string): string {
   const sections = fullDiff.split(/(?=^diff --git )/m);
   const match = sections.find((s) => s.includes(`b/${filePath}`));
   return match ?? `(no diff found for ${filePath})`;
+}
+
+function buildCommitPrompt(stagedDiff: string, recentLog: string, ctx: PRContext): string {
+  return `# Role
+You are an expert software engineer creating a git commit for staged changes on Pull Request #${ctx.num} in ${ctx.repo}.
+
+# Context
+## Recent Commits (follow this style)
+\`\`\`
+${recentLog}
+\`\`\`
+
+## Staged Changes (\`git diff --cached\`)
+\`\`\`diff
+${stagedDiff}
+\`\`\`
+
+# Task
+1. Analyze the staged changes.
+2. Write a concise commit message that matches the tone and format of the recent commits above.
+3. Run \`git commit -m "<message>"\` to create the commit.
+
+# Constraints
+- Commit ONLY what is already staged. Do NOT run \`git add\`.
+- Keep the subject line under 72 characters.
+- If staging is empty, print "No staged changes" and do nothing.
+- Do not amend or rewrite existing commits.
+
+# Output Format
+1. Brief reasoning (1-2 lines) explaining your chosen message.
+2. The commit command you ran and its result.`;
+}
+
+async function runCommitMenu(ctx: PRContext): Promise<void> {
+  const status = (await $`git status --short`.text()).trim();
+  if (!status) {
+    logInfo("=> No changes to commit. Skipping commit menu.");
+    return;
+  }
+
+  console.log();
+  logHeader("=> Git status:");
+  console.log(status);
+  console.log();
+
+  if (!await confirmUser("=> Create a commit for staged files? [Y/n] ")) {
+    logInfo("=> Skipped commit.");
+    return;
+  }
+
+  const stagedDiff = (await $`git diff --cached`.text()).trim();
+  if (!stagedDiff) {
+    logWarn("=> Nothing is staged. Stage files with `git add` first, then re-run.");
+    return;
+  }
+
+  const recentLog = (await $`git log -10 --oneline`.text()).trim();
+
+  console.log();
+  logHeader("=> Generating commit with Claude...");
+  const code = await runClaude(
+    buildCommitPrompt(stagedDiff, recentLog, ctx),
+    CLAUDE_COMMIT_ALLOWED_TOOLS,
+  );
+  if (code === 0) {
+    logSuccess("=> Commit step finished.");
+  }
 }
 
 function buildPrompt(contextBlock: string): string {
@@ -194,38 +319,48 @@ ${ctx.diff}`;
 
 async function processItem(item: Item, index: number, total: number, ctx: PRContext): Promise<void> {
   console.log();
-  console.log(SEPARATOR);
+  console.log();
+  logSeparator();
 
   const label = item.kind === "thread"
     ? `Thread on ${item.line != null ? `${item.path}:${item.line}` : item.path}`
     : "General PR comment";
 
-  console.log(`=> [${index + 1}/${total}] ${label}`);
-  console.log(item.kind === "thread" ? "=> Comments:" : "=> Comment:");
-  console.log(item.comments);
-  console.log(SEPARATOR);
+  const counter = paint(C.label, `[${index + 1}/${total}]`);
+  console.log(`${paint(C.header, "=>")} ${counter} ${paint(C.header + BOLD, label)}`);
+  console.log();
+  console.log(paint(C.label, item.kind === "thread" ? "Comments:" : "Comment:"));
+  for (const line of item.comments.split("\n")) {
+    console.log(`  ${line}`);
+  }
+  logSeparator();
+  console.log();
 
   const actionLabel = item.kind === "thread" ? "Resolve this thread" : "Address this comment";
   if (!await confirmUser(`=> ${actionLabel}? [Y/n] `)) {
-    console.log("=> Skipped.");
+    logInfo("=> Skipped.");
     return;
   }
 
+  console.log();
   await runClaude(buildPrompt(await buildContext(item, ctx)));
 
+  await runCommitMenu(ctx);
+
   if (item.kind === "thread") {
+    console.log();
     if (await confirmUser("=> Mark this thread as resolved on GitHub? [Y/n] ")) {
       const resolved = await resolveThreadOnGitHub(item.id);
       if (resolved) {
-        console.log("=> Thread marked as resolved on GitHub.");
+        logSuccess("=> Thread marked as resolved on GitHub.");
       } else {
-        console.warn("=> Warning: could not resolve thread on GitHub.");
+        logWarn("=> Warning: could not resolve thread on GitHub.");
       }
     }
   }
 
   console.log();
-  console.log(`=> Done with item [${index + 1}/${total}].`);
+  logSuccess(`=> Done with item [${index + 1}/${total}].`);
 }
 
 // --- Main ---
@@ -235,27 +370,28 @@ async function main(): Promise<void> {
   try {
     repo = (await $`gh repo view --json nameWithOwner --jq '.nameWithOwner'`.text()).trim();
   } catch {
-    console.error("=> Error: could not determine repo. Are you inside a GitHub repository?");
+    logError("=> Error: could not determine repo. Are you inside a GitHub repository?");
     process.exit(1);
   }
-  console.log(`=> Repo: ${repo}`);
+  console.log(`${paint(C.header, "=> Repo:")} ${paint(C.label, repo)}`);
 
-  console.log("=> Fetching PR number...");
+  logInfo("=> Fetching PR number...");
   let prNum: number;
   try {
     const raw = (await $`gh pr view --json number --jq '.number'`.text()).trim();
     prNum = parseInt(raw);
     if (!Number.isFinite(prNum) || prNum <= 0) throw new Error("invalid PR number");
   } catch {
-    console.error(
+    logError(
       "=> Error: could not parse a valid PR number from `gh pr view`.\n" +
       "   Make sure you are on a branch with an open PR and that `gh auth status` is authenticated."
     );
     process.exit(1);
   }
-  console.log(`=> PR #${prNum}`);
+  console.log(`${paint(C.header, "=> PR")} ${paint(C.label, `#${prNum}`)}`);
+  console.log();
 
-  console.log("=> Fetching unresolved review threads and general comments...");
+  logInfo("=> Fetching unresolved review threads and general comments...");
   const [owner, repoName] = repo.split("/");
 
   const threadsResult = await $`gh api graphql -f query=${`
@@ -294,20 +430,20 @@ async function main(): Promise<void> {
   `} -f owner=${owner} -f repo=${repoName} -F pr=${prNum}`.json();
 
   if (threadsResult.errors?.length) {
-    console.error("=> GraphQL error fetching review threads:");
-    for (const e of threadsResult.errors) console.error("  ", e.message);
+    logError("=> GraphQL error fetching review threads:");
+    for (const e of threadsResult.errors) logError(`   ${e.message}`);
     process.exit(1);
   }
 
   const pr = threadsResult.data.repository.pullRequest;
 
   if (pr.reviewThreads.pageInfo.hasNextPage) {
-    console.warn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
+    logWarn("=> Warning: this PR has more than 100 review threads. Only the first 100 will be processed.");
   }
 
   for (const thread of pr.reviewThreads.nodes as RawThread[]) {
     if (thread.comments.pageInfo.hasNextPage) {
-      console.warn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
+      logWarn(`=> Warning: thread on ${thread.path} has more than 10 comments. Only the first 10 are included in the prompt.`);
     }
   }
 
@@ -331,15 +467,17 @@ async function main(): Promise<void> {
   const items: Item[] = [...unresolvedThreads, ...generalComments];
 
   if (items.length === 0) {
-    console.log("=> No review comments found. Nothing to do.");
+    logSuccess("=> No review comments found. Nothing to do.");
     process.exit(0);
   }
 
   console.log(
-    `=> Found ${unresolvedThreads.length} unresolved review thread(s) and ${generalComments.length} general comment(s).`
+    `${paint(C.header, "=> Found")} ${paint(C.label, String(unresolvedThreads.length))}` +
+    `${paint(C.header, " unresolved review thread(s) and ")}` +
+    `${paint(C.label, String(generalComments.length))}${paint(C.header, " general comment(s).")}`
   );
 
-  console.log("=> Fetching PR diff...");
+  logInfo("=> Fetching PR diff...");
   const ctx: PRContext = {
     num: prNum,
     repo,
@@ -351,8 +489,8 @@ async function main(): Promise<void> {
   }
 
   console.log();
-  console.log(`=> All ${items.length} item(s) processed.`);
-  console.log("=> Review the changes and commit when ready.");
+  logSuccess(`=> All ${items.length} item(s) processed.`);
+  logInfo("=> Review the changes and commit when ready.");
   rl.close();
 }
 
