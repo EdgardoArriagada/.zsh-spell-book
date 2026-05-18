@@ -2,14 +2,14 @@
 _${zsb}.singleComp() {
   (( $CURRENT > 2 )) && return 0
   local comp=( "$@" )
-  _describe 'command' comp
+  _describe 'command' comp -M 'm:{[:lower:]}={[:upper:]}' -M 'l:|=* r:|=*'
 }
 
 # singleComp with Command
 _${zsb}.singleCompC() {
   (( $CURRENT > 2 )) && return 0
   local comp=( $(eval "$1") )
-  _describe 'command' comp
+  _describe 'command' comp -M 'm:{[:lower:]}={[:upper:]}' -M 'l:|=* r:|=*'
 }
 
 # cache expensive commands
@@ -28,7 +28,7 @@ _${zsb}.cachedSingleComp() {
   else
     comp=( "${(z)cachedValue}" )
   fi
-  _describe 'command' comp
+  _describe 'command' comp -M 'm:{[:lower:]}={[:upper:]}' -M 'l:|=* r:|=*'
 }
 
 # cachedSingleComp by Working Directory
@@ -49,6 +49,6 @@ _${zsb}.cachedSingleCompWD() {
   else
     comp=( "${(z)cachedValue}" )
   fi
-  _describe 'command' comp
+  _describe 'command' comp -M 'm:{[:lower:]}={[:upper:]}' -M 'l:|=* r:|=*'
 }
 
