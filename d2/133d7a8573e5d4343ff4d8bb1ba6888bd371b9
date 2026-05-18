@@ -1,0 +1,19 @@
+src/charms/solve-pr-comments
+  s_f05de6fc0b2999::t_a275448763011a 120,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "d2133d7a8573e5d4343ff4d8bb1ba6888bd371b9",
+  "prompts": {},
+  "sessions": {
+    "s_f05de6fc0b2999": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4ab82eb-73a4-4bba-9f88-3193f817f0b7",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
