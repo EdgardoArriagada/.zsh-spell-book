@@ -115,12 +115,12 @@ type PRContext = {
 
 // --- Helpers ---
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-
 async function confirmUser(question: string): Promise<boolean> {
   const colored = paint(C.prompt, question);
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   return new Promise((resolve) => {
     rl.question(colored, (answer) => {
+      rl.close();
       const a = answer.trim().toLowerCase();
       resolve(a !== "n" && a !== "no");
     });
@@ -491,7 +491,6 @@ async function main(): Promise<void> {
   console.log();
   logSuccess(`=> All ${items.length} item(s) processed.`);
   logInfo("=> Review the changes and commit when ready.");
-  rl.close();
 }
 
 main();
