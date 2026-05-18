@@ -1,0 +1,19 @@
+src/utils/zsb-utils/completions/singleComp.zsh
+  s_495c5e3f704a48::t_120fc4e121bbb2 5,12,31,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9cd361a9048d253ab683eed5a9c8c3d15d34282b",
+  "prompts": {},
+  "sessions": {
+    "s_495c5e3f704a48": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bfc60dc7-64fe-4d28-b75f-be692dea5dd2",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
