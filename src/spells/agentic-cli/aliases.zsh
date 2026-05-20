@@ -1,4 +1,4 @@
 alias cl='claude --model=opus --dangerously-skip-permissions'
-alias clp='cl --permission-mode plan'
+alias co='codex'
 
-hisIgnore cl clp
+hisIgnore cl co
