@@ -1,0 +1,19 @@
+src/spells/agentic-cli/aliases.zsh
+  s_b1c8ae8610ce00::t_5ca46ad3fbf44a 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "a7234eda23e9e286f96269c218a92d196cc42906",
+  "prompts": {},
+  "sessions": {
+    "s_b1c8ae8610ce00": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e46fd-f79d-77f2-82af-b40b4553c751",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
