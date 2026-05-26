@@ -1,0 +1,3 @@
+#!/usr/bin/env bun
+
+import "../cmd/create_jira_ticket/main.ts";

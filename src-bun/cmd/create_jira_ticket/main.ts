@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { Buffer } from "node:buffer";
 
 const REQUIRED_ENV = [

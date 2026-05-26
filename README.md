@@ -10,6 +10,7 @@
 
 - zsh installed and configured as default shell
 - [rust](https://www.rust-lang.org/tools/install) for bundling
+- [bun](https://bun.sh/) for Bun-based CLI scripts
 - (optional) some commands utilize external packages like [ripgrep](https://github.com/BurntSushi/ripgrep), [sd](https://github.com/chmln/sd) and [fd](https://github.com/sharkdp/fd)
 - (optional) [entr](https://github.com/eradman/entr) for fast development
 
@@ -55,7 +56,7 @@ then, in ~/temp/.zshenv paste the following depending on your OS
 ```zsh
 ZSB_MACOS=1 # only on MacOS
 
-export PATH=~/.zsh-spell-book/src/charms:$PATH
+export PATH=~/.zsh-spell-book/src-bun/bin:$PATH
 export PATH=~/.zsh-spell-book/src-go/bin:$PATH
 export PATH=~/.zsh-spell-book/src-rust/bin:$PATH
 ```

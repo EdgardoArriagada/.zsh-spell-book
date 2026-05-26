@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
-const charmPath = join(testDir, "..", "..", "charms", "create_jira_ticket");
+const commandPath = join(testDir, "..", "bin", "create_jira_ticket");
 
 const defaultJiraEnv = {
   ZSB_JIRA_BASEURL: "https://mercadolibre.atlassian.net/",
@@ -131,7 +131,7 @@ async function runCreateJiraTicket(options: RunOptions = {}) {
         "--no-env-file",
         "--preload",
         preloadPath,
-        charmPath,
+        commandPath,
         ...(options.args ?? ["Ticket title", "Line one\n\nLine three"]),
       ],
       {

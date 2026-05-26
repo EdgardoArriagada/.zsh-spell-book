@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A zsh configuration framework ("spell book") that organizes shell aliases/functions into modular files under `src/spells/`, plus Go and Rust CLI utilities. A bundler (`zsb_bundle`) compiles all `.zsh` files into a single `result.zsh` that gets sourced from `.zshrc`.
+A zsh configuration framework ("spell book") that organizes shell aliases/functions into modular files under `src/spells/`, plus Bun, Go, and Rust CLI utilities. A bundler (`zsb_bundle`) compiles all `.zsh` files into a single `result.zsh` that gets sourced from `.zshrc`.
 
 ## Build Commands
 
-All make targets run from the repo root. Go workspace is in `src-go/` (Go 1.26.0).
+All make targets run from the repo root. Go workspace is in `src-go/` (Go 1.26.0). Bun commands live in `src-bun/`.
 
 ```sh
 make go-build               # Build a Go command (interactive fzf selection)
@@ -22,9 +22,10 @@ make rust-build <name>      # Build specific command (e.g., make rust-build wcas
 make rust-build-all         # Build all Rust commands
 make rust-dev               # Live dev mode for Rust (requires entr)
 make rust-test-all          # Run all Rust tests
+cd src-bun && bun test      # Run Bun tests
 ```
 
-Binaries go to `src-go/bin/` (Go) and `src-rust/bin/` (Rust). After building zsb_bundle: `./src-rust/bin/zsb_bundle` regenerates `result.zsh`.
+Binaries go to `src-go/bin/` (Go) and `src-rust/bin/` (Rust). Bun entrypoint scripts live in `src-bun/bin/`. After building zsb_bundle: `./src-rust/bin/zsb_bundle` regenerates `result.zsh`.
 
 ## Testing
 
@@ -37,15 +38,19 @@ cd src-go && go test ./...               # Test everything
 
 ## Architecture
 
-**Two layers:**
+**Four layers:**
 
 1. **Zsh layer** (`src/`): Modular shell scripts organized by category in `src/spells/` (git, docker, files, tmux, etc.). `src/utils/` has shared zsh helpers. `src/automatic-calls/` runs on shell init. `src/globalVariables.zsh` defines shared constants (colors, git branch patterns, file type regexes).
 
-2. **Go layer** (`src-go/`): CLI tools as separate modules under `src-go/cmd/`. Shared libraries in `src-go/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
+2. **Bun layer** (`src-bun/`): CLI tools under `src-bun/cmd/`, exposed by executable wrappers in `src-bun/bin/`. Tests live in `src-bun/__tests__/`.
 
-3. **Rust layer** (`src-rust/`): CLI tools as crates under `src-rust/cmd/`. Uses Cargo workspace. Shared libraries go in `src-rust/lib/`.
+3. **Go layer** (`src-go/`): CLI tools as separate modules under `src-go/cmd/`. Shared libraries in `src-go/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
+
+4. **Rust layer** (`src-rust/`): CLI tools as crates under `src-rust/cmd/`. Uses Cargo workspace. Shared libraries go in `src-rust/lib/`.
 
 **Key Go commands:** `gitworktree` (git worktree TUI using Bubble Tea), `airbnb_calculator`.
+
+**Key Bun commands:** `create_jira_ticket`, `solve-pr-comments`.
 
 **Key Rust commands:** `zsb_bundle` (the bundler), `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
 
@@ -55,6 +60,8 @@ cd src-go && go test ./...               # Test everything
 
 - Go modules follow one-command-per-directory pattern in `src-go/cmd/`
 - Shared Go code goes in `src-go/lib/`
+- Bun commands follow one-command-per-directory pattern in `src-bun/cmd/`
+- Bun command wrappers go in `src-bun/bin/`
 - Rust crates follow one-command-per-directory pattern in `src-rust/cmd/`
 - Shared Rust code goes in `src-rust/lib/`
 - New shell spells go in `src/spells/<category>/` as individual `.zsh` files
