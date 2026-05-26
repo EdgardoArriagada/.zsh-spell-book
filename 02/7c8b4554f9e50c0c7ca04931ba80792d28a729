@@ -1,0 +1,22 @@
+src/charms/create_jira_ticket
+  s_9a3f2ba2f17b78::t_9e5d9b141c30ef 1-198,202-265
+  s_9a3f2ba2f17b78::t_239f0bf33d1c2d 199-201
+src/__tests__/charms/create_jira_ticket.test.ts
+  s_9a3f2ba2f17b78::t_7c86e3ff692f66 1-265
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "027c8b4554f9e50c0c7ca04931ba80792d28a729",
+  "prompts": {},
+  "sessions": {
+    "s_9a3f2ba2f17b78": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e6546-01bf-7561-9535-c11efb75d235",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
