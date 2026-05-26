@@ -1,0 +1,23 @@
+src-rust/cmd/zsb_play/Cargo.toml
+  s_6f920fdc281ea4::t_2a655b2c2e5a71 1-4
+src-rust/cmd/zsb_play/src/main.rs
+  s_6f920fdc281ea4::t_2a655b2c2e5a71 1-60
+README.md
+  s_6f920fdc281ea4::t_2a655b2c2e5a71 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "5f8719dd36e1156157c5bfff13adfa8ecedb8fa3",
+  "prompts": {},
+  "sessions": {
+    "s_6f920fdc281ea4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e64c0-7ee5-7073-b875-e46748746e53",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
