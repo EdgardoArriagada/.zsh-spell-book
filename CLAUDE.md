@@ -42,7 +42,7 @@ cd src-go && go test ./...               # Test everything
 
 1. **Zsh layer** (`src/`): Modular shell scripts organized by category in `src/spells/` (git, docker, files, tmux, etc.). `src/utils/` has shared zsh helpers. `src/automatic-calls/` runs on shell init. `src/globalVariables.zsh` defines shared constants (colors, git branch patterns, file type regexes).
 
-2. **Bun layer** (`src-bun/`): CLI tools under `src-bun/cmd/`, exposed by executable wrappers in `src-bun/bin/`. Tests live in `src-bun/__tests__/`.
+2. **Bun layer** (`src-bun/`): CLI tools under `src-bun/cmd/`, exposed by executable wrappers in `src-bun/bin/`. Tests live with their command modules under `src-bun/cmd/<name>/__tests__/`.
 
 3. **Go layer** (`src-go/`): CLI tools as separate modules under `src-go/cmd/`. Shared libraries in `src-go/lib/` (args, utils, git, open). Uses Go workspace (`go.work`) to manage multi-module setup.
 
