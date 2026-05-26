@@ -1,0 +1,20 @@
+src/spells/jira/create_jira_ticket.zsh
+  s_1c3eecab70df03::t_090196bcfedc29 1-20,22-40,42-73,75-77,79-110
+  s_1c3eecab70df03::t_be29e931deedb3 21,41,74,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "7aebabc5314e59a35dde685b3f2ec446a4f82268",
+  "prompts": {},
+  "sessions": {
+    "s_1c3eecab70df03": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e64f5-4598-7972-92ee-81674ef7b277",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
