@@ -414,5 +414,9 @@ name = "zsb_open"
 version = "0.1.0"
 
 [[package]]
+name = "zsb_play"
+version = "0.1.0"
+
+[[package]]
 name = "zsb_time"
 version = "0.0.1"

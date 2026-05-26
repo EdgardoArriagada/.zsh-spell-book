@@ -57,6 +57,7 @@ ZSB_MACOS=1 # only on MacOS
 
 export PATH=~/.zsh-spell-book/src/charms:$PATH
 export PATH=~/.zsh-spell-book/src-go/bin:$PATH
+export PATH=~/.zsh-spell-book/src-rust/bin:$PATH
 ```
 
 ### Development
