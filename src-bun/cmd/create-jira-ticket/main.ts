@@ -40,7 +40,7 @@ class CliError extends Error {
 }
 
 function usage(): string {
-  return 'Usage: create_jira_ticket "<title>" "<description>"';
+  return 'Usage: create-jira-ticket "<title>" "<description>"';
 }
 
 function requireEnv(name: EnvKey): string {

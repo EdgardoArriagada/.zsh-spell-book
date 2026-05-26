@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
-const commandPath = join(testDir, "..", "..", "..", "bin", "create_jira_ticket");
+const commandPath = join(testDir, "..", "..", "..", "bin", "create-jira-ticket");
 
 const defaultJiraEnv = {
   ZSB_JIRA_BASEURL: "https://mercadolibre.atlassian.net/",
@@ -157,7 +157,7 @@ async function runCreateJiraTicket(options: RunOptions = {}) {
   }
 }
 
-describe("create_jira_ticket", () => {
+describe("create-jira-ticket", () => {
   test("creates the issue with the expected payload and prints only the URL", async () => {
     const result = await runCreateJiraTicket();
 
@@ -206,7 +206,7 @@ describe("create_jira_ticket", () => {
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain(
-      'Usage: create_jira_ticket "<title>" "<description>"'
+      'Usage: create-jira-ticket "<title>" "<description>"'
     );
     expect(result.requests).toHaveLength(0);
   });

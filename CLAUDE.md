@@ -50,7 +50,7 @@ cd src-go && go test ./...               # Test everything
 
 **Key Go commands:** `gitworktree` (git worktree TUI using Bubble Tea), `airbnb_calculator`.
 
-**Key Bun commands:** `create_jira_ticket`, `solve-pr-comments`.
+**Key Bun commands:** `create-jira-ticket`, `solve-pr-comments`.
 
 **Key Rust commands:** `zsb_bundle` (the bundler), `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
 
