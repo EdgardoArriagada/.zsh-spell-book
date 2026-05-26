@@ -1,0 +1,35 @@
+src-bun/__tests__/create_jira_ticket.test.ts
+  s_41b3480b6437ba::t_1da615acc105a9 9,134
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-8,10-133,135-265
+CLAUDE.md
+  s_41b3480b6437ba::t_1da615acc105a9 41
+  s_41b3480b6437ba::t_33c65064f9b9c6 7,11,25,28,45,47-49,53-54,63-64
+src-bun/package.json
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-7
+src-bun/bin/create_jira_ticket
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-3
+src-bun/bin/solve-pr-comments
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-3
+README.md
+  s_41b3480b6437ba::t_33c65064f9b9c6 13,59
+src-bun/cmd/solve-pr-comments/main.ts
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-495
+src-bun/cmd/create_jira_ticket/main.ts
+  s_41b3480b6437ba::t_33c65064f9b9c6 1-263
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "a9adcb4057b1f23246b1c62ed1a7d55fea01c234",
+  "prompts": {},
+  "sessions": {
+    "s_41b3480b6437ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e6621-f156-79f1-a5a2-5b5a14b0ae55",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
