@@ -1,0 +1,25 @@
+CLAUDE.md
+  s_81bdec01aa8056::t_e655d1019cd31d 53
+src-bun/cmd/create-jira-ticket/__tests__/create-jira-ticket.test.ts
+  s_81bdec01aa8056::t_e655d1019cd31d 1-265
+src-bun/cmd/create-jira-ticket/main.ts
+  s_81bdec01aa8056::t_e655d1019cd31d 1-263
+src-bun/bin/create-jira-ticket
+  s_81bdec01aa8056::t_e655d1019cd31d 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "fc4758090730b61b557ffa81b69a29b16f9e226f",
+  "prompts": {},
+  "sessions": {
+    "s_81bdec01aa8056": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e662e-3bec-7561-97e2-3cd75a7fe88e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
