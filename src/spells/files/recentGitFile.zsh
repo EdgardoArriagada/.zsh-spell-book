@@ -5,7 +5,7 @@ ${zsb}.recentGitFile() {
 
   if [[ "$firstArg" =~ "^--" ]]
     then eval "$callback ${@:3}"
-    else eval "$callback $firstArg"
+    else eval "$@"
   fi
 }
 
@@ -37,7 +37,8 @@ compdef _${zsb}.recentGitFile ${zsb}.recentGitFile
 
 alias vr="noglob ${zsb}.recentGitFile v"
 alias cr="noglob ${zsb}.recentGitFile c"
-alias ccpr="noglob ${zsb}.recentGitFile ccp"
+alias opr="noglob ${zsb}.recentGitFile zsb_open"
+alias cpr="noglob ${zsb}.recentGitFile cp"
 alias tigr="noglob ${zsb}.recentGitFile tig"
 alias rmr="noglob ${zsb}.recentGitFile 'rm -rf'"
 alias mvr="noglob ${zsb}.recentGitFile mv"
