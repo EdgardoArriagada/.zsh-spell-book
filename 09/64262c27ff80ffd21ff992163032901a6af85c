@@ -1,0 +1,24 @@
+src/utils/zsb-utils/completions/commandIgnoredPatterns.zsh
+  s_fd900fc7bfac3b::t_6838530c5c154d 1-3
+src/zsh.config.zsh
+  s_fd900fc7bfac3b::t_6838530c5c154d 14-15
+src/__tests__/utils/zsb-utils/completions/commandIgnoredPatterns.test.zsh
+  s_fd900fc7bfac3b::t_25fda6af119c7b 6-7,9,17-18,20
+  s_fd900fc7bfac3b::t_26a7969e474a57 1-5,8,10-16,19,21-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0964262c27ff80ffd21ff992163032901a6af85c",
+  "prompts": {},
+  "sessions": {
+    "s_fd900fc7bfac3b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e8f10-fe73-7d50-a33f-0ca512abf5c7",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
