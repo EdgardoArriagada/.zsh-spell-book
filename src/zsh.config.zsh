@@ -11,6 +11,8 @@ setopt MENU_COMPLETE # Always show menu completely instead of waiting for a seco
 
 # Make completion smarter when pressing tab based on current input
 zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} l:|=* r:|=*'
+zstyle -e ':completion:*:*:-command-:*:*' ignored-patterns "_${zsb}.commandIgnoredPatterns"
+zstyle ':completion:*:ignored:-command-:*:*' matcher-list 'm:{[:lower:]}={[:upper:]}'
 
 # prevent unknown commands to be output to the history
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
