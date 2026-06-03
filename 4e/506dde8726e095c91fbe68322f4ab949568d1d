@@ -1,0 +1,24 @@
+src/__tests__/utils/zsb-utils/completions/commandCompletionStyles.test.zsh
+  s_4bd9cec481fe74::t_82f8a2a1e6ddeb 1-2,9,11-13,15-16,18,20,22,27-28,30-41,43,45
+  s_4bd9cec481fe74::t_b0a39d6c863e62 8,10
+  s_4bd9cec481fe74::t_523ab819f1bba0 3-6
+  s_4bd9cec481fe74::t_23ede4bf8d7eae 7
+src/zsh.config.zsh
+  s_4bd9cec481fe74::t_e92a8924534a39 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4e506dde8726e095c91fbe68322f4ab949568d1d",
+  "prompts": {},
+  "sessions": {
+    "s_4bd9cec481fe74": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e8f1e-7dd6-7a72-b175-444e99e3aeba",
+        "model": "gpt-5.5"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
