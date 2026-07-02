@@ -40,7 +40,7 @@ class CliError extends Error {
 }
 
 function usage(): string {
-  return 'Usage: create-jira-ticket "<title>" "<description>"';
+  return 'Usage: create-jira-ticket "<title>" ["<description>"]';
 }
 
 function requireEnv(name: EnvKey): string {
@@ -233,16 +233,13 @@ async function createJiraTicket(
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  if (args.length !== 2) {
+  if (args.length < 1 || args.length > 2) {
     throw new CliError(usage());
   }
 
-  const [title, description] = args;
+  const [title, description = ""] = args;
   if (title.length === 0) {
     throw new CliError("Title cannot be empty.");
-  }
-  if (description.length === 0) {
-    throw new CliError("Description cannot be empty.");
   }
 
   const config = loadConfig();
