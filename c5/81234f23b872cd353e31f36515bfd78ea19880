@@ -1,0 +1,20 @@
+src-bun/cmd/create-jira-ticket/main.ts
+  s_c95acacac01601::t_d97c8c21d2ac00 43
+  s_c95acacac01601::t_3049e377467263 236,240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c581234f23b872cd353e31f36515bfd78ea19880",
+  "prompts": {},
+  "sessions": {
+    "s_c95acacac01601": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5872b01-69ed-4603-aa06-91113b855b4c",
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
