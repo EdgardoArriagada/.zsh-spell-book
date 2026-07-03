@@ -1,0 +1,30 @@
+src-go/cmd/gitworktree/model.go
+  s_41062ed42b9079::t_601fd39d558a09 27
+src-go/cmd/gitworktree/worktree.go
+  s_41062ed42b9079::t_07227bf71bc0ca 64-71
+src-go/cmd/gitworktree/update.go
+  s_41062ed42b9079::t_e70aeb59fce658 179,189,200,211-214,216
+  s_41062ed42b9079::t_8ec522ff5d2452 79,87
+  s_41062ed42b9079::t_1caf165fb5de2d 232,237,248,259-262,264
+src-go/cmd/gitworktree/view.go
+  s_41062ed42b9079::t_2f71f115ca86ed 111
+  s_41062ed42b9079::t_c1f4065bc2c771 76-79,81,84-87,89
+src-go/cmd/gitworktree/update_test.go
+  s_41062ed42b9079::t_7dbf919fc48f0f 160-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "165ad7c0fa909ef06f8b5e0134f981ad2b00ad31",
+  "prompts": {},
+  "sessions": {
+    "s_41062ed42b9079": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fc7e26e2-ca73-4f6e-9ae9-39b59a9696f9",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
