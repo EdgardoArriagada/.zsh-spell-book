@@ -420,3 +420,7 @@ version = "0.1.0"
 [[package]]
 name = "zsb_time"
 version = "0.0.1"
+
+[[package]]
+name = "zsb_tmux_jira_picker"
+version = "0.1.0"
