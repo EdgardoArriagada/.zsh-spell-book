@@ -24,6 +24,7 @@ type model struct {
 	err          error
 	statusMsg    string // transient info message shown in list mode
 	current      int    // index of current worktree in worktrees, -1 if none
+	deleteBranch bool   // when true, D key was used — also delete the branch after worktree removal
 }
 
 func applyWorktreeFilter(wts []Worktree, term string) []Worktree {

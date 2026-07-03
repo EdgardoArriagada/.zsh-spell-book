@@ -73,12 +73,20 @@ func (m model) View() string {
 			s.WriteString(tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n")
 		}
 	case tui.DeleteConfirmMode:
+		confirmLabel := "Delete"
+		if m.deleteBranch {
+			confirmLabel = "Delete + branch"
+		}
 		s.WriteString("\n" + tui.WarnStyle.Render(
-			fmt.Sprintf("  Delete %s [%s]? (y/n)", filepath.Base(target.Path), target.Branch),
+			fmt.Sprintf("  %s %s [%s]? (y/n)", confirmLabel, filepath.Base(target.Path), target.Branch),
 		) + "\n")
 	case tui.ForceDeleteConfirmMode:
+		forceSuffix := "force delete"
+		if m.deleteBranch {
+			forceSuffix = "force delete + branch"
+		}
 		s.WriteString("\n" + tui.ErrStyle.Render(
-			fmt.Sprintf("  %s has uncommitted changes — force delete? (y/n)", filepath.Base(target.Path)),
+			fmt.Sprintf("  %s has uncommitted changes — %s? (y/n)", filepath.Base(target.Path), forceSuffix),
 		) + "\n")
 	case tui.SearchMode:
 		s.WriteString(tui.RenderSearchInput(m.searchInput))
@@ -100,6 +108,7 @@ func (m model) View() string {
 			tui.Hint("enter", "select") + sep +
 			tui.Hint("a", "add") + sep +
 			tui.Hint("d", "delete") + sep +
+			tui.Hint("D", "delete+branch") + sep +
 			tui.Hint("/", "search") + sep +
 			tui.Hint("esc/q", "quit")
 	}

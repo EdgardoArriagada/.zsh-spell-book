@@ -61,6 +61,14 @@ func deleteWorktreeForce(path string) error {
 	return nil
 }
 
+func deleteWorktreeBranch(branch string) error {
+	out, err := exec.Command("git", "branch", "-D", branch).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s", strings.TrimSpace(string(out)))
+	}
+	return nil
+}
+
 func isWorktreeDirtyError(err error) bool {
 	if err == nil {
 		return false

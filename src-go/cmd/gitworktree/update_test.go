@@ -157,6 +157,54 @@ func TestIsWorktreeDirtyError(t *testing.T) {
 	}
 }
 
+// --- D key: delete worktree + branch ---
+
+func TestDeleteWithBranchMainShowsStatus(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 0) // cursor on main
+	m = pressKey(m, "D")
+	if m.mode != tui.ListMode {
+		t.Errorf("D on main: mode = %v, want ListMode", m.mode)
+	}
+	if m.statusMsg == "" {
+		t.Error("D on main: statusMsg is empty, want a message")
+	}
+}
+
+func TestDeleteWithBranchNonMainSetsFlag(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 1) // cursor on non-main
+	m = pressKey(m, "D")
+	if m.mode != tui.DeleteConfirmMode {
+		t.Errorf("D on non-main: mode = %v, want DeleteConfirmMode", m.mode)
+	}
+	if !m.deleteBranch {
+		t.Error("D on non-main: deleteBranch = false, want true")
+	}
+}
+
+func TestDeleteWithoutBranchDoesNotSetFlag(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 1)
+	m = pressKey(m, "d")
+	if m.deleteBranch {
+		t.Error("d key: deleteBranch = true, want false")
+	}
+}
+
+func TestCancelDeleteResetsBranchFlag(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 1)
+	m = pressKey(m, "D")
+	if !m.deleteBranch {
+		t.Fatal("precondition: deleteBranch not set after D")
+	}
+	m = pressKey(m, "n") // cancel
+	if m.deleteBranch {
+		t.Error("after cancel: deleteBranch = true, want false")
+	}
+}
+
 // --- Branch name validation in add mode (issue 5) ---
 
 func TestAddModeRejectsInvalidBranch(t *testing.T) {

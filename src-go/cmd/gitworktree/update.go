@@ -76,7 +76,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.err = nil
 		m.statusMsg = ""
 		return m, m.input.Focus()
-	case "d":
+	case "d", "D":
 		if len(m.filtered) == 0 {
 			break
 		}
@@ -84,6 +84,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.statusMsg = "cannot delete main worktree"
 		} else {
 			m.statusMsg = ""
+			m.deleteBranch = km.String() == "D"
 			m.mode = tui.DeleteConfirmMode
 		}
 	}
@@ -175,6 +176,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			target := m.filtered[m.cursor]
+			branch := target.Branch
 			deletingCurrent := m.current >= 0 && target.Path == m.worktrees[m.current].Path
 			if err := deleteWorktree(target.Path); err != nil {
 				if isWorktreeDirtyError(err) {
@@ -184,6 +186,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				m.err = err
 				m.mode = tui.ListMode
+				m.deleteBranch = false
 				return m, nil
 			}
 			if deletingCurrent && len(m.worktrees) > 0 {
@@ -194,6 +197,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err != nil {
 				m.err = err
 				m.mode = tui.ListMode
+				m.deleteBranch = false
 				return m, nil
 			}
 			m.worktrees = wts
@@ -204,7 +208,12 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.mode = tui.ListMode
 			m.err = nil
+			if m.deleteBranch && branch != "" {
+				m.err = deleteWorktreeBranch(branch)
+			}
+			m.deleteBranch = false
 		default:
+			m.deleteBranch = false
 			m.mode = tui.ListMode
 		}
 	}
@@ -220,10 +229,12 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			target := m.filtered[m.cursor]
+			branch := target.Branch
 			deletingCurrent := m.current >= 0 && target.Path == m.worktrees[m.current].Path
 			if err := deleteWorktreeForce(target.Path); err != nil {
 				m.err = err
 				m.mode = tui.ListMode
+				m.deleteBranch = false
 				return m, nil
 			}
 			if deletingCurrent && len(m.worktrees) > 0 {
@@ -234,6 +245,7 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err != nil {
 				m.err = err
 				m.mode = tui.ListMode
+				m.deleteBranch = false
 				return m, nil
 			}
 			m.worktrees = wts
@@ -244,7 +256,12 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.mode = tui.ListMode
 			m.err = nil
+			if m.deleteBranch && branch != "" {
+				m.err = deleteWorktreeBranch(branch)
+			}
+			m.deleteBranch = false
 		default:
+			m.deleteBranch = false
 			m.mode = tui.ListMode
 		}
 	}
