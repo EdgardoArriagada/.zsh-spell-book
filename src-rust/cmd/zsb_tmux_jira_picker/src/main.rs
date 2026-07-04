@@ -1,3 +1,13 @@
+//! zsb_tmux_jira_picker
+//!
+//! Reads `~/temp/tickets` (pipe-delimited: parent_ticket|current_ticket|label),
+//! presents an fzf picker, then for a NEW session:
+//!   - Creates the tmux session
+//!   - Sets ZSB_PARENT_TICKET, ZSB_CURRENT_TICKET, ZSB_CURRENT_LABEL in the session
+//!   - Writes ~/temp/current-ticket.zsh with those vars (sourced by ~/.zshenv
+//!     so new shells inherit the current ticket context)
+//! For an EXISTING session: switches to it, does nothing else.
+
 use std::env;
 use std::fs;
 use std::io::Write;
@@ -77,6 +87,13 @@ fn main() {
         tmux(&["set-environment", "-t", &session_name, "ZSB_PARENT_TICKET", parent_ticket]);
         tmux(&["set-environment", "-t", &session_name, "ZSB_CURRENT_TICKET", current_ticket]);
         tmux(&["set-environment", "-t", &session_name, "ZSB_CURRENT_LABEL", current_label]);
+
+        let ticket_file = format!("{}/temp/current-ticket.zsh", home);
+        let file_content = format!(
+            "declare ZSB_PARENT_TICKET={}\ndeclare ZSB_CURRENT_TICKET={}\ndeclare ZSB_CURRENT_LABEL={}\n",
+            parent_ticket, current_ticket, current_label
+        );
+        let _ = fs::write(&ticket_file, file_content);
     }
 
     if env::var("TMUX").is_ok() {
