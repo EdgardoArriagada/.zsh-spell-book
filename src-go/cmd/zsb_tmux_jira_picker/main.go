@@ -36,9 +36,6 @@ func main() {
 
 	if !sessionExists {
 		exec.Command("tmux", "new-session", "-d", "-s", sessionName).Run() //nolint:errcheck
-		tmux("set-environment", "-t", sessionName, "ZSB_PARENT_TICKET", t.Parent)
-		tmux("set-environment", "-t", sessionName, "ZSB_CURRENT_TICKET", t.Current)
-		tmux("set-environment", "-t", sessionName, "ZSB_CURRENT_LABEL", t.Label)
 	}
 
 	home := os.Getenv("HOME")
