@@ -1,0 +1,19 @@
+src/spells/jira/jira.aliases.zsh
+  s_6358f7a042e15f::t_3019997187cfc3 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "632ac66f19e237b45b208c2bffb3564f2dee1d92",
+  "prompts": {},
+  "sessions": {
+    "s_6358f7a042e15f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2c056ae8-08a8-4419-aef8-90748b42f058",
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
