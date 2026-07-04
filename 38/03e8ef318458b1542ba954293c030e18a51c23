@@ -1,0 +1,20 @@
+src-rust/cmd/zsb_tmux_jira_picker/src/main.rs
+  s_e0e2774e8a3a6b::t_34bc72889fbddf 90-96
+  s_e0e2774e8a3a6b::t_129fb330b3b84c 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3803e8ef318458b1542ba954293c030e18a51c23",
+  "prompts": {},
+  "sessions": {
+    "s_e0e2774e8a3a6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1bece872-ce5b-485e-aabb-c70417df0fef",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
