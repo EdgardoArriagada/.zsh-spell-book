@@ -1,0 +1,31 @@
+src-go/go.work
+  s_f7690237525381::t_6992b4ec11e03f 7
+src-go/cmd/zsb_tmux_jira_picker/main.go
+  s_f7690237525381::t_801d645f8fbc8e 1-56
+src-go/cmd/zsb_tmux_jira_picker/view.go
+  s_f7690237525381::t_451c2f605ed3ef 1-55
+src-go/cmd/zsb_tmux_jira_picker/update.go
+  s_f7690237525381::t_986272a1a7e485 1-86
+src-go/cmd/zsb_tmux_jira_picker/model.go
+  s_f7690237525381::t_e0774b05541d91 1-82
+src-go/cmd/zsb_tmux_jira_picker/go.sum
+  s_f7690237525381::t_2194edb5a582de 1-27
+src-go/cmd/zsb_tmux_jira_picker/go.mod
+  s_f7690237525381::t_54697772e1ba41 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a50e21fb2f595dd0d42181124a0af4bedc658fbd",
+  "prompts": {},
+  "sessions": {
+    "s_f7690237525381": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "25e1daa9-279e-4bcf-a32a-bb8210f00794",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
