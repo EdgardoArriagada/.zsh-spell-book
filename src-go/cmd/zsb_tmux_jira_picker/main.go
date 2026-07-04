@@ -39,14 +39,14 @@ func main() {
 		tmux("set-environment", "-t", sessionName, "ZSB_PARENT_TICKET", t.Parent)
 		tmux("set-environment", "-t", sessionName, "ZSB_CURRENT_TICKET", t.Current)
 		tmux("set-environment", "-t", sessionName, "ZSB_CURRENT_LABEL", t.Label)
-
-		home := os.Getenv("HOME")
-		content := fmt.Sprintf(
-			"declare ZSB_PARENT_TICKET='%s'\ndeclare ZSB_CURRENT_TICKET='%s'\ndeclare ZSB_CURRENT_LABEL='%s'\n",
-			t.Parent, t.Current, t.Label,
-		)
-		os.WriteFile(home+"/temp/current-ticket.zsh", []byte(content), 0644) //nolint:errcheck
 	}
+
+	home := os.Getenv("HOME")
+	content := fmt.Sprintf(
+		"declare ZSB_PARENT_TICKET='%s'\ndeclare ZSB_CURRENT_TICKET='%s'\ndeclare ZSB_CURRENT_LABEL='%s'\n",
+		t.Parent, t.Current, t.Label,
+	)
+	os.WriteFile(home+"/temp/current-ticket.zsh", []byte(content), 0644) //nolint:errcheck
 
 	if os.Getenv("TMUX") != "" {
 		tmux("switch-client", "-t", "="+sessionName)
