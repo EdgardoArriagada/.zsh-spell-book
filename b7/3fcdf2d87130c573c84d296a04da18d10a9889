@@ -1,0 +1,19 @@
+src-go/cmd/zsb_tmux_jira_picker/main.go
+  s_c4992a14f6c8fa::t_043243461c2a5d 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b73fcdf2d87130c573c84d296a04da18d10a9889",
+  "prompts": {},
+  "sessions": {
+    "s_c4992a14f6c8fa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d8c1ce5-c2f1-4e0e-b6b2-9441a212805d",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
