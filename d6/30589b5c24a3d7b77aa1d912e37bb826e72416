@@ -1,0 +1,23 @@
+src-go/cmd/zsb_tmux_jira_picker/view.go
+  s_cb3e50e490ff2b::t_9102c54be54445 19-23,36-47,49
+src-go/cmd/zsb_tmux_jira_picker/model.go
+  s_cb3e50e490ff2b::t_f669293bad6b1e 31
+  s_cb3e50e490ff2b::t_14efae3be86f6e 65-83
+  s_cb3e50e490ff2b::t_f2a344b5ce711c 93-109,113,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d630589b5c24a3d7b77aa1d912e37bb826e72416",
+  "prompts": {},
+  "sessions": {
+    "s_cb3e50e490ff2b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "182b880b-b9ae-43d2-88be-47d592d21986",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
