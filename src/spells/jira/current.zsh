@@ -1,24 +1,22 @@
-${zsb}.current.getDir() <<< $ZSB_TICKETS_DIR/$ZSB_PARENT_TICKET
+declare ZSB_CURRENT_TICKET_DIR=$ZSB_TICKETS_DIR/$ZSB_PARENT_TICKET
 
 ${zsb}_createCurrentDir() {
   ${zsb}.assertJira
 
-  local parentTicketDir=`${zsb}.current.getDir`
+  [[ -d $ZSB_CURRENT_TICKET_DIR ]] && return 0
 
-  [[ -d $parentTicketDir ]] && return 0
-
-  mkdir -p $parentTicketDir
-  print "# $ZSB_CURRENT_LABEL" > $parentTicketDir/NOTES.md
-  (builtin cd $parentTicketDir && git init);
+  mkdir -p $ZSB_CURRENT_TICKET_DIR
+  print "# $ZSB_CURRENT_LABEL" > $ZSB_CURRENT_TICKET_DIR/NOTES.md
+  (builtin cd $ZSB_CURRENT_TICKET_DIR && git init);
 
   return 0
 }
 
-alias cdcurrent="${zsb}_createCurrentDir && cds `${zsb}.current.getDir`"
+alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
 
 # We enter in the directory to be ablo to open new shell to interact with git
-alias vnotescurrent="${zsb}_createCurrentDir && builtin cd `${zsb}.current.getDir` && nvim NOTES.md"
-alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat `${zsb}.current.getDir`/NOTES.md"
+alias vnotescurrent="${zsb}_createCurrentDir && nvim $ZSB_CURRENT_TICKET_DIR/NOTES.md"
+alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat $ZSB_CURRENT_TICKET_DIR/NOTES.md"
 alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
 
 alias vn='vnotescurrent'
