@@ -62,10 +62,6 @@ func loadTickets() ([]Ticket, error) {
 	return tickets, nil
 }
 
-func loadCurrentTicket() (parent, current string) {
-	return os.Getenv("ZSB_PARENT_TICKET"), os.Getenv("ZSB_CURRENT_TICKET")
-}
-
 func applyTicketFilter(tickets []Ticket, term string) []Ticket {
 	return tui.ApplyFilter(tickets, term, func(t Ticket) string {
 		return t.Parent + " " + t.Current + " " + t.Label
@@ -77,9 +73,9 @@ func initialModel() model {
 	si := tui.NewSearchInput()
 
 	cur := -1
-	parentTicket, currentTicket := loadCurrentTicket()
+	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
 	for i, t := range tickets {
-		if (t.Parent == parentTicket && t.Current == currentTicket) {
+		if t.Current == currentTicket {
 			cur = i
 			break
 		}
