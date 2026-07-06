@@ -1,0 +1,23 @@
+src-rust/lib/zsb_git/src/lib.rs
+  s_f7a9770e7afd57::t_ff0826ece7c55d 1-17
+src-rust/cmd/zsb_claude_statusline/src/main.rs
+  s_f7a9770e7afd57::t_86993230d7aeb0 4
+src-rust/cmd/get_repo_name/src/main.rs
+  s_f7a9770e7afd57::t_78f1c568cfeac7 1,3,6-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9962bcca8946ae752cb3c6fdf2ed97f7b3eed741",
+  "prompts": {},
+  "sessions": {
+    "s_f7a9770e7afd57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b16df1f5-02bd-4cd7-885c-98f8589099de",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
