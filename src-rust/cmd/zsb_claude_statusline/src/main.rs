@@ -1,7 +1,7 @@
 use std::io::{self, BufWriter, Read, Write};
 use std::process::Command;
 
-use zsb_git::repo_name_from_url;
+use zsb_git::git_repo_name;
 
 use serde::Deserialize;
 
@@ -86,22 +86,6 @@ struct StatusInput {
 }
 
 // ── Git helpers ────────────────────────────────────────────────────────────────
-
-fn git_repo_name(cwd: &str) -> Option<String> {
-    let out = Command::new("git")
-        .args(["-C", cwd, "remote", "get-url", "origin"])
-        .stderr(std::process::Stdio::null())
-        .output()
-        .ok()?;
-    if !out.status.success() {
-        return None;
-    }
-    let url = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    if url.is_empty() {
-        return None;
-    }
-    Some(repo_name_from_url(&url).to_string())
-}
 
 /// Single subprocess returning (branch_name, is_dirty).
 /// Replaces the previous git_branch + git_is_dirty two-call pattern.

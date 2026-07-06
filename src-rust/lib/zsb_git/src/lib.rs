@@ -1,3 +1,20 @@
+pub fn git_repo_name(cwd: &str) -> Option<String> {
+    use std::process::Command;
+    let out = Command::new("git")
+        .args(["-C", cwd, "remote", "get-url", "origin"])
+        .stderr(std::process::Stdio::null())
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let url = String::from_utf8_lossy(&out.stdout).trim().to_string();
+    if url.is_empty() {
+        return None;
+    }
+    Some(repo_name_from_url(&url).to_string())
+}
+
 pub fn repo_name_from_url(url: &str) -> &str {
     let base = url.rsplit(|c| c == '/' || c == ':').next().unwrap_or(url);
     base.strip_suffix(".git").unwrap_or(base)
