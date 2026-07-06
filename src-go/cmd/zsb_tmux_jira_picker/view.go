@@ -16,6 +16,11 @@ func (m model) View() string {
 	var s strings.Builder
 	s.WriteString(tui.Title("Jira Tickets"))
 
+	var currentTicket string
+	if m.current >= 0 && m.current < len(m.tickets) {
+		currentTicket = m.tickets[m.current].Current
+	}
+
 	maxVis := m.vp.MaxVisible(len(m.filtered))
 	end := m.vp.Offset + maxVis
 	if end > len(m.filtered) {
@@ -28,11 +33,20 @@ func (m model) View() string {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 		line := t.Parent + " | " + t.Current + " | " + t.Label
-		if idx == m.cursor {
-			s.WriteString(cursor + tui.ActiveStyle.Render(line) + "\n")
-		} else {
-			s.WriteString(cursor + tui.DimStyle.Render(line) + "\n")
+		isCurrent := currentTicket != "" && t.Current == currentTicket
+
+		var renderedLine string
+		switch {
+		case isCurrent && idx == m.cursor:
+			renderedLine = tui.CurrentMark.Render(line) + tui.CurrentMark.Render("  ●")
+		case isCurrent:
+			renderedLine = tui.DimStyle.Render(line) + tui.CurrentMark.Render("  ●")
+		case idx == m.cursor:
+			renderedLine = tui.ActiveStyle.Render(line)
+		default:
+			renderedLine = tui.DimStyle.Render(line)
 		}
+		s.WriteString(cursor + renderedLine + "\n")
 	}
 
 	if m.mode == tui.SearchMode {

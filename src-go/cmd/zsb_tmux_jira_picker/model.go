@@ -28,6 +28,7 @@ type model struct {
 	vp          tui.Viewport
 	selected    *Ticket
 	err         error
+	current     int // index of current ticket in tickets, -1 if none
 }
 
 func loadTickets() ([]Ticket, error) {
@@ -61,6 +62,25 @@ func loadTickets() ([]Ticket, error) {
 	return tickets, nil
 }
 
+func loadCurrentTicket() string {
+	home := os.Getenv("HOME")
+	data, err := os.ReadFile(home + "/temp/current-ticket.zsh")
+	if err != nil {
+		return ""
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		if !strings.Contains(line, "ZSB_CURRENT_TICKET=") {
+			continue
+		}
+		start := strings.Index(line, "'")
+		end := strings.LastIndex(line, "'")
+		if start >= 0 && end > start {
+			return line[start+1 : end]
+		}
+	}
+	return ""
+}
+
 func applyTicketFilter(tickets []Ticket, term string) []Ticket {
 	return tui.ApplyFilter(tickets, term, func(t Ticket) string {
 		return t.Parent + " " + t.Current + " " + t.Label
@@ -70,10 +90,29 @@ func applyTicketFilter(tickets []Ticket, term string) []Ticket {
 func initialModel() model {
 	tickets, err := loadTickets()
 	si := tui.NewSearchInput()
+
+	cur := -1
+	currentTicket := loadCurrentTicket()
+	if currentTicket != "" {
+		for i, t := range tickets {
+			if t.Current == currentTicket {
+				cur = i
+				break
+			}
+		}
+	}
+
+	cursor := 0
+	if cur > 0 {
+		cursor = cur
+	}
+
 	return model{
 		tickets:     tickets,
 		filtered:    tickets,
+		cursor:      cursor,
 		searchInput: si,
+		current:     cur,
 		width:       tui.DefaultWidth,
 		err:         err,
 	}
