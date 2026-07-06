@@ -134,6 +134,9 @@ dependencies = [
 [[package]]
 name = "get_repo_name"
 version = "0.1.0"
+dependencies = [
+ "zsb_git",
+]
 
 [[package]]
 name = "get_repo_url"
@@ -403,10 +406,15 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "zsb_git",
 ]
 
 [[package]]
 name = "zsb_clipcopy"
+version = "0.1.0"
+
+[[package]]
+name = "zsb_git"
 version = "0.1.0"
 
 [[package]]
@@ -420,7 +428,3 @@ version = "0.1.0"
 [[package]]
 name = "zsb_time"
 version = "0.0.1"
-
-[[package]]
-name = "zsb_tmux_jira_picker"
-version = "0.1.0"

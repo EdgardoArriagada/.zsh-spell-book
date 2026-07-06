@@ -2,3 +2,6 @@
 name = "get_repo_name"
 version = "0.1.0"
 edition = "2021"
+
+[dependencies]
+zsb_git = { path = "../../lib/zsb_git" }

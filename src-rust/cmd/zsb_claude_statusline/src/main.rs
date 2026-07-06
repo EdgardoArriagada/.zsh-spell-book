@@ -1,6 +1,8 @@
 use std::io::{self, BufWriter, Read, Write};
 use std::process::Command;
 
+use zsb_git::repo_name_from_url;
+
 use serde::Deserialize;
 
 // ── Color palette (Nordic — 256-color approximations) ─────────────────────────
@@ -85,6 +87,22 @@ struct StatusInput {
 
 // ── Git helpers ────────────────────────────────────────────────────────────────
 
+fn git_repo_name(cwd: &str) -> Option<String> {
+    let out = Command::new("git")
+        .args(["-C", cwd, "remote", "get-url", "origin"])
+        .stderr(std::process::Stdio::null())
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let url = String::from_utf8_lossy(&out.stdout).trim().to_string();
+    if url.is_empty() {
+        return None;
+    }
+    Some(repo_name_from_url(&url).to_string())
+}
+
 /// Single subprocess returning (branch_name, is_dirty).
 /// Replaces the previous git_branch + git_is_dirty two-call pattern.
 fn git_info(cwd: &str) -> (Option<String>, bool) {
@@ -118,13 +136,6 @@ fn git_info(cwd: &str) -> (Option<String>, bool) {
 }
 
 // ── Formatting helpers ─────────────────────────────────────────────────────────
-
-fn project_name(cwd: &str) -> &str {
-    std::path::Path::new(cwd)
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or(cwd)
-}
 
 fn capitalize(s: &str) -> String {
     let mut chars = s.chars();
@@ -221,15 +232,16 @@ fn build_line1(input: &StatusInput) -> String {
     let mut segments = Vec::new();
 
     // Segment 1: project name (dark bg, golden fg)
-    let project = input.cwd.as_deref().map(project_name).unwrap_or("?");
-    segments.push(Segment {
-        bg_color: DARK,
-        fg_color: GOLDEN,
-        content: format!(" \u{e5fc} {project} "),
-    });
+    let cwd = input.cwd.as_deref().unwrap_or(".");
+    if let Some(project) = git_repo_name(cwd) {
+        segments.push(Segment {
+            bg_color: DARK,
+            fg_color: GOLDEN,
+            content: format!(" \u{e5fc} {project} "),
+        });
+    }
 
     // Segment 2: git branch with dirty indicator — single git subprocess.
-    let cwd = input.cwd.as_deref().unwrap_or(".");
     let (git_branch, dirty) = git_info(cwd);
 
     let branch = input
