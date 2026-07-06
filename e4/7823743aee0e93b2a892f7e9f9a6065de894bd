@@ -1,0 +1,22 @@
+src/spells/jira/current.zsh
+  s_0a1aacb167be0a::t_6f843ed4e58c7f 8-10
+  s_0a1aacb167be0a::t_498b17bdd26eb9 18
+  s_0a1aacb167be0a::t_8204532ff246a0 19
+  s_0a1aacb167be0a::t_17b4c6af91473a 1,6,15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e47823743aee0e93b2a892f7e9f9a6065de894bd",
+  "prompts": {},
+  "sessions": {
+    "s_0a1aacb167be0a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d1c1c053-9f8c-40f3-8a17-43d729dc9105",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
