@@ -40,7 +40,7 @@ func main() {
 
 	home := os.Getenv("HOME")
 	content := fmt.Sprintf(
-		"declare ZSB_PARENT_TICKET='%s'\ndeclare ZSB_CURRENT_TICKET='%s'\ndeclare ZSB_CURRENT_LABEL='%s'\n",
+		"export ZSB_PARENT_TICKET='%s'\nexport ZSB_CURRENT_TICKET='%s'\nexport ZSB_CURRENT_LABEL='%s'\n",
 		t.Parent, t.Current, t.Label,
 	)
 	os.WriteFile(home+"/temp/current-ticket.zsh", []byte(content), 0644) //nolint:errcheck
