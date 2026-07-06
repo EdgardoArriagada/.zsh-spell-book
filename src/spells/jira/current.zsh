@@ -22,7 +22,9 @@ alias vnotescurrent="${zsb}_createCurrentDir && (builtincdcurrent && nvim `${zsb
 alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat `${zsb}.current.getDir`/NOTES.md"
 alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
 
-hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent
+alias vn='vnotescurrent'
+
+hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent vn
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
