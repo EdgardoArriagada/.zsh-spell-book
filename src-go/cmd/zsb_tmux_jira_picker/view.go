@@ -62,6 +62,7 @@ func (m model) View() string {
 		footer = "  " + tui.Hint("↑/↓", "navigate") + sep +
 			tui.Hint("enter", "select") + sep +
 			tui.Hint("/", "search") + sep +
+			tui.Hint("ctrl+g", "edit tickets") + sep +
 			tui.Hint("esc/q", "quit")
 	}
 	s.WriteString("\n" + footer + "\n")

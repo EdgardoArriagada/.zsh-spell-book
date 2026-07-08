@@ -29,33 +29,31 @@ func applyTicketFilter(tickets []jira.Ticket, term string) []jira.Ticket {
 	})
 }
 
-func initialModel() model {
+func (m model) reloadTickets() model {
 	tickets, err := jira.LoadTickets()
-	si := tui.NewSearchInput()
-
-	cur := -1
+	m.tickets = tickets
+	m.err = err
 	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
+	m.current = -1
 	for i, t := range tickets {
 		if t.Current == currentTicket {
-			cur = i
+			m.current = i
 			break
 		}
 	}
+	return m
+}
 
-	cursor := 0
-	if cur > 0 {
-		cursor = cur
-	}
-
-	return model{
-		tickets:     tickets,
-		filtered:    tickets,
-		cursor:      cursor,
-		searchInput: si,
-		current:     cur,
+func initialModel() model {
+	m := model{
+		searchInput: tui.NewSearchInput(),
 		width:       tui.DefaultWidth,
-		err:         err,
+		current:     -1,
 	}
+	m = m.reloadTickets()
+	m.cursor = max(0, m.current)
+	m.filtered = m.tickets
+	return m
 }
 
 func (m model) Init() tea.Cmd { return nil }
