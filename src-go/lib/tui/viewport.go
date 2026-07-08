@@ -1,6 +1,6 @@
 package tui
 
-const ViewportOverhead = 6  // title(2) + status/confirm(2) + footer(2)
+const ViewportOverhead = 8  // title(3) + status/confirm(2) + footer(2) + slack(1)
 const DefaultWidth      = 80 // fallback width before first WindowSizeMsg
 
 // Viewport tracks scrolling state for a list with more items than fit on screen.
