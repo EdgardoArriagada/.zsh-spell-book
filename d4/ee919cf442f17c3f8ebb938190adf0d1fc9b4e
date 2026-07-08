@@ -1,0 +1,33 @@
+src-go/cmd/gitworktree/view.go
+  s_fd020a03061ff6::t_8d27ba0c3b1998 63-67
+src-go/cmd/gitbranch/view.go
+  s_fd020a03061ff6::t_524aed7d0e407e 66-70,74
+  s_fd020a03061ff6::t_1192b2e43f2fe6 71-73
+  s_1e7fdbcb64948c::t_eb8cb2da953aca 34,40
+src-go/cmd/zsb_tmux_jira_picker/view.go
+  s_fd020a03061ff6::t_eadc147fba61f9 52-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d4ee919cf442f17c3f8ebb938190adf0d1fc9b4e",
+  "prompts": {},
+  "sessions": {
+    "s_1e7fdbcb64948c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd431790-d425-4564-b008-a81e1a3acad5",
+        "model": "unknown"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    },
+    "s_fd020a03061ff6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3ea50291-53d2-41c5-aab2-c0c1139fe54a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
