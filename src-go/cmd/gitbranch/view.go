@@ -31,11 +31,13 @@ func (m model) View() string {
 	if end > len(m.filtered) {
 		end = len(m.filtered)
 	}
+	hasDivider := false
 	for i, br := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		// Only show divider when no filter active
 		if !filterActive && idx == m.firstWorktreeIdx {
 			s.WriteString(tui.Title("Worktree Branches"))
+			hasDivider = true
 		}
 		cursor := "   "
 		if idx == m.cursor {
@@ -59,6 +61,15 @@ func (m model) View() string {
 		}
 
 		s.WriteString(cursor + line + "\n")
+	}
+
+	actualDisplayed := end - m.vp.Offset
+	dividerLines := 0
+	if hasDivider {
+		dividerLines = 3
+	}
+	if padding := maxVis - actualDisplayed - dividerLines; padding > 0 {
+		s.WriteString(strings.Repeat("\n", padding))
 	}
 
 	var target Branch

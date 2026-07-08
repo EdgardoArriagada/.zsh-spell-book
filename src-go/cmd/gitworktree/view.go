@@ -60,6 +60,11 @@ func (m model) View() string {
 		s.WriteString(cursor + line + "\n")
 	}
 
+	actualDisplayed := end - m.vp.Offset
+	if padding := maxVis - actualDisplayed; padding > 0 {
+		s.WriteString(strings.Repeat("\n", padding))
+	}
+
 	var target Worktree
 	if len(m.filtered) > 0 && m.cursor < len(m.filtered) {
 		target = m.filtered[m.cursor]

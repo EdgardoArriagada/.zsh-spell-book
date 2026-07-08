@@ -49,6 +49,11 @@ func (m model) View() string {
 		s.WriteString(cursor + renderedLine + "\n")
 	}
 
+	actualDisplayed := end - m.vp.Offset
+	if padding := maxVis - actualDisplayed; padding > 0 {
+		s.WriteString(strings.Repeat("\n", padding))
+	}
+
 	if m.mode == tui.SearchMode {
 		s.WriteString(tui.RenderSearchInput(m.searchInput))
 	} else {
