@@ -9,3 +9,8 @@ const (
 	ForceDeleteConfirmMode
 	SearchMode
 )
+
+type EditorDoneMsg struct {
+	TmpFile string
+	Err     error
+}

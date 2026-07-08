@@ -96,9 +96,14 @@ func (m model) View() string {
 	}
 
 	var footer string
-	if m.mode == tui.SearchMode {
+	switch m.mode {
+	case tui.SearchMode:
 		footer = tui.SearchFooter()
-	} else {
+	case tui.AddMode:
+		footer = "  " + tui.Hint("enter", "confirm") + sep +
+			tui.Hint("ctrl+g", "open $EDITOR") + sep +
+			tui.Hint("esc", "cancel")
+	default:
 		footer = "  " + tui.Hint("↑/↓", "navigate") + sep +
 			tui.Hint("enter", "select") + sep +
 			tui.Hint("a", "add") + sep +

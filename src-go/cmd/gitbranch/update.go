@@ -1,11 +1,16 @@
 package main
 
 import (
+	"os"
+	"os/exec"
+	"strings"
+
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
+
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
@@ -169,6 +174,15 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if edMsg, ok := msg.(tui.EditorDoneMsg); ok {
+		if content, _ := os.ReadFile(edMsg.TmpFile); len(content) > 0 {
+			if branch := strings.TrimSpace(string(content)); branch != "" {
+				m.input.SetValue(branch)
+			}
+		}
+		os.Remove(edMsg.TmpFile)
+		return m, m.input.Focus()
+	}
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "ctrl+c":
@@ -178,6 +192,25 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.input.Blur()
 			m.err = nil
 			return m, nil
+		case "ctrl+g":
+			f, err := os.CreateTemp("", "zsb-branch-*")
+			if err != nil {
+				m.err = err
+				return m, nil
+			}
+			if v := tui.ParseInputValue(m.input); v != "" {
+				f.WriteString(v)
+			}
+			f.Close()
+			editor := os.Getenv("EDITOR")
+			if editor == "" {
+				editor = "vi"
+			}
+			parts := strings.Fields(editor)
+			cmd := exec.Command(parts[0], append(parts[1:], f.Name())...)
+			return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
+				return tui.EditorDoneMsg{TmpFile: f.Name(), Err: err}
+			})
 		case "enter":
 			branch := tui.ParseInputValue(m.input)
 			if branch == "" {
