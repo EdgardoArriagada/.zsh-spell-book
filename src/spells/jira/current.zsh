@@ -1,5 +1,3 @@
-declare ZSB_CURRENT_TICKET_DIR=$ZSB_TICKETS_DIR/$ZSB_PARENT_TICKET
-
 ${zsb}_createCurrentDir() {
   ${zsb}.assertJira
 
