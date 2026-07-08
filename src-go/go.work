@@ -4,9 +4,11 @@ use (
 	./cmd/airbnb_calculator
 	./cmd/gitbranch
 	./cmd/gitworktree
+	./cmd/tmdiff
 	./cmd/zsb_tmux_jira_picker
 	./lib/args
 	./lib/git
+	./lib/jira
 	./lib/open
 	./lib/tui
 	./lib/utils

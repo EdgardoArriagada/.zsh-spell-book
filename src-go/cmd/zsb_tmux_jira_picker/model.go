@@ -1,75 +1,36 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"os"
-	"strings"
 
+	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type Ticket struct {
-	Parent  string
-	Current string
-	Label   string
-}
-
 type model struct {
-	tickets     []Ticket
-	filtered    []Ticket
+	tickets     []jira.Ticket
+	filtered    []jira.Ticket
 	cursor      int
 	mode        tui.Mode
 	searchInput textinput.Model
 	width       int
 	vp          tui.Viewport
-	selected    *Ticket
+	selected    *jira.Ticket
 	err         error
 	current     int // index of current ticket in tickets, -1 if none
 }
 
-func loadTickets() ([]Ticket, error) {
-	home := os.Getenv("HOME")
-	f, err := os.Open(home + "/temp/tickets")
-	if err != nil {
-		return nil, fmt.Errorf("no tickets file at %s/temp/tickets", home)
-	}
-	defer f.Close()
-
-	var tickets []Ticket
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		parts := strings.SplitN(line, "|", 3)
-		if len(parts) < 3 {
-			continue
-		}
-		tickets = append(tickets, Ticket{
-			Parent:  strings.TrimSpace(parts[0]),
-			Current: strings.TrimSpace(parts[1]),
-			Label:   strings.TrimSpace(parts[2]),
-		})
-	}
-	if len(tickets) == 0 {
-		return nil, fmt.Errorf("tickets file is empty")
-	}
-	return tickets, nil
-}
-
-func applyTicketFilter(tickets []Ticket, term string) []Ticket {
-	return tui.ApplyFilter(tickets, term, func(t Ticket) string {
+func applyTicketFilter(tickets []jira.Ticket, term string) []jira.Ticket {
+	return tui.ApplyFilter(tickets, term, func(t jira.Ticket) string {
 		return t.Parent + " " + t.Current + " " + t.Label
 	})
 }
 
 func initialModel() model {
-	tickets, err := loadTickets()
+	tickets, err := jira.LoadTickets()
 	si := tui.NewSearchInput()
 
 	cur := -1
