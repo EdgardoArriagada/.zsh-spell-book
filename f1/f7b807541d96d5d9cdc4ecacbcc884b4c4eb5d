@@ -1,0 +1,37 @@
+src-go/cmd/gitbranch/view.go
+  s_335fa148f4dedf::t_2f0a94e4cdb72f 99-100,102-106
+src-go/lib/tui/modes.go
+  s_335fa148f4dedf::t_75372eae91c070 12-16
+src-go/cmd/gitworktree/update.go
+  s_335fa148f4dedf::t_77dc475e2ec1ce 129-130,132-133,143-148,152-159,161
+  s_335fa148f4dedf::t_013e2c1cbb263a 149-151
+  s_335fa148f4dedf::t_50f6348e71c401 5-6
+  s_335fa148f4dedf::t_e8d167f70b500a 125-128,131
+  s_335fa148f4dedf::t_9d5d024b53520c 160
+  s_335fa148f4dedf::t_691ebda9e594d1 14
+src-go/cmd/gitworktree/view.go
+  s_335fa148f4dedf::t_c7aff6dcadbaee 104-105,107-111
+src-go/cmd/gitbranch/update.go
+  s_335fa148f4dedf::t_343cf838574c18 4-7
+  s_335fa148f4dedf::t_b4deae8f7af623 181-182,184-185,195-200,204-211,213
+  s_335fa148f4dedf::t_101d878ba9a31d 201-203
+  s_335fa148f4dedf::t_1479824d39d5c5 177-180,183
+  s_335fa148f4dedf::t_119debb27a069f 212
+  s_335fa148f4dedf::t_63239a590c5694 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f1f7b807541d96d5d9cdc4ecacbcc884b4c4eb5d",
+  "prompts": {},
+  "sessions": {
+    "s_335fa148f4dedf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ddcbfcf2-9db4-41f1-aa38-8997b54289f6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
