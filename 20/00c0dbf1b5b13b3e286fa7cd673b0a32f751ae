@@ -1,0 +1,58 @@
+src-go/lib/tui/viewport.go
+  s_358a1be1876d61::t_e945ce22708114 3-4,6-22
+  s_bfb06075cdccbb::t_bea3a407cc130e 5,26,29-33,36,40-41,44
+src-go/cmd/gitbranch/update.go
+  s_bfb06075cdccbb::t_0a70ecc0a833d4 18,20
+  s_bfb06075cdccbb::t_02f333856fd814 65,81,85,110,159,172
+src-go/cmd/zsb_tmux_jira_picker/model.go
+  s_bfb06075cdccbb::t_23674eef41d529 19-21
+src-go/cmd/gitbranch/update_test.go
+  s_bfb06075cdccbb::t_e1b7da68f9f35f 179,239
+  s_bfb06075cdccbb::t_9c5adb6707197a 34
+src-go/cmd/zsb_tmux_jira_picker/update.go
+  s_bfb06075cdccbb::t_27fa08e08de284 16-17
+  s_bfb06075cdccbb::t_af41d71c316381 36,54,59,62,67,99,112
+src-go/cmd/gitworktree/model.go
+  s_bfb06075cdccbb::t_e470ca8af5cf97 21
+src-go/cmd/gitworktree/update.go
+  s_bfb06075cdccbb::t_684cdbb2d287f9 54,60,64,70,107,120
+  s_bfb06075cdccbb::t_88efee4628e172 18,20
+src-go/cmd/gitbranch/view.go
+  s_bfb06075cdccbb::t_571cef30917c34 10-81,83-84,98,100,145-146
+  s_358a1be1876d61::t_d0aa1e02d84bb9 82
+src-go/cmd/gitworktree/view.go
+  s_bfb06075cdccbb::t_220d2d716dc480 11-72,74-75,89,132-133
+  s_358a1be1876d61::t_eefdff371ee587 73
+src-go/cmd/gitbranch/view_test.go
+  s_bfb06075cdccbb::t_1a25424211608e 19-20,26-28,30,33,37-40,43
+  s_bfb06075cdccbb::t_34b98c0083630d 142,159
+src-go/cmd/zsb_tmux_jira_picker/view.go
+  s_bfb06075cdccbb::t_27d9e5dc0e9e51 10-29,31-32,46,79-80
+  s_358a1be1876d61::t_cfb7b47b254aee 30
+src-go/cmd/gitbranch/model.go
+  s_bfb06075cdccbb::t_7c9bf9b7d52669 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2000c0dbf1b5b13b3e286fa7cd673b0a32f751ae",
+  "prompts": {},
+  "sessions": {
+    "s_358a1be1876d61": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7911afdf-ad3d-4f42-abd7-4d7a44f33cd1",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    },
+    "s_bfb06075cdccbb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7f3d1ef4-a3f9-456d-8b93-c5dbe15f8fa2",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
