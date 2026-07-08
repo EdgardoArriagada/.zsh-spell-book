@@ -18,6 +18,7 @@ type model struct {
 	input        textarea.Model
 	searchInput  textinput.Model
 	width        int
+	windowHeight int
 	vp           tui.Viewport
 	selected     string
 	fallbackPath string // set when current worktree is deleted, so quit still cd's somewhere valid

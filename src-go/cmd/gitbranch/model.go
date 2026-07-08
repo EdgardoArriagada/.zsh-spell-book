@@ -23,6 +23,7 @@ type model struct {
 	input            textarea.Model
 	searchInput      textinput.Model
 	width            int
+	windowHeight     int
 	vp               tui.Viewport
 	selected         string
 	err              error
@@ -75,11 +76,6 @@ func initialModel() model {
 		cursor = cur
 	}
 
-	vp := tui.Viewport{}
-	if inWT {
-		vp.ExtraOverhead = 2
-	}
-
 	return model{
 		branches:         branches,
 		filtered:         branches,
@@ -90,7 +86,6 @@ func initialModel() model {
 		current:          cur,
 		width:            tui.DefaultWidth,
 		inWorktree:       inWT,
-		vp:               vp,
 		firstWorktreeIdx: findFirstWorktreeIdx(branches),
 	}
 }

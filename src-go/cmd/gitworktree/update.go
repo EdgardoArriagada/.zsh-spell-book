@@ -15,9 +15,9 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
-		m.vp.Height = ws.Height
+		m.windowHeight = ws.Height
 		m.input.SetWidth(ws.Width)
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
 	}
 	switch m.mode {
@@ -51,23 +51,23 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor + 1) % len(m.filtered)
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "g":
 		m.statusMsg = ""
 		m.cursor = 0
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "G":
 		m.statusMsg = ""
 		if len(m.filtered) > 0 {
 			m.cursor = len(m.filtered) - 1
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "enter":
 		if len(m.filtered) > 0 {
 			m.selected = m.filtered[m.cursor].Path
@@ -104,7 +104,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.searchInput.SetValue("")
 			m.filtered = m.worktrees
 			m.cursor = 0
-			m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 			m.mode = tui.ListMode
 			return m, nil
 		case "enter":
@@ -117,7 +117,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = applyWorktreeFilter(m.worktrees, m.searchInput.Value())
 	m.cursor = 0
-	m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
 }
 

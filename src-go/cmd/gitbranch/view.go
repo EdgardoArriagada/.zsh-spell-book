@@ -7,12 +7,86 @@ import (
 	"example.com/workspace/lib/tui"
 )
 
+func (m model) headerSection() string {
+	s := tui.Title("Git Branches")
+	if m.inWorktree {
+		s += tui.WarnStyle.Render("  ⚠  You are inside a worktree — branch management here is not recommended") + "\n\n"
+	}
+	return s
+}
+
+func (m model) statusSection() string {
+	var target Branch
+	if len(m.filtered) > 0 && m.cursor < len(m.filtered) {
+		target = m.filtered[m.cursor]
+	}
+	var currentName string
+	if m.current >= 0 && m.current < len(m.branches) {
+		currentName = m.branches[m.current].Name
+	}
+	switch m.mode {
+	case tui.AddMode:
+		s := "\n" + tui.PromptStyle.Render("  New branch") + "\n  ❱"
+		s += m.input.View() + "\n"
+		if m.err != nil {
+			s += tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n"
+		}
+		return s
+	case tui.DeleteConfirmMode:
+		msg := fmt.Sprintf("  Delete branch %s? (y/n)", target.Name)
+		if currentName != "" && target.Name == currentName {
+			msg = fmt.Sprintf("  Switch away and delete branch %s? (y/n)", target.Name)
+		}
+		return "\n" + tui.WarnStyle.Render(msg) + "\n"
+	case tui.ForceDeleteConfirmMode:
+		return "\n" + tui.ErrStyle.Render(
+			fmt.Sprintf("  %s is not fully merged — force delete? (y/n)", target.Name),
+		) + "\n"
+	case tui.SearchMode:
+		return tui.RenderSearchInput(m.searchInput)
+	default:
+		if m.statusMsg != "" {
+			return "\n" + tui.StatusStyle.Render("  "+m.statusMsg) + "\n"
+		} else if m.err != nil {
+			return "\n" + tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n"
+		}
+		return tui.RenderActiveFilterHint(m.searchInput)
+	}
+}
+
+func (m model) footerSection() string {
+	sep := tui.Sep()
+	filterActive := m.searchInput.Value() != ""
+	switch m.mode {
+	case tui.SearchMode:
+		return tui.SearchFooter()
+	case tui.AddMode:
+		return "  " + tui.Hint("enter", "confirm") + sep +
+			tui.Hint("ctrl+g", "open $EDITOR") + sep +
+			tui.Hint("esc", "cancel")
+	default:
+		footer := "  " + tui.Hint("↑/↓", "navigate") + sep +
+			tui.Hint("enter", "select") + sep +
+			tui.Hint("a", "add") + sep +
+			tui.Hint("d", "delete") + sep +
+			tui.Hint("/", "search") + sep +
+			tui.Hint("esc/q", "quit")
+		if !filterActive && m.firstWorktreeIdx >= 0 {
+			footer += sep + tui.Hint("wt", "checked out elsewhere")
+		}
+		return footer
+	}
+}
+
+func (m model) availableRows() int {
+	return tui.AvailableRows(m.windowHeight, m.headerSection(), m.statusSection(), "\n"+m.footerSection()+"\n")
+}
+
 func (m model) View() string {
 	if m.err != nil && len(m.branches) == 0 {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}
 
-	sep := tui.Sep()
 	filterActive := m.searchInput.Value() != ""
 
 	var currentName string
@@ -21,12 +95,9 @@ func (m model) View() string {
 	}
 
 	var s strings.Builder
-	s.WriteString(tui.Title("Git Branches"))
-	if m.inWorktree {
-		s.WriteString(tui.WarnStyle.Render("  ⚠  You are inside a worktree — branch management here is not recommended") + "\n\n")
-	}
+	s.WriteString(m.headerSection())
 
-	maxVis := m.vp.MaxVisible(len(m.filtered))
+	maxVis := m.vp.MaxVisible(len(m.filtered), m.availableRows())
 	end := m.vp.Offset + maxVis
 	if end > len(m.filtered) {
 		end = len(m.filtered)
@@ -34,7 +105,6 @@ func (m model) View() string {
 	hasDivider := false
 	for i, br := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
-		// Only show divider when no filter active
 		if !filterActive && idx == m.firstWorktreeIdx {
 			s.WriteString(tui.Title("Worktree Branches"))
 			hasDivider = true
@@ -72,59 +142,7 @@ func (m model) View() string {
 		s.WriteString(strings.Repeat("\n", padding))
 	}
 
-	var target Branch
-	if len(m.filtered) > 0 && m.cursor < len(m.filtered) {
-		target = m.filtered[m.cursor]
-	}
-
-	switch m.mode {
-	case tui.AddMode:
-		s.WriteString("\n" + tui.PromptStyle.Render("  New branch") + "\n  ❱")
-		s.WriteString(m.input.View() + "\n")
-		if m.err != nil {
-			s.WriteString(tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n")
-		}
-	case tui.DeleteConfirmMode:
-		msg := fmt.Sprintf("  Delete branch %s? (y/n)", target.Name)
-		if currentName != "" && target.Name == currentName {
-			msg = fmt.Sprintf("  Switch away and delete branch %s? (y/n)", target.Name)
-		}
-		s.WriteString("\n" + tui.WarnStyle.Render(msg) + "\n")
-	case tui.ForceDeleteConfirmMode:
-		s.WriteString("\n" + tui.ErrStyle.Render(
-			fmt.Sprintf("  %s is not fully merged — force delete? (y/n)", target.Name),
-		) + "\n")
-	case tui.SearchMode:
-		s.WriteString(tui.RenderSearchInput(m.searchInput))
-	default:
-		if m.statusMsg != "" {
-			s.WriteString("\n" + tui.StatusStyle.Render("  "+m.statusMsg) + "\n")
-		} else if m.err != nil {
-			s.WriteString("\n" + tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n")
-		} else {
-			s.WriteString(tui.RenderActiveFilterHint(m.searchInput))
-		}
-	}
-
-	var footer string
-	switch m.mode {
-	case tui.SearchMode:
-		footer = tui.SearchFooter()
-	case tui.AddMode:
-		footer = "  " + tui.Hint("enter", "confirm") + sep +
-			tui.Hint("ctrl+g", "open $EDITOR") + sep +
-			tui.Hint("esc", "cancel")
-	default:
-		footer = "  " + tui.Hint("↑/↓", "navigate") + sep +
-			tui.Hint("enter", "select") + sep +
-			tui.Hint("a", "add") + sep +
-			tui.Hint("d", "delete") + sep +
-			tui.Hint("/", "search") + sep +
-			tui.Hint("esc/q", "quit")
-		if !filterActive && m.firstWorktreeIdx >= 0 {
-			footer += sep + tui.Hint("wt", "checked out elsewhere")
-		}
-	}
-	s.WriteString("\n" + footer + "\n")
+	s.WriteString(m.statusSection())
+	s.WriteString("\n" + m.footerSection() + "\n")
 	return s.String()
 }

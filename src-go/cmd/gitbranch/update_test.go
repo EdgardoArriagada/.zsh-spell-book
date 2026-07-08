@@ -31,7 +31,7 @@ func makeListModelWithHeight(branches []Branch, cursor, current, height int) mod
 		mode:             tui.ListMode,
 		input:            ti,
 		current:          current,
-		vp:               tui.Viewport{Height: height},
+		windowHeight:     height,
 		firstWorktreeIdx: findFirstWorktreeIdx(branches),
 	}
 }
@@ -176,7 +176,7 @@ func TestViewportOffsetIncreasesWhenCursorMovesBelow(t *testing.T) {
 	if m.cursor != 4 {
 		t.Fatalf("cursor = %d, want 4", m.cursor)
 	}
-	maxVis := m.vp.MaxVisible(len(m.branches))
+	maxVis := m.vp.MaxVisible(len(m.branches), m.availableRows())
 	if m.cursor < m.vp.Offset || m.cursor >= m.vp.Offset+maxVis {
 		t.Errorf("cursor %d not visible in viewport [%d, %d)", m.cursor, m.vp.Offset, m.vp.Offset+maxVis)
 	}
@@ -236,7 +236,7 @@ func TestViewportClampsOnWindowResize(t *testing.T) {
 	updated, _ := m.Update(tea.WindowSizeMsg{Width: 80, Height: 10}) // maxVisible=4
 	m = updated.(model)
 
-	maxVis := m.vp.MaxVisible(len(m.branches))
+	maxVis := m.vp.MaxVisible(len(m.branches), m.availableRows())
 	if m.cursor < m.vp.Offset || m.cursor >= m.vp.Offset+maxVis {
 		t.Errorf("cursor %d not visible in viewport [%d, %d) after resize", m.cursor, m.vp.Offset, m.vp.Offset+maxVis)
 	}

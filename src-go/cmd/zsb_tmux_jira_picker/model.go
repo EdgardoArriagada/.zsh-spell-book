@@ -16,8 +16,9 @@ type model struct {
 	cursor      int
 	mode        tui.Mode
 	searchInput textinput.Model
-	width       int
-	vp          tui.Viewport
+	width        int
+	windowHeight int
+	vp           tui.Viewport
 	selected    *jira.Ticket
 	err         error
 	current     int // index of current ticket in tickets, -1 if none

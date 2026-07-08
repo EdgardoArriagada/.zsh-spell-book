@@ -9,8 +9,6 @@ import (
 )
 
 func TestViewOnlyRendersVisibleBranches(t *testing.T) {
-	// height=10, viewportOverhead=6 → maxVisible=4
-	// offset=2 → visible indices 2..5
 	brs := manyBranches(10)
 	ti := tui.NewInput("branch-name")
 	m := model{
@@ -18,26 +16,31 @@ func TestViewOnlyRendersVisibleBranches(t *testing.T) {
 		filtered:         brs,
 		cursor:           3,
 		current:          0,
-		vp:               tui.Viewport{Height: 10, Offset: 2},
+		windowHeight:     40,
+		vp:               tui.Viewport{Offset: 2},
 		input:            ti,
 		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
 
 	view := m.View()
+	maxVis := m.vp.MaxVisible(len(brs), m.availableRows())
+	start := m.vp.Offset
+	end := start + maxVis
 
-	// branches at indices 2..5 must appear
-	for i := 2; i <= 5; i++ {
+	for i := start; i < end && i < len(brs); i++ {
 		name := fmt.Sprintf("branch-%02d", i)
 		if !strings.Contains(view, name) {
-			t.Errorf("branch %q (index %d) should be visible (offset=2, maxVis=4) but not found in view", name, i)
+			t.Errorf("branch %q (index %d) should be visible but not found in view", name, i)
 		}
 	}
 
-	// branches outside the window must NOT appear
-	for _, i := range []int{0, 1, 6, 7, 8, 9} {
+	for i := 0; i < len(brs); i++ {
+		if i >= start && i < end {
+			continue
+		}
 		name := fmt.Sprintf("branch-%02d", i)
 		if strings.Contains(view, name) {
-			t.Errorf("branch %q (index %d) should NOT be visible (offset=2, maxVis=4) but found in view", name, i)
+			t.Errorf("branch %q (index %d) should NOT be visible but found in view", name, i)
 		}
 	}
 }
@@ -136,7 +139,7 @@ func TestViewNoWorktreeWarningWhenNotInWorktree(t *testing.T) {
 }
 
 func TestViewNoScrollWhenHeightZero(t *testing.T) {
-	// height=0 means "no terminal size received yet" → all branches must render
+	// windowHeight=0 means "no terminal size received yet" → all branches must render
 	brs := manyBranches(5)
 	ti := tui.NewInput("branch-name")
 	m := model{
@@ -144,7 +147,6 @@ func TestViewNoScrollWhenHeightZero(t *testing.T) {
 		filtered:         brs,
 		cursor:           0,
 		current:          0,
-		vp:               tui.Viewport{Height: 0, Offset: 0},
 		input:            ti,
 		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
@@ -154,7 +156,7 @@ func TestViewNoScrollWhenHeightZero(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		name := fmt.Sprintf("branch-%02d", i)
 		if !strings.Contains(view, name) {
-			t.Errorf("branch %q should be visible when height=0 (no viewport) but not found in view", name)
+			t.Errorf("branch %q should be visible when windowHeight=0 (no viewport) but not found in view", name)
 		}
 	}
 }

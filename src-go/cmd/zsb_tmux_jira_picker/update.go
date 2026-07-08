@@ -13,8 +13,8 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
-		m.vp.Height = ws.Height
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.windowHeight = ws.Height
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
 	}
 	if m.mode == tui.SearchMode {
@@ -33,7 +33,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.cursor >= len(m.filtered) {
 			m.cursor = max(0, len(m.filtered)-1)
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
 	}
 
@@ -51,20 +51,20 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor + 1) % len(m.filtered)
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "k", "up", "shift+tab":
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "g":
 		m.cursor = 0
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "G":
 		if len(m.filtered) > 0 {
 			m.cursor = len(m.filtered) - 1
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "enter":
 		if len(m.filtered) > 0 {
 			t := m.filtered[m.cursor]
@@ -96,7 +96,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.searchInput.SetValue("")
 			m.filtered = m.tickets
 			m.cursor = 0
-			m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 			m.mode = tui.ListMode
 			return m, nil
 		case "enter":
@@ -109,6 +109,6 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = applyTicketFilter(m.tickets, m.searchInput.Value())
 	m.cursor = 0
-	m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
 }

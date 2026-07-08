@@ -7,12 +7,34 @@ import (
 	"example.com/workspace/lib/tui"
 )
 
+func (m model) statusSection() string {
+	if m.mode == tui.SearchMode {
+		return tui.RenderSearchInput(m.searchInput)
+	}
+	return tui.RenderActiveFilterHint(m.searchInput)
+}
+
+func (m model) footerSection() string {
+	sep := tui.Sep()
+	if m.mode == tui.SearchMode {
+		return tui.SearchFooter()
+	}
+	return "  " + tui.Hint("↑/↓", "navigate") + sep +
+		tui.Hint("enter", "select") + sep +
+		tui.Hint("/", "search") + sep +
+		tui.Hint("ctrl+g", "edit tickets") + sep +
+		tui.Hint("esc/q", "quit")
+}
+
+func (m model) availableRows() int {
+	return tui.AvailableRows(m.windowHeight, tui.Title("Jira Tickets"), m.statusSection(), "\n"+m.footerSection()+"\n")
+}
+
 func (m model) View() string {
 	if m.err != nil && len(m.tickets) == 0 {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}
 
-	sep := tui.Sep()
 	var s strings.Builder
 	s.WriteString(tui.Title("Jira Tickets"))
 
@@ -21,7 +43,7 @@ func (m model) View() string {
 		currentTicket = m.tickets[m.current].Current
 	}
 
-	maxVis := m.vp.MaxVisible(len(m.filtered))
+	maxVis := m.vp.MaxVisible(len(m.filtered), m.availableRows())
 	end := m.vp.Offset + maxVis
 	if end > len(m.filtered) {
 		end = len(m.filtered)
@@ -54,22 +76,7 @@ func (m model) View() string {
 		s.WriteString(strings.Repeat("\n", padding))
 	}
 
-	if m.mode == tui.SearchMode {
-		s.WriteString(tui.RenderSearchInput(m.searchInput))
-	} else {
-		s.WriteString(tui.RenderActiveFilterHint(m.searchInput))
-	}
-
-	var footer string
-	if m.mode == tui.SearchMode {
-		footer = tui.SearchFooter()
-	} else {
-		footer = "  " + tui.Hint("↑/↓", "navigate") + sep +
-			tui.Hint("enter", "select") + sep +
-			tui.Hint("/", "search") + sep +
-			tui.Hint("ctrl+g", "edit tickets") + sep +
-			tui.Hint("esc/q", "quit")
-	}
-	s.WriteString("\n" + footer + "\n")
+	s.WriteString(m.statusSection())
+	s.WriteString("\n" + m.footerSection() + "\n")
 	return s.String()
 }

@@ -15,9 +15,9 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
-		m.vp.Height = ws.Height
+		m.windowHeight = ws.Height
 		m.input.SetWidth(ws.Width)
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
 	}
 	switch m.mode {
@@ -62,7 +62,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "k", "up", "shift+tab":
 		m.statusMsg = ""
 		if len(m.filtered) > 0 {
@@ -78,11 +78,11 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "g":
 		m.statusMsg = ""
 		m.cursor = 0
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "G":
 		m.statusMsg = ""
 		if len(m.filtered) > 0 {
@@ -107,7 +107,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-		m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "enter":
 		if len(m.filtered) > 0 && m.filtered[m.cursor].IsWorktree {
 			m.statusMsg = "worktree branches are not selectable"
@@ -156,7 +156,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.searchInput.SetValue("")
 			m.filtered = m.branches
 			m.cursor = 0
-			m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 			m.mode = tui.ListMode
 			return m, nil
 		case "enter":
@@ -169,7 +169,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = applyBranchFilter(m.branches, m.searchInput.Value())
 	m.cursor = 0
-	m.vp = m.vp.Clamp(m.cursor, len(m.filtered))
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
 }
 

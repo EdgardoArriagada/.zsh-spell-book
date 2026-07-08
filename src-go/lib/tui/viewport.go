@@ -1,34 +1,47 @@
 package tui
 
-const ViewportOverhead = 8  // title(3) + status/confirm(2) + footer(2) + slack(1)
-const DefaultWidth      = 80 // fallback width before first WindowSizeMsg
+import "github.com/charmbracelet/lipgloss"
+
+const DefaultWidth = 80 // fallback width before first WindowSizeMsg
+
+// AvailableRows returns the number of list rows that fit on screen after
+// subtracting the rendered height of each section string.
+// Returns 0 when windowHeight is 0 (no WindowSizeMsg yet).
+func AvailableRows(windowHeight int, sections ...string) int {
+	if windowHeight == 0 {
+		return 0
+	}
+	overhead := 0
+	for _, s := range sections {
+		overhead += lipgloss.Height(s)
+	}
+	if rows := windowHeight - overhead; rows >= 1 {
+		return rows
+	}
+	return 1
+}
 
 // Viewport tracks scrolling state for a list with more items than fit on screen.
 type Viewport struct {
-	Height        int
-	Offset        int
-	ExtraOverhead int
+	Offset int
 }
 
-// MaxVisible returns the number of items that fit in the terminal.
-// When Height is 0 (no WindowSizeMsg received yet), all items are considered visible.
-func (v Viewport) MaxVisible(totalItems int) int {
-	if v.Height == 0 {
+// MaxVisible returns the number of rows available for list items.
+// availableRows is computed by the caller via lipgloss.Height on rendered sections.
+// When availableRows is 0 (no WindowSizeMsg received yet), all items are considered visible.
+func (v Viewport) MaxVisible(totalItems, availableRows int) int {
+	if availableRows <= 0 {
 		return totalItems
 	}
-	n := v.Height - ViewportOverhead - v.ExtraOverhead
-	if n < 1 {
-		return 1
-	}
-	return n
+	return max(1, availableRows)
 }
 
 // Clamp adjusts Offset so that cursor is always within the visible window.
-func (v Viewport) Clamp(cursor, totalItems int) Viewport {
-	if v.Height == 0 {
+func (v Viewport) Clamp(cursor, totalItems, availableRows int) Viewport {
+	if availableRows <= 0 {
 		return v
 	}
-	maxVis := v.MaxVisible(totalItems)
+	maxVis := v.MaxVisible(totalItems, availableRows)
 	if cursor < v.Offset {
 		v.Offset = cursor
 	} else if cursor >= v.Offset+maxVis {
