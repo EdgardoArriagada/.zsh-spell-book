@@ -1,0 +1,19 @@
+src/charms/zsb_charm_if_file_nvim
+  s_45269024648ee7::t_64690463cc2156 17,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "09c85d84a38563d06d01edb034965eb99e6e8039",
+  "prompts": {},
+  "sessions": {
+    "s_45269024648ee7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4de8f50e-aaef-47c0-995e-12d58924e52c",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
