@@ -14,9 +14,9 @@ fi
 
 function loadFile() {
   case ${1:e} in
-    rs) export PATH=$PATH:~/.cargo/bin ;;
+    rs) [[ ":$PATH:" != *":$HOME/.cargo/bin:"* ]] && export PATH=$PATH:~/.cargo/bin ;;
     js|ts|jsx|tsx|mjs|cjs) eval "$(fnm env --use-on-cd)" ;;
-    py) eval "$(pyenv init -)"; $(poetry env activate) ;;
+    py) eval "$(pyenv init -)"; eval "$(poetry env activate)" ;;
   esac
 
   case $# in
