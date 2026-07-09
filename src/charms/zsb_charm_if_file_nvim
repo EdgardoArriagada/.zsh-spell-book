@@ -5,6 +5,7 @@ set -euo pipefail
 # for tmux conf, see https://github.com/EdgardoArriagada/dotFiles/blob/main/tmux/home/.tmux.conf
 
 local lines=("${(@f)*}")
+lines=("${(@)lines:#}")
 local filename=${lines[1]}
 
 if [[ ! -f $filename ]]
@@ -24,7 +25,7 @@ function loadFile() {
   esac
 }
 
-local lastLine=${lines[-2]}
+local lastLine=${lines[-1]}
 
 if [[ -f "$lastLine" ]]
   then loadFile $filename; exit 0
