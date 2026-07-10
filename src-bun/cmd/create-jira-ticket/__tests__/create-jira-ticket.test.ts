@@ -18,7 +18,6 @@ const defaultJiraEnv = {
   ZSB_JIRA_PARENT_KEY: "ABC-1",
   ZSB_JIRA_PRIORITY_ID: "3",
   ZSB_JIRA_LABELS: " foo,bar,, baz ",
-  ZSB_JIRA_SPRINT_ID: "12345",
 };
 
 type RecordedRequest = {
@@ -175,8 +174,6 @@ describe("create-jira-ticket", () => {
       `Basic ${Buffer.from("dev@example.com:secret-token").toString("base64")}`
     );
     expect(result.requests[0].body.fields.labels).toEqual(["foo", "bar", "baz"]);
-    expect(result.requests[0].body.fields.customfield_10115).toBe(12345);
-    expect(typeof result.requests[0].body.fields.customfield_10115).toBe("number");
     expect(result.requests[0].body.fields.description).toEqual({
       type: "doc",
       version: 1,
@@ -201,12 +198,12 @@ describe("create-jira-ticket", () => {
   });
 
   test("rejects the wrong argument count", async () => {
-    const result = await runCreateJiraTicket({ args: ["Only title"] });
+    const result = await runCreateJiraTicket({ args: [] });
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain(
-      'Usage: create-jira-ticket "<title>" "<description>"'
+      'Usage: create-jira-ticket "<title>" ["<description>"]'
     );
     expect(result.requests).toHaveLength(0);
   });

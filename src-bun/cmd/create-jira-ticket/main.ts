@@ -10,7 +10,6 @@ const REQUIRED_ENV = [
   "ZSB_JIRA_PARENT_KEY",
   "ZSB_JIRA_PRIORITY_ID",
   "ZSB_JIRA_LABELS",
-  "ZSB_JIRA_SPRINT_ID",
 ] as const;
 
 const ALLOWED_JIRA_BASE_URL = "https://mercadolibre.atlassian.net";
@@ -19,7 +18,6 @@ const JIRA_KEY_RE = /^[A-Z][A-Z0-9]+-\d+$/;
 type EnvKey = (typeof REQUIRED_ENV)[number];
 type JiraConfig = Record<EnvKey, string> & {
   jiraBaseUrl: typeof ALLOWED_JIRA_BASE_URL;
-  sprintId: number;
   labels: string[];
 };
 
@@ -58,20 +56,6 @@ function parseLabels(value: string): string[] {
     .filter((label) => label.length > 0);
 }
 
-function parseSprintId(value: string): number {
-  const trimmed = value.trim();
-  if (!/^\d+$/.test(trimmed)) {
-    throw new CliError("ZSB_JIRA_SPRINT_ID must be a numeric sprint id.");
-  }
-
-  const sprintId = Number(trimmed);
-  if (!Number.isSafeInteger(sprintId)) {
-    throw new CliError("ZSB_JIRA_SPRINT_ID must be a safe integer.");
-  }
-
-  return sprintId;
-}
-
 function loadConfig(): JiraConfig {
   const env = Object.fromEntries(
     REQUIRED_ENV.map((name) => [name, requireEnv(name)])
@@ -88,7 +72,6 @@ function loadConfig(): JiraConfig {
     ...env,
     jiraBaseUrl,
     labels: parseLabels(env.ZSB_JIRA_LABELS),
-    sprintId: parseSprintId(env.ZSB_JIRA_SPRINT_ID),
   };
 }
 
@@ -146,7 +129,6 @@ function buildPayload(config: JiraConfig, title: string, description: string) {
       parent: { key: config.ZSB_JIRA_PARENT_KEY },
       priority: { id: config.ZSB_JIRA_PRIORITY_ID },
       labels: config.labels,
-      customfield_10115: config.sprintId,
       summary: title,
       description: buildAdfDescription(description),
     },
