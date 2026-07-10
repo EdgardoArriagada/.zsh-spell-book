@@ -1,0 +1,19 @@
+src/spells/jira/current.zsh
+  s_f5c542efcbf9b5::t_5af26392a17f40 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "70bb7f09a5455059161f6ce0f4e1a3baebbe3bc4",
+  "prompts": {},
+  "sessions": {
+    "s_f5c542efcbf9b5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0915aeae-83ba-48ed-8452-3bff75da327d",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
