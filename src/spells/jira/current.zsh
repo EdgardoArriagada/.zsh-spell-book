@@ -5,7 +5,7 @@ ${zsb}_createCurrentDir() {
 
   mkdir -p $ZSB_CURRENT_TICKET_DIR
   print "# $ZSB_CURRENT_LABEL" > $ZSB_CURRENT_TICKET_DIR/NOTES.md
-  (builtin cd `dirname $ZSB_CURRENT_TICKET_DIR` && git init);
+  (builtin cd $ZSB_CURRENT_TICKET_DIR && git init);
 
   return 0
 }
