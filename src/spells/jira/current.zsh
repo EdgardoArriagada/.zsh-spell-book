@@ -19,7 +19,33 @@ alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
 
 alias cinit='cdcurrent'
 
-hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit
+alias vrepos="nvim $ZSB_CURRENT_TICKET_DIR/.repos"
+
+cdc() {
+  local repos=$ZSB_CURRENT_TICKET_DIR/.repos
+  [[ ! -f $repos ]] && ${zsb}.throw "`hl $repos` not set"
+
+  local -a entries
+  entries=("${(@f)$(grep -v '^[[:space:]]*$' $repos)}")
+
+  local selection
+  if (( ${#entries} == 1 )); then
+    selection=$entries[1]
+  else
+    selection=$(print -l ${entries[@]} | fzf)
+  fi
+
+  if [[ -z "$selection" ]]; then
+    ${zsb}.cancel 'no selection'
+  elif [[ -d ${~selection} ]]; then
+    cd ${~selection}
+  else
+    ${zsb}.throw "`hl $selection` is not a directory"
+  fi
+}
+
+hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc vrepos
+
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
