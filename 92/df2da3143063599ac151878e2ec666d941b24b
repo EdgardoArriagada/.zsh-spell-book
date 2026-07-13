@@ -1,0 +1,32 @@
+src/spells/jira/current.zsh
+  s_1c46b343018721::t_a4a0029624bcaf 35
+  s_9ae265294ffb12::t_3fc9d6010c26c7 40-41
+  s_9ae265294ffb12::t_c68fc40dda8427 27-34,36-37,42-44
+  s_9ae265294ffb12::t_6988a7c4981cbc 24-26
+  s_9ae265294ffb12::t_604119e0b6058c 38-39
+  s_9ae265294ffb12::t_5cd05e9bca6e72 45-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "92df2da3143063599ac151878e2ec666d941b24b",
+  "prompts": {},
+  "sessions": {
+    "s_1c46b343018721": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5dfc8431-92f7-4dc4-9bdb-57f8eb89d3d9",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    },
+    "s_9ae265294ffb12": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "add28abb-34fd-4ba8-9e30-459b58b0d828",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
