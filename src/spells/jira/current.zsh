@@ -29,16 +29,15 @@ cdc() {
   entries=("${(@f)$(grep -v '^[[:space:]]*$' $repos)}")
 
   local selection
-  if (( ${#entries} == 1 )); then
-    selection=$entries[1]
-  else
-    selection=$(print -l ${entries[@]} | fzf)
+  if (( ${#entries} == 1 ))
+    then selection=$entries[1]
+    else selection=$(print -l ${entries[@]} | fzf)
   fi
 
-  if [[ -z "$selection" ]]; then
-    ${zsb}.cancel 'no selection'
-  elif [[ -d ${~selection} ]]; then
-    cd ${~selection}
+  if [[ -z "$selection" ]]
+    then ${zsb}.cancel 'no selection'
+  elif [[ -d ${~selection} ]]
+    then cd ${~selection}
   else
     ${zsb}.throw "`hl $selection` is not a directory"
   fi
