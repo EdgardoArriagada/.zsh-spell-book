@@ -25,18 +25,6 @@ impl Bundler {
         self.content.push('\n');
     }
 
-    fn load_file_optional(&mut self, relative_path: &str) {
-        let full_path = self.zsb_dir.join(relative_path);
-        match fs::read_to_string(&full_path) {
-            Ok(data) => {
-                self.content.push_str(&data);
-                self.content.push('\n');
-            }
-            Err(e) if e.kind() == ErrorKind::NotFound => {}
-            Err(e) => panic!("failed to read {}: {}", full_path.display(), e),
-        }
-    }
-
     fn load_dir(&mut self, relative_path: &str) {
         let full_path = self.zsb_dir.join(relative_path);
         self.walk_dir(&full_path, false);
