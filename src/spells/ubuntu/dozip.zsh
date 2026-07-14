@@ -1,5 +1,5 @@
-doz() {
-  [[ -z "$1" ]] && ${zsb}.throw 'Usage: doz <file_to_compress>'
+dozip() {
+  [[ -z "$1" ]] && ${zsb}.throw 'Usage: dozip <file_to_compress>'
 
   local outputFile="${1}.zip"
   [[ -f "$outputFile" ]] && ${zsb}.throw "$(hl "$outputFile") already exists."
