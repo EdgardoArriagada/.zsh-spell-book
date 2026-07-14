@@ -11,12 +11,6 @@ ${zsb}_createCurrentDir() {
 }
 
 alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
-
-# We enter in the directory to be ablo to open new shell to interact with git
-alias vnotescurrent="${zsb}_createCurrentDir && nvim $ZSB_CURRENT_TICKET_DIR/NOTES.md"
-alias cnotescurrent="${zsb}_createCurrentDir && zsb_cat $ZSB_CURRENT_TICKET_DIR/NOTES.md"
-alias ncurrent="cdcurrent && (( $ZSB_MACOS )) && open . || nautilus ."
-
 alias cinit='cdcurrent'
 
 alias vrepos="nvim $ZSB_CURRENT_TICKET_DIR/.repos"
