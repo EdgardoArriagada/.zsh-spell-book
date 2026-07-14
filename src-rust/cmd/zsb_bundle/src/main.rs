@@ -164,7 +164,7 @@ fn main() {
 
     let mut bundler = Bundler::new(PathBuf::from(&zsb_dir));
 
-    bundler.load_file_optional(".env");
+    bundler.content.push_str("source $ZSB_DIR/.env\n");
     bundler.load_file("src/zsh.config.zsh");
     bundler.load_file("src/globalVariables.zsh");
 
