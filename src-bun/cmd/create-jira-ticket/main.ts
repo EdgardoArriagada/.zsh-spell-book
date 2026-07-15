@@ -4,7 +4,7 @@ const REQUIRED_ENV = [
   "ZSB_JIRA_BASEURL",
   "ZSB_JIRA_EMAIL",
   "ZSB_JIRA_PROJECT_KEY",
-  "ZSB_JIRA_ISSUE_TYPE_ID",
+  "ZSB_JIRA_ISSUE_TYPE_IDS",
   "ZSB_JIRA_REPORTER_ACCOUNT_ID",
   "ZSB_JIRA_ASSIGNEE_ACCOUNT_ID",
   "ZSB_PARENT_TICKET",
@@ -19,6 +19,7 @@ type EnvKey = (typeof REQUIRED_ENV)[number];
 type JiraConfig = Record<EnvKey, string> & {
   jiraBaseUrl: typeof ALLOWED_JIRA_BASE_URL;
   labels: string[];
+  issueTypeMap: Map<string, string>;
 };
 
 type AdfDoc = {
@@ -56,6 +57,21 @@ function parseLabels(value: string): string[] {
     .filter((label) => label.length > 0);
 }
 
+function parseIssueTypeIds(value: string): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const entry of value.split(",")) {
+    const eq = entry.indexOf("=");
+    if (eq < 1) continue;
+    const label = entry.slice(0, eq).trim();
+    const id = entry.slice(eq + 1).trim();
+    if (label && id) map.set(label, id);
+  }
+  if (map.size === 0) {
+    throw new CliError("ZSB_JIRA_ISSUE_TYPE_IDS has no valid entries.");
+  }
+  return map;
+}
+
 function loadConfig(): JiraConfig {
   const env = Object.fromEntries(
     REQUIRED_ENV.map((name) => [name, requireEnv(name)])
@@ -72,6 +88,7 @@ function loadConfig(): JiraConfig {
     ...env,
     jiraBaseUrl,
     labels: parseLabels(env.ZSB_JIRA_LABELS),
+    issueTypeMap: parseIssueTypeIds(env.ZSB_JIRA_ISSUE_TYPE_IDS),
   };
 }
 
@@ -100,6 +117,31 @@ async function readJiraToken(): Promise<string> {
   return token;
 }
 
+async function selectIssueTypeId(issueTypeMap: Map<string, string>): Promise<string> {
+  const labels = Array.from(issueTypeMap.keys()).join("\n");
+  const proc = Bun.spawn(["fzf", "--prompt=Issue type: ", "--no-sort"], {
+    stdin: Buffer.from(labels),
+    stdout: "pipe",
+    stderr: "inherit",
+  });
+
+  const [stdout, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    proc.exited,
+  ]);
+
+  if (exitCode !== 0) {
+    throw new CliError("Issue type selection cancelled.");
+  }
+
+  const selected = stdout.trim();
+  const id = issueTypeMap.get(selected);
+  if (!id) {
+    throw new CliError(`Unknown issue type: ${selected}`);
+  }
+  return id;
+}
+
 function buildAdfDescription(description: string): AdfDoc {
   return {
     type: "doc",
@@ -119,11 +161,11 @@ function buildAdfDescription(description: string): AdfDoc {
   };
 }
 
-function buildPayload(config: JiraConfig, title: string, description: string) {
+function buildPayload(config: JiraConfig, title: string, description: string, issueTypeId: string) {
   return {
     fields: {
       project: { key: config.ZSB_JIRA_PROJECT_KEY },
-      issuetype: { id: config.ZSB_JIRA_ISSUE_TYPE_ID },
+      issuetype: { id: issueTypeId },
       reporter: { accountId: config.ZSB_JIRA_REPORTER_ACCOUNT_ID },
       assignee: { accountId: config.ZSB_JIRA_ASSIGNEE_ACCOUNT_ID },
       parent: { key: config.ZSB_PARENT_TICKET },
@@ -188,7 +230,8 @@ async function createJiraTicket(
   config: JiraConfig,
   token: string,
   title: string,
-  description: string
+  description: string,
+  issueTypeId: string
 ): Promise<string> {
   const auth = Buffer.from(`${config.ZSB_JIRA_EMAIL}:${token}`, "utf8").toString(
     "base64"
@@ -200,7 +243,7 @@ async function createJiraTicket(
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildPayload(config, title, description)),
+    body: JSON.stringify(buildPayload(config, title, description, issueTypeId)),
   });
 
   const body = await response.text();
@@ -225,8 +268,9 @@ async function main(): Promise<void> {
   }
 
   const config = loadConfig();
+  const issueTypeId = await selectIssueTypeId(config.issueTypeMap);
   const token = await readJiraToken();
-  const key = await createJiraTicket(config, token, title, description);
+  const key = await createJiraTicket(config, token, title, description, issueTypeId);
 
   console.log(`${config.jiraBaseUrl}/browse/${key}`);
 }

@@ -12,7 +12,7 @@ const defaultJiraEnv = {
   ZSB_JIRA_BASEURL: "https://mercadolibre.atlassian.net/",
   ZSB_JIRA_EMAIL: "dev@example.com",
   ZSB_JIRA_PROJECT_KEY: "ABC",
-  ZSB_JIRA_ISSUE_TYPE_ID: "10001",
+  ZSB_JIRA_ISSUE_TYPE_IDS: "Epic=10000,Task=10101",
   ZSB_JIRA_REPORTER_ACCOUNT_ID: "reporter-1",
   ZSB_JIRA_ASSIGNEE_ACCOUNT_ID: "assignee-1",
   ZSB_PARENT_TICKET: "ABC-1",
@@ -35,6 +35,8 @@ type RunOptions = {
   passOutput?: string;
   passExitCode?: number;
   passStderr?: string;
+  fzfOutput?: string;
+  fzfExitCode?: number;
 };
 
 async function writeFakePass(binDir: string): Promise<void> {
@@ -51,6 +53,22 @@ exit "\${ZSB_TEST_PASS_EXIT_CODE:-0}"
 `
   );
   await chmod(passPath, 0o755);
+}
+
+async function writeFakeFzf(binDir: string): Promise<void> {
+  const fzfPath = join(binDir, "fzf");
+  await writeFile(
+    fzfPath,
+    `#!/usr/bin/env sh
+cat > /dev/null
+if [ "\${ZSB_TEST_FZF_EXIT_CODE:-0}" != "0" ]; then
+  exit "\${ZSB_TEST_FZF_EXIT_CODE}"
+fi
+printf "%s\\n" "\${ZSB_TEST_FZF_OUTPUT:-Epic}"
+exit 0
+`
+  );
+  await chmod(fzfPath, 0o755);
 }
 
 async function writeFetchPreload(preloadPath: string): Promise<void> {
@@ -95,6 +113,7 @@ async function runCreateJiraTicket(options: RunOptions = {}) {
   await mkdir(binDir);
   await writeFile(requestsFile, "[]");
   await writeFakePass(binDir);
+  await writeFakeFzf(binDir);
   await writeFetchPreload(preloadPath);
 
   const env: Record<string, string> = {
@@ -112,6 +131,8 @@ async function runCreateJiraTicket(options: RunOptions = {}) {
     ZSB_TEST_PASS_OUTPUT: options.passOutput ?? "secret-token",
     ZSB_TEST_PASS_EXIT_CODE: String(options.passExitCode ?? 0),
     ZSB_TEST_PASS_STDERR: options.passStderr ?? "",
+    ZSB_TEST_FZF_OUTPUT: options.fzfOutput ?? "Epic",
+    ZSB_TEST_FZF_EXIT_CODE: String(options.fzfExitCode ?? 0),
     ...defaultJiraEnv,
   };
 
@@ -173,6 +194,7 @@ describe("create-jira-ticket", () => {
     expect(result.requests[0].headers.authorization).toBe(
       `Basic ${Buffer.from("dev@example.com:secret-token").toString("base64")}`
     );
+    expect(result.requests[0].body.fields.issuetype).toEqual({ id: "10000" });
     expect(result.requests[0].body.fields.labels).toEqual(["foo", "bar", "baz"]);
     expect(result.requests[0].body.fields.description).toEqual({
       type: "doc",
@@ -197,6 +219,22 @@ describe("create-jira-ticket", () => {
     ).toBe(false);
   });
 
+  test("uses the issue type id matching the fzf-selected label", async () => {
+    const result = await runCreateJiraTicket({ fzfOutput: "Task" });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.requests[0].body.fields.issuetype).toEqual({ id: "10101" });
+  });
+
+  test("fails when fzf selection is cancelled", async () => {
+    const result = await runCreateJiraTicket({ fzfExitCode: 130 });
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("Issue type selection cancelled.");
+    expect(result.requests).toHaveLength(0);
+  });
+
   test("rejects the wrong argument count", async () => {
     const result = await runCreateJiraTicket({ args: [] });
 
@@ -216,6 +254,16 @@ describe("create-jira-ticket", () => {
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("You must set ZSB_JIRA_EMAIL first.");
+    expect(result.requests).toHaveLength(0);
+  });
+
+  test("rejects missing ZSB_JIRA_ISSUE_TYPE_IDS", async () => {
+    const result = await runCreateJiraTicket({
+      env: { ZSB_JIRA_ISSUE_TYPE_IDS: undefined },
+    });
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("You must set ZSB_JIRA_ISSUE_TYPE_IDS first.");
     expect(result.requests).toHaveLength(0);
   });
 
