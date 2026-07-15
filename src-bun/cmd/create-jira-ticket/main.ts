@@ -7,7 +7,7 @@ const REQUIRED_ENV = [
   "ZSB_JIRA_ISSUE_TYPE_ID",
   "ZSB_JIRA_REPORTER_ACCOUNT_ID",
   "ZSB_JIRA_ASSIGNEE_ACCOUNT_ID",
-  "ZSB_JIRA_PARENT_KEY",
+  "ZSB_PARENT_TICKET",
   "ZSB_JIRA_PRIORITY_ID",
   "ZSB_JIRA_LABELS",
 ] as const;
@@ -126,7 +126,7 @@ function buildPayload(config: JiraConfig, title: string, description: string) {
       issuetype: { id: config.ZSB_JIRA_ISSUE_TYPE_ID },
       reporter: { accountId: config.ZSB_JIRA_REPORTER_ACCOUNT_ID },
       assignee: { accountId: config.ZSB_JIRA_ASSIGNEE_ACCOUNT_ID },
-      parent: { key: config.ZSB_JIRA_PARENT_KEY },
+      parent: { key: config.ZSB_PARENT_TICKET },
       priority: { id: config.ZSB_JIRA_PRIORITY_ID },
       labels: config.labels,
       summary: title,

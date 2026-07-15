@@ -15,7 +15,7 @@ const defaultJiraEnv = {
   ZSB_JIRA_ISSUE_TYPE_ID: "10001",
   ZSB_JIRA_REPORTER_ACCOUNT_ID: "reporter-1",
   ZSB_JIRA_ASSIGNEE_ACCOUNT_ID: "assignee-1",
-  ZSB_JIRA_PARENT_KEY: "ABC-1",
+  ZSB_PARENT_TICKET: "ABC-1",
   ZSB_JIRA_PRIORITY_ID: "3",
   ZSB_JIRA_LABELS: " foo,bar,, baz ",
 };
