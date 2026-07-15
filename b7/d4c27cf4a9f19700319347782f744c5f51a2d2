@@ -1,0 +1,23 @@
+src-bun/cmd/create-jira-ticket/__tests__/create-jira-ticket.test.ts
+  s_feefe70b9f8c78::t_21ac364b1fe359 38-39,58-73,116,134-135,197,222-237,260-266
+  s_feefe70b9f8c78::t_31ad9d21d39989 15
+src-bun/cmd/create-jira-ticket/main.ts
+  s_feefe70b9f8c78::t_2fb708e07eea51 7,22,60-62,67-74,91,120-144,164,168,233-234,246,271,273
+  s_feefe70b9f8c78::t_d6089f8859aac1 63-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b7d4c27cf4a9f19700319347782f744c5f51a2d2",
+  "prompts": {},
+  "sessions": {
+    "s_feefe70b9f8c78": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ff93e8a1-539e-4b40-8f4d-e2cad0f6df57",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "EdgardoArriagada <edgardo.arriagada.ortiz@gmail.com>"
+    }
+  }
+}
