@@ -307,4 +307,18 @@ describe("create-jira-ticket", () => {
     );
     expect(result.requests).toHaveLength(1);
   });
+
+  test("omits parent field when issue type is Epic", async () => {
+    const result = await runCreateJiraTicket({ fzfOutput: "Epic" });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.requests[0].body.fields.parent).toBeUndefined();
+  });
+
+  test("includes parent field when issue type is not Epic", async () => {
+    const result = await runCreateJiraTicket({ fzfOutput: "Task" });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.requests[0].body.fields.parent).toEqual({ key: "ABC-1" });
+  });
 });

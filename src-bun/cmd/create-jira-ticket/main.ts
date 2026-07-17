@@ -117,7 +117,7 @@ async function readJiraToken(): Promise<string> {
   return token;
 }
 
-async function selectIssueTypeId(issueTypeMap: Map<string, string>): Promise<string> {
+async function selectIssueTypeId(issueTypeMap: Map<string, string>): Promise<{id: string; label: string}> {
   const labels = Array.from(issueTypeMap.keys()).join("\n");
   const proc = Bun.spawn(["fzf", "--prompt=Issue type: ", "--no-sort"], {
     stdin: Buffer.from(labels),
@@ -139,7 +139,7 @@ async function selectIssueTypeId(issueTypeMap: Map<string, string>): Promise<str
   if (!id) {
     throw new CliError(`Unknown issue type: ${selected}`);
   }
-  return id;
+  return {id, label: selected};
 }
 
 function buildAdfDescription(description: string): AdfDoc {
@@ -161,14 +161,15 @@ function buildAdfDescription(description: string): AdfDoc {
   };
 }
 
-function buildPayload(config: JiraConfig, title: string, description: string, issueTypeId: string) {
+function buildPayload(config: JiraConfig, title: string, description: string, issueTypeId: string, issueTypeLabel: string) {
+  const isEpic = issueTypeLabel.toLowerCase() === "epic";
   return {
     fields: {
       project: { key: config.ZSB_JIRA_PROJECT_KEY },
       issuetype: { id: issueTypeId },
       reporter: { accountId: config.ZSB_JIRA_REPORTER_ACCOUNT_ID },
       assignee: { accountId: config.ZSB_JIRA_ASSIGNEE_ACCOUNT_ID },
-      parent: { key: config.ZSB_PARENT_TICKET },
+      ...(!isEpic && { parent: { key: config.ZSB_PARENT_TICKET } }),
       priority: { id: config.ZSB_JIRA_PRIORITY_ID },
       labels: config.labels,
       summary: title,
@@ -231,7 +232,8 @@ async function createJiraTicket(
   token: string,
   title: string,
   description: string,
-  issueTypeId: string
+  issueTypeId: string,
+  issueTypeLabel: string
 ): Promise<string> {
   const auth = Buffer.from(`${config.ZSB_JIRA_EMAIL}:${token}`, "utf8").toString(
     "base64"
@@ -243,7 +245,7 @@ async function createJiraTicket(
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildPayload(config, title, description, issueTypeId)),
+    body: JSON.stringify(buildPayload(config, title, description, issueTypeId, issueTypeLabel)),
   });
 
   const body = await response.text();
@@ -268,9 +270,9 @@ async function main(): Promise<void> {
   }
 
   const config = loadConfig();
-  const issueTypeId = await selectIssueTypeId(config.issueTypeMap);
+  const {id: issueTypeId, label: issueTypeLabel} = await selectIssueTypeId(config.issueTypeMap);
   const token = await readJiraToken();
-  const key = await createJiraTicket(config, token, title, description, issueTypeId);
+  const key = await createJiraTicket(config, token, title, description, issueTypeId, issueTypeLabel);
 
   console.log(`${config.jiraBaseUrl}/browse/${key}`);
 }
