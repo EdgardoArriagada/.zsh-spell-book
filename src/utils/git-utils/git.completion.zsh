@@ -6,13 +6,15 @@ ${zsb}.gitBranches() {
 }
 
 ${zsb}.getGitFiles() (
-  # '--short' is better than '--porcelain' because
-  # it keeps the paths of the git files relative
-  # to current working folder
+  # '--short' is better than '--porcelain' because it keeps the paths of the
+  # git files relative to current working folder
+
+  # '--no-renames' skips rename detection (avoids reading blob objects), faster
+  # on large repos
 
   case $# in
-    0) git status --short 2>/dev/null | cut -c 4- ;;
-    *) git status --short 2>/dev/null | rg ${ZSB_GIT_FILETYPE_TO_REGEX[$1]} | cut -c 4- ;;
+    0) git status --short --no-renames 2>/dev/null | cut -c 4- ;;
+    *) git status --short --no-renames 2>/dev/null | rg ${ZSB_GIT_FILETYPE_TO_REGEX[$1]} | cut -c 4- ;;
   esac
 )
 
