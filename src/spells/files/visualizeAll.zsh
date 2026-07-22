@@ -1,7 +1,7 @@
 ${zsb}.loopFiles() {
   for file in $*; do
     ${zsb}.info "Visualizing $file"
-    v "$file"
+    ${zsb}.v "$file"
   done
 }
 
