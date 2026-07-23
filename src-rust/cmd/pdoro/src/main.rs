@@ -21,6 +21,10 @@ fn main() {
         return actions::is_counter_running();
     }
 
+    if args.is_server_alive {
+        return actions::is_server_alive();
+    }
+
     if let Some(input) = args.is_valid_time {
         return actions::is_valid_time(&input);
     }

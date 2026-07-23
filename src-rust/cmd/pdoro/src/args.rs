@@ -35,4 +35,8 @@ pub struct Args {
     /// check if counter is running
     #[clap(long, short)]
     pub is_counter_running: bool,
+
+    /// check if server is alive
+    #[clap(long, short = 'a')]
+    pub is_server_alive: bool,
 }

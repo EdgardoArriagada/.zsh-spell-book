@@ -14,10 +14,11 @@ _pdoro() {
     '(: * -)'{-s,--start-server}'[start pdoro server]'
     '(: * -)'--halt-counter'[halt counter]'
     '(: * -)'{-p,--pause-resume-counter}'[pause or resume counter]'
+    '(: * -)'--is-valid-time'[validate time duration]: :->is_time'
     '(: * -)'{-i,--is-counter-running}'[check if counter is running]'
+    '(: * -)'{-a,--is-server-alive}'[check if server is alive]'
     '(: * -)'{-h,--help}'[show help]'
     '(: * -)'{-v,--version}'[show version]'
-    '(: * -)'--is-valid-time'[validate time duration]: :->is_time'
   )
 
   case $state in

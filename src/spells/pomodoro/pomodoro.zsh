@@ -5,6 +5,12 @@ pomodoro() (
   shift 1
   local cbMessage=$*
 
+  ${this}.assertServerAlive() {
+    if ! pdoro --is-server-alive
+      then ${zsb}.throw 'Pdoro server is not running.'
+    fi
+  }
+
   ${this}.assertPomodoroNotRunning() {
     if `pdoro --is-counter-running`
       then ${zsb}.throw 'Pomodoro already running.'
@@ -33,6 +39,7 @@ pomodoro() (
   }
 
   { # main
+    ${this}.assertServerAlive
     ${this}.assertInputTime
     ${this}.assertPomodoroNotRunning
 

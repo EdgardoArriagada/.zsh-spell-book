@@ -84,6 +84,13 @@ pub fn halt_counter() {
     });
 }
 
+pub fn is_server_alive() {
+    match Client::new(IP).run("healthcheck;") {
+        Ok(_) => std::process::exit(0),
+        _ => std::process::exit(1),
+    }
+}
+
 pub fn start_server() {
     match Client::new(IP).run("healthcheck;") {
         Ok(_) => return stderr("Pomodoro server already running."),
