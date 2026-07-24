@@ -3,14 +3,12 @@ hw() {
   zparseopts -D -E -F -- p=parent || return 1
   local msg=${*:?Error: You must provide a message.}
 
-  local ticket
-  [[ -n "$parent" ]] && ticket="$ZSB_PARENT_TICKET" || ticket="$ZSB_CURRENT_TICKET"
-
   local token="$(pass jira)"
   [[ -z "$token" ]] && ${zsb}.throw "Token obtain failed"
 
-  curl -s -o /dev/null -w "%{http_code}" -u "${ZSB_JIRA_EMAIL}:${token}" \
-   -H "Content-Type: application/json" "$ZSB_JIRA_BASEURL/rest/api/3/issue/$ticket/comment" \
+  local response body httpStatus
+  response=$(curl -s -w "\n%{http_code}" -u "${ZSB_JIRA_EMAIL}:${token}" \
+   -H "Content-Type: application/json" "$ZSB_JIRA_BASEURL/rest/api/3/issue/$ZSB_CURRENT_TICKET/comment" \
    -X POST --data \
       "{
       \"body\": {
@@ -28,7 +26,11 @@ hw() {
             }
           ]
         }
-      }"
+      }")
+  body="${response%$'\n'*}"
+  httpStatus="${response##*$'\n'}"
+  echo "$httpStatus"
+  [[ "$httpStatus" != 2* ]] && echo "$body"
 }
 
 compdef "_${zsb}.singleComp '-p'" hw
