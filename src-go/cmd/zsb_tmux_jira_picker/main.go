@@ -38,12 +38,14 @@ func main() {
 		exec.Command("tmux", "new-session", "-d", "-s", sessionName).Run() //nolint:errcheck
 	}
 
-	home := os.Getenv("HOME")
-	content := fmt.Sprintf(
-		"export ZSB_PARENT_TICKET='%s'\nexport ZSB_CURRENT_TICKET='%s'\nexport ZSB_CURRENT_LABEL='%s'\n",
-		t.Parent, t.Current, t.Label,
-	)
-	os.WriteFile(home+"/temp/current-ticket.zsh", []byte(content), 0644) //nolint:errcheck
+	if t.Current != os.Getenv("ZSB_CURRENT_TICKET") {
+		home := os.Getenv("HOME")
+		content := fmt.Sprintf(
+			"export ZSB_PARENT_TICKET='%s'\nexport ZSB_CURRENT_TICKET='%s'\nexport ZSB_CURRENT_LABEL='%s'\n",
+			t.Parent, t.Current, t.Label,
+		)
+		os.WriteFile(home+"/temp/current-ticket.zsh", []byte(content), 0644) //nolint:errcheck
+	}
 
 	if os.Getenv("TMUX") != "" {
 		tmux("switch-client", "-t", "="+sessionName)
