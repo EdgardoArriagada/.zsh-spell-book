@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const maxTmuxIDLen = 38
+
 var (
 	invalidChars      = regexp.MustCompile(`[^a-zA-Z0-9-]`)
 	consecutiveDashes = regexp.MustCompile(`-{2,}`)
@@ -12,9 +14,9 @@ var (
 
 func (t Ticket) TmuxSessionID() string {
 	kebab := strings.ToLower(strings.ReplaceAll(t.Label, " ", "-"))
-	result := sanitizeTmuxID(t.Current + "-" + kebab)
-	if len(result) > 25 {
-		result = result[:25]
+	result := SanitizeTmuxID(t.Current + "-" + kebab)
+	if len(result) > maxTmuxIDLen {
+		result = result[:maxTmuxIDLen]
 	}
 	return strings.TrimRight(result, "-")
 }
@@ -22,7 +24,7 @@ func (t Ticket) TmuxSessionID() string {
 func TmuxSessionPrefixes(currentIDs map[string]bool) []string {
 	prefixes := make([]string, 0, len(currentIDs))
 	for id := range currentIDs {
-		prefixes = append(prefixes, sanitizeTmuxID(id)+"-")
+		prefixes = append(prefixes, SanitizeTmuxID(id)+"-")
 	}
 	return prefixes
 }
@@ -36,7 +38,7 @@ func MatchesTmuxSession(session string, prefixes []string) bool {
 	return false
 }
 
-func sanitizeTmuxID(s string) string {
+func SanitizeTmuxID(s string) string {
 	s = invalidChars.ReplaceAllString(s, "-")
 	s = consecutiveDashes.ReplaceAllString(s, "-")
 	return s

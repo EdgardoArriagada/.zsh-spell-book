@@ -1,6 +1,10 @@
-package jira
+package jira_test
 
-import "testing"
+import (
+	"testing"
+
+	"example.com/workspace/lib/jira"
+)
 
 func TestSanitizeTmuxID(t *testing.T) {
 	cases := []struct {
@@ -16,9 +20,9 @@ func TestSanitizeTmuxID(t *testing.T) {
 		{"abc.def-ghi", "abc-def-ghi"}, // mixed valid + invalid
 	}
 	for _, c := range cases {
-		got := sanitizeTmuxID(c.in)
+		got := jira.SanitizeTmuxID(c.in)
 		if got != c.want {
-			t.Errorf("sanitizeTmuxID(%q) = %q, want %q", c.in, got, c.want)
+			t.Errorf("SanitizeTmuxID(%q) = %q, want %q", c.in, got, c.want)
 		}
 	}
 }
@@ -37,10 +41,10 @@ func TestTmuxSessionID(t *testing.T) {
 			want:    "PROJ-123-my-ticket",
 		},
 		{
-			name:    "result exactly 25 chars",
+			name:    "result exactly 38 chars",
 			current: "PROJ-1234",
-			label:   "abcdefghijklmno",
-			want:    "PROJ-1234-abcdefghijklmno",
+			label:   "abcdefghijklmnopqrstuvwxyzab",
+			want:    "PROJ-1234-abcdefghijklmnopqrstuvwxyzab",
 		},
 		{
 			name:    "label uppercase lowercased",
@@ -51,29 +55,22 @@ func TestTmuxSessionID(t *testing.T) {
 		{
 			name:    "truncated no trailing dash",
 			current: "PROJ-123",
-			label:   "abcdefghijklmnopqrstuvwxyz",
-			want:    "PROJ-123-abcdefghijklmnop",
+			label:   "abcdefghijklmnopqrstuvwxyzabcde",
+			want:    "PROJ-123-abcdefghijklmnopqrstuvwxyzabc",
 		},
 		{
-			// full result ends with '-', char at index 24 IS '-' → trimmed
+			// result[:38] ends with '-' → trimmed
 			name:    "truncated trailing dash trimmed",
 			current: "PROJ-123",
-			label:   "abcdefghijklmno more.",
-			want:    "PROJ-123-abcdefghijklmno",
+			label:   "abcdefghijklmnopqrstuvwxyzab more.",
+			want:    "PROJ-123-abcdefghijklmnopqrstuvwxyzab",
 		},
 		{
-			// full result ends with '-', char at index 24 is NOT '-' → no-op trim
-			name:    "truncated full ends dash but pos24 clean",
+			// full result ends with '-', but result[:38] does not → no trim
+			name:    "truncated full ends dash but pos37 clean",
 			current: "PROJ-123",
-			label:   "abcdefghijklmnop more.",
-			want:    "PROJ-123-abcdefghijklmnop",
-		},
-		{
-			// full result does NOT end with '-', but position 24 IS '-' → trailing dash kept
-			name:    "truncated pos24 is dash but full result clean",
-			current: "PROJ-123",
-			label:   "abcdefghijklmno more words",
-			want:    "PROJ-123-abcdefghijklmno",
+			label:   "abcdefghijklmnopqrstuvwxyzabc more.",
+			want:    "PROJ-123-abcdefghijklmnopqrstuvwxyzabc",
 		},
 		{
 			name:    "label has special chars",
@@ -109,7 +106,7 @@ func TestTmuxSessionID(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			ticket := Ticket{Current: c.current, Label: c.label}
+			ticket := jira.Ticket{Current: c.current, Label: c.label}
 			got := ticket.TmuxSessionID()
 			if got != c.want {
 				t.Errorf("got %q, want %q", got, c.want)
@@ -128,50 +125,50 @@ func TestMatchesTmuxSession(t *testing.T) {
 		{
 			name:     "matching session",
 			session:  "PROJ-123-my-ticket",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
 			want:     true,
 		},
 		{
 			name:     "session without trailing dash suffix",
 			session:  "PROJ-123",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
 			want:     false,
 		},
 		{
 			name:     "different prefix",
 			session:  "OTHER-456-something",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
 			want:     false,
 		},
 		{
 			name:     "empty session",
 			session:  "",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-123": true}),
 			want:     false,
 		},
 		{
 			name:     "current with special chars sanitized before compare",
 			session:  "PROJ-123-my-ticket",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ.123": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ.123": true}),
 			want:     true,
 		},
 		{
 			name:     "longer current does not partially match",
 			session:  "PROJ-12-something",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-1": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-1": true}),
 			want:     false,
 		},
 		{
 			name:     "matches one of multiple IDs",
 			session:  "PROJ-456-foo",
-			prefixes: TmuxSessionPrefixes(map[string]bool{"PROJ-123": true, "PROJ-456": true}),
+			prefixes: jira.TmuxSessionPrefixes(map[string]bool{"PROJ-123": true, "PROJ-456": true}),
 			want:     true,
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got := MatchesTmuxSession(c.session, c.prefixes)
+			got := jira.MatchesTmuxSession(c.session, c.prefixes)
 			if got != c.want {
 				t.Errorf("MatchesTmuxSession(%q, %v) = %v, want %v", c.session, c.prefixes, got, c.want)
 			}
