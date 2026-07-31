@@ -8,8 +8,37 @@ import (
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+type deleteResultMsg struct {
+	err             error
+	branch          string
+	deletingCurrent bool
+	fallbackPath    string
+	deleteBranch    bool
+	force           bool
+}
+
+func runDeleteCmd(path string, force bool, branch string, deletingCurrent bool, fallbackPath string, deleteBranch bool) tea.Cmd {
+	return func() tea.Msg {
+		var err error
+		if force {
+			err = deleteWorktreeForce(path)
+		} else {
+			err = deleteWorktree(path)
+		}
+		return deleteResultMsg{
+			err:             err,
+			branch:          branch,
+			deletingCurrent: deletingCurrent,
+			fallbackPath:    fallbackPath,
+			deleteBranch:    deleteBranch,
+			force:           force,
+		}
+	}
+}
 
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -19,6 +48,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.input.SetWidth(ws.Width)
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
+	}
+	if _, ok := msg.(spinner.TickMsg); ok {
+		if m.mode == tui.DeletingMode {
+			var cmd tea.Cmd
+			m.spinner, cmd = m.spinner.Update(msg)
+			return m, cmd
+		}
+		return m, nil
+	}
+	if result, ok := msg.(deleteResultMsg); ok {
+		return m.handleDeleteResult(result)
 	}
 	switch m.mode {
 	case tui.AddMode:
@@ -32,6 +72,44 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		return m.updateList(msg)
 	}
+}
+
+func (m model) handleDeleteResult(result deleteResultMsg) (tea.Model, tea.Cmd) {
+	if result.err != nil {
+		if !result.force && isWorktreeDirtyError(result.err) {
+			m.mode = tui.ForceDeleteConfirmMode
+			m.err = nil
+			return m, nil
+		}
+		m.err = result.err
+		m.mode = tui.ListMode
+		m.deleteBranch = false
+		return m, nil
+	}
+	if result.deletingCurrent && result.fallbackPath != "" {
+		m.fallbackPath = result.fallbackPath
+		os.Chdir(result.fallbackPath)
+	}
+	wts, err := listWorktrees()
+	if err != nil {
+		m.err = err
+		m.mode = tui.ListMode
+		m.deleteBranch = false
+		return m, nil
+	}
+	m.worktrees = wts
+	m.current = currentWorktreeIndex(wts)
+	m.filtered = applyWorktreeFilter(wts, m.searchInput.Value())
+	if m.cursor >= len(m.filtered) {
+		m.cursor = max(0, len(m.filtered)-1)
+	}
+	m.mode = tui.ListMode
+	m.err = nil
+	if result.deleteBranch && result.branch != "" {
+		m.err = deleteWorktreeBranch(result.branch)
+	}
+	m.deleteBranch = false
+	return m, nil
 }
 
 func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -198,51 +276,29 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+func (m model) startDelete(force bool) (tea.Model, tea.Cmd) {
+	if len(m.filtered) == 0 {
+		m.mode = tui.ListMode
+		return m, nil
+	}
+	target := m.filtered[m.cursor]
+	deletingCurrent := m.current >= 0 && target.Path == m.worktrees[m.current].Path
+	fallbackPath := ""
+	if deletingCurrent && len(m.worktrees) > 0 {
+		fallbackPath = m.worktrees[0].Path
+	}
+	m.mode = tui.DeletingMode
+	return m, tea.Batch(
+		runDeleteCmd(target.Path, force, target.Branch, deletingCurrent, fallbackPath, m.deleteBranch),
+		m.spinner.Tick,
+	)
+}
+
 func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
-			if len(m.filtered) == 0 {
-				m.mode = tui.ListMode
-				return m, nil
-			}
-			target := m.filtered[m.cursor]
-			branch := target.Branch
-			deletingCurrent := m.current >= 0 && target.Path == m.worktrees[m.current].Path
-			if err := deleteWorktree(target.Path); err != nil {
-				if isWorktreeDirtyError(err) {
-					m.mode = tui.ForceDeleteConfirmMode
-					m.err = nil
-					return m, nil
-				}
-				m.err = err
-				m.mode = tui.ListMode
-				m.deleteBranch = false
-				return m, nil
-			}
-			if deletingCurrent && len(m.worktrees) > 0 {
-				m.fallbackPath = m.worktrees[0].Path
-				os.Chdir(m.fallbackPath)
-			}
-			wts, err := listWorktrees()
-			if err != nil {
-				m.err = err
-				m.mode = tui.ListMode
-				m.deleteBranch = false
-				return m, nil
-			}
-			m.worktrees = wts
-			m.current = currentWorktreeIndex(wts)
-			m.filtered = applyWorktreeFilter(wts, m.searchInput.Value())
-			if m.cursor >= len(m.filtered) {
-				m.cursor = max(0, len(m.filtered)-1)
-			}
-			m.mode = tui.ListMode
-			m.err = nil
-			if m.deleteBranch && branch != "" {
-				m.err = deleteWorktreeBranch(branch)
-			}
-			m.deleteBranch = false
+			return m.startDelete(false)
 		default:
 			m.deleteBranch = false
 			m.mode = tui.ListMode
@@ -255,42 +311,7 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if km, ok := msg.(tea.KeyMsg); ok {
 		switch km.String() {
 		case "y", "Y":
-			if len(m.filtered) == 0 {
-				m.mode = tui.ListMode
-				return m, nil
-			}
-			target := m.filtered[m.cursor]
-			branch := target.Branch
-			deletingCurrent := m.current >= 0 && target.Path == m.worktrees[m.current].Path
-			if err := deleteWorktreeForce(target.Path); err != nil {
-				m.err = err
-				m.mode = tui.ListMode
-				m.deleteBranch = false
-				return m, nil
-			}
-			if deletingCurrent && len(m.worktrees) > 0 {
-				m.fallbackPath = m.worktrees[0].Path
-				os.Chdir(m.fallbackPath)
-			}
-			wts, err := listWorktrees()
-			if err != nil {
-				m.err = err
-				m.mode = tui.ListMode
-				m.deleteBranch = false
-				return m, nil
-			}
-			m.worktrees = wts
-			m.current = currentWorktreeIndex(wts)
-			m.filtered = applyWorktreeFilter(wts, m.searchInput.Value())
-			if m.cursor >= len(m.filtered) {
-				m.cursor = max(0, len(m.filtered)-1)
-			}
-			m.mode = tui.ListMode
-			m.err = nil
-			if m.deleteBranch && branch != "" {
-				m.err = deleteWorktreeBranch(branch)
-			}
-			m.deleteBranch = false
+			return m.startDelete(true)
 		default:
 			m.deleteBranch = false
 			m.mode = tui.ListMode

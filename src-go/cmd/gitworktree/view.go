@@ -37,6 +37,8 @@ func (m model) statusSection() string {
 		return "\n" + tui.ErrStyle.Render(
 			fmt.Sprintf("  %s has uncommitted changes — %s? (y/n)", filepath.Base(target.Path), forceSuffix),
 		) + "\n"
+	case tui.DeletingMode:
+		return "\n" + tui.WarnStyle.Render("  "+m.spinner.View()+" deleting...") + "\n"
 	case tui.SearchMode:
 		return tui.RenderSearchInput(m.searchInput)
 	default:

@@ -5,6 +5,7 @@ import (
 
 	"example.com/workspace/lib/tui"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -17,6 +18,7 @@ type model struct {
 	mode         tui.Mode
 	input        textarea.Model
 	searchInput  textinput.Model
+	spinner      spinner.Model
 	width        int
 	windowHeight int
 	vp           tui.Viewport
@@ -36,6 +38,7 @@ func initialModel() model {
 	wts, err := listWorktrees()
 	ti := tui.NewInput("branch-name")
 	si := tui.NewSearchInput()
+	sp := spinner.New(spinner.WithSpinner(spinner.Dot), spinner.WithStyle(tui.WarnStyle))
 
 	cur := -1
 	if err == nil {
@@ -54,6 +57,7 @@ func initialModel() model {
 		err:         err,
 		input:       ti,
 		searchInput: si,
+		spinner:     sp,
 		current:     cur,
 		width:       tui.DefaultWidth,
 	}
