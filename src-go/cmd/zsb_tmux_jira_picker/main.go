@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -26,11 +25,7 @@ func main() {
 	}
 
 	t := mdl.selected
-	labelKebab := strings.ToLower(strings.ReplaceAll(t.Label, " ", "-"))
-	if len(labelKebab) > 25 {
-		labelKebab = labelKebab[:25]
-	}
-	sessionName := t.Current + "-" + labelKebab
+	sessionName := t.TmuxSessionID()
 
 	sessionExists := exec.Command("tmux", "has-session", "-t", "="+sessionName).Run() == nil
 

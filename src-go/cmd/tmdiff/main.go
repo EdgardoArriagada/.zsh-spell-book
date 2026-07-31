@@ -16,6 +16,8 @@ func main() {
 		currentIDs[t.Current] = true
 	}
 
+	prefixes := jira.TmuxSessionPrefixes(currentIDs)
+
 	out, err := exec.Command("tmux", "ls", "-F", "#{session_name}").Output()
 	if err != nil {
 		return
@@ -25,17 +27,8 @@ func main() {
 		if s == "" {
 			continue
 		}
-		if !isJiraSession(s, currentIDs) {
+		if !jira.MatchesTmuxSession(s, prefixes) {
 			fmt.Println(s)
 		}
 	}
-}
-
-func isJiraSession(session string, currentIDs map[string]bool) bool {
-	for id := range currentIDs {
-		if strings.HasPrefix(session, id+"-") {
-			return true
-		}
-	}
-	return false
 }
