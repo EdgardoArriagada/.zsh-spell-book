@@ -12,6 +12,7 @@ import (
 
 type model struct {
 	tickets     []jira.Ticket
+	filterKeys  []string // search projections, one per ticket, computed at load
 	filtered    []jira.Ticket
 	cursor      int
 	mode        tui.Mode
@@ -25,10 +26,8 @@ type model struct {
 	notifCounts map[string]int
 }
 
-func applyTicketFilter(tickets []jira.Ticket, term string) []jira.Ticket {
-	return tui.ApplyFilter(tickets, term, func(t jira.Ticket) string {
-		return t.Parent + " " + t.Current + " " + t.Label
-	})
+func (m model) filterTickets(term string) []jira.Ticket {
+	return tui.ApplyFilterKeys(m.tickets, m.filterKeys, term)
 }
 
 func (m model) reloadTickets() model {
@@ -36,12 +35,13 @@ func (m model) reloadTickets() model {
 	m.tickets = tickets
 	m.err = err
 	m.notifCounts = jira.LoadNotificationCounts()
-	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
+	m.filterKeys = make([]string, len(tickets))
 	m.current = -1
+	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
 	for i, t := range tickets {
-		if t.Current == currentTicket {
+		m.filterKeys[i] = t.Parent + " " + t.Current + " " + t.Label
+		if m.current == -1 && t.Current == currentTicket {
 			m.current = i
-			break
 		}
 	}
 	return m

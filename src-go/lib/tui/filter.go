@@ -27,6 +27,13 @@ func ApplyFilter[T any](items []T, term string, key func(T) string) []T {
 	for i, item := range items {
 		keys[i] = key(item)
 	}
+	return ApplyFilterKeys(items, keys, term)
+}
+
+// ApplyFilterKeys is ApplyFilter with the string projections precomputed by the
+// caller (keys[i] describes items[i]). Use when items are static and the filter
+// runs repeatedly (e.g. per keystroke) to avoid rebuilding keys each call.
+func ApplyFilterKeys[T any](items []T, keys []string, term string) []T {
 	indices := FuzzyFilter(term, keys)
 	result := make([]T, len(indices))
 	for i, idx := range indices {

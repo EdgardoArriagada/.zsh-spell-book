@@ -29,7 +29,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.err != nil {
 			return m, nil
 		}
-		m.filtered = applyTicketFilter(m.tickets, m.searchInput.Value())
+		m.filtered = m.filterTickets(m.searchInput.Value())
 		if m.cursor >= len(m.filtered) {
 			m.cursor = max(0, len(m.filtered)-1)
 		}
@@ -107,7 +107,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	var cmd tea.Cmd
 	m.searchInput, cmd = m.searchInput.Update(msg)
-	m.filtered = applyTicketFilter(m.tickets, m.searchInput.Value())
+	m.filtered = m.filterTickets(m.searchInput.Value())
 	m.cursor = 0
 	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
