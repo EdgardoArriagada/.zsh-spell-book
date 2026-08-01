@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -41,7 +40,7 @@ func windowHasNotif(winID string) bool {
 		return false
 	}
 	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
-		if n, _ := strconv.Atoi(strings.TrimSpace(line)); n > 0 {
+		if strings.TrimSpace(line) == "1" {
 			return true
 		}
 	}
