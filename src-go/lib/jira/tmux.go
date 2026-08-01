@@ -56,7 +56,7 @@ func SanitizeTmuxID(s string) string {
 		} else {
 			prevDash = false
 		}
-		b.WriteRune(r)
+		b.WriteByte(byte(r)) // ponytail: all valid output chars are ASCII [a-zA-Z0-9-]
 	}
 	return b.String()
 }

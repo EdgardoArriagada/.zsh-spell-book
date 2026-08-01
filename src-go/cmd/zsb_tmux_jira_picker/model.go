@@ -19,11 +19,12 @@ type model struct {
 	searchInput textinput.Model
 	width        int
 	windowHeight int
+	availRows    int // cached tui.AvailableRows result; updated on WindowSizeMsg only
 	vp           tui.Viewport
-	selected    *jira.Ticket
-	err         error
-	current     int // index of current ticket in tickets, -1 if none
-	notifCounts map[string]int
+	selected     *jira.Ticket
+	err          error
+	current      int // index of current ticket in tickets, -1 if none
+	notifCounts  map[string]int
 }
 
 // notifCountsMsg delivers tmux notification counts loaded off the startup

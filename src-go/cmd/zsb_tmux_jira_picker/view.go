@@ -27,28 +27,26 @@ func (m model) footerSection() string {
 		tui.Hint("esc/q", "quit")
 }
 
-func (m model) availableRows() int {
-	return tui.AvailableRows(m.windowHeight, tui.Title("Jira Tickets"), m.statusSection(), "\n"+m.footerSection()+"\n")
-}
-
 func (m model) View() string {
 	if m.err != nil && len(m.tickets) == 0 {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}
 
+	title := tui.Title("Jira Tickets")
+	statusSec := m.statusSection()
+	footerSec := "\n" + m.footerSection() + "\n"
+
 	var s strings.Builder
-	s.WriteString(tui.Title("Jira Tickets"))
+	s.Grow(len(m.filtered) * 80)
+	s.WriteString(title)
 
 	var currentTicket string
 	if m.current >= 0 && m.current < len(m.tickets) {
 		currentTicket = m.tickets[m.current].Current
 	}
 
-	maxVis := m.vp.MaxVisible(len(m.filtered), m.availableRows())
-	end := m.vp.Offset + maxVis
-	if end > len(m.filtered) {
-		end = len(m.filtered)
-	}
+	maxVis := m.vp.MaxVisible(len(m.filtered), m.availRows)
+	end := min(m.vp.Offset+maxVis, len(m.filtered))
 	for i, t := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		cursor := "   "
@@ -57,7 +55,7 @@ func (m model) View() string {
 		}
 		const cursorWidth = 3
 		const badgeReserve = 9 // "  ●" (3) + " (999)" (6)
-		fixedWidth := len([]rune(t.Current + ": "))
+		fixedWidth := len(t.Current) + 2 // ponytail: JIRA IDs are ASCII-only, byte len == rune len
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
 		line := t.Current + ": " + label
 		isCurrent := currentTicket != "" && t.Current == currentTicket
@@ -76,7 +74,9 @@ func (m model) View() string {
 		if n := m.notifCounts[t.SessionID]; n > 0 {
 			renderedLine += tui.NotifBadge.Render(" " + strconv.Itoa(n))
 		}
-		s.WriteString(cursor + renderedLine + "\n")
+		s.WriteString(cursor)
+		s.WriteString(renderedLine)
+		s.WriteByte('\n')
 	}
 
 	actualDisplayed := end - m.vp.Offset
@@ -84,8 +84,8 @@ func (m model) View() string {
 		s.WriteString(strings.Repeat("\n", padding))
 	}
 
-	s.WriteString(m.statusSection())
-	s.WriteString("\n" + m.footerSection() + "\n")
+	s.WriteString(statusSec)
+	s.WriteString(footerSec)
 	return s.String()
 }
 
