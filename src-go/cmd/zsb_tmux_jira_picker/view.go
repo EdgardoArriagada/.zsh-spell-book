@@ -65,9 +65,9 @@ func (m model) View() string {
 		var renderedLine string
 		switch {
 		case isCurrent && idx == m.cursor:
-			renderedLine = tui.CurrentMark.Render(line) + tui.CurrentMark.Render("  ●")
+			renderedLine = tui.CurrentMark.Render(line) + tui.CurrentMark.Render(" ●")
 		case isCurrent:
-			renderedLine = tui.DimStyle.Render(line) + tui.CurrentMark.Render("  ●")
+			renderedLine = tui.DimStyle.Render(line) + tui.CurrentMark.Render(" ●")
 		case idx == m.cursor:
 			renderedLine = tui.ActiveStyle.Render(line)
 		default:
