@@ -74,7 +74,7 @@ func (m model) View() string {
 			renderedLine = tui.DimStyle.Render(line)
 		}
 		if n := m.notifCounts[t.TmuxSessionID()]; n > 0 {
-			renderedLine += tui.NotifBadge.Render(" (" + strconv.Itoa(n) + ")")
+			renderedLine += tui.NotifBadge.Render(" " + strconv.Itoa(n))
 		}
 		s.WriteString(cursor + renderedLine + "\n")
 	}
