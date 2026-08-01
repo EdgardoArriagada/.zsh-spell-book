@@ -2,17 +2,11 @@ package jira
 
 import (
 	"os/exec"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
 const maxTmuxIDLen = 38
-
-var (
-	invalidChars      = regexp.MustCompile(`[^a-zA-Z0-9-]`)
-	consecutiveDashes = regexp.MustCompile(`-{2,}`)
-)
 
 func (t Ticket) TmuxSessionID() string {
 	kebab := strings.ToLower(strings.ReplaceAll(t.Label, " ", "-"))
@@ -40,10 +34,31 @@ func MatchesTmuxSession(session string, prefixes []string) bool {
 	return false
 }
 
+// SanitizeTmuxID replaces every char outside [a-zA-Z0-9-] with '-' and
+// collapses runs of dashes into one, in a single pass (no regex).
 func SanitizeTmuxID(s string) string {
-	s = invalidChars.ReplaceAllString(s, "-")
-	s = consecutiveDashes.ReplaceAllString(s, "-")
-	return s
+	var b strings.Builder
+	b.Grow(len(s))
+	prevDash := false
+	for _, r := range s {
+		ok := r == '-' ||
+			(r >= 'a' && r <= 'z') ||
+			(r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9')
+		if !ok {
+			r = '-'
+		}
+		if r == '-' {
+			if prevDash {
+				continue
+			}
+			prevDash = true
+		} else {
+			prevDash = false
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
 }
 
 func LoadNotificationCounts() map[string]int {
@@ -53,7 +68,7 @@ func LoadNotificationCounts() map[string]int {
 	if err != nil {
 		return counts
 	}
-	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+	for line := range strings.SplitSeq(strings.TrimSpace(string(out)), "\n") {
 		parts := strings.SplitN(line, "\t", 2)
 		if len(parts) < 2 {
 			continue
