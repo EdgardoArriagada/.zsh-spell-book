@@ -1,7 +1,9 @@
 package jira
 
 import (
+	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -42,4 +44,22 @@ func SanitizeTmuxID(s string) string {
 	s = invalidChars.ReplaceAllString(s, "-")
 	s = consecutiveDashes.ReplaceAllString(s, "-")
 	return s
+}
+
+func LoadNotificationCounts() map[string]int {
+	counts := map[string]int{}
+	out, err := exec.Command("tmux", "list-panes", "-a", "-F",
+		"#{session_name}\t#{@zsb_agent_notif}").Output()
+	if err != nil {
+		return counts
+	}
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		parts := strings.SplitN(line, "\t", 2)
+		if len(parts) < 2 {
+			continue
+		}
+		n, _ := strconv.Atoi(strings.TrimSpace(parts[1])) // empty/unset → 0
+		counts[parts[0]] += n
+	}
+	return counts
 }

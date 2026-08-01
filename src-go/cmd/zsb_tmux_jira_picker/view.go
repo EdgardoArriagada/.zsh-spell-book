@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"example.com/workspace/lib/tui"
@@ -67,6 +68,9 @@ func (m model) View() string {
 			renderedLine = tui.ActiveStyle.Render(line)
 		default:
 			renderedLine = tui.DimStyle.Render(line)
+		}
+		if n := m.notifCounts[t.TmuxSessionID()]; n > 0 {
+			renderedLine += tui.NotifBadge.Render(" (" + strconv.Itoa(n) + ")")
 		}
 		s.WriteString(cursor + renderedLine + "\n")
 	}

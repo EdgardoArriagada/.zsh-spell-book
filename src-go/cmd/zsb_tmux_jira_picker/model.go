@@ -22,6 +22,7 @@ type model struct {
 	selected    *jira.Ticket
 	err         error
 	current     int // index of current ticket in tickets, -1 if none
+	notifCounts map[string]int
 }
 
 func applyTicketFilter(tickets []jira.Ticket, term string) []jira.Ticket {
@@ -34,6 +35,7 @@ func (m model) reloadTickets() model {
 	tickets, err := jira.LoadTickets()
 	m.tickets = tickets
 	m.err = err
+	m.notifCounts = jira.LoadNotificationCounts()
 	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
 	m.current = -1
 	for i, t := range tickets {
