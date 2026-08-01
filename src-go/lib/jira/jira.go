@@ -11,6 +11,10 @@ type Ticket struct {
 	Parent  string
 	Current string
 	Label   string
+	// SessionID is the cached tmux session id, computed once at load so the
+	// render path (per row, per frame) does a plain field read instead of
+	// re-running SanitizeTmuxID.
+	SessionID string
 }
 
 func LoadTickets() ([]Ticket, error) {
@@ -32,11 +36,13 @@ func LoadTickets() ([]Ticket, error) {
 		if len(parts) < 3 {
 			continue
 		}
-		tickets = append(tickets, Ticket{
+		t := Ticket{
 			Parent:  strings.TrimSpace(parts[0]),
 			Current: strings.TrimSpace(parts[1]),
 			Label:   strings.TrimSpace(parts[2]),
-		})
+		}
+		t.SessionID = t.TmuxSessionID()
+		tickets = append(tickets, t)
 	}
 	if err := sc.Err(); err != nil {
 		return nil, err
