@@ -17,6 +17,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 		return m, nil
 	}
+	if nc, ok := msg.(notifCountsMsg); ok {
+		m.notifCounts = nc
+		return m, nil
+	}
 	if m.mode == tui.SearchMode {
 		return m.updateSearch(msg)
 	}

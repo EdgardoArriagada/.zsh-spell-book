@@ -26,6 +26,14 @@ type model struct {
 	notifCounts map[string]int
 }
 
+// notifCountsMsg delivers tmux notification counts loaded off the startup
+// critical path, so the list paints before the tmux subprocess returns.
+type notifCountsMsg map[string]int
+
+func loadNotifCountsCmd() tea.Msg {
+	return notifCountsMsg(jira.LoadNotificationCounts())
+}
+
 func (m model) filterTickets(term string) []jira.Ticket {
 	return tui.ApplyFilterKeys(m.tickets, m.filterKeys, term)
 }
@@ -34,7 +42,6 @@ func (m model) reloadTickets() model {
 	tickets, err := jira.LoadTickets()
 	m.tickets = tickets
 	m.err = err
-	m.notifCounts = jira.LoadNotificationCounts()
 	m.filterKeys = make([]string, len(tickets))
 	m.current = -1
 	currentTicket := os.Getenv("ZSB_CURRENT_TICKET")
@@ -59,4 +66,4 @@ func initialModel() model {
 	return m
 }
 
-func (m model) Init() tea.Cmd { return nil }
+func (m model) Init() tea.Cmd { return loadNotifCountsCmd }
