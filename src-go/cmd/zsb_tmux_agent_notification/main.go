@@ -24,6 +24,17 @@ func setWindowName(pane, name string) {
 	exec.Command("tmux", "rename-window", "-t", pane, name).Run() //nolint:errcheck
 }
 
+// paneIsFocused reports whether the user is currently looking at this pane:
+// its session is attached, its window is active, and the pane is active.
+func paneIsFocused(pane string) bool {
+	out, err := exec.Command("tmux", "display-message", "-p", "-t", pane,
+		"#{&&:#{session_attached},#{&&:#{window_active},#{pane_active}}}").Output()
+	if err != nil {
+		return false
+	}
+	return strings.TrimSpace(string(out)) == "1"
+}
+
 func windowHasNotif(winID string) bool {
 	out, err := exec.Command("tmux", "list-panes", "-t", winID, "-F", "#{@zsb_agent_notif}").Output()
 	if err != nil {
@@ -60,6 +71,10 @@ func main() {
 				setWindowName(pane, strings.TrimSuffix(name, notifSuffix))
 			}
 		}
+		return
+	}
+
+	if paneIsFocused(pane) {
 		return
 	}
 
