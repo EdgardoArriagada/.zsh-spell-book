@@ -57,9 +57,9 @@ func (m model) View() string {
 		}
 		const cursorWidth = 3
 		const badgeReserve = 9 // "  ●" (3) + " (999)" (6)
-		fixedWidth := len([]rune(t.Current + " | "))
+		fixedWidth := len([]rune(t.Current + ": "))
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
-		line := t.Current + " | " + label
+		line := t.Current + ": " + label
 		isCurrent := currentTicket != "" && t.Current == currentTicket
 
 		var renderedLine string
