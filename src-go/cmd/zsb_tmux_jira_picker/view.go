@@ -55,7 +55,11 @@ func (m model) View() string {
 		if idx == m.cursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
-		line := t.Parent + " | " + t.Current + " | " + t.Label
+		const cursorWidth = 3
+		const badgeReserve = 9 // "  ●" (3) + " (999)" (6)
+		fixedWidth := len([]rune(t.Parent + " | " + t.Current + " | "))
+		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
+		line := t.Parent + " | " + t.Current + " | " + label
 		isCurrent := currentTicket != "" && t.Current == currentTicket
 
 		var renderedLine string
@@ -83,4 +87,15 @@ func (m model) View() string {
 	s.WriteString(m.statusSection())
 	s.WriteString("\n" + m.footerSection() + "\n")
 	return s.String()
+}
+
+func truncateLabel(s string, maxWidth int) string {
+	if maxWidth < 1 {
+		maxWidth = 1
+	}
+	runes := []rune(s)
+	if len(runes) <= maxWidth {
+		return s
+	}
+	return string(runes[:maxWidth-1]) + "…"
 }
