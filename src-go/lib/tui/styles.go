@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 )
 
 var (
@@ -24,7 +25,14 @@ var (
 )
 
 func init() {
-	lipgloss.SetDefaultRenderer(lipgloss.NewRenderer(os.Stderr))
+	r := lipgloss.NewRenderer(os.Stderr)
+	// ponytail: pin profile/background so termenv skips its terminal-capability
+	// probe (env parse + possible OSC round-trip) on the keybind-hot boot path.
+	// This stack is truecolor + dark (COLORTERM=truecolor, tmux Tc). All styles
+	// here are fixed hex, so no adaptive-color detection is lost.
+	r.SetColorProfile(termenv.TrueColor)
+	r.SetHasDarkBackground(true)
+	lipgloss.SetDefaultRenderer(r)
 
 	CursorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true) // yellow — warm cursor
 	ActiveStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9"))             // white1 — hovered item
