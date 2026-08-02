@@ -2,7 +2,6 @@ package jira
 
 import (
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -61,20 +60,41 @@ func SanitizeTmuxID(s string) string {
 	return b.String()
 }
 
-func LoadNotificationCounts() map[string]int {
-	counts := map[string]int{}
+// NotifCounts is the per-session tally of agent notification states:
+// panes finished (value 1, red badge) and still working (value 2, blue badge).
+type NotifCounts struct {
+	Working  int
+	Finished int
+}
+
+func LoadNotificationCounts() map[string]NotifCounts {
 	out, err := exec.Command("tmux", "list-panes", "-a", "-F",
 		"#{session_name}\t#{@zsb_agent_notif}").Output()
 	if err != nil {
-		return counts
+		return map[string]NotifCounts{}
 	}
-	for line := range strings.SplitSeq(strings.TrimSpace(string(out)), "\n") {
+	return parseNotifCounts(string(out))
+}
+
+// parseNotifCounts tallies panes per session by state: value "1" → Finished,
+// "2" → Working. Everything else (unset/empty/"0") is ignored.
+func parseNotifCounts(out string) map[string]NotifCounts {
+	counts := map[string]NotifCounts{}
+	for line := range strings.SplitSeq(strings.TrimSpace(out), "\n") {
 		parts := strings.SplitN(line, "\t", 2)
 		if len(parts) < 2 {
 			continue
 		}
-		n, _ := strconv.Atoi(strings.TrimSpace(parts[1])) // empty/unset → 0
-		counts[parts[0]] += n
+		c := counts[parts[0]]
+		switch strings.TrimSpace(parts[1]) {
+		case "1":
+			c.Finished++
+		case "2":
+			c.Working++
+		default:
+			continue
+		}
+		counts[parts[0]] = c
 	}
 	return counts
 }

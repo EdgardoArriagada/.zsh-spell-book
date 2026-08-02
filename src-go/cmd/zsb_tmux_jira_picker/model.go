@@ -24,12 +24,12 @@ type model struct {
 	selected     *jira.Ticket
 	err          error
 	current      int // index of current ticket in tickets, -1 if none
-	notifCounts  map[string]int
+	notifCounts  map[string]jira.NotifCounts
 }
 
 // notifCountsMsg delivers tmux notification counts loaded off the startup
 // critical path, so the list paints before the tmux subprocess returns.
-type notifCountsMsg map[string]int
+type notifCountsMsg map[string]jira.NotifCounts
 
 func loadNotifCountsCmd() tea.Msg {
 	return notifCountsMsg(jira.LoadNotificationCounts())

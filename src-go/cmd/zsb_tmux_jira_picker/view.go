@@ -54,7 +54,7 @@ func (m model) View() string {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 		const cursorWidth = 3
-		const badgeReserve = 9 // "  ●" (3) + " (999)" (6)
+		const badgeReserve = 11 // "  ●" (3) + " 999" working + " 999" finished (~4 each)
 		fixedWidth := len(t.Current) + 2 // ponytail: JIRA IDs are ASCII-only, byte len == rune len
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
 		line := t.Current + ": " + label
@@ -71,8 +71,12 @@ func (m model) View() string {
 		default:
 			renderedLine = tui.DimStyle.Render(line)
 		}
-		if n := m.notifCounts[t.SessionID]; n > 0 {
-			renderedLine += tui.NotifBadge.Render(" " + strconv.Itoa(n))
+		c := m.notifCounts[t.SessionID]
+		if c.Working > 0 {
+			renderedLine += tui.NotifWorking.Render(" " + strconv.Itoa(c.Working))
+		}
+		if c.Finished > 0 {
+			renderedLine += tui.NotifBadge.Render(" " + strconv.Itoa(c.Finished))
 		}
 		s.WriteString(cursor)
 		s.WriteString(renderedLine)

@@ -20,6 +20,7 @@ var (
 	StatusStyle   lipgloss.Style
 	KeyStyle      lipgloss.Style
 	NotifBadge    lipgloss.Style
+	NotifWorking  lipgloss.Style
 )
 
 func init() {
@@ -37,7 +38,8 @@ func init() {
 	WarnStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#D08770"))             // orange — destructive confirm
 	StatusStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#8FBCBB"))             // cyan — info messages
 	KeyStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)  // yellow bold — key hints
-	NotifBadge    = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true)  // red — pending notifications
+	NotifBadge    = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true)  // red — finished notifications
+	NotifWorking  = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Bold(true)  // blue1 — agents still working
 }
 
 func Title(text string) string {
