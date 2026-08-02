@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
@@ -33,6 +34,14 @@ type notifCountsMsg map[string]jira.NotifCounts
 
 func loadNotifCountsCmd() tea.Msg {
 	return notifCountsMsg(jira.LoadNotificationCounts())
+}
+
+// tickNotifCountsCmd re-reads tmux notif counts every 2s so any open picker
+// reflects notifications written by zsb_tmux_agent_notification after startup.
+func tickNotifCountsCmd() tea.Cmd {
+	return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
+		return notifCountsMsg(jira.LoadNotificationCounts())
+	})
 }
 
 func (m model) filterTickets(term string) []jira.Ticket {
