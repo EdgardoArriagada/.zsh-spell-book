@@ -25,10 +25,6 @@ func windowName(pane string) string {
 	return strings.TrimSpace(string(out))
 }
 
-func setWindowName(pane, name string) {
-	exec.Command("tmux", "rename-window", "-t", pane, name).Run() //nolint:errcheck
-}
-
 // paneIsFocused reports whether the user is currently looking at this pane:
 // its session is attached, its window is active, and the pane is active.
 func paneIsFocused(pane string) bool {
@@ -84,7 +80,7 @@ func refreshWindowName(pane string) {
 		want += finishedSuffix
 	}
 	if want != cur {
-		setWindowName(pane, want)
+		exec.Command("tmux", "rename-window", "-t", pane, want).Run() //nolint:errcheck
 	}
 }
 
@@ -97,7 +93,6 @@ func main() {
 	if len(args) > 0 && strings.HasPrefix(args[0], "--") {
 		switch args[0] {
 		case "--finished":
-			mode = "finished"
 		case "--working":
 			mode = "working"
 		case "--clear-finished":
