@@ -14,8 +14,8 @@ no deps.
 zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
 ```
 
-- **`--finished`** (default when no flag): set `@zsb_agent_notif` = `1` (red). Skipped if the
-  pane is currently focused (you're already watching it).
+- **`--finished`** (default when no flag): set `@zsb_agent_notif` = `1` (red). If the pane is
+  currently focused, clears to `0` instead (hourglass removed, no bell — you're already watching).
 - **`--working`**: set `@zsb_agent_notif` = `2` (blue). Does **not** skip on focus — its hook
   fires while the pane is still focused at submit time, before you switch away.
 - **`--clear-finished`**: reset `@zsb_agent_notif` = `0` **only if it's `1` (finished)**. A
@@ -127,6 +127,6 @@ zsb_tmux_agent_notification --clear-finished _ "$pane"
 tmux show-options -pqv -t "$pane" @zsb_agent_notif   # -> 2  (working kept — only clears 1)
 ```
 
-`--finished` is a no-op on the **focused** pane by design — to see it set `1` (and swap the
-glyph to `󰂟`), target a pane in another window/session that you're not currently on.
+`--finished` on the **focused** pane clears to `0` (removes hourglass, no bell). To see it set
+`1` (swap glyph to `󰂟`), target a pane in another window/session that you're not currently on.
 `--clear-finished` on that finished pane then resets it to `0`.

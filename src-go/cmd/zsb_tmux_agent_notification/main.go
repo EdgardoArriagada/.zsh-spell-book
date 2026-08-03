@@ -121,9 +121,11 @@ func main() {
 		exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "2").Run() //nolint:errcheck
 	default: // finished
 		if paneIsFocused(pane) {
-			return
+			// Already watching: clear working state without ringing the bell.
+			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "0").Run() //nolint:errcheck
+		} else {
+			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "1").Run() //nolint:errcheck
 		}
-		exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "1").Run() //nolint:errcheck
 	}
 	refreshWindowName(pane)
 }
