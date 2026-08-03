@@ -7,7 +7,7 @@ import (
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 func makeListModel(worktrees []Worktree, cursor int) model {
@@ -23,22 +23,9 @@ func makeListModel(worktrees []Worktree, cursor int) model {
 }
 
 func pressKey(m model, key string) model {
-	var msg tea.Msg
-	switch key {
-	case "j":
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'j'}}
-	case "k":
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'k'}}
-	case "d":
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'d'}}
-	case "y":
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'y'}}
-	case "n":
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'n'}}
-	default:
-		msg = tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(key)}
-	}
-	updated, _ := m.Update(msg)
+	// Key.String() returns Text when set, so this stringifies to `key` for the
+	// printable single-char keys the tests use (j/k/d/y/n/D).
+	updated, _ := m.Update(tea.KeyPressMsg{Text: key})
 	return updated.(model)
 }
 
@@ -216,7 +203,7 @@ func TestAddModeRejectsInvalidBranch(t *testing.T) {
 	_ = cmd
 
 	m.input.SetValue("my invalid branch")
-	enterMsg := tea.KeyMsg{Type: tea.KeyEnter}
+	enterMsg := tea.KeyPressMsg{Code: tea.KeyEnter}
 	updated, _ := m.Update(enterMsg)
 	result := updated.(model)
 

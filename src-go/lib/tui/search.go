@@ -1,6 +1,6 @@
 package tui
 
-import "github.com/charmbracelet/bubbles/textinput"
+import "charm.land/bubbles/v2/textinput"
 
 // RenderSearchInput renders the search input widget for SearchMode.
 func RenderSearchInput(si textinput.Model) string {

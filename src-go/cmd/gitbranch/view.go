@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"example.com/workspace/lib/tui"
+
+	tea "charm.land/bubbletea/v2"
 )
 
 func (m model) headerSection() string {
@@ -82,7 +84,13 @@ func (m model) availableRows() int {
 	return tui.AvailableRows(m.windowHeight, m.headerSection(), m.statusSection(), "\n"+m.footerSection()+"\n")
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
+	v := tea.NewView(m.render())
+	v.AltScreen = true
+	return v
+}
+
+func (m model) render() string {
 	if m.err != nil && len(m.branches) == 0 {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}

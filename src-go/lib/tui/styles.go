@@ -1,11 +1,6 @@
 package tui
 
-import (
-	"os"
-
-	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
-)
+import "charm.land/lipgloss/v2"
 
 var (
 	CursorStyle   lipgloss.Style
@@ -25,15 +20,9 @@ var (
 )
 
 func init() {
-	r := lipgloss.NewRenderer(os.Stderr)
-	// ponytail: pin profile/background so termenv skips its terminal-capability
-	// probe (env parse + possible OSC round-trip) on the keybind-hot boot path.
-	// This stack is truecolor + dark (COLORTERM=truecolor, tmux Tc). All styles
-	// here are fixed hex, so no adaptive-color detection is lost.
-	r.SetColorProfile(termenv.TrueColor)
-	r.SetHasDarkBackground(true)
-	lipgloss.SetDefaultRenderer(r)
-
+	// lipgloss v2 has no renderer: Style is a plain value and color downsampling
+	// happens at write time. All styles here use fixed truecolor hex; bubbletea
+	// owns the program's output profile.
 	CursorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true) // yellow — warm cursor
 	ActiveStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9"))             // white1 — hovered item
 	CurrentMark   = lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C"))             // green — current marker

@@ -8,8 +8,8 @@ import (
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
 )
 
 type deleteResultMsg struct {
@@ -113,7 +113,7 @@ func (m model) handleDeleteResult(result deleteResultMsg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
-	km, ok := msg.(tea.KeyMsg)
+	km, ok := msg.(tea.KeyPressMsg)
 	if !ok {
 		return m, nil
 	}
@@ -173,7 +173,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -209,7 +209,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 		os.Remove(edMsg.TmpFile)
 		return m, m.input.Focus()
 	}
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -295,7 +295,7 @@ func (m model) startDelete(force bool) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "y", "Y":
 			return m.startDelete(false)
@@ -308,7 +308,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "y", "Y":
 			return m.startDelete(true)

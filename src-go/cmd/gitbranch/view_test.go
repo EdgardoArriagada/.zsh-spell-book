@@ -22,7 +22,7 @@ func TestViewOnlyRendersVisibleBranches(t *testing.T) {
 		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
 
-	view := m.View()
+	view := m.render()
 	maxVis := m.vp.MaxVisible(len(brs), m.availableRows())
 	start := m.vp.Offset
 	end := start + maxVis
@@ -56,7 +56,7 @@ func TestViewShowsDividerBeforeWorktrees(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if !strings.Contains(view, "Worktree Branches") {
 		t.Error("view should contain a 'Worktree Branches' section header when worktree branches exist")
@@ -71,7 +71,7 @@ func TestViewNoDividerWithoutWorktrees(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if strings.Contains(view, "Worktree Branches") {
 		t.Error("view should not contain 'Worktree Branches' section header when no worktree branches exist")
@@ -86,7 +86,7 @@ func TestViewFooterShowsWorktreeHintWhenPresent(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if !strings.Contains(view, "checked out elsewhere") {
 		t.Error("footer should show 'checked out elsewhere' hint when worktree branches exist")
@@ -101,7 +101,7 @@ func TestViewFooterNoWorktreeHintWhenAbsent(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if strings.Contains(view, "checked out elsewhere") {
 		t.Error("footer should not show worktree hint when no worktree branches exist")
@@ -116,7 +116,7 @@ func TestViewWorktreeWarningBanner(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, inWorktree: true, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if !strings.Contains(view, "worktree") {
 		t.Error("view should contain worktree warning when inWorktree=true")
@@ -131,7 +131,7 @@ func TestViewNoWorktreeWarningWhenNotInWorktree(t *testing.T) {
 	ti := tui.NewInput("branch-name")
 	m := model{branches: brs, filtered: brs, cursor: 0, current: 0, input: ti, inWorktree: false, firstWorktreeIdx: findFirstWorktreeIdx(brs)}
 
-	view := m.View()
+	view := m.render()
 
 	if strings.Contains(view, "⚠") {
 		t.Error("view should not contain worktree warning when inWorktree=false")
@@ -151,7 +151,7 @@ func TestViewNoScrollWhenHeightZero(t *testing.T) {
 		firstWorktreeIdx: findFirstWorktreeIdx(brs),
 	}
 
-	view := m.View()
+	view := m.render()
 
 	for i := 0; i < 5; i++ {
 		name := fmt.Sprintf("branch-%02d", i)

@@ -8,7 +8,7 @@ import (
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 
@@ -35,7 +35,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
-	km, ok := msg.(tea.KeyMsg)
+	km, ok := msg.(tea.KeyPressMsg)
 	if !ok {
 		return m, nil
 	}
@@ -147,7 +147,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -183,7 +183,7 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 		os.Remove(edMsg.TmpFile)
 		return m, m.input.Focus()
 	}
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -287,7 +287,7 @@ func postDeleteRefresh(m model, deletedIdx int, wasCurrentBranch bool) model {
 }
 
 func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "y", "Y":
 			if len(m.filtered) == 0 {
@@ -339,7 +339,7 @@ func (m model) updateDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if km, ok := msg.(tea.KeyMsg); ok {
+	if km, ok := msg.(tea.KeyPressMsg); ok {
 		switch km.String() {
 		case "y", "Y":
 			if len(m.filtered) == 0 {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 func main() {
-	p := tea.NewProgram(initialModel(), tea.WithAltScreen(), tea.WithOutput(os.Stderr))
+	p := tea.NewProgram(initialModel(), tea.WithOutput(os.Stderr))
 	m, err := p.Run()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

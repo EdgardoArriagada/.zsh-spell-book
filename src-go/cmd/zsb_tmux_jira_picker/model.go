@@ -7,8 +7,8 @@ import (
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
 )
 
 type model struct {
