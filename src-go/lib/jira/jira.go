@@ -11,6 +11,7 @@ type Ticket struct {
 	Parent  string
 	Current string
 	Label   string
+	Line    int
 	// SessionID is the cached tmux session id, computed once at load so the
 	// render path (per row, per frame) does a plain field read instead of
 	// re-running SanitizeTmuxID.
@@ -27,7 +28,7 @@ func LoadTickets() ([]Ticket, error) {
 
 	var tickets []Ticket
 	sc := bufio.NewScanner(f)
-	for sc.Scan() {
+	for lineNumber := 1; sc.Scan(); lineNumber++ {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
@@ -40,6 +41,7 @@ func LoadTickets() ([]Ticket, error) {
 			Parent:  strings.TrimSpace(parts[0]),
 			Current: strings.TrimSpace(parts[1]),
 			Label:   strings.TrimSpace(parts[2]),
+			Line:    lineNumber,
 		}
 		t.SessionID = t.TmuxSessionID()
 		tickets = append(tickets, t)

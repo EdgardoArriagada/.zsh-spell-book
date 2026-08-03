@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
 
 	"example.com/workspace/lib/tui"
@@ -77,18 +79,29 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	case "ctrl+g":
+		if len(m.filtered) == 0 {
+			return m, nil
+		}
 		home := os.Getenv("HOME")
 		editor := os.Getenv("EDITOR")
-		if editor == "" {
-			editor = "vi"
-		}
-		parts := strings.Fields(editor)
-		cmd := exec.Command(parts[0], append(parts[1:], home+"/temp/tickets")...)
+		cmd := editTicketsCmd(editor, home+"/temp/tickets", m.filtered[m.cursor].Line)
 		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
 			return tui.EditorDoneMsg{Err: err}
 		})
 	}
 	return m, nil
+}
+
+func editTicketsCmd(editor, filename string, line int) *exec.Cmd {
+	parts := strings.Fields(editor)
+	if len(parts) == 0 {
+		parts = []string{"vi"}
+	}
+	args := parts[1:]
+	if filepath.Base(parts[0]) == "nvim" {
+		args = append(args, "+"+strconv.Itoa(line))
+	}
+	return exec.Command(parts[0], append(args, filename)...)
 }
 
 func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
