@@ -8,7 +8,7 @@ import (
 
 const notifOpt = "@zsb_agent_notif"
 const finishedSuffix = " 󰂚" // bell — agent finished / needs attention
-const workingSuffix = " 󰒓" // cog — agent still working
+const workingSuffix = " 󰔟" // cog — agent still working
 
 func paneNotif(pane string) string {
 	out, _ := exec.Command("tmux", "show-options", "-pqv", "-t", pane, notifOpt).Output()
