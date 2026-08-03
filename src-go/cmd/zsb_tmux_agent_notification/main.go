@@ -8,7 +8,7 @@ import (
 
 const notifOpt = "@zsb_agent_notif"
 const finishedSuffix = " 󰂚" // bell — agent finished / needs attention
-const workingSuffix = " 󰔟" // cog — agent still working
+const workingSuffix = " 󰔟"  // hourglass — agent still working
 
 func paneNotif(pane string) string {
 	out, _ := exec.Command("tmux", "show-options", "-pqv", "-t", pane, notifOpt).Output()
@@ -89,10 +89,11 @@ func refreshWindowName(pane string) {
 // signature but is unused. No flag defaults to --finished.
 func main() {
 	args := os.Args[1:]
-	mode := "finished"
+	var mode string
 	if len(args) > 0 && strings.HasPrefix(args[0], "--") {
 		switch args[0] {
 		case "--finished":
+			mode = "finished"
 		case "--working":
 			mode = "working"
 		case "--clear-finished":
