@@ -45,3 +45,22 @@ func TestLoadTicketsAssignsSectionTitles(t *testing.T) {
 		t.Fatalf("titles = %q, want %q", got, want)
 	}
 }
+
+func TestLoadTicketsKeepsPipesInLabel(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	if err := os.Mkdir(filepath.Join(home, "temp"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(home, "temp", "tickets"), []byte("parent | JIRA-1 | First | Second\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	tickets, err := LoadTickets()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := tickets[0].Label; got != "First | Second" {
+		t.Fatalf("label = %q", got)
+	}
+}

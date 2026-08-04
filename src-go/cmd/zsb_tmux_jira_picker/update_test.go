@@ -46,6 +46,23 @@ func TestSectionTitlesCountAsViewportRows(t *testing.T) {
 	}
 }
 
+func TestRenderUsesBoundedRowsBeforeWindowSize(t *testing.T) {
+	tickets := make([]jira.Ticket, defaultAvailableRows+1)
+	for i := range tickets {
+		tickets[i] = jira.Ticket{Current: "JIRA", Label: "ticket"}
+	}
+	m := model{tickets: tickets, filtered: tickets, current: -1, width: 80, searchInput: tui.NewSearchInput()}
+	if got := strings.Count(m.render(), "JIRA:"); got != defaultAvailableRows {
+		t.Fatalf("rendered %d tickets, want %d", got, defaultAvailableRows)
+	}
+}
+
+func TestTruncateLabelPreservesShortUnicode(t *testing.T) {
+	if got := truncateLabel("café", 4); got != "café" {
+		t.Fatalf("label = %q", got)
+	}
+}
+
 func TestEditTicketsCmdKeepsOtherEditors(t *testing.T) {
 	cmd := editTicketsCmd("vim", "/tmp/tickets", 4)
 	if got, want := cmd.Args, []string{"vim", "/tmp/tickets"}; !slices.Equal(got, want) {

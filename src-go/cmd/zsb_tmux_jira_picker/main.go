@@ -25,13 +25,7 @@ func main() {
 	}
 
 	t := mdl.selected
-	sessionName := t.TmuxSessionID()
-
-	sessionExists := exec.Command("tmux", "has-session", "-t", "="+sessionName).Run() == nil
-
-	if !sessionExists {
-		exec.Command("tmux", "new-session", "-d", "-s", sessionName).Run() //nolint:errcheck
-	}
+	sessionName := t.SessionID
 
 	if t.Current != os.Getenv("ZSB_CURRENT_TICKET") {
 		home := os.Getenv("HOME")
@@ -43,8 +37,14 @@ func main() {
 	}
 
 	if os.Getenv("TMUX") != "" {
-		tmux("switch-client", "-t", "="+sessionName)
+		if exec.Command("tmux", "switch-client", "-t", "="+sessionName).Run() != nil {
+			exec.Command("tmux", "new-session", "-d", "-s", sessionName).Run() //nolint:errcheck
+			tmux("switch-client", "-t", "="+sessionName)
+		}
 	} else {
+		if exec.Command("tmux", "has-session", "-t", "="+sessionName).Run() != nil {
+			exec.Command("tmux", "new-session", "-d", "-s", sessionName).Run() //nolint:errcheck
+		}
 		tmux("attach-session", "-t", "="+sessionName)
 	}
 }

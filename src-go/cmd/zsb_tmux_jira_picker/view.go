@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
@@ -44,15 +45,14 @@ func (m model) render() string {
 	statusSec := m.statusSection()
 	footerSec := "\n" + m.footerSection() + "\n"
 
-	var s strings.Builder
-	s.Grow(len(m.filtered) * 80)
-
 	var currentTicket string
 	if m.current >= 0 && m.current < len(m.tickets) {
 		currentTicket = m.tickets[m.current].Current
 	}
 
 	end, usedRows := visibleTicketEnd(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
+	var s strings.Builder
+	s.Grow((end - m.vp.Offset) * 80)
 	for i, t := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		if m.showTitles() && sectionStarts(m.filtered, idx) && !(idx == m.vp.Offset && m.availRows == 1) {
@@ -111,7 +111,7 @@ func sectionStarts(tickets []jira.Ticket, index int) bool {
 
 func visibleTicketEnd(tickets []jira.Ticket, start, availableRows int, showTitles bool) (end, usedRows int) {
 	if availableRows <= 0 {
-		return len(tickets), len(tickets)
+		availableRows = defaultAvailableRows
 	}
 	for i := start; i < len(tickets); i++ {
 		rows := 1
@@ -151,9 +151,9 @@ func truncateLabel(s string, maxWidth int) string {
 	if maxWidth < 1 {
 		maxWidth = 1
 	}
-	runes := []rune(s)
-	if len(runes) <= maxWidth {
+	if utf8.RuneCountInString(s) <= maxWidth {
 		return s
 	}
+	runes := []rune(s)
 	return string(runes[:maxWidth-1]) + "…"
 }

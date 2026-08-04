@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
@@ -28,20 +27,14 @@ type model struct {
 	notifCounts  map[string]jira.NotifCounts
 }
 
+const defaultAvailableRows = 20
+
 // notifCountsMsg delivers tmux notification counts loaded off the startup
 // critical path, so the list paints before the tmux subprocess returns.
 type notifCountsMsg map[string]jira.NotifCounts
 
 func loadNotifCountsCmd() tea.Msg {
 	return notifCountsMsg(jira.LoadNotificationCounts())
-}
-
-// tickNotifCountsCmd re-reads tmux notif counts every 2s so any open picker
-// reflects notifications written by zsb_tmux_agent_notification after startup.
-func tickNotifCountsCmd() tea.Cmd {
-	return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
-		return notifCountsMsg(jira.LoadNotificationCounts())
-	})
 }
 
 func (m model) filterTickets(term string) []jira.Ticket {
@@ -77,6 +70,7 @@ func initialModel() model {
 	m := model{
 		searchInput: tui.NewSearchInput(),
 		width:       tui.DefaultWidth,
+		availRows:   defaultAvailableRows,
 		current:     -1,
 	}
 	m = m.reloadTickets()

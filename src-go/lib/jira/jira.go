@@ -35,19 +35,20 @@ func LoadTickets() ([]Ticket, error) {
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		if !strings.Contains(line, "|") {
+		parent, rest, ok := strings.Cut(line, "|")
+		if !ok {
 			title = line
 			continue
 		}
-		parts := strings.SplitN(line, "|", 3)
-		if len(parts) < 3 {
+		current, label, ok := strings.Cut(rest, "|")
+		if !ok {
 			continue
 		}
 		t := Ticket{
 			Title:   title,
-			Parent:  strings.TrimSpace(parts[0]),
-			Current: strings.TrimSpace(parts[1]),
-			Label:   strings.TrimSpace(parts[2]),
+			Parent:  strings.TrimSpace(parent),
+			Current: strings.TrimSpace(current),
+			Label:   strings.TrimSpace(label),
 			Line:    lineNumber,
 		}
 		t.SessionID = t.TmuxSessionID()
