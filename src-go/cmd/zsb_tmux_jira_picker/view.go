@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
 
 	tea "charm.land/bubbletea/v2"
@@ -40,29 +41,31 @@ func (m model) render() string {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}
 
-	title := tui.Title("Jira Tickets")
 	statusSec := m.statusSection()
 	footerSec := "\n" + m.footerSection() + "\n"
 
 	var s strings.Builder
 	s.Grow(len(m.filtered) * 80)
-	s.WriteString(title)
 
 	var currentTicket string
 	if m.current >= 0 && m.current < len(m.tickets) {
 		currentTicket = m.tickets[m.current].Current
 	}
 
-	maxVis := m.vp.MaxVisible(len(m.filtered), m.availRows)
-	end := min(m.vp.Offset+maxVis, len(m.filtered))
+	end, usedRows := visibleTicketEnd(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
 	for i, t := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
+		if m.showTitles() && sectionStarts(m.filtered, idx) && !(idx == m.vp.Offset && m.availRows == 1) {
+			title := truncateLabel(t.Title, m.width-2)
+			s.WriteString(tui.TitleStyle.Render("  " + title))
+			s.WriteByte('\n')
+		}
 		cursor := "   "
 		if idx == m.cursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 		const cursorWidth = 3
-		const badgeReserve = 11 // "  ●" (3) + " 999" working + " 999" finished (~4 each)
+		const badgeReserve = 11          // "  ●" (3) + " 999" working + " 999" finished (~4 each)
 		fixedWidth := len(t.Current) + 2 // ponytail: JIRA IDs are ASCII-only, byte len == rune len
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
 		line := t.Current + ": " + label
@@ -91,14 +94,55 @@ func (m model) render() string {
 		s.WriteByte('\n')
 	}
 
-	actualDisplayed := end - m.vp.Offset
-	if padding := maxVis - actualDisplayed; padding > 0 {
+	if padding := m.availRows - usedRows; m.availRows > 0 && padding > 0 {
 		s.WriteString(strings.Repeat("\n", padding))
 	}
 
 	s.WriteString(statusSec)
 	s.WriteString(footerSec)
 	return s.String()
+}
+
+func sectionStarts(tickets []jira.Ticket, index int) bool {
+	return tickets[index].Title != "" && (index == 0 || tickets[index-1].Title != tickets[index].Title)
+}
+
+func visibleTicketEnd(tickets []jira.Ticket, start, availableRows int, showTitles bool) (end, usedRows int) {
+	if availableRows <= 0 {
+		return len(tickets), len(tickets)
+	}
+	for i := start; i < len(tickets); i++ {
+		rows := 1
+		if showTitles && sectionStarts(tickets, i) && !(i == start && availableRows == 1) {
+			rows++
+		}
+		if usedRows+rows > availableRows {
+			break
+		}
+		usedRows += rows
+		end = i + 1
+	}
+	return end, usedRows
+}
+
+func clampTicketViewport(vp tui.Viewport, cursor int, tickets []jira.Ticket, availableRows int, showTitles bool) tui.Viewport {
+	if availableRows <= 0 || len(tickets) == 0 {
+		return vp
+	}
+	if cursor < vp.Offset {
+		vp.Offset = cursor
+	}
+	for end, _ := visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles); cursor >= end; end, _ = visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles) {
+		vp.Offset++
+	}
+	for vp.Offset > 0 {
+		end, _ := visibleTicketEnd(tickets, vp.Offset-1, availableRows, showTitles)
+		if end < len(tickets) {
+			break
+		}
+		vp.Offset--
+	}
+	return vp
 }
 
 func truncateLabel(s string, maxWidth int) string {

@@ -12,12 +12,12 @@ import (
 )
 
 type model struct {
-	tickets     []jira.Ticket
-	filterKeys  []string // search projections, one per ticket, computed at load
-	filtered    []jira.Ticket
-	cursor      int
-	mode        tui.Mode
-	searchInput textinput.Model
+	tickets      []jira.Ticket
+	filterKeys   []string // search projections, one per ticket, computed at load
+	filtered     []jira.Ticket
+	cursor       int
+	mode         tui.Mode
+	searchInput  textinput.Model
 	width        int
 	windowHeight int
 	availRows    int // cached tui.AvailableRows result; updated on WindowSizeMsg only
@@ -46,6 +46,15 @@ func tickNotifCountsCmd() tea.Cmd {
 
 func (m model) filterTickets(term string) []jira.Ticket {
 	return tui.ApplyFilterKeys(m.tickets, m.filterKeys, term)
+}
+
+func (m model) showTitles() bool {
+	return m.mode != tui.SearchMode && m.searchInput.Value() == ""
+}
+
+func (m model) clampViewport() model {
+	m.vp = clampTicketViewport(m.vp, m.cursor, m.filtered, m.availRows, m.showTitles())
+	return m
 }
 
 func (m model) reloadTickets() model {

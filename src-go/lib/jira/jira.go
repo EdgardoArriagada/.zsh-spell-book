@@ -8,6 +8,7 @@ import (
 )
 
 type Ticket struct {
+	Title   string
 	Parent  string
 	Current string
 	Label   string
@@ -27,10 +28,15 @@ func LoadTickets() ([]Ticket, error) {
 	defer f.Close()
 
 	var tickets []Ticket
+	var title string
 	sc := bufio.NewScanner(f)
 	for lineNumber := 1; sc.Scan(); lineNumber++ {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if !strings.Contains(line, "|") {
+			title = line
 			continue
 		}
 		parts := strings.SplitN(line, "|", 3)
@@ -38,6 +44,7 @@ func LoadTickets() ([]Ticket, error) {
 			continue
 		}
 		t := Ticket{
+			Title:   title,
 			Parent:  strings.TrimSpace(parts[0]),
 			Current: strings.TrimSpace(parts[1]),
 			Label:   strings.TrimSpace(parts[2]),
