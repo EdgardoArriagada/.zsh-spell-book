@@ -38,8 +38,8 @@ func TestRenderSectionTitlesOnlyWithoutSearch(t *testing.T) {
 
 func TestSectionTitlesCountAsViewportRows(t *testing.T) {
 	tickets := []jira.Ticket{{Title: "Personal"}, {Title: "Work"}}
-	if end, _ := visibleTicketEnd(tickets, 0, 3, true); end != 1 {
-		t.Fatalf("end = %d, want 1", end)
+	if end, rows := visibleTicketEnd(tickets, 0, 4, true); end != 1 || rows != 4 {
+		t.Fatalf("end, rows = %d, %d; want 1, 4", end, rows)
 	}
 	if got := clampTicketViewport(tui.Viewport{}, 1, tickets, 3, true).Offset; got != 1 {
 		t.Fatalf("offset = %d, want 1", got)

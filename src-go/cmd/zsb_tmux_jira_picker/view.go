@@ -57,7 +57,9 @@ func (m model) render() string {
 		idx := i + m.vp.Offset
 		if m.showTitles() && sectionStarts(m.filtered, idx) && !(idx == m.vp.Offset && m.availRows == 1) {
 			title := truncateLabel(t.Title, m.width-2)
+			s.WriteByte('\n')
 			s.WriteString(tui.TitleStyle.Render("  " + title))
+			s.WriteByte('\n')
 			s.WriteByte('\n')
 		}
 		cursor := "   "
@@ -114,7 +116,7 @@ func visibleTicketEnd(tickets []jira.Ticket, start, availableRows int, showTitle
 	for i := start; i < len(tickets); i++ {
 		rows := 1
 		if showTitles && sectionStarts(tickets, i) && !(i == start && availableRows == 1) {
-			rows++
+			rows += 3
 		}
 		if usedRows+rows > availableRows {
 			break
