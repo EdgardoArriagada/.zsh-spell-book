@@ -75,6 +75,23 @@ func TestCursorNormalUp(t *testing.T) {
 	}
 }
 
+func TestPageKeysMoveWorktreeCursor(t *testing.T) {
+	m := makeListModel(make([]Worktree, 10), 0)
+	m.windowHeight = 10
+	m.width = 80
+	page := m.availableRows()
+
+	updated, _ := m.Update(tea.KeyPressMsg{Code: 'd', Mod: tea.ModCtrl})
+	m = updated.(model)
+	if m.cursor != page {
+		t.Fatalf("ctrl+d cursor = %d, want %d", m.cursor, page)
+	}
+	updated, _ = m.Update(tea.KeyPressMsg{Code: 'u', Mod: tea.ModCtrl})
+	if got := updated.(model).cursor; got != 0 {
+		t.Fatalf("ctrl+u cursor = %d, want 0", got)
+	}
+}
+
 // --- Delete on main worktree shows status (issue 3) ---
 
 func TestDeleteMainShowsStatus(t *testing.T) {

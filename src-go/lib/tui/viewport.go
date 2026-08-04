@@ -26,6 +26,14 @@ type Viewport struct {
 	Offset int
 }
 
+// PageCursor moves cursor one visible page without wrapping.
+func PageCursor(cursor, totalItems, availableRows, direction int) int {
+	if totalItems == 0 {
+		return 0
+	}
+	return min(max(0, cursor+direction*max(1, availableRows)), totalItems-1)
+}
+
 // MaxVisible returns the number of rows available for list items.
 // availableRows is computed by the caller via lipgloss.Height on rendered sections.
 // When availableRows is 0 (no WindowSizeMsg received yet), all items are considered visible.

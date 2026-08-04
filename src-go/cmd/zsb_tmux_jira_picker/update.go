@@ -64,6 +64,12 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
 		m = m.clampViewport()
+	case "ctrl+d":
+		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availRows, 1)
+		m = m.clampViewport()
+	case "ctrl+u":
+		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availRows, -1)
+		m = m.clampViewport()
 	case "g":
 		m.cursor = 0
 		m = m.clampViewport()

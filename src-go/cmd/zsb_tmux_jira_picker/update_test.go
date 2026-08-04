@@ -7,12 +7,29 @@ import (
 
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
+
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestEditTicketsCmdStartsNvimAtTicketLine(t *testing.T) {
 	cmd := editTicketsCmd("nvim --clean", "/tmp/tickets", 4)
 	if got, want := cmd.Args, []string{"nvim", "--clean", "+4", "/tmp/tickets"}; !slices.Equal(got, want) {
 		t.Fatalf("args = %q, want %q", got, want)
+	}
+}
+
+func TestPageKeysMoveTicketCursor(t *testing.T) {
+	tickets := make([]jira.Ticket, 10)
+	m := model{tickets: tickets, filtered: tickets, availRows: 4, current: -1, width: 80, searchInput: tui.NewSearchInput()}
+
+	updated, _ := m.Update(tea.KeyPressMsg{Code: 'd', Mod: tea.ModCtrl})
+	m = updated.(model)
+	if m.cursor != 4 {
+		t.Fatalf("ctrl+d cursor = %d, want 4", m.cursor)
+	}
+	updated, _ = m.Update(tea.KeyPressMsg{Code: 'u', Mod: tea.ModCtrl})
+	if got := updated.(model).cursor; got != 0 {
+		t.Fatalf("ctrl+u cursor = %d, want 0", got)
 	}
 }
 

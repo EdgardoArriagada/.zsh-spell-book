@@ -40,7 +40,6 @@ func runDeleteCmd(path string, force bool, branch string, deletingCurrent bool, 
 	}
 }
 
-
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
@@ -135,6 +134,14 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+	case "ctrl+d":
+		m.statusMsg = ""
+		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availableRows(), 1)
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+	case "ctrl+u":
+		m.statusMsg = ""
+		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availableRows(), -1)
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "g":
 		m.statusMsg = ""
@@ -319,4 +326,3 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, nil
 }
-

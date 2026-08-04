@@ -11,7 +11,6 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
@@ -79,6 +78,14 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+	case "ctrl+d", "ctrl+u":
+		m.statusMsg = ""
+		direction := 1
+		if km.String() == "ctrl+u" {
+			direction = -1
+		}
+		m.cursor = m.pageCursor(direction)
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	case "g":
 		m.statusMsg = ""
 		m.cursor = 0
@@ -144,6 +151,27 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.mode = tui.DeleteConfirmMode
 	}
 	return m, nil
+}
+
+func (m model) pageCursor(direction int) int {
+	if len(m.filtered) == 0 {
+		return 0
+	}
+	cursor := tui.PageCursor(m.cursor, len(m.filtered), m.availableRows(), direction)
+	if m.searchInput.Value() != "" || !m.filtered[cursor].IsWorktree {
+		return cursor
+	}
+	for i := cursor + direction; i >= 0 && i < len(m.filtered); i += direction {
+		if !m.filtered[i].IsWorktree {
+			return i
+		}
+	}
+	for i := cursor - direction; i >= 0 && i < len(m.filtered); i -= direction {
+		if !m.filtered[i].IsWorktree {
+			return i
+		}
+	}
+	return m.cursor
 }
 
 func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -364,4 +392,3 @@ func (m model) updateForceDelete(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, nil
 }
-

@@ -98,6 +98,22 @@ func TestCursorNormalUp(t *testing.T) {
 	}
 }
 
+func TestPageKeysMoveBranchCursor(t *testing.T) {
+	m := makeListModelWithHeight(manyBranches(10), 0, 0, 10)
+	m.width = 80
+	page := m.availableRows()
+
+	updated, _ := m.Update(tea.KeyPressMsg{Code: 'd', Mod: tea.ModCtrl})
+	m = updated.(model)
+	if m.cursor != page {
+		t.Fatalf("ctrl+d cursor = %d, want %d", m.cursor, page)
+	}
+	updated, _ = m.Update(tea.KeyPressMsg{Code: 'u', Mod: tea.ModCtrl})
+	if got := updated.(model).cursor; got != 0 {
+		t.Fatalf("ctrl+u cursor = %d, want 0", got)
+	}
+}
+
 // --- Delete on current branch shows status ---
 
 func TestDeleteCurrentShowsStatus(t *testing.T) {
@@ -173,7 +189,7 @@ func TestViewportOffsetDecreasesWhenCursorMovesAbove(t *testing.T) {
 	// cursor at top of a scrolled-down viewport; k should scroll up
 	brs := manyBranches(10)
 	m := makeListModelWithHeight(brs, 6, 0, 10) // cursor=6, maxVisible=4
-	m.vp.Offset = 6                              // cursor at the very top of viewport
+	m.vp.Offset = 6                             // cursor at the very top of viewport
 
 	m = pressKey(m, "k") // cursor → 5, viewport must scroll up
 
@@ -202,7 +218,7 @@ func TestViewportWrapAroundResetsOffset(t *testing.T) {
 	// cursor at last item with scrolled viewport; j wraps to 0, offset must go to 0
 	brs := manyBranches(10)
 	m := makeListModelWithHeight(brs, 9, 0, 10) // cursor=9 (last), maxVisible=4
-	m.vp.Offset = 6                              // viewport scrolled down
+	m.vp.Offset = 6                             // viewport scrolled down
 
 	m = pressKey(m, "j") // wraps to cursor=0
 
