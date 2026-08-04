@@ -24,11 +24,21 @@ func (m model) footerSection() string {
 	if m.mode == tui.SearchMode {
 		return tui.SearchFooter()
 	}
+	working, finished := 0, 0
+	for _, c := range m.notifCounts {
+		working += c.Working
+		finished += c.Finished
+	}
 	return "  " + tui.Hint("↑/↓", "navigate") + sep +
 		tui.Hint("enter", "select") + sep +
 		tui.Hint("/", "search") + sep +
 		tui.Hint("ctrl+g", "edit tickets") + sep +
-		tui.Hint("esc/q", "quit")
+		tui.Hint("esc/q", "quit") + sep +
+		tui.DimStyle.Render("(") +
+		tui.Hint("󰔟", strconv.Itoa(working)) +
+		tui.DimStyle.Render(" · ") +
+		tui.Hint("󰂚", strconv.Itoa(finished)) +
+		tui.DimStyle.Render(")")
 }
 
 func (m model) View() tea.View {

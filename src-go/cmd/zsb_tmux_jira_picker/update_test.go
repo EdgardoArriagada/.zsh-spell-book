@@ -96,6 +96,20 @@ func TestRenderShowsScrollIndicatorsAndUsesViewport(t *testing.T) {
 	}
 }
 
+func TestFooterShowsTotalAgentCountsOutsideSearch(t *testing.T) {
+	m := model{notifCounts: map[string]jira.NotifCounts{
+		"one": {Working: 2, Finished: 1},
+		"two": {Working: 3, Finished: 4},
+	}}
+	if got := m.footerSection(); !strings.Contains(got, "󰔟") || !strings.Contains(got, "󰂚") || strings.Count(got, " 5") != 2 {
+		t.Fatalf("footer = %q", got)
+	}
+	m.mode = tui.SearchMode
+	if got := m.footerSection(); strings.Contains(got, "󰔟") || strings.Contains(got, "󰂚") {
+		t.Fatalf("search footer = %q", got)
+	}
+}
+
 func TestTruncateLabelPreservesShortUnicode(t *testing.T) {
 	if got := truncateLabel("café", 4); got != "café" {
 		t.Fatalf("label = %q", got)
