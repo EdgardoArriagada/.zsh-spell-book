@@ -16,7 +16,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
 		m.windowHeight = ws.Height
-		m.availRows = tui.AvailableRows(m.windowHeight, m.statusSection(), "\n"+m.footerSection()+"\n")
+		m.availRows = tui.AvailableRows(m.windowHeight, m.statusSection(), m.footerSection())
 		m = m.clampViewport()
 		return m, nil
 	}

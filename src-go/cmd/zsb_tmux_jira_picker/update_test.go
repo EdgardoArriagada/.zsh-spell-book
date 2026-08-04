@@ -48,8 +48,8 @@ func TestSectionTitlesCountAsViewportRows(t *testing.T) {
 
 func TestClampTicketViewportLargeJumpKeepsLastPageFull(t *testing.T) {
 	tickets := make([]jira.Ticket, 100)
-	if got := clampTicketViewport(tui.Viewport{}, len(tickets)-1, tickets, 20, false).Offset; got != 80 {
-		t.Fatalf("offset = %d, want 80", got)
+	if got := clampTicketViewport(tui.Viewport{}, len(tickets)-1, tickets, 20, false).Offset; got != 81 {
+		t.Fatalf("offset = %d, want 81", got)
 	}
 }
 
@@ -61,6 +61,21 @@ func TestRenderUsesBoundedRowsBeforeWindowSize(t *testing.T) {
 	m := model{tickets: tickets, filtered: tickets, current: -1, width: 80, searchInput: tui.NewSearchInput()}
 	if got := strings.Count(m.render(), "JIRA:"); got != defaultAvailableRows {
 		t.Fatalf("rendered %d tickets, want %d", got, defaultAvailableRows)
+	}
+}
+
+func TestRenderShowsScrollIndicatorsAndUsesViewport(t *testing.T) {
+	tickets := make([]jira.Ticket, 5)
+	for i := range tickets {
+		tickets[i] = jira.Ticket{Current: "JIRA", Label: "ticket"}
+	}
+	m := model{tickets: tickets, filtered: tickets, current: -1, width: 80, availRows: 3, searchInput: tui.NewSearchInput()}
+	if got := m.render(); strings.Count(got, "JIRA:") != 2 || !strings.Contains(got, "") || !strings.HasSuffix(got, m.footerSection()) {
+		t.Fatalf("first page = %q", got)
+	}
+	m.vp.Offset = 1
+	if got := m.render(); strings.Count(got, "JIRA:") != 1 || !strings.Contains(got, "") || !strings.Contains(got, "") {
+		t.Fatalf("middle page = %q", got)
 	}
 }
 

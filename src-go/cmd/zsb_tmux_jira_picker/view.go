@@ -43,16 +43,19 @@ func (m model) render() string {
 	}
 
 	statusSec := m.statusSection()
-	footerSec := "\n" + m.footerSection() + "\n"
+	footerSec := m.footerSection()
 
 	var currentTicket string
 	if m.current >= 0 && m.current < len(m.tickets) {
 		currentTicket = m.tickets[m.current].Current
 	}
 
-	end, usedRows := visibleTicketEnd(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
+	end, usedRows, showUp, showDown := ticketViewport(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
 	var s strings.Builder
 	s.Grow((end - m.vp.Offset) * 80)
+	if showUp {
+		s.WriteString(tui.CursorStyle.Render("  ") + "\n")
+	}
 	for i, t := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		if m.showTitles() && sectionStarts(m.filtered, idx) && !(idx == m.vp.Offset && m.availRows == 1) {
@@ -96,13 +99,42 @@ func (m model) render() string {
 		s.WriteByte('\n')
 	}
 
-	if padding := m.availRows - usedRows; m.availRows > 0 && padding > 0 {
+	indicatorRows := 0
+	if showUp {
+		indicatorRows++
+	}
+	if showDown {
+		indicatorRows++
+	}
+	if padding := m.availRows - usedRows - indicatorRows; m.availRows > 0 && padding > 0 {
 		s.WriteString(strings.Repeat("\n", padding))
+	}
+	if showDown {
+		s.WriteString(tui.CursorStyle.Render("  ") + "\n")
 	}
 
 	s.WriteString(statusSec)
 	s.WriteString(footerSec)
 	return s.String()
+}
+
+// ticketViewport reserves rows for scroll indicators only when needed.
+func ticketViewport(tickets []jira.Ticket, start, availableRows int, showTitles bool) (end, usedRows int, showUp, showDown bool) {
+	showUp = start > 0
+	if availableRows <= 1 {
+		end, usedRows = visibleTicketEnd(tickets, start, availableRows, showTitles)
+		return
+	}
+	contentRows := availableRows
+	if showUp {
+		contentRows--
+	}
+	end, usedRows = visibleTicketEnd(tickets, start, contentRows, showTitles)
+	showDown = end < len(tickets)
+	if showDown && contentRows > 1 {
+		end, usedRows = visibleTicketEnd(tickets, start, contentRows-1, showTitles)
+	}
+	return
 }
 
 func sectionStarts(tickets []jira.Ticket, index int) bool {
@@ -134,14 +166,14 @@ func clampTicketViewport(vp tui.Viewport, cursor int, tickets []jira.Ticket, ava
 	if cursor < vp.Offset {
 		vp.Offset = cursor
 	}
-	if end, _ := visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles); cursor == len(tickets)-1 && cursor-end >= availableRows {
+	if end, _, _, _ := ticketViewport(tickets, vp.Offset, availableRows, showTitles); cursor == len(tickets)-1 && cursor-end >= availableRows {
 		vp.Offset = cursor
 	}
-	for end, _ := visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles); cursor >= end; end, _ = visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles) {
+	for end, _, _, _ := ticketViewport(tickets, vp.Offset, availableRows, showTitles); cursor >= end; end, _, _, _ = ticketViewport(tickets, vp.Offset, availableRows, showTitles) {
 		vp.Offset++
 	}
 	for vp.Offset > 0 {
-		end, _ := visibleTicketEnd(tickets, vp.Offset-1, availableRows, showTitles)
+		end, _, _, _ := ticketViewport(tickets, vp.Offset-1, availableRows, showTitles)
 		if end < len(tickets) {
 			break
 		}
