@@ -134,6 +134,9 @@ func clampTicketViewport(vp tui.Viewport, cursor int, tickets []jira.Ticket, ava
 	if cursor < vp.Offset {
 		vp.Offset = cursor
 	}
+	if end, _ := visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles); cursor == len(tickets)-1 && cursor-end >= availableRows {
+		vp.Offset = cursor
+	}
 	for end, _ := visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles); cursor >= end; end, _ = visibleTicketEnd(tickets, vp.Offset, availableRows, showTitles) {
 		vp.Offset++
 	}

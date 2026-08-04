@@ -46,6 +46,13 @@ func TestSectionTitlesCountAsViewportRows(t *testing.T) {
 	}
 }
 
+func TestClampTicketViewportLargeJumpKeepsLastPageFull(t *testing.T) {
+	tickets := make([]jira.Ticket, 100)
+	if got := clampTicketViewport(tui.Viewport{}, len(tickets)-1, tickets, 20, false).Offset; got != 80 {
+		t.Fatalf("offset = %d, want 80", got)
+	}
+}
+
 func TestRenderUsesBoundedRowsBeforeWindowSize(t *testing.T) {
 	tickets := make([]jira.Ticket, defaultAvailableRows+1)
 	for i := range tickets {
