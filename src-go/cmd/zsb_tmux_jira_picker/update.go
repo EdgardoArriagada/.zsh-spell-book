@@ -22,7 +22,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	if nc, ok := msg.(notifCountsMsg); ok {
 		m.notifCounts = nc
-		return m, nil
+		return m, tickNotifCountsCmd()
 	}
 	if m.mode == tui.SearchMode {
 		return m.updateSearch(msg)

@@ -110,6 +110,16 @@ func TestFooterShowsTotalAgentCountsOutsideSearch(t *testing.T) {
 	}
 }
 
+func TestNotificationRefreshSchedulesNextPoll(t *testing.T) {
+	updated, cmd := (model{}).Update(notifCountsMsg{"session": {Finished: 1}})
+	if cmd == nil {
+		t.Fatal("notification update did not schedule next poll")
+	}
+	if got := updated.(model).notifCounts["session"].Finished; got != 1 {
+		t.Fatalf("finished notifications = %d, want 1", got)
+	}
+}
+
 func TestTruncateLabelPreservesShortUnicode(t *testing.T) {
 	if got := truncateLabel("café", 4); got != "café" {
 		t.Fatalf("label = %q", got)

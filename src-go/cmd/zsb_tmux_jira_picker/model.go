@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"example.com/workspace/lib/jira"
 	"example.com/workspace/lib/tui"
@@ -35,6 +36,12 @@ type notifCountsMsg map[string]jira.NotifCounts
 
 func loadNotifCountsCmd() tea.Msg {
 	return notifCountsMsg(jira.LoadNotificationCounts())
+}
+
+func tickNotifCountsCmd() tea.Cmd {
+	return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
+		return notifCountsMsg(jira.LoadNotificationCounts())
+	})
 }
 
 func (m model) filterTickets(term string) []jira.Ticket {
