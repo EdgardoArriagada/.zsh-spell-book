@@ -18,7 +18,6 @@ const defaultJiraEnv = {
   ZSB_PARENT_TICKET: "ABC-1",
   ZSB_JIRA_PRIORITY_ID: "3",
   ZSB_JIRA_LABELS: " foo,bar,, baz ",
-  ZSB_JIRA_CONTROL_POINT: "some-control-point",
 };
 
 type RecordedRequest = {
@@ -153,7 +152,7 @@ async function runCreateJiraTicket(options: RunOptions = {}) {
         "--preload",
         preloadPath,
         commandPath,
-        ...(options.args ?? ["Ticket title", "Line one\n\nLine three"]),
+        ...(options.args ?? ["Ticket title [some-control-point]", "Line one\n\nLine three"]),
       ],
       {
         env,
@@ -198,6 +197,7 @@ describe("create-jira-ticket", () => {
     expect(result.requests[0].body.fields.issuetype).toEqual({ id: "10000" });
     expect(result.requests[0].body.fields.labels).toEqual(["foo", "bar", "baz"]);
     expect(result.requests[0].body.fields.customfield_25390).toEqual(["some-control-point"]);
+    expect(result.requests[0].body.fields.summary).toBe("Ticket title [some-control-point]");
     expect(result.requests[0].body.fields.description).toEqual({
       type: "doc",
       version: 1,
@@ -269,13 +269,33 @@ describe("create-jira-ticket", () => {
     expect(result.requests).toHaveLength(0);
   });
 
-  test("rejects a missing control point", async () => {
+  test("rejects a title without a control point", async () => {
     const result = await runCreateJiraTicket({
-      env: { ZSB_JIRA_CONTROL_POINT: undefined },
+      args: ["Ticket title"],
     });
 
     expect(result.exitCode).not.toBe(0);
-    expect(result.stderr).toContain("You must set ZSB_JIRA_CONTROL_POINT first.");
+    expect(result.stderr).toContain("Title must contain exactly one control point in square brackets.");
+    expect(result.requests).toHaveLength(0);
+  });
+
+  test("rejects a title with multiple control points", async () => {
+    const result = await runCreateJiraTicket({
+      args: ["Ticket title [first] [second]"],
+    });
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("Title must contain exactly one control point in square brackets.");
+    expect(result.requests).toHaveLength(0);
+  });
+
+  test("rejects an empty control point", async () => {
+    const result = await runCreateJiraTicket({
+      args: ["Ticket title [   ]"],
+    });
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("Control point cannot be empty.");
     expect(result.requests).toHaveLength(0);
   });
 

@@ -10,7 +10,6 @@ const REQUIRED_ENV = [
   "ZSB_PARENT_TICKET",
   "ZSB_JIRA_PRIORITY_ID",
   "ZSB_JIRA_LABELS",
-  "ZSB_JIRA_CONTROL_POINT",
 ] as const;
 
 const ALLOWED_JIRA_BASE_URL = "https://mercadolibre.atlassian.net";
@@ -71,6 +70,23 @@ function parseIssueTypeIds(value: string): Map<string, string> {
     throw new CliError("ZSB_JIRA_ISSUE_TYPE_IDS has no valid entries.");
   }
   return map;
+}
+
+function controlPointFromTitle(title: string): string {
+  const matches = title.match(/\[[^\[\]]+\]/g) ?? [];
+  if (
+    matches.length !== 1 ||
+    (title.match(/\[/g) ?? []).length !== 1 ||
+    (title.match(/\]/g) ?? []).length !== 1
+  ) {
+    throw new CliError("Title must contain exactly one control point in square brackets.");
+  }
+
+  const controlPoint = matches[0].slice(1, -1).trim();
+  if (controlPoint.length === 0) {
+    throw new CliError("Control point cannot be empty.");
+  }
+  return controlPoint;
 }
 
 function loadConfig(): JiraConfig {
@@ -162,7 +178,7 @@ function buildAdfDescription(description: string): AdfDoc {
   };
 }
 
-function buildPayload(config: JiraConfig, title: string, description: string, issueTypeId: string, issueTypeLabel: string) {
+function buildPayload(config: JiraConfig, title: string, controlPoint: string, description: string, issueTypeId: string, issueTypeLabel: string) {
   const isEpic = issueTypeLabel.toLowerCase() === "epic";
   return {
     fields: {
@@ -173,7 +189,7 @@ function buildPayload(config: JiraConfig, title: string, description: string, is
       ...(!isEpic && { parent: { key: config.ZSB_PARENT_TICKET } }),
       priority: { id: config.ZSB_JIRA_PRIORITY_ID },
       labels: config.labels,
-      customfield_25390: [config.ZSB_JIRA_CONTROL_POINT],
+      customfield_25390: [controlPoint],
       summary: title,
       description: buildAdfDescription(description),
     },
@@ -233,6 +249,7 @@ async function createJiraTicket(
   config: JiraConfig,
   token: string,
   title: string,
+  controlPoint: string,
   description: string,
   issueTypeId: string,
   issueTypeLabel: string
@@ -247,7 +264,7 @@ async function createJiraTicket(
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildPayload(config, title, description, issueTypeId, issueTypeLabel)),
+    body: JSON.stringify(buildPayload(config, title, controlPoint, description, issueTypeId, issueTypeLabel)),
   });
 
   const body = await response.text();
@@ -270,11 +287,12 @@ async function main(): Promise<void> {
   if (title.length === 0) {
     throw new CliError("Title cannot be empty.");
   }
+  const controlPoint = controlPointFromTitle(title);
 
   const config = loadConfig();
   const {id: issueTypeId, label: issueTypeLabel} = await selectIssueTypeId(config.issueTypeMap);
   const token = await readJiraToken();
-  const key = await createJiraTicket(config, token, title, description, issueTypeId, issueTypeLabel);
+  const key = await createJiraTicket(config, token, title, controlPoint, description, issueTypeId, issueTypeLabel);
 
   console.log(`${config.jiraBaseUrl}/browse/${key}`);
 }
