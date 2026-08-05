@@ -73,7 +73,6 @@ func (m model) render() string {
 			s.WriteByte('\n')
 			s.WriteString(tui.TitleStyle.Render("  " + title))
 			s.WriteByte('\n')
-			s.WriteByte('\n')
 		}
 		cursor := "   "
 		if idx == m.cursor {
@@ -158,7 +157,7 @@ func visibleTicketEnd(tickets []jira.Ticket, start, availableRows int, showTitle
 	for i := start; i < len(tickets); i++ {
 		rows := 1
 		if showTitles && sectionStarts(tickets, i) && !(i == start && availableRows == 1) {
-			rows += 3
+			rows += 2
 		}
 		if usedRows+rows > availableRows {
 			break
