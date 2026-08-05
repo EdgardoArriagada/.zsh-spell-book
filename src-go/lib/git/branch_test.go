@@ -1,9 +1,11 @@
-package git
+package git_test
 
 import (
 	"os"
 	"os/exec"
 	"testing"
+
+	"example.com/workspace/lib/git"
 )
 
 func TestValidateBranchName(t *testing.T) {
@@ -15,7 +17,7 @@ func TestValidateBranchName(t *testing.T) {
 		"my_branch",
 	}
 	for _, name := range valid {
-		if err := ValidateBranchName(name); err != nil {
+		if err := git.ValidateBranchName(name); err != nil {
 			t.Errorf("ValidateBranchName(%q) returned unexpected error: %v", name, err)
 		}
 	}
@@ -43,7 +45,7 @@ func TestValidateBranchName(t *testing.T) {
 	}
 	for _, tt := range invalid {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := ValidateBranchName(tt.branch); err == nil {
+			if err := git.ValidateBranchName(tt.branch); err == nil {
 				t.Errorf("ValidateBranchName(%q) expected error, got nil", tt.branch)
 			}
 		})
@@ -85,7 +87,7 @@ func TestRemoteBranchExists(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.branch, func(t *testing.T) {
-			if got := RemoteBranchExists(tt.branch); got != tt.want {
+			if got := git.RemoteBranchExists(tt.branch); got != tt.want {
 				t.Errorf("RemoteBranchExists(%q) = %v, want %v", tt.branch, got, tt.want)
 			}
 		})

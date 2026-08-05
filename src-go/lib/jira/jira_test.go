@@ -1,10 +1,12 @@
-package jira
+package jira_test
 
 import (
 	"os"
 	"path/filepath"
 	"slices"
 	"testing"
+
+	"example.com/workspace/lib/jira"
 )
 
 func TestLoadTicketsKeepsSourceLine(t *testing.T) {
@@ -17,7 +19,7 @@ func TestLoadTicketsKeepsSourceLine(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tickets, err := LoadTickets()
+	tickets, err := jira.LoadTickets()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +39,7 @@ func TestLoadTicketsAssignsSectionTitles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tickets, err := LoadTickets()
+	tickets, err := jira.LoadTickets()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +58,7 @@ func TestLoadTicketsKeepsPipesInLabel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tickets, err := LoadTickets()
+	tickets, err := jira.LoadTickets()
 	if err != nil {
 		t.Fatal(err)
 	}

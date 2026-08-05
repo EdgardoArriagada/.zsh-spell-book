@@ -1,12 +1,16 @@
-package git
+package git_test
 
-import "testing"
+import (
+	"testing"
+
+	"example.com/workspace/lib/git"
+)
 
 func TestParseWorktreeList(t *testing.T) {
 	tests := []struct {
 		name   string
 		input  string
-		expect []Worktree
+		expect []git.Worktree
 	}{
 		{
 			name:   "empty output",
@@ -18,7 +22,7 @@ func TestParseWorktreeList(t *testing.T) {
 			input: "worktree /home/user/repo\n" +
 				"HEAD abc123def\n" +
 				"branch refs/heads/main\n",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo", Branch: "main"},
 			},
 		},
@@ -31,7 +35,7 @@ func TestParseWorktreeList(t *testing.T) {
 				"worktree /home/user/repo_gitworktree/feature\n" +
 				"HEAD def456abc\n" +
 				"branch refs/heads/feature\n",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo", Branch: "main"},
 				{Path: "/home/user/repo_gitworktree/feature", Branch: "feature"},
 			},
@@ -41,7 +45,7 @@ func TestParseWorktreeList(t *testing.T) {
 			input: "worktree /home/user/repo.git\n" +
 				"HEAD abc123def\n" +
 				"bare\n",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo.git", IsBare: true},
 			},
 		},
@@ -50,7 +54,7 @@ func TestParseWorktreeList(t *testing.T) {
 			input: "worktree /home/user/repo\n" +
 				"HEAD abc123def\n" +
 				"detached\n",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo", Branch: "(detached)"},
 			},
 		},
@@ -59,7 +63,7 @@ func TestParseWorktreeList(t *testing.T) {
 			input: "worktree /home/user/repo\n" +
 				"HEAD abc123def\n" +
 				"branch refs/heads/main",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo", Branch: "main"},
 			},
 		},
@@ -68,7 +72,7 @@ func TestParseWorktreeList(t *testing.T) {
 			input: "worktree /home/user/repo\n" +
 				"HEAD abc123def\n" +
 				"branch refs/heads/feature/my-branch\n",
-			expect: []Worktree{
+			expect: []git.Worktree{
 				{Path: "/home/user/repo", Branch: "feature/my-branch"},
 			},
 		},
@@ -76,7 +80,7 @@ func TestParseWorktreeList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ParseWorktreeList(tt.input)
+			got := git.ParseWorktreeList(tt.input)
 			if len(got) != len(tt.expect) {
 				t.Fatalf("got %d worktrees, want %d", len(got), len(tt.expect))
 			}
@@ -96,7 +100,7 @@ func TestParseWorktreeList(t *testing.T) {
 }
 
 func TestFindCurrentWorktree(t *testing.T) {
-	worktrees := []Worktree{
+	worktrees := []git.Worktree{
 		{Path: "/home/user/repo"},
 		{Path: "/home/user/repo_gitworktree/feature"},
 		{Path: "/home/user/repo_gitworktree/bugfix"},
@@ -117,7 +121,7 @@ func TestFindCurrentWorktree(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := FindCurrentWorktree(worktrees, tt.cwd)
+			got := git.FindCurrentWorktree(worktrees, tt.cwd)
 			if got != tt.expect {
 				t.Errorf("FindCurrentWorktree(cwd=%q) = %d, want %d", tt.cwd, got, tt.expect)
 			}

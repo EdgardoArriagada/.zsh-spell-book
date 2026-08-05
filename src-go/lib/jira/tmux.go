@@ -73,12 +73,12 @@ func LoadNotificationCounts() map[string]NotifCounts {
 	if err != nil {
 		return map[string]NotifCounts{}
 	}
-	return parseNotifCounts(string(out))
+	return ParseNotificationCounts(string(out))
 }
 
-// parseNotifCounts tallies panes per session by state: value "1" → Finished,
+// ParseNotificationCounts tallies panes per session by state: value "1" → Finished,
 // "2" → Working. Everything else (unset/empty/"0") is ignored.
-func parseNotifCounts(out string) map[string]NotifCounts {
+func ParseNotificationCounts(out string) map[string]NotifCounts {
 	counts := map[string]NotifCounts{}
 	for line := range strings.SplitSeq(strings.TrimSpace(out), "\n") {
 		parts := strings.SplitN(line, "\t", 2)
