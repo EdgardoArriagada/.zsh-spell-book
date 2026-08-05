@@ -18,6 +18,7 @@ const defaultJiraEnv = {
   ZSB_PARENT_TICKET: "ABC-1",
   ZSB_JIRA_PRIORITY_ID: "3",
   ZSB_JIRA_LABELS: " foo,bar,, baz ",
+  ZSB_JIRA_CONTROL_POINT: "some-control-point",
 };
 
 type RecordedRequest = {
@@ -196,6 +197,7 @@ describe("create-jira-ticket", () => {
     );
     expect(result.requests[0].body.fields.issuetype).toEqual({ id: "10000" });
     expect(result.requests[0].body.fields.labels).toEqual(["foo", "bar", "baz"]);
+    expect(result.requests[0].body.fields.customfield_25390).toEqual(["some-control-point"]);
     expect(result.requests[0].body.fields.description).toEqual({
       type: "doc",
       version: 1,
@@ -264,6 +266,16 @@ describe("create-jira-ticket", () => {
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("You must set ZSB_JIRA_ISSUE_TYPE_IDS first.");
+    expect(result.requests).toHaveLength(0);
+  });
+
+  test("rejects a missing control point", async () => {
+    const result = await runCreateJiraTicket({
+      env: { ZSB_JIRA_CONTROL_POINT: undefined },
+    });
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("You must set ZSB_JIRA_CONTROL_POINT first.");
     expect(result.requests).toHaveLength(0);
   });
 
