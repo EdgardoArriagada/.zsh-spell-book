@@ -13,7 +13,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: get-ticket-row <jira-url>")
+		fmt.Fprintln(os.Stderr, "usage: fetch-jira-ticket <jira-url>")
 		os.Exit(1)
 	}
 
