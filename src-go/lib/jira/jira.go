@@ -4,22 +4,44 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 )
 
-// AppendTicketRow appends parentKey|issueKey|summary to ticketsPath.
 // Returns (existingLine, nil) if already present, (0, nil) on success, (0, err) on write failure.
 func AppendTicketRow(ticketsPath, parentKey, issueKey, summary string) (int, error) {
 	if lnum := findTicketLine(ticketsPath, issueKey); lnum > 0 {
 		return lnum, nil
 	}
-	f, err := os.OpenFile(ticketsPath, os.O_APPEND|os.O_WRONLY, 0644)
+
+	data, err := os.ReadFile(ticketsPath)
 	if err != nil {
 		return 0, fmt.Errorf("open tickets: %w", err)
 	}
-	defer f.Close()
-	_, err = fmt.Fprintf(f, "%s|%s|%s\n", parentKey, issueKey, summary)
-	return 0, err
+
+	row := fmt.Sprintf("%s|%s|%s", parentKey, issueKey, summary)
+	lines := strings.Split(string(data), "\n")
+
+	unmanagedIdx := -1
+	for i, line := range lines {
+		if strings.TrimSpace(line) == "Unmanaged" {
+			unmanagedIdx = i
+			break
+		}
+	}
+
+	var out []byte
+	if unmanagedIdx >= 0 {
+		out = []byte(strings.Join(slices.Insert(lines, unmanagedIdx+1, row), "\n"))
+	} else {
+		suffix := "Unmanaged\n" + row + "\n"
+		if len(data) > 0 && data[len(data)-1] != '\n' {
+			suffix = "\n" + suffix
+		}
+		out = append(data, []byte(suffix)...)
+	}
+
+	return 0, os.WriteFile(ticketsPath, out, 0644)
 }
 
 func findTicketLine(path, issueKey string) int {

@@ -66,3 +66,63 @@ func TestLoadTicketsKeepsPipesInLabel(t *testing.T) {
 		t.Fatalf("label = %q", got)
 	}
 }
+
+func writeTickets(t *testing.T, content string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "tickets")
+	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
+func TestAppendTicketRowCreatesUnmanagedSection(t *testing.T) {
+	path := writeTickets(t, "Current\nP|JIRA-1|First\n")
+
+	if _, err := jira.AppendTicketRow(path, "P", "JIRA-2", "Second"); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "Current\nP|JIRA-1|First\nUnmanaged\nP|JIRA-2|Second\n"
+	if string(got) != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
+func TestAppendTicketRowInsertsAfterUnmanagedHeader(t *testing.T) {
+	path := writeTickets(t, "Current\nP|JIRA-1|First\nUnmanaged\nOther\nP|JIRA-3|Third\n")
+
+	if _, err := jira.AppendTicketRow(path, "P", "JIRA-2", "Second"); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "Current\nP|JIRA-1|First\nUnmanaged\nP|JIRA-2|Second\nOther\nP|JIRA-3|Third\n"
+	if string(got) != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
+func TestAppendTicketRowSkipsDuplicate(t *testing.T) {
+	path := writeTickets(t, "P|JIRA-1|First\n")
+
+	lnum, err := jira.AppendTicketRow(path, "P", "JIRA-1", "First")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if lnum != 1 {
+		t.Fatalf("lnum = %d, want 1", lnum)
+	}
+
+	got, _ := os.ReadFile(path)
+	if string(got) != "P|JIRA-1|First\n" {
+		t.Fatalf("file modified unexpectedly: %q", got)
+	}
+}
