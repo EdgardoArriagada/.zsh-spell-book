@@ -48,9 +48,9 @@ cd src-go && go test ./...               # Test everything
 
 4. **Rust layer** (`src-rust/`): CLI tools as crates under `src-rust/cmd/`. Uses Cargo workspace. Shared libraries go in `src-rust/lib/`.
 
-**Key Go commands (TUI, Bubble Tea):** `gitworktree`, `gitbranch`, `zsb_tmux_jira_picker`. Also: `airbnb_calculator`.
+**Key Go commands (TUI, Bubble Tea):** `gitworktree`, `gitbranch`, `zsb_tmux_jira_picker`. Also: `airbnb_calculator`, `create-jira-ticket`, `get-ticket-row`.
 
-**Key Bun commands:** `create-jira-ticket`, `solve-pr-comments`.
+**Key Bun commands:** `solve-pr-comments`.
 
 **Key Rust commands:** `zsb_bundle` (the bundler), `wcase` (text case transformation), `pdoro` (pomodoro daemon), `zsb_charm_tmux_renametab` (renames tmux window to current git repo name), `zsb_charm_tmux_urlopen`.
 
