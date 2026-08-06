@@ -7,6 +7,38 @@ import (
 	"strings"
 )
 
+// AppendTicketRow appends parentKey|issueKey|summary to ticketsPath.
+// Returns (existingLine, nil) if already present, (0, nil) on success, (0, err) on write failure.
+func AppendTicketRow(ticketsPath, parentKey, issueKey, summary string) (int, error) {
+	if lnum := findTicketLine(ticketsPath, issueKey); lnum > 0 {
+		return lnum, nil
+	}
+	f, err := os.OpenFile(ticketsPath, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return 0, fmt.Errorf("open tickets: %w", err)
+	}
+	defer f.Close()
+	_, err = fmt.Fprintf(f, "%s|%s|%s\n", parentKey, issueKey, summary)
+	return 0, err
+}
+
+func findTicketLine(path, issueKey string) int {
+	f, err := os.Open(path)
+	if err != nil {
+		return 0
+	}
+	defer f.Close()
+	needle := "|" + issueKey + "|"
+	sc := bufio.NewScanner(f)
+	for lnum := 1; sc.Scan(); lnum++ {
+		if strings.Contains(sc.Text(), needle) {
+			return lnum
+		}
+	}
+	_ = sc.Err() // ponytail: find-only; 0 = not found, error indistinguishable from miss
+	return 0
+}
+
 type Ticket struct {
 	Title   string
 	Parent  string

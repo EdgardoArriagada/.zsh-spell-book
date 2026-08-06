@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+
+	"example.com/workspace/lib/jira"
 )
 
 const (
@@ -101,6 +103,16 @@ func run(args []string, out io.Writer) error {
 	}
 
 	fmt.Fprintln(out, cfg.baseURL+"/browse/"+key)
+
+	parentKey := cfg.parentTicket
+	if strings.EqualFold(selected.Label, "epic") {
+		parentKey = "xxxxxxxxxxxx"
+	}
+	home := os.Getenv("HOME")
+	if _, err := jira.AppendTicketRow(home+"/temp/tickets", parentKey, key, title); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: could not write ticket row: %v\n", err)
+	}
+
 	return nil
 }
 

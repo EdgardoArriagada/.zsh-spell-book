@@ -1,13 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"example.com/workspace/lib/jira"
 )
 
 func main() {
@@ -42,40 +43,17 @@ func main() {
 		parentKey = "xxxxxxxxxxxx"
 	}
 
-	row := fmt.Sprintf("%s|%s|%s", parentKey, issueKey, summary)
-	fmt.Println(row)
+	fmt.Printf("%s|%s|%s\n", parentKey, issueKey, summary)
 
 	home := os.Getenv("HOME")
-	ticketsPath := home + "/temp/tickets"
-
-	if lnum := findTicketLine(ticketsPath, issueKey); lnum > 0 {
-		fmt.Printf("ticket already on line %d\n", lnum)
-		return
-	}
-
-	f, err := os.OpenFile(ticketsPath, os.O_APPEND|os.O_WRONLY, 0644)
+	lnum, err := jira.AppendTicketRow(home+"/temp/tickets", parentKey, issueKey, summary)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "open tickets:", err)
+		fmt.Fprintln(os.Stderr, "write tickets:", err)
 		os.Exit(1)
 	}
-	defer f.Close()
-	fmt.Fprintln(f, row)
-}
-
-func findTicketLine(path, issueKey string) int {
-	f, err := os.Open(path)
-	if err != nil {
-		return 0
+	if lnum > 0 {
+		fmt.Printf("ticket already on line %d\n", lnum)
 	}
-	defer f.Close()
-	needle := "|" + issueKey + "|"
-	sc := bufio.NewScanner(f)
-	for lnum := 1; sc.Scan(); lnum++ {
-		if strings.Contains(sc.Text(), needle) {
-			return lnum
-		}
-	}
-	return 0
 }
 
 func extractIssueKey(rawURL string) string {
