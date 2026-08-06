@@ -34,7 +34,7 @@ func AppendTicketRow(ticketsPath, parentKey, issueKey, summary string) (int, err
 	if unmanagedIdx >= 0 {
 		out = []byte(strings.Join(slices.Insert(lines, unmanagedIdx+1, row), "\n"))
 	} else {
-		suffix := "Unmanaged\n" + row + "\n"
+		suffix := "\nUnmanaged\n" + row + "\n"
 		if len(data) > 0 && data[len(data)-1] != '\n' {
 			suffix = "\n" + suffix
 		}
