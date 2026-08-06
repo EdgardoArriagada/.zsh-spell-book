@@ -26,6 +26,7 @@ type model struct {
 	err          error
 	current      int // index of current ticket in tickets, -1 if none
 	notifCounts  map[string]jira.NotifCounts
+	statusMsg    string
 }
 
 const defaultAvailableRows = 20

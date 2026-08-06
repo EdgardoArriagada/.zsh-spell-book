@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"example.com/workspace/lib/open"
 	"example.com/workspace/lib/tui"
 
 	tea "charm.land/bubbletea/v2"
@@ -23,6 +24,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if nc, ok := msg.(notifCountsMsg); ok {
 		m.notifCounts = nc
 		return m, tickNotifCountsCmd()
+	}
+	if ob, ok := msg.(openBrowserMsg); ok {
+		if ob.err != nil {
+			m.statusMsg = "open browser: " + ob.err.Error()
+		}
+		return m, nil
 	}
 	if m.mode == tui.SearchMode {
 		return m.updateSearch(msg)
@@ -48,6 +55,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if !ok {
 		return m, nil
 	}
+	m.statusMsg = ""
 	switch km.String() {
 	case "q", "ctrl+c", "esc":
 		return m, tea.Quit
@@ -84,6 +92,16 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = &t
 		}
 		return m, tea.Quit
+	case "C":
+		if len(m.filtered) == 0 {
+			return m, nil
+		}
+		baseURL := strings.TrimRight(os.Getenv("ZSB_JIRA_BASEURL"), "/")
+		if baseURL == "" {
+			m.statusMsg = "ZSB_JIRA_BASEURL not set"
+			return m, nil
+		}
+		return m, openBrowserCmd(baseURL+"/browse/"+m.filtered[m.cursor].Current)
 	case "ctrl+g":
 		if len(m.filtered) == 0 {
 			return m, nil
@@ -96,6 +114,12 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		})
 	}
 	return m, nil
+}
+
+type openBrowserMsg struct{ err error }
+
+func openBrowserCmd(url string) tea.Cmd {
+	return func() tea.Msg { return openBrowserMsg{err: open.Url(url)} }
 }
 
 func editTicketsCmd(editor, filename string, line int) *exec.Cmd {

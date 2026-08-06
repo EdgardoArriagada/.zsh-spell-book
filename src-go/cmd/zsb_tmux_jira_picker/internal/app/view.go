@@ -13,6 +13,9 @@ import (
 )
 
 func (m model) statusSection() string {
+	if m.statusMsg != "" {
+		return "\n" + tui.ErrStyle.Render("  "+m.statusMsg) + "\n"
+	}
 	if m.mode == tui.SearchMode {
 		return tui.RenderSearchInput(m.searchInput)
 	}
