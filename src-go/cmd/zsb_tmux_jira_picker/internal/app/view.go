@@ -67,7 +67,7 @@ func (m model) render() string {
 	var s strings.Builder
 	s.Grow((end - m.vp.Offset) * 80)
 	if showUp {
-		s.WriteString(tui.CursorStyle.Render("  ") + "\n")
+		s.WriteString(blinkArrow(m.blinkOn, tui.CursorStyle.Render("  ")))
 	}
 	for i, t := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
@@ -122,12 +122,19 @@ func (m model) render() string {
 		s.WriteString(strings.Repeat("\n", padding))
 	}
 	if showDown {
-		s.WriteString(tui.CursorStyle.Render("  ") + "\n")
+		s.WriteString(blinkArrow(m.blinkOn, tui.CursorStyle.Render("  ")))
 	}
 
 	s.WriteString(statusSec)
 	s.WriteString(footerSec)
 	return s.String()
+}
+
+func blinkArrow(on bool, arrow string) string {
+	if on {
+		return arrow + "\n"
+	}
+	return "\n"
 }
 
 // ticketViewport reserves rows for scroll indicators only when needed.

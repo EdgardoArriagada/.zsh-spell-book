@@ -25,6 +25,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.notifCounts = nc
 		return m, tickNotifCountsCmd()
 	}
+	if _, ok := msg.(blinkMsg); ok {
+		m.blinkOn = !m.blinkOn
+		return m, blinkCmd()
+	}
 	if ob, ok := msg.(openBrowserMsg); ok {
 		if ob.err != nil {
 			m.statusMsg = "open browser: " + ob.err.Error()

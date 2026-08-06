@@ -27,6 +27,7 @@ type model struct {
 	current      int // index of current ticket in tickets, -1 if none
 	notifCounts  map[string]jira.NotifCounts
 	statusMsg    string
+	blinkOn      bool
 }
 
 const defaultAvailableRows = 20
@@ -43,6 +44,12 @@ func tickNotifCountsCmd() tea.Cmd {
 	return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
 		return notifCountsMsg(jira.LoadNotificationCounts())
 	})
+}
+
+type blinkMsg struct{}
+
+func blinkCmd() tea.Cmd {
+	return tea.Tick(500*time.Millisecond, func(time.Time) tea.Msg { return blinkMsg{} })
 }
 
 func (m model) filterTickets(term string) []jira.Ticket {
@@ -87,4 +94,4 @@ func initialModel() model {
 	return m
 }
 
-func (m model) Init() tea.Cmd { return loadNotifCountsCmd }
+func (m model) Init() tea.Cmd { return tea.Batch(loadNotifCountsCmd, blinkCmd()) }
