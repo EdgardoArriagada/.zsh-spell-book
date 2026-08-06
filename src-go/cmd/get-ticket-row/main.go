@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -45,13 +46,36 @@ func main() {
 	fmt.Println(row)
 
 	home := os.Getenv("HOME")
-	f, err := os.OpenFile(home+"/temp/tickets", os.O_APPEND|os.O_WRONLY, 0644)
+	ticketsPath := home + "/temp/tickets"
+
+	if lnum := findTicketLine(ticketsPath, issueKey); lnum > 0 {
+		fmt.Printf("ticket already on line %d\n", lnum)
+		return
+	}
+
+	f, err := os.OpenFile(ticketsPath, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "open tickets:", err)
 		os.Exit(1)
 	}
 	defer f.Close()
 	fmt.Fprintln(f, row)
+}
+
+func findTicketLine(path, issueKey string) int {
+	f, err := os.Open(path)
+	if err != nil {
+		return 0
+	}
+	defer f.Close()
+	needle := "|" + issueKey + "|"
+	sc := bufio.NewScanner(f)
+	for lnum := 1; sc.Scan(); lnum++ {
+		if strings.Contains(sc.Text(), needle) {
+			return lnum
+		}
+	}
+	return 0
 }
 
 func extractIssueKey(rawURL string) string {
