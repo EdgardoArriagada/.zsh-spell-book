@@ -70,26 +70,26 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor + 1) % len(m.filtered)
 		}
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "k", "up", "shift+tab":
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "ctrl+d":
 		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availRows, 1)
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "ctrl+u":
 		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availRows, -1)
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "g":
 		m.cursor = 0
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "G":
 		if len(m.filtered) > 0 {
 			m.cursor = len(m.filtered) - 1
 		}
-		m = m.clampViewport()
+		return m.clampViewport(), nil
 	case "enter":
 		if len(m.filtered) > 0 {
 			t := m.filtered[m.cursor]
@@ -97,44 +97,56 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	case "O":
-		if len(m.filtered) == 0 {
-			return m, nil
-		}
-		baseURL := strings.TrimRight(os.Getenv("ZSB_JIRA_BASEURL"), "/")
-		if baseURL == "" {
-			m.statusMsg = "ZSB_JIRA_BASEURL not set"
-			return m, nil
-		}
-		return m, openBrowserCmd(baseURL + "/browse/" + m.filtered[m.cursor].Current)
+		return m.handleOpenBrowser()
 	case "alt+j":
-		if len(m.filtered) == 0 {
-			return m, nil
-		}
-		ticketsDir := os.Getenv("ZSB_TICKETS_DIR")
-		if ticketsDir == "" {
-			m.statusMsg = "ZSB_TICKETS_DIR not set"
-			return m, nil
-		}
-		t := m.filtered[m.cursor]
-		notesPath := filepath.Join(ticketsDir, t.Parent, t.Current, "NOTES.md")
-		if _, err := os.Stat(notesPath); os.IsNotExist(err) {
-			m.statusMsg = "Notes not found"
-			return m, nil
-		}
-		cmd := openNotesCmd(os.Getenv("EDITOR"), notesPath)
-		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
-			return tui.EditorDoneMsg{Err: err}
-		})
+		return m.handleOpenNotes()
 	case "ctrl+g":
-		if len(m.filtered) == 0 {
-			return m, nil
-		}
-		cmd := editTicketsCmd(os.Getenv("EDITOR"), os.Getenv("HOME")+"/temp/tickets", m.filtered[m.cursor].Line)
-		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
-			return tui.EditorDoneMsg{Err: err}
-		})
+		return m.handleEditTickets()
 	}
 	return m, nil
+}
+
+func (m model) handleOpenBrowser() (tea.Model, tea.Cmd) {
+	if len(m.filtered) == 0 {
+		return m, nil
+	}
+	baseURL := strings.TrimRight(os.Getenv("ZSB_JIRA_BASEURL"), "/")
+	if baseURL == "" {
+		m.statusMsg = "ZSB_JIRA_BASEURL not set"
+		return m, nil
+	}
+	return m, openBrowserCmd(baseURL + "/browse/" + m.filtered[m.cursor].Current)
+}
+
+func (m model) handleOpenNotes() (tea.Model, tea.Cmd) {
+	if len(m.filtered) == 0 {
+		return m, nil
+	}
+	ticketsDir := os.Getenv("ZSB_TICKETS_DIR")
+	if ticketsDir == "" {
+		m.statusMsg = "ZSB_TICKETS_DIR not set"
+		return m, nil
+	}
+	t := m.filtered[m.cursor]
+	notesPath := filepath.Join(ticketsDir, t.Parent, t.Current, "NOTES.md")
+	if _, err := os.Stat(notesPath); os.IsNotExist(err) {
+		m.statusMsg = "Notes not found"
+		return m, nil
+	}
+	cmd := openNotesCmd(os.Getenv("EDITOR"), notesPath)
+	return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
+		return tui.EditorDoneMsg{Err: err}
+	})
+}
+
+func (m model) handleEditTickets() (tea.Model, tea.Cmd) {
+	if len(m.filtered) == 0 {
+		return m, nil
+	}
+	cmd := editTicketsCmd(os.Getenv("EDITOR"), os.Getenv("HOME")+"/temp/tickets", m.filtered[m.cursor].Line)
+	return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
+		return tui.EditorDoneMsg{Err: err}
+	})
 }
 
 type openBrowserMsg struct{ err error }
