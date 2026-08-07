@@ -106,6 +106,21 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		return m, openBrowserCmd(baseURL+"/browse/"+m.filtered[m.cursor].Current)
+	case "alt+j":
+		if len(m.filtered) == 0 {
+			return m, nil
+		}
+		ticketsDir := os.Getenv("ZSB_TICKETS_DIR")
+		if ticketsDir == "" {
+			m.statusMsg = "ZSB_TICKETS_DIR not set"
+			return m, nil
+		}
+		t := m.filtered[m.cursor]
+		notesPath := filepath.Join(ticketsDir, t.Parent, t.Current, "NOTES.md")
+		cmd := openNotesCmd(os.Getenv("EDITOR"), notesPath)
+		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
+			return tui.EditorDoneMsg{Err: err}
+		})
 	case "ctrl+g":
 		if len(m.filtered) == 0 {
 			return m, nil
@@ -124,6 +139,18 @@ type openBrowserMsg struct{ err error }
 
 func openBrowserCmd(url string) tea.Cmd {
 	return func() tea.Msg { return openBrowserMsg{err: open.Url(url)} }
+}
+
+func openNotesCmd(editor, notesPath string) *exec.Cmd {
+	parts := strings.Fields(editor)
+	if len(parts) == 0 {
+		parts = []string{"vi"}
+	}
+	args := parts[1:]
+	if filepath.Base(parts[0]) == "nvim" {
+		args = append(args, "-c", "cd "+filepath.Dir(notesPath))
+	}
+	return exec.Command(parts[0], append(args, notesPath)...)
 }
 
 func editTicketsCmd(editor, filename string, line int) *exec.Cmd {
