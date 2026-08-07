@@ -96,7 +96,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = &t
 		}
 		return m, tea.Quit
-	case "C":
+	case "O":
 		if len(m.filtered) == 0 {
 			return m, nil
 		}
