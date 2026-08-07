@@ -90,6 +90,23 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = len(m.filtered) - 1
 		}
 		return m.clampViewport(), nil
+	case "H":
+		if len(m.filtered) > 0 {
+			m.cursor = m.vp.Offset
+		}
+		return m.clampViewport(), nil
+	case "M":
+		if len(m.filtered) > 0 {
+			end, _, _, _ := ticketViewport(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
+			m.cursor = m.vp.Offset + (end-1-m.vp.Offset)/2
+		}
+		return m.clampViewport(), nil
+	case "L":
+		if len(m.filtered) > 0 {
+			end, _, _, _ := ticketViewport(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
+			m.cursor = end - 1
+		}
+		return m.clampViewport(), nil
 	case "enter":
 		if len(m.filtered) > 0 {
 			t := m.filtered[m.cursor]
