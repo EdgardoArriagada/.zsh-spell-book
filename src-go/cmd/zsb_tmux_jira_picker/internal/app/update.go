@@ -117,6 +117,10 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		t := m.filtered[m.cursor]
 		notesPath := filepath.Join(ticketsDir, t.Parent, t.Current, "NOTES.md")
+		if _, err := os.Stat(notesPath); os.IsNotExist(err) {
+			m.statusMsg = "Notes not found"
+			return m, nil
+		}
 		cmd := openNotesCmd(os.Getenv("EDITOR"), notesPath)
 		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
 			return tui.EditorDoneMsg{Err: err}
