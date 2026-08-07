@@ -13,15 +13,15 @@ ${zsb}_createCurrentDir() {
 alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
 alias cinit='cdcurrent'
 
-alias vrepos="nvim $ZSB_CURRENT_TICKET_DIR/.repos"
-alias anchor="print -P %~ >> $ZSB_CURRENT_TICKET_DIR/.repos && ${zsb}.success 'Added to repos!'"
+alias vanchors="nvim $ZSB_CURRENT_TICKET_DIR/.anchors"
+alias anchor="print -P %~ >> $ZSB_CURRENT_TICKET_DIR/.anchors && ${zsb}.success 'Added to anchors!'"
 
 cdc() {
-  local repos=$ZSB_CURRENT_TICKET_DIR/.repos
-  [[ ! -f $repos ]] && ${zsb}.throw "`hl $repos` not set"
+  local anchors=$ZSB_CURRENT_TICKET_DIR/.anchors
+  [[ ! -f $anchors ]] && ${zsb}.throw "`hl $anchors` not set"
 
   local -a entries
-  entries=("${(@f)$(grep -v '^[[:space:]]*$' $repos)}")
+  entries=("${(@f)$(grep -v '^[[:space:]]*$' $anchors)}")
 
   local selection
   if (( ${#entries} == 1 ))
@@ -38,8 +38,7 @@ cdc() {
   fi
 }
 
-hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc vrepos
-
+hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc vanchors anchor
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
