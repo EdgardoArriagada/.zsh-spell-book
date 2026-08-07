@@ -14,6 +14,7 @@ alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
 alias cinit='cdcurrent'
 
 alias vrepos="nvim $ZSB_CURRENT_TICKET_DIR/.repos"
+alias anchor="print -P %~ >> $ZSB_CURRENT_TICKET_DIR/.repos && ${zsb}.success 'Added to repos!'"
 
 cdc() {
   local repos=$ZSB_CURRENT_TICKET_DIR/.repos
