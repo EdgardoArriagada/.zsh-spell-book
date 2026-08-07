@@ -146,7 +146,7 @@ func openNotesCmd(editor, notesPath string) *exec.Cmd {
 	}
 	args := parts[1:]
 	if filepath.Base(parts[0]) == "nvim" {
-		args = append(args, "-c", "cd "+filepath.Dir(notesPath))
+		args = append(args, "+let g:zsb_prevent_renametab = 1", "-c", "cd "+filepath.Dir(notesPath))
 	}
 	return exec.Command(parts[0], append(args, notesPath)...)
 }
@@ -158,7 +158,7 @@ func editTicketsCmd(editor, filename string, line int) *exec.Cmd {
 	}
 	args := parts[1:]
 	if filepath.Base(parts[0]) == "nvim" {
-		args = append(args, "+"+strconv.Itoa(line))
+		args = append(args, "+let g:zsb_prevent_renametab = 1", "+"+strconv.Itoa(line))
 	}
 	return exec.Command(parts[0], append(args, filename)...)
 }
