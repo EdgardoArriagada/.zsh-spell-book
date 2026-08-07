@@ -105,7 +105,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.statusMsg = "ZSB_JIRA_BASEURL not set"
 			return m, nil
 		}
-		return m, openBrowserCmd(baseURL+"/browse/"+m.filtered[m.cursor].Current)
+		return m, openBrowserCmd(baseURL + "/browse/" + m.filtered[m.cursor].Current)
 	case "alt+j":
 		if len(m.filtered) == 0 {
 			return m, nil
@@ -125,9 +125,7 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if len(m.filtered) == 0 {
 			return m, nil
 		}
-		home := os.Getenv("HOME")
-		editor := os.Getenv("EDITOR")
-		cmd := editTicketsCmd(editor, home+"/temp/tickets", m.filtered[m.cursor].Line)
+		cmd := editTicketsCmd(os.Getenv("EDITOR"), os.Getenv("HOME")+"/temp/tickets", m.filtered[m.cursor].Line)
 		return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
 			return tui.EditorDoneMsg{Err: err}
 		})
