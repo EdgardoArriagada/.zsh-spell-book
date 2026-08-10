@@ -11,12 +11,12 @@ ${zsb}_createCurrentDir() {
 }
 
 alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
-alias cinit='cdcurrent'
+alias cdc='cdcurrent'
 
 alias vanchors="nvim $ZSB_CURRENT_TICKET_DIR/.anchors"
 alias anchor="print -P %~ >> $ZSB_CURRENT_TICKET_DIR/.anchors && ${zsb}.success 'Added to anchors!'"
 
-cdc() {
+cda() {
   local anchors=$ZSB_CURRENT_TICKET_DIR/.anchors
   [[ ! -f $anchors ]] && ${zsb}.throw "`hl $anchors` not set"
 
@@ -38,7 +38,7 @@ cdc() {
   fi
 }
 
-hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc vanchors anchor
+hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc cda vanchors anchor
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
