@@ -100,6 +100,8 @@ func Run(args []string) int {
 		switch args[0] {
 		case "--finished":
 			mode = "finished"
+		case "--force-finished":
+			mode = "force-finished"
 		case "--working":
 			mode = "working"
 		case "--clear-finished":
@@ -134,6 +136,8 @@ func Run(args []string) int {
 		case "0", "":
 			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "3").Run() //nolint:errcheck
 		}
+	case "force-finished":
+		exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "1").Run() //nolint:errcheck
 	default: // finished
 		if paneIsFocused(pane) {
 			// Already watching: clear working state without ringing the bell.
