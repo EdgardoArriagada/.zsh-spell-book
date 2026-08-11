@@ -9,17 +9,20 @@ import (
 func TestParseNotifCounts(t *testing.T) {
 	out := "sess-a\t1\n" +
 		"sess-a\t2\n" +
+		"sess-a\t3\n" +
 		"sess-a\t0\n" +
 		"sess-b\t2\n" +
 		"sess-b\t2\n" +
 		"sess-c\t\n" + // unset/empty → ignored
-		"sess-c\t1\n"
+		"sess-c\t1\n" +
+		"sess-d\t3\n"
 
 	got := jira.ParseNotificationCounts(out)
 	want := map[string]jira.NotifCounts{
-		"sess-a": {Working: 1, Finished: 1},
+		"sess-a": {Working: 1, Finished: 1, Manual: 1},
 		"sess-b": {Working: 2},
 		"sess-c": {Finished: 1},
+		"sess-d": {Manual: 1},
 	}
 
 	if len(got) != len(want) {

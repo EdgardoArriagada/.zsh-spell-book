@@ -9,9 +9,11 @@ func TestBaseName(t *testing.T) {
 		{"no suffix", "myrepo", "myrepo"},
 		{"finished only", "myrepo" + finishedSuffix, "myrepo"},
 		{"working only", "myrepo" + workingSuffix, "myrepo"},
+		{"manual only", "myrepo" + manualSuffix, "myrepo"},
 		{"both working then finished", "myrepo" + workingSuffix + finishedSuffix, "myrepo"},
 		{"both finished then working", "myrepo" + finishedSuffix + workingSuffix, "myrepo"},
 		{"double finished", "myrepo" + finishedSuffix + finishedSuffix, "myrepo"},
+		{"all three suffixes", "myrepo" + workingSuffix + finishedSuffix + manualSuffix, "myrepo"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

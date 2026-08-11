@@ -27,10 +27,11 @@ func (m model) footerSection() string {
 	if m.mode == tui.SearchMode {
 		return tui.SearchFooter()
 	}
-	working, finished := 0, 0
+	working, finished, manual := 0, 0, 0
 	for _, c := range m.notifCounts {
 		working += c.Working
 		finished += c.Finished
+		manual += c.Manual
 	}
 	return "  " + tui.Hint("↑/↓", "navigate") + sep +
 		tui.Hint("enter", "select") + sep +
@@ -41,6 +42,8 @@ func (m model) footerSection() string {
 		tui.Hint("󰔟", strconv.Itoa(working)) +
 		tui.DimStyle.Render(" · ") +
 		tui.Hint("󰂚", strconv.Itoa(finished)) +
+		tui.DimStyle.Render(" · ") +
+		tui.Hint("󰹇", strconv.Itoa(manual)) +
 		tui.DimStyle.Render(")")
 }
 
@@ -82,7 +85,7 @@ func (m model) render() string {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 		const cursorWidth = 3
-		const badgeReserve = 11          // "  ●" (3) + " 999" working + " 999" finished (~4 each)
+		const badgeReserve = 15          // "  ●" (3) + " 999" working + " 999" finished + " 999" manual (~4 each)
 		fixedWidth := len(t.Current) + 2 // ponytail: JIRA IDs are ASCII-only, byte len == rune len
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
 		line := t.Current + ": " + label
@@ -105,6 +108,9 @@ func (m model) render() string {
 		}
 		if c.Finished > 0 {
 			renderedLine += tui.NotifBadge.Render(" " + strconv.Itoa(c.Finished))
+		}
+		if c.Manual > 0 {
+			renderedLine += tui.NotifManual.Render(" " + strconv.Itoa(c.Manual))
 		}
 		s.WriteString(cursor)
 		s.WriteString(renderedLine)

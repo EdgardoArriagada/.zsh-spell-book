@@ -1,9 +1,9 @@
 # zsb_tmux_agent_notification
 
 Per-pane notification **state**, stored as a tmux **pane user option** (`@zsb_agent_notif`).
-Tri-state: `0` idle · `1` finished · `2` working. `zsb_tmux_jira_picker` reads it per session
-and shows a **blue** count (agents still working) beside a **red** count (agents finished /
-needs attention).
+Quad-state: `0` idle · `1` finished · `2` working · `3` manual. `zsb_tmux_jira_picker` reads
+it per session and shows a **blue** count (working), **red** count (finished), and **yellow**
+count (manually flagged).
 
 State lives in the running tmux server (in-memory, dies with tmux). No sqlite, no files,
 no deps.
@@ -11,7 +11,7 @@ no deps.
 ## Command
 
 ```
-zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
+zsb_tmux_agent_notification [--finished|--working|--clear-finished|--manual] <session_name> <pane_id>
 ```
 
 - **`--finished`** (default when no flag): set `@zsb_agent_notif` = `1` (red). If the pane is
@@ -19,8 +19,10 @@ zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_nam
 - **`--working`**: set `@zsb_agent_notif` = `2` (blue). Does **not** skip on focus — its hook
   fires while the pane is still focused at submit time, before you switch away.
 - **`--clear-finished`**: reset `@zsb_agent_notif` = `0` **only if it's `1` (finished)**. A
-  working pane (`2`) is left untouched, so the blue badge survives focus and persists until
-  the agent finishes.
+  working (`2`) or manually-flagged (`3`) pane is left untouched.
+- **`--manual`**: toggle `@zsb_agent_notif` between `0` and `3` (yellow). No-op if the pane
+  is working (`2`) or finished (`1`) — those states take priority. `--finished` and `--working`
+  override `3` normally.
 - `<pane_id>` identifies the pane (and its session). `<session_name>` is accepted to match
   the tmux hook format string but is **unused** — pass anything (`_`).
 

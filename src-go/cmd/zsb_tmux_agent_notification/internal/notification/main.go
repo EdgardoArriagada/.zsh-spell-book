@@ -8,6 +8,7 @@ import (
 const notifOpt = "@zsb_agent_notif"
 const finishedSuffix = " 󰂚" // bell — agent finished / needs attention
 const workingSuffix = " 󰔟"  // hourglass — agent still working
+const manualSuffix = " 󰹇"   // flag — manually flagged
 
 func paneNotif(pane string) string {
 	out, _ := exec.Command("tmux", "show-options", "-pqv", "-t", pane, notifOpt).Output()
@@ -43,17 +44,19 @@ func baseName(name string) string {
 			name = strings.TrimSuffix(name, finishedSuffix)
 		case strings.HasSuffix(name, workingSuffix):
 			name = strings.TrimSuffix(name, workingSuffix)
+		case strings.HasSuffix(name, manualSuffix):
+			name = strings.TrimSuffix(name, manualSuffix)
 		default:
 			return name
 		}
 	}
 }
 
-// windowStates reports whether any pane in the window is finished (1) or working (2).
-func windowStates(winID string) (finished, working bool) {
+// windowStates reports whether any pane in the window is finished (1), working (2), or manual (3).
+func windowStates(winID string) (finished, working, manual bool) {
 	out, err := exec.Command("tmux", "list-panes", "-t", winID, "-F", "#{@zsb_agent_notif}").Output()
 	if err != nil {
-		return false, false
+		return false, false, false
 	}
 	for line := range strings.SplitSeq(strings.TrimSpace(string(out)), "\n") {
 		switch strings.TrimSpace(line) {
@@ -61,15 +64,17 @@ func windowStates(winID string) (finished, working bool) {
 			finished = true
 		case "2":
 			working = true
+		case "3":
+			manual = true
 		}
 	}
-	return finished, working
+	return finished, working, manual
 }
 
 // refreshWindowName recomputes the window-name suffixes from the window's pane
 // states: working glyph first, then finished bell. Renames only if changed.
 func refreshWindowName(pane string) {
-	finished, working := windowStates(windowID(pane))
+	finished, working, manual := windowStates(windowID(pane))
 	cur := windowName(pane)
 	want := baseName(cur)
 	if working {
@@ -77,6 +82,9 @@ func refreshWindowName(pane string) {
 	}
 	if finished {
 		want += finishedSuffix
+	}
+	if manual {
+		want += manualSuffix
 	}
 	if want != cur {
 		exec.Command("tmux", "rename-window", "-t", pane, want).Run() //nolint:errcheck
@@ -96,6 +104,8 @@ func Run(args []string) int {
 			mode = "working"
 		case "--clear-finished":
 			mode = "clear-finished"
+		case "--manual":
+			mode = "manual"
 		default:
 			return 1
 		}
@@ -108,8 +118,7 @@ func Run(args []string) int {
 
 	switch mode {
 	case "clear-finished":
-		// Only clear the finished (1) state; leave a working (2) pane alone so
-		// the blue "still working" badge persists until the agent finishes.
+		// Only clear the finished (1) state; leave working (2) and manual (3) alone.
 		if paneNotif(pane) == "1" {
 			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "0").Run() //nolint:errcheck
 		}
@@ -117,6 +126,14 @@ func Run(args []string) int {
 		// working fires while the pane is still focused (at submit time); don't
 		// skip on focus — the focus-out/next --clear resets it.
 		exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "2").Run() //nolint:errcheck
+	case "manual":
+		// Toggle: 3 → 0, 0 → 3. Ignore if pane is working (2) or finished (1).
+		switch paneNotif(pane) {
+		case "3":
+			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "0").Run() //nolint:errcheck
+		case "0", "":
+			exec.Command("tmux", "set-option", "-p", "-t", pane, notifOpt, "3").Run() //nolint:errcheck
+		}
 	default: // finished
 		if paneIsFocused(pane) {
 			// Already watching: clear working state without ringing the bell.

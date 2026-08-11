@@ -17,6 +17,7 @@ var (
 	KeyStyle      lipgloss.Style
 	NotifBadge    lipgloss.Style
 	NotifWorking  lipgloss.Style
+	NotifManual   lipgloss.Style
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	KeyStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)  // yellow bold — key hints
 	NotifBadge    = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true)  // red — finished notifications
 	NotifWorking  = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Bold(true)  // blue1 — agents still working
+	NotifManual   = KeyStyle
 }
 
 func Title(text string) string {

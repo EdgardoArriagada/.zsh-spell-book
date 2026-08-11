@@ -61,10 +61,12 @@ func SanitizeTmuxID(s string) string {
 }
 
 // NotifCounts is the per-session tally of agent notification states:
-// panes finished (value 1, red badge) and still working (value 2, blue badge).
+// panes finished (value 1, red badge), still working (value 2, blue badge),
+// or manually flagged (value 3, yellow badge).
 type NotifCounts struct {
 	Working  int
 	Finished int
+	Manual   int
 }
 
 func LoadNotificationCounts() map[string]NotifCounts {
@@ -91,6 +93,8 @@ func ParseNotificationCounts(out string) map[string]NotifCounts {
 			c.Finished++
 		case "2":
 			c.Working++
+		case "3":
+			c.Manual++
 		default:
 			continue
 		}
