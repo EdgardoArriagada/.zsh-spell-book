@@ -81,9 +81,16 @@ rust-test-all:
 .PHONY: agents-sync-skills
 agents-sync-skills:
 	@for target in "$(HOME)/.claude/skills" "$(HOME)/.agents/skills" "$(HOME)/.codex/skills"; do \
-		if [[ ! -d "$$target" ]]; then echo "warning: $$target missing; skipped"; continue; fi; \
+		if [[ ! -d "$$target" ]]; then echo "⚠️  warning: $$target missing; skipped"; continue; fi; \
 		for skill in src-agents/skills/*; do \
-			[[ -d "$$skill" ]] || continue; link="$$target/$${skill##*/}"; \
-			if [[ -L "$$link" && "$$(cd -P "$$link" && pwd)" == "$(CURDIR)/$$skill" ]]; then echo "skill already set: $$link"; elif [[ -e "$$link" || -L "$$link" ]]; then echo "skip because exists: $$link"; else ln -s "$(CURDIR)/$$skill" "$$link" && echo "skill added: $$link"; fi; \
+			[[ -d "$$skill" ]] || continue; \
+			link="$$target/$${skill##*/}"; \
+			if [[ -L "$$link" && "$$(readlink "$$link")" == "$(CURDIR)/$$skill" ]]; then \
+				echo "✅ skill already set: $$link"; \
+			elif [[ -e "$$link" || -L "$$link" ]]; then \
+				echo "🚫 skip because exists: $$link"; \
+			else \
+				ln -s "$(CURDIR)/$$skill" "$$link" && echo "🔗 skill added: $$link"; \
+			fi; \
 		done; \
 	done
