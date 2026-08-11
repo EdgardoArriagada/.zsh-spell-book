@@ -98,6 +98,10 @@ func refreshWindowName(pane string) {
 	}
 }
 
+func setPaneState(pane string, state string) {
+	exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, state).Run() //nolint:errcheck
+}
+
 // zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
 // pane_id identifies the pane (and its session); session_name matches the hook
 // signature but is unused. No flag defaults to --finished.
@@ -116,28 +120,28 @@ func Run(args []string) int {
 	case "", "--finished":
 		// Already watching: clear working state without ringing the bell.
 		if paneIsFocused(pane) {
-			exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, CLEAR).Run() //nolint:errcheck
+			setPaneState(pane, CLEAR)
 		} else {
-			exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, FINISHED).Run() //nolint:errcheck
+			setPaneState(pane, FINISHED)
 		}
 	case "--force-finished":
-		exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, FINISHED).Run() //nolint:errcheck
+		setPaneState(pane, FINISHED)
 	case "--working":
 		// working fires while the pane is still focused (at submit time); don't
 		// skip on focus — the focus-out/next --clear resets it.
-		exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, WORKING).Run() //nolint:errcheck
+		setPaneState(pane, WORKING)
 	case "--clear-finished":
 		// Only clear the finished (1) state; leave working (2) and manual (3) alone.
 		if paneNotif(pane) == FINISHED {
-			exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, CLEAR).Run() //nolint:errcheck
+			setPaneState(pane, CLEAR)
 		}
 	case "--manual":
 		// Toggle: 3 → 0, 0 → 3. Ignore if pane is working (2) or finished (1).
 		switch paneNotif(pane) {
 		case MANUAL:
-			exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, CLEAR).Run() //nolint:errcheck
+			setPaneState(pane, CLEAR)
 		case CLEAR, "":
-			exec.Command("tmux", "set-option", "-p", "-t", pane, NOTIF_VAR, MANUAL).Run() //nolint:errcheck
+			setPaneState(pane, MANUAL)
 		}
 	default:
 		return 1
