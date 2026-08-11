@@ -86,7 +86,7 @@ func TestRenderShowsScrollIndicatorsAndUsesViewport(t *testing.T) {
 	for i := range tickets {
 		tickets[i] = jira.Ticket{Current: "JIRA", Label: "ticket"}
 	}
-	m := model{tickets: tickets, filtered: tickets, current: -1, width: 80, availRows: 3, searchInput: tui.NewSearchInput()}
+	m := model{tickets: tickets, filtered: tickets, current: -1, width: 80, availRows: 3, blinkOn: true, searchInput: tui.NewSearchInput()}
 	if got := m.render(); strings.Count(got, "JIRA:") != 2 || !strings.Contains(got, "") || !strings.HasSuffix(got, m.footerSection()) {
 		t.Fatalf("first page = %q", got)
 	}

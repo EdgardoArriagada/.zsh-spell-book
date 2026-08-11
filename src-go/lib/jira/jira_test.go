@@ -87,7 +87,7 @@ func TestAppendTicketRowCreatesUnmanagedSection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := "Current\nP|JIRA-1|First\nUnmanaged\nP|JIRA-2|Second\n"
+	want := "Current\nP|JIRA-1|First\n\nUnmanaged\nP|JIRA-2|Second\n"
 	if string(got) != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
