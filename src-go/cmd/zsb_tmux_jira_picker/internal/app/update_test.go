@@ -13,7 +13,7 @@ import (
 
 func TestEditTicketsCmdStartsNvimAtTicketLine(t *testing.T) {
 	cmd := editTicketsCmd("nvim --clean", "/tmp/tickets", 4)
-	if got, want := cmd.Args, []string{"nvim", "--clean", "+4", "/tmp/tickets"}; !slices.Equal(got, want) {
+	if got, want := cmd.Args, []string{"nvim", "--clean", "+let g:zsb_prevent_renametab = 1", "+4", "/tmp/tickets"}; !slices.Equal(got, want) {
 		t.Fatalf("args = %q, want %q", got, want)
 	}
 }
