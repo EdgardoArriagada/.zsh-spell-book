@@ -112,11 +112,11 @@ set-hook -g pane-focus-in 'run-shell "zsb_tmux_agent_notification --clear-finish
 
 ## Build / install
 
-Binary must be on `PATH` (repo ships `src-go/bin` on `PATH`, see repo README). Built by the
+Binary must be on `PATH` (repo ships `src-rust/bin` on `PATH`, see repo README). Built by the
 auto-build server on change, or manually:
 
 ```sh
-make go-build zsb_tmux_agent_notification
+make rust-build zsb_tmux_agent_notification
 ```
 
 ## Verify

@@ -1,0 +1,4 @@
+[package]
+name = "zsb_tmux_agent_notification"
+version = "0.1.0"
+edition = "2021"

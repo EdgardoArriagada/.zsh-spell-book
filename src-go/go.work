@@ -7,7 +7,6 @@ use (
 	./cmd/gitbranch
 	./cmd/gitworktree
 	./cmd/tmdiff
-	./cmd/zsb_tmux_agent_notification
 	./cmd/zsb_tmux_jira_picker
 	./lib/args
 	./lib/git
