@@ -105,6 +105,45 @@ func setPaneState(pane string, state string) {
 // zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
 // pane_id identifies the pane (and its session); session_name matches the hook
 // signature but is unused. No flag defaults to --finished.
+func applyFlag(flag, pane string) bool {
+	switch flag {
+	case "", "--finished":
+		// Already watching: clear working state without ringing the bell.
+		if paneIsFocused(pane) {
+			setPaneState(pane, CLEAR)
+		} else {
+			setPaneState(pane, FINISHED)
+		}
+
+    return true
+	case "--force-finished":
+		setPaneState(pane, FINISHED)
+    return true
+	case "--working":
+		// working fires while the pane is still focused (at submit time); don't
+		// skip on focus — the focus-out/next --clear resets it.
+		setPaneState(pane, WORKING)
+    return true
+	case "--clear-finished":
+		// Only clear the finished (1) state; leave working (2) and manual (3) alone.
+		if paneNotif(pane) == FINISHED {
+			setPaneState(pane, CLEAR)
+		}
+    return true
+	case "--manual":
+		// Toggle: 3 → 0, 0 → 3. Ignore if pane is working (2) or finished (1).
+		switch paneNotif(pane) {
+		case MANUAL:
+			setPaneState(pane, CLEAR)
+		case CLEAR, "":
+			setPaneState(pane, MANUAL)
+		}
+    return true
+	default:
+		return false
+	}
+}
+
 func Run(args []string) int {
 	flag := ""
 	if len(args) > 0 && strings.HasPrefix(args[0], "--") {
@@ -116,34 +155,7 @@ func Run(args []string) int {
 	}
 	pane := args[1]
 
-	switch flag {
-	case "", "--finished":
-		// Already watching: clear working state without ringing the bell.
-		if paneIsFocused(pane) {
-			setPaneState(pane, CLEAR)
-		} else {
-			setPaneState(pane, FINISHED)
-		}
-	case "--force-finished":
-		setPaneState(pane, FINISHED)
-	case "--working":
-		// working fires while the pane is still focused (at submit time); don't
-		// skip on focus — the focus-out/next --clear resets it.
-		setPaneState(pane, WORKING)
-	case "--clear-finished":
-		// Only clear the finished (1) state; leave working (2) and manual (3) alone.
-		if paneNotif(pane) == FINISHED {
-			setPaneState(pane, CLEAR)
-		}
-	case "--manual":
-		// Toggle: 3 → 0, 0 → 3. Ignore if pane is working (2) or finished (1).
-		switch paneNotif(pane) {
-		case MANUAL:
-			setPaneState(pane, CLEAR)
-		case CLEAR, "":
-			setPaneState(pane, MANUAL)
-		}
-	default:
+	if !applyFlag(flag, pane) {
 		return 1
 	}
 	refreshWindowName(pane)
