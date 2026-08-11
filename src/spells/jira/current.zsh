@@ -11,6 +11,7 @@ ${zsb}_createCurrentDir() {
 }
 
 alias cdcurrent="${zsb}_createCurrentDir && cds $ZSB_CURRENT_TICKET_DIR"
+alias vcurrent="nvim $ZSB_CURRENT_TICKET_DIR/NOTES.md"
 alias cdc='cdcurrent'
 
 alias vanchors="nvim $ZSB_CURRENT_TICKET_DIR/.anchors"
