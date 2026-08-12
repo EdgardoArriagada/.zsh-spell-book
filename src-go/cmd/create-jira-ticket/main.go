@@ -109,7 +109,7 @@ func run(args []string, out io.Writer) error {
 		parentKey = "xxxxxxxxxxxx"
 	}
 	home := os.Getenv("HOME")
-	if _, err := jira.AppendTicketRow(home+"/temp/tickets", parentKey, key, title); err != nil {
+	if _, err := jira.AppendTicketRow(home+"/temp/tickets.conf", parentKey, key, title); err != nil {
 		fmt.Fprintf(os.Stderr, "warning: could not write ticket row: %v\n", err)
 	}
 

@@ -75,9 +75,9 @@ type Ticket struct {
 
 func LoadTickets() ([]Ticket, error) {
 	home := os.Getenv("HOME")
-	f, err := os.Open(home + "/temp/tickets")
+	f, err := os.Open(home + "/temp/tickets.conf")
 	if err != nil {
-		return nil, fmt.Errorf("no tickets file at %s/temp/tickets", home)
+		return nil, fmt.Errorf("no tickets file at %s/temp/tickets.conf", home)
 	}
 	defer f.Close()
 

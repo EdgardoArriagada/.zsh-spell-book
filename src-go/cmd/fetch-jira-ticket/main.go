@@ -46,7 +46,7 @@ func main() {
 	fmt.Printf("%s|%s|%s\n", parentKey, issueKey, summary)
 
 	home := os.Getenv("HOME")
-	lnum, err := jira.AppendTicketRow(home+"/temp/tickets", parentKey, issueKey, summary)
+	lnum, err := jira.AppendTicketRow(home+"/temp/tickets.conf", parentKey, issueKey, summary)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "write tickets:", err)
 		os.Exit(1)

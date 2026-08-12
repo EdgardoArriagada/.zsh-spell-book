@@ -160,7 +160,7 @@ func (m model) handleEditTickets() (tea.Model, tea.Cmd) {
 	if len(m.filtered) == 0 {
 		return m, nil
 	}
-	cmd := editTicketsCmd(os.Getenv("EDITOR"), os.Getenv("HOME")+"/temp/tickets", m.filtered[m.cursor].Line)
+	cmd := editTicketsCmd(os.Getenv("EDITOR"), os.Getenv("HOME")+"/temp/tickets.conf", m.filtered[m.cursor].Line)
 	return m, tea.ExecProcess(cmd, func(err error) tea.Msg {
 		return tui.EditorDoneMsg{Err: err}
 	})
