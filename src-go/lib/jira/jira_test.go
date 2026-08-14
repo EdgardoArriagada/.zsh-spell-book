@@ -15,7 +15,7 @@ func TestLoadTicketsKeepsSourceLine(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(home, "temp"), 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(home, "temp", "tickets"), []byte("# note\n\nparent | JIRA-1 | First\nparent | JIRA-2 | Second\n"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(home, "temp", "tickets.conf"), []byte("# note\n\nparent | JIRA-1 | First\nparent | JIRA-2 | Second\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -35,7 +35,7 @@ func TestLoadTicketsAssignsSectionTitles(t *testing.T) {
 		t.Fatal(err)
 	}
 	content := "parent | JIRA-1 | Untitled\n# comment\nPersonal\nparent | JIRA-2 | First\nWork\nparent | JIRA-3 | Second\n"
-	if err := os.WriteFile(filepath.Join(home, "temp", "tickets"), []byte(content), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(home, "temp", "tickets.conf"), []byte(content), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -54,7 +54,7 @@ func TestLoadTicketsKeepsPipesInLabel(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(home, "temp"), 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(home, "temp", "tickets"), []byte("parent | JIRA-1 | First | Second\n"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(home, "temp", "tickets.conf"), []byte("parent | JIRA-1 | First | Second\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
