@@ -34,10 +34,8 @@ cda() {
   fi
 }
 
-get-rev-line() { printf "`get_repo_name 2>/dev/null` - `git branch --show-current 2>/dev/null`"; }
-
 grl() {
-  local revLine=`get-rev-line`
+  local revLine="`get_repo_name 2>/dev/null` - `git branch --show-current 2>/dev/null`"
   zsb_clipcopy <<< $revLine
   ${zsb}.success "`hl $revLine` copied!"
 }
