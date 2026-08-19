@@ -34,7 +34,15 @@ cda() {
   fi
 }
 
-hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc cda vanchors anchor
+get-rev-line() { printf "`get_repo_name 2>/dev/null` - `git branch --show-current 2>/dev/null`"; }
+
+grl() {
+  local revLine=`get-rev-line`
+  zsb_clipcopy <<< $revLine
+  ${zsb}.success "`hl $revLine` copied!"
+}
+
+hisIgnore cdcurrent vnotescurrent cnotescurrent ncurrent cinit cdc cda vanchors anchor get-rev-line grl
 
 pomodorocurrent() {
   ${zsb}.assertIsSet 'ZSB_CURRENT_TICKET'
