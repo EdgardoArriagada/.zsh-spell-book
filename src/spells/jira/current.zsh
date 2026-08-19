@@ -21,11 +21,12 @@ cda() {
   local anchors=$ZSB_CURRENT_TICKET_DIR/.anchors
   [[ ! -f $anchors ]] && ${zsb}.throw "`hl $anchors` not set"
 
-  local -a entries=("${(@f)$(grep -v '^[[:space:]]*$' $anchors)}")
+  local cwd=$(print -P %~)
+  local -a entries=("${(@f)$(grep -v '^[[:space:]]*$' $anchors | grep -vFxe "$cwd")}")
   local selection=$(print -l ${entries[@]} | fzf --select-1)
 
   if [[ -z "$selection" ]]
-    then ${zsb}.cancel 'no selection'
+    then ${zsb}.cancel 'You did not move.'
   elif [[ -d ${~selection} ]]
     then cd ${~selection}
   else
