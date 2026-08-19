@@ -61,21 +61,19 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	m.statusMsg = ""
 	switch km.String() {
-	case "q", "ctrl+c", "esc":
-		return m, tea.Quit
-	case "/":
-		m.mode = tui.SearchMode
-		return m, m.searchInput.Focus()
-	case "j", "down", "tab":
+	case "j":
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor + 1) % len(m.filtered)
 		}
 		return m.clampViewport(), nil
-	case "k", "up", "shift+tab":
+	case "k":
 		if len(m.filtered) > 0 {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
 		return m.clampViewport(), nil
+	case "/":
+		m.mode = tui.SearchMode
+		return m, m.searchInput.Focus()
 	case "ctrl+d":
 		m.cursor = tui.PageCursor(m.cursor, len(m.filtered), m.availRows, 1)
 		return m.clampViewport(), nil
@@ -119,6 +117,8 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleOpenNotes()
 	case "ctrl+g":
 		return m.handleEditTickets()
+	case "q", "ctrl+c", "esc":
+		return m, tea.Quit
 	}
 	return m, nil
 }
