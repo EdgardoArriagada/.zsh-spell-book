@@ -33,7 +33,7 @@ func (m model) footerSection() string {
 		finished += c.Finished
 		manual += c.Manual
 	}
-	return "  " + tui.Hint("↑/↓", "navigate") + sep +
+	return "  " + tui.Hint("j/k", "navigate") + sep +
 		tui.Hint("enter", "select") + sep +
 		tui.Hint("/", "search") + sep +
 		tui.Hint("ctrl+g", "edit tickets") + sep +
