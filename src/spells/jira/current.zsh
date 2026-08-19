@@ -21,14 +21,8 @@ cda() {
   local anchors=$ZSB_CURRENT_TICKET_DIR/.anchors
   [[ ! -f $anchors ]] && ${zsb}.throw "`hl $anchors` not set"
 
-  local -a entries
-  entries=("${(@f)$(grep -v '^[[:space:]]*$' $anchors)}")
-
-  local selection
-  if (( ${#entries} == 1 ))
-    then selection=$entries[1]
-    else selection=$(print -l ${entries[@]} | fzf)
-  fi
+  local -a entries=("${(@f)$(grep -v '^[[:space:]]*$' $anchors)}")
+  local selection=$(print -l ${entries[@]} | fzf --select-1)
 
   if [[ -z "$selection" ]]
     then ${zsb}.cancel 'no selection'

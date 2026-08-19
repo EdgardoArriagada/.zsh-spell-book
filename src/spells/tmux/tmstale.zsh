@@ -1,5 +1,5 @@
 tmstale() {
-  local session=$(tmdiff | fzf --exit-0)
+  local session=$(tmdiff | fzf --exit-0 --select-1)
   [[ -z "$session" ]] && ${zsb}.cancel 'There are no stale sessions.'
 
   if [[ -n "$TMUX" ]]
