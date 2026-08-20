@@ -103,6 +103,17 @@ fn set_pane_state(pane: &str, state: &str) {
         .ok();
 }
 
+fn play_finish_sound(flag: &str) {
+    if !matches!(flag, "" | "--finished" | "--force-finished") {
+        return;
+    }
+    if let Ok(sound) = std::env::var("ZSB_FINISH_SOUND") {
+        if !sound.is_empty() {
+            zsb_play::spawn(&sound).ok();
+        }
+    }
+}
+
 // zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
 // pane_id identifies the pane (and its session); session_name matches the hook
 // signature but is unused. No flag defaults to --finished.
@@ -165,6 +176,7 @@ fn run(args: &[String]) -> i32 {
         return 1;
     }
     refresh_window_name(pane);
+    play_finish_sound(flag);
     0
 }
 
@@ -181,7 +193,11 @@ mod tests {
     fn base_name_strips_suffixes() {
         let cases = [
             ("no suffix", "myrepo".to_owned(), "myrepo"),
-            ("finished only", format!("myrepo{FINISHED_SUFFIX}"), "myrepo"),
+            (
+                "finished only",
+                format!("myrepo{FINISHED_SUFFIX}"),
+                "myrepo",
+            ),
             ("working only", format!("myrepo{WORKING_SUFFIX}"), "myrepo"),
             ("manual only", format!("myrepo{MANUAL_SUFFIX}"), "myrepo"),
             (

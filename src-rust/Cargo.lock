@@ -432,3 +432,6 @@ version = "0.0.1"
 [[package]]
 name = "zsb_tmux_agent_notification"
 version = "0.1.0"
+dependencies = [
+ "zsb_play",
+]
