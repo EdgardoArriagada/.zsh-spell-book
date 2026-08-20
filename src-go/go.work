@@ -6,6 +6,7 @@ use (
 	./cmd/fetch-jira-ticket
 	./cmd/gitbranch
 	./cmd/gitworktree
+	./cmd/poll-pr-pipeline
 	./cmd/tmdiff
 	./cmd/zsb_tmux_jira_picker
 	./lib/args
