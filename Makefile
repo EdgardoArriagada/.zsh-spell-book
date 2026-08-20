@@ -82,7 +82,7 @@ rust-test-all:
 agents-sync-skills:
 	@for target in "$(HOME)/.claude/skills" "$(HOME)/.agents/skills" "$(HOME)/.codex/skills"; do \
 		if [[ ! -d "$$target" ]]; then echo "⚠️  warning: $$target missing; skipped"; continue; fi; \
-		for skill in src-agents/skills/*; do \
+		for skill in src-agents/skills/* src/temp/skills/*; do \
 			[[ -d "$$skill" ]] || continue; \
 			link="$$target/$${skill##*/}"; \
 			if [[ -L "$$link" && "$$(readlink "$$link")" == "$(CURDIR)/$$skill" ]]; then \
