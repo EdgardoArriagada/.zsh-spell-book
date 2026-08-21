@@ -23,17 +23,26 @@ func BranchExists(branch string) bool {
 	return err == nil
 }
 
+// RemoteBranchRef returns the full remote-tracking ref for branch.
+func RemoteBranchRef(branch string) (string, bool) {
+	out, err := exec.Command("git", "for-each-ref", "--format=%(refname)", "refs/remotes").Output()
+	if err != nil {
+		return "", false
+	}
+	for line := range strings.SplitSeq(strings.TrimSpace(string(out)), "\n") {
+		const prefix = "refs/remotes/"
+		if remoteBranch, ok := strings.CutPrefix(line, prefix); ok {
+			if _, rest, ok := strings.Cut(remoteBranch, "/"); ok && rest == branch {
+				return line, true
+			}
+		}
+	}
+	return "", false
+}
+
 // RemoteBranchExists returns true if any remote-tracking branch matches the
 // given branch name (e.g. refs/remotes/origin/<branch>).
 func RemoteBranchExists(branch string) bool {
-	out, err := exec.Command("git", "for-each-ref", "--format=%(refname:short)", "refs/remotes").Output()
-	if err != nil {
-		return false
-	}
-	for line := range strings.SplitSeq(strings.TrimSpace(string(out)), "\n") {
-		if _, rest, ok := strings.Cut(line, "/"); ok && rest == branch {
-			return true
-		}
-	}
-	return false
+	_, ok := RemoteBranchRef(branch)
+	return ok
 }

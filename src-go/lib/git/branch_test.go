@@ -92,4 +92,7 @@ func TestRemoteBranchExists(t *testing.T) {
 			}
 		})
 	}
+	if got, ok := git.RemoteBranchRef("feature/nested"); !ok || got != "refs/remotes/upstream/feature/nested" {
+		t.Errorf("RemoteBranchRef(feature/nested) = %q, %v", got, ok)
+	}
 }
