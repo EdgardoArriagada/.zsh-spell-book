@@ -98,4 +98,11 @@ func TestCreateWorktreeFetchesRemoteBase(t *testing.T) {
 	if got != want {
 		t.Errorf("feature/latest is at %s, want fetched develop %s", got, want)
 	}
+
+	worktreePath := filepath.Join(WorktreeBaseDir(mainPath), "feature/latest")
+	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "@{upstream}")
+	cmd.Dir = worktreePath
+	if out, err := cmd.CombinedOutput(); err == nil {
+		t.Errorf("feature/latest unexpectedly tracks %s", out)
+	}
 }

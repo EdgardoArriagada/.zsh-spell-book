@@ -44,7 +44,7 @@ func createWorktree(mainPath, branch string) error {
 		if err != nil {
 			return err
 		}
-		args = []string{"worktree", "add", wtPath, "-b", branch, base}
+		args = []string{"worktree", "add", "--no-track", wtPath, "-b", branch, base}
 	}
 	out, err := exec.Command("git", append([]string{"-C", mainPath}, args...)...).CombinedOutput()
 	if err != nil {
