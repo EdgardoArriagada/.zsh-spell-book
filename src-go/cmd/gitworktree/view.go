@@ -41,6 +41,8 @@ func (m model) statusSection() string {
 		) + "\n"
 	case tui.DeletingMode:
 		return "\n" + tui.WarnStyle.Render("  "+m.spinner.View()+" deleting...") + "\n"
+	case tui.CreatingMode:
+		return "\n" + tui.WarnStyle.Render("  "+m.spinner.View()+" creating...") + "\n"
 	case tui.SearchMode:
 		return tui.RenderSearchInput(m.searchInput)
 	default:

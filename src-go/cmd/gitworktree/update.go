@@ -21,6 +21,11 @@ type deleteResultMsg struct {
 	force           bool
 }
 
+type createResultMsg struct {
+	err    error
+	branch string
+}
+
 func runDeleteCmd(path string, force bool, branch string, deletingCurrent bool, fallbackPath string, deleteBranch bool) tea.Cmd {
 	return func() tea.Msg {
 		var err error
@@ -40,6 +45,12 @@ func runDeleteCmd(path string, force bool, branch string, deletingCurrent bool, 
 	}
 }
 
+func runCreateCmd(mainPath, branch string) tea.Cmd {
+	return func() tea.Msg {
+		return createResultMsg{err: createWorktree(mainPath, branch), branch: branch}
+	}
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ws, ok := msg.(tea.WindowSizeMsg); ok {
 		m.width = ws.Width
@@ -49,7 +60,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	if _, ok := msg.(spinner.TickMsg); ok {
-		if m.mode == tui.DeletingMode {
+		if m.mode == tui.DeletingMode || m.mode == tui.CreatingMode {
 			var cmd tea.Cmd
 			m.spinner, cmd = m.spinner.Update(msg)
 			return m, cmd
@@ -58,6 +69,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	if result, ok := msg.(deleteResultMsg); ok {
 		return m.handleDeleteResult(result)
+	}
+	if result, ok := msg.(createResultMsg); ok {
+		return m.handleCreateResult(result)
 	}
 	switch m.mode {
 	case tui.AddMode:
@@ -108,6 +122,33 @@ func (m model) handleDeleteResult(result deleteResultMsg) (tea.Model, tea.Cmd) {
 		m.err = deleteWorktreeBranch(result.branch)
 	}
 	m.deleteBranch = false
+	return m, nil
+}
+
+func (m model) handleCreateResult(result createResultMsg) (tea.Model, tea.Cmd) {
+	if result.err != nil {
+		m.err = result.err
+		m.mode = tui.AddMode
+		return m, m.input.Focus()
+	}
+	wts, err := listWorktrees()
+	if err != nil {
+		m.err = err
+		m.mode = tui.ListMode
+		return m, nil
+	}
+	m.worktrees = wts
+	m.current = currentWorktreeIndex(wts)
+	m.filtered = applyWorktreeFilter(wts, m.searchInput.Value())
+	m.mode = tui.ListMode
+	m.input.Blur()
+	m.err = nil
+	for i, wt := range m.filtered {
+		if wt.Branch == result.branch {
+			m.cursor = i
+			break
+		}
+	}
 	return m, nil
 }
 
@@ -253,29 +294,8 @@ func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.err = err
 				return m, nil
 			}
-			mainPath := m.worktrees[0].Path
-			if err := createWorktree(mainPath, branch); err != nil {
-				m.err = err
-				return m, nil
-			}
-			wts, err := listWorktrees()
-			if err != nil {
-				m.err = err
-				return m, nil
-			}
-			m.worktrees = wts
-			m.current = currentWorktreeIndex(wts)
-			m.filtered = applyWorktreeFilter(wts, m.searchInput.Value())
-			m.mode = tui.ListMode
-			m.input.Blur()
-			m.err = nil
-			for i, wt := range m.filtered {
-				if wt.Branch == branch {
-					m.cursor = i
-					break
-				}
-			}
-			return m, nil
+			m.mode = tui.CreatingMode
+			return m, tea.Batch(runCreateCmd(m.worktrees[0].Path, branch), m.spinner.Tick)
 		}
 	}
 	var cmd tea.Cmd

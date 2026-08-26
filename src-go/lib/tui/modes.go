@@ -9,6 +9,7 @@ const (
 	ForceDeleteConfirmMode
 	SearchMode
 	DeletingMode
+	CreatingMode
 )
 
 type EditorDoneMsg struct {

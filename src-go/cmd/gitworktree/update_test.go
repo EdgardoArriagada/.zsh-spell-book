@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	gitlib "example.com/workspace/lib/git"
@@ -241,5 +242,22 @@ func TestAddModeAcceptsValidBranch(t *testing.T) {
 	}
 	if err := gitlib.ValidateBranchName("my invalid branch"); err == nil {
 		t.Error("ValidateBranchName(\"my invalid branch\") expected error, got nil")
+	}
+}
+
+func TestAddModeShowsCreatingSpinner(t *testing.T) {
+	m := makeListModel(threeWorktrees(), 0)
+	m.mode = tui.AddMode
+	m.input.SetValue("feature/my-branch")
+
+	updated, cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	if got := updated.(model).mode; got != tui.CreatingMode {
+		t.Errorf("mode = %v, want CreatingMode", got)
+	}
+	if cmd == nil {
+		t.Error("enter on a valid branch should start the create command")
+	}
+	if got := updated.(model).statusSection(); !strings.Contains(got, "creating...") {
+		t.Errorf("status = %q, want creating indicator", got)
 	}
 }
