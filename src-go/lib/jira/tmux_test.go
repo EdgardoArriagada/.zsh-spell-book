@@ -11,13 +11,16 @@ func TestSanitizeTmuxID(t *testing.T) {
 		in   string
 		want string
 	}{
-		{"abc123", "abc123"},          // purely alphanumeric — unchanged
-		{"abc-def", "abc-def"},        // dashes allowed — unchanged
-		{"abc.", "abc-"},              // single special char → dash
-		{"abc...", "abc-"},            // consecutive special chars → single dash
-		{".abc", "-abc"},              // leading special char → leading dash
-		{"abc.", "abc-"},              // trailing special char → trailing dash
+		{"abc123", "abc123"},           // purely alphanumeric — unchanged
+		{"abc-def", "abc-def"},         // dashes allowed — unchanged
+		{"abc.", "abc-"},               // single special char → dash
+		{"abc...", "abc-"},             // consecutive special chars → single dash
+		{".abc", "-abc"},               // leading special char → leading dash
+		{"abc.", "abc-"},               // trailing special char → trailing dash
 		{"abc.def-ghi", "abc-def-ghi"}, // mixed valid + invalid
+		{"Árvíztűrő-tükörfúrógép", "arvizturo-tukorfurogep"},
+		{"Český žluťoučký kůň", "cesky-zlutoucky-kun"},
+		{"café-mañana", "cafe-manana"},
 	}
 	for _, c := range cases {
 		got := jira.SanitizeTmuxID(c.in)
@@ -89,6 +92,12 @@ func TestTmuxSessionID(t *testing.T) {
 			current: "A",
 			label:   "hello  world",
 			want:    "A-hello-world",
+		},
+		{
+			name:    "label diacritics transliterated",
+			current: "PROJ-123",
+			label:   "Revisión rápida",
+			want:    "PROJ-123-revision-rapida",
 		},
 		{
 			name:    "current with special chars sanitized",

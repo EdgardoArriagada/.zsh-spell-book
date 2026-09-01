@@ -8,18 +8,77 @@ import (
 
 const maxTmuxIDLen = 38
 
+func sanitizeTmuxRune(r rune) rune {
+	if r <= unicode.MaxASCII {
+		if r == '-' || r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' {
+			return r
+		}
+		return '-'
+	}
+	r = unicode.ToLower(r)
+	switch r {
+	case 'à', 'á', 'â', 'ã', 'ä', 'å', 'ā', 'ă', 'ą', 'ǎ', 'ǟ', 'ǡ', 'ǻ', 'ȁ', 'ȃ', 'ȧ', 'ḁ', 'ạ', 'ả', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ':
+		r = 'a'
+	case 'ḃ', 'ḅ', 'ḇ':
+		r = 'b'
+	case 'ç', 'ć', 'ĉ', 'ċ', 'č':
+		r = 'c'
+	case 'ď', 'ḋ', 'ḍ', 'ḏ', 'ḑ', 'ḓ':
+		r = 'd'
+	case 'è', 'é', 'ê', 'ë', 'ē', 'ĕ', 'ė', 'ę', 'ě', 'ȅ', 'ȇ', 'ȩ', 'ḕ', 'ḗ', 'ḙ', 'ḛ', 'ḝ', 'ẹ', 'ẻ', 'ẽ', 'ế', 'ề', 'ể', 'ễ', 'ệ':
+		r = 'e'
+	case 'ḟ':
+		r = 'f'
+	case 'ĝ', 'ğ', 'ġ', 'ģ', 'ǧ', 'ǵ', 'ḡ':
+		r = 'g'
+	case 'ĥ', 'ȟ', 'ḣ', 'ḥ', 'ḧ', 'ḩ', 'ḫ':
+		r = 'h'
+	case 'ì', 'í', 'î', 'ï', 'ĩ', 'ī', 'ĭ', 'į', 'ǐ', 'ȉ', 'ȋ', 'ḭ', 'ḯ', 'ỉ', 'ị':
+		r = 'i'
+	case 'ĵ', 'ǰ':
+		r = 'j'
+	case 'ķ', 'ǩ', 'ḱ', 'ḳ', 'ḵ':
+		r = 'k'
+	case 'ĺ', 'ļ', 'ľ', 'ŀ', 'ḷ', 'ḹ', 'ḻ', 'ḽ':
+		r = 'l'
+	case 'ḿ', 'ṁ', 'ṃ':
+		r = 'm'
+	case 'ñ', 'ń', 'ņ', 'ň', 'ǹ', 'ṅ', 'ṇ', 'ṉ', 'ṋ':
+		r = 'n'
+	case 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ō', 'ŏ', 'ő', 'ǒ', 'ǫ', 'ǭ', 'ǿ', 'ȍ', 'ȏ', 'ȫ', 'ȭ', 'ȯ', 'ȱ', 'ṍ', 'ṏ', 'ṑ', 'ṓ', 'ọ', 'ỏ', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ':
+		r = 'o'
+	case 'ṕ', 'ṗ':
+		r = 'p'
+	case 'ŕ', 'ŗ', 'ř', 'ȑ', 'ȓ', 'ṙ', 'ṛ', 'ṝ', 'ṟ':
+		r = 'r'
+	case 'ś', 'ŝ', 'ş', 'š', 'ș', 'ṡ', 'ṣ', 'ṥ', 'ṧ', 'ṩ':
+		r = 's'
+	case 'ţ', 'ť', 'ț', 'ṫ', 'ṭ', 'ṯ', 'ṱ':
+		r = 't'
+	case 'ù', 'ú', 'û', 'ü', 'ũ', 'ū', 'ŭ', 'ů', 'ű', 'ų', 'ǔ', 'ǖ', 'ǘ', 'ǚ', 'ǜ', 'ȕ', 'ȗ', 'ṳ', 'ṵ', 'ṷ', 'ṹ', 'ṻ', 'ụ', 'ủ', 'ứ', 'ừ', 'ử', 'ữ', 'ự':
+		r = 'u'
+	case 'ṽ', 'ṿ':
+		r = 'v'
+	case 'ŵ', 'ẁ', 'ẃ', 'ẅ', 'ẇ', 'ẉ':
+		r = 'w'
+	case 'ẋ', 'ẍ':
+		r = 'x'
+	case 'ý', 'ÿ', 'ŷ', 'ȳ', 'ẏ', 'ỳ', 'ỵ', 'ỷ', 'ỹ':
+		r = 'y'
+	case 'ź', 'ż', 'ž', 'ẑ', 'ẓ', 'ẕ':
+		r = 'z'
+	default:
+		return '-'
+	}
+	return r
+}
+
 func (t Ticket) TmuxSessionID() string {
 	var result [maxTmuxIDLen]byte
 	n := 0
 	prevDash := false
 	writeRune := func(r rune) bool {
-		ok := r == '-' ||
-			(r >= 'a' && r <= 'z') ||
-			(r >= 'A' && r <= 'Z') ||
-			(r >= '0' && r <= '9')
-		if !ok {
-			r = '-'
-		}
+		r = sanitizeTmuxRune(r)
 		if r == '-' {
 			if prevDash {
 				return false
@@ -34,7 +93,7 @@ func (t Ticket) TmuxSessionID() string {
 	}
 	write := func(s string, lower bool) bool {
 		for _, r := range s {
-			if lower {
+			if lower && r <= unicode.MaxASCII {
 				r = unicode.ToLower(r)
 			}
 			if writeRune(r) {
@@ -86,20 +145,14 @@ func MatchesTmuxSession(session string, prefixes []string) bool {
 	return false
 }
 
-// SanitizeTmuxID replaces every char outside [a-zA-Z0-9-] with '-' and
-// collapses runs of dashes into one, in a single pass (no regex).
+// SanitizeTmuxID transliterates Latin diacritics, replaces other disallowed
+// chars with '-', and collapses runs of dashes into one, in a single pass.
 func SanitizeTmuxID(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))
 	prevDash := false
 	for _, r := range s {
-		ok := r == '-' ||
-			(r >= 'a' && r <= 'z') ||
-			(r >= 'A' && r <= 'Z') ||
-			(r >= '0' && r <= '9')
-		if !ok {
-			r = '-'
-		}
+		r = sanitizeTmuxRune(r)
 		if r == '-' {
 			if prevDash {
 				continue
