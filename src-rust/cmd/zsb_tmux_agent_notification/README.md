@@ -11,11 +11,14 @@ no deps.
 ## Command
 
 ```
-zsb_tmux_agent_notification [--finished|--working|--clear-finished|--manual] <session_name> <pane_id>
+zsb_tmux_agent_notification [--finished|--force-finished|--working|--clear-finished|--manual] <session_name> <pane_id>
 ```
 
-- **`--finished`** (default when no flag): set `@zsb_agent_notif` = `1` (red). If the pane is
-  currently focused, clears to `0` instead (hourglass removed, no bell — you're already watching).
+- **`--finished`** (default when no flag): wait 10 seconds, then set `@zsb_agent_notif` = `1`
+  (red). Another `--finished` restarts the timer; any notification except `--clear-finished`
+  cancels it. If the pane is focused when the timer fires, clears to `0` instead (you're already
+  watching).
+- **`--force-finished`**: cancel any pending timer and finish immediately, even when focused.
 - **`--working`**: set `@zsb_agent_notif` = `2` (blue). Does **not** skip on focus — its hook
   fires while the pane is still focused at submit time, before you switch away.
 - **`--clear-finished`**: reset `@zsb_agent_notif` = `0` **only if it's `1` (finished)**. A
@@ -91,8 +94,8 @@ same `hooks` array:
 ]
 ```
 
-Note: `ExitPlanMode` matches under both `PreToolUse` and `PostToolUse` → two `--finished`
-calls per plan exit (both just set `1`, harmless).
+Note: `ExitPlanMode` matches under both `PreToolUse` and `PostToolUse` → the second
+`--finished` restarts the 10-second timer.
 
 ### Other coding agents
 

@@ -1,6 +1,11 @@
-use std::process::{self, Command};
+use std::process::{self, Command, Stdio};
+use std::thread;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const NOTIF_VAR: &str = "@zsb_agent_notif";
+const FINISH_TIMER_VAR: &str = "@zsb_agent_finish_timer";
+const DEBOUNCED_FINISH: &str = "--debounced-finished";
+const FINISH_DELAY: Duration = Duration::from_secs(10);
 const FINISHED_SUFFIX: &str = " \u{f009a}"; // bell — agent finished / needs attention
 const WORKING_SUFFIX: &str = " \u{f051f}"; //  hourglass — agent still working
 const MANUAL_SUFFIX: &str = " \u{f0e47}"; //   flag — manually flagged
@@ -21,6 +26,28 @@ fn tmux_output(args: &[&str]) -> String {
 
 fn pane_notif(pane: &str) -> String {
     tmux_output(&["show-options", "-pqv", "-t", pane, NOTIF_VAR])
+}
+
+fn pane_id(pane: &str) -> String {
+    tmux_output(&["display-message", "-p", "-t", pane, "#{pane_id}"])
+}
+
+fn finish_timer(pane: &str) -> String {
+    tmux_output(&["show-options", "-pqv", "-t", pane, FINISH_TIMER_VAR])
+}
+
+fn set_finish_timer(pane: &str, token: &str) -> bool {
+    Command::new("tmux")
+        .args(["set-option", "-p", "-t", pane, FINISH_TIMER_VAR, token])
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
+fn clear_finish_timer(pane: &str) {
+    Command::new("tmux")
+        .args(["set-option", "-pu", "-t", pane, FINISH_TIMER_VAR])
+        .status()
+        .ok();
 }
 
 fn window_id(pane: &str) -> String {
@@ -114,7 +141,64 @@ fn play_finish_sound(flag: &str) {
     }
 }
 
-// zsb_tmux_agent_notification [--finished|--working|--clear-finished] <session_name> <pane_id>
+fn is_finished(flag: &str) -> bool {
+    matches!(flag, "" | "--finished")
+}
+
+fn cancels_finish(flag: &str) -> bool {
+    !is_finished(flag) && flag != "--clear-finished"
+}
+
+fn schedule_finish(pane: &str) -> bool {
+    let token = format!(
+        "{}-{}",
+        process::id(),
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    );
+    if !set_finish_timer(pane, &token) {
+        return false;
+    }
+
+    let spawned = std::env::current_exe().ok().and_then(|exe| {
+        Command::new(exe)
+            .args([DEBOUNCED_FINISH, &token, "_", pane])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .ok()
+    });
+    if spawned.is_none() && finish_timer(pane) == token {
+        clear_finish_timer(pane);
+    }
+    spawned.is_some()
+}
+
+fn run_debounced_finish(args: &[String]) -> i32 {
+    if args.len() != 4 {
+        return 1;
+    }
+    let token = &args[1];
+    let pane = &args[3];
+    thread::sleep(FINISH_DELAY);
+    if finish_timer(pane) != *token {
+        return 0;
+    }
+
+    apply_flag("--finished", pane);
+    refresh_window_name(pane);
+    play_finish_sound("--finished");
+    if finish_timer(pane) == *token {
+        clear_finish_timer(pane);
+    }
+    0
+}
+
+// zsb_tmux_agent_notification [--finished|--force-finished|--working|--clear-finished|--manual]
+//     <session_name> <pane_id>
 // pane_id identifies the pane (and its session); session_name matches the hook
 // signature but is unused. No flag defaults to --finished.
 fn apply_flag(flag: &str, pane: &str) -> bool {
@@ -159,6 +243,10 @@ fn apply_flag(flag: &str, pane: &str) -> bool {
 }
 
 fn run(args: &[String]) -> i32 {
+    if args.first().map(String::as_str) == Some(DEBOUNCED_FINISH) {
+        return run_debounced_finish(args);
+    }
+
     let mut flag = "";
     let mut rest: &[String] = args;
     if let Some(first) = args.first() {
@@ -171,6 +259,15 @@ fn run(args: &[String]) -> i32 {
         return 1;
     }
     let pane = &rest[1];
+    let resolved_pane = pane_id(pane);
+
+    if is_finished(flag) && !resolved_pane.is_empty() {
+        if schedule_finish(&resolved_pane) {
+            return 0;
+        }
+    } else if cancels_finish(flag) && !resolved_pane.is_empty() {
+        clear_finish_timer(&resolved_pane);
+    }
 
     if !apply_flag(flag, pane) {
         return 1;
@@ -224,5 +321,21 @@ mod tests {
         for (name, input, want) in cases {
             assert_eq!(base_name(&input), want, "case: {name}");
         }
+    }
+
+    #[test]
+    fn only_normal_finish_is_debounced() {
+        assert!(is_finished(""));
+        assert!(is_finished("--finished"));
+        assert!(!is_finished("--force-finished"));
+        assert!(!is_finished("--working"));
+        assert!(!is_finished("--clear-finished"));
+        assert!(!is_finished("--manual"));
+
+        assert!(cancels_finish("--force-finished"));
+        assert!(cancels_finish("--working"));
+        assert!(!cancels_finish("--clear-finished"));
+        assert!(cancels_finish("--manual"));
+        assert!(cancels_finish("--invalid"));
     }
 }
