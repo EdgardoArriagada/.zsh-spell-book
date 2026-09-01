@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"strings"
@@ -49,6 +50,26 @@ func runCreateCmd(mainPath, branch string) tea.Cmd {
 	return func() tea.Msg {
 		return createResultMsg{err: createWorktree(mainPath, branch), branch: branch}
 	}
+}
+
+func tmuxWorktreeBranch(mainBranch string) (string, error) {
+	out, err := exec.Command("tmux", "display-message", "-p", "#S").Output()
+	if err != nil {
+		return "", errors.New("A requires tmux")
+	}
+	session := strings.TrimSpace(string(out))
+	if session == "" {
+		return "", errors.New("tmux session name is empty")
+	}
+	return automaticWorktreeBranch(mainBranch, session), nil
+}
+
+func automaticWorktreeBranch(mainBranch, session string) string {
+	prefix := "feature"
+	if mainBranch == "master" || mainBranch == "main" {
+		prefix = "hotfix"
+	}
+	return prefix + "/" + session
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -205,6 +226,24 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.err = nil
 		m.statusMsg = ""
 		return m, m.input.Focus()
+	case "A":
+		if len(m.worktrees) == 0 {
+			m.statusMsg = "no main worktree"
+			break
+		}
+		branch, err := tmuxWorktreeBranch(m.worktrees[0].Branch)
+		if err != nil {
+			m.err = err
+			break
+		}
+		if err := gitlib.ValidateBranchName(branch); err != nil {
+			m.err = err
+			break
+		}
+		m.mode = tui.CreatingMode
+		m.err = nil
+		m.statusMsg = ""
+		return m, tea.Batch(runCreateCmd(m.worktrees[0].Path, branch), m.spinner.Tick)
 	case "d", "D":
 		if len(m.filtered) == 0 {
 			break

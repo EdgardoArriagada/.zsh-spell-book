@@ -38,6 +38,27 @@ func threeWorktrees() []Worktree {
 	}
 }
 
+func TestTmuxWorktreeBranchPrefix(t *testing.T) {
+	for _, tt := range []struct {
+		mainBranch string
+		want       string
+	}{
+		{"develop", "feature/session"},
+		{"master", "hotfix/session"},
+		{"main", "hotfix/session"},
+	} {
+		if got := automaticWorktreeBranch(tt.mainBranch, "session"); got != tt.want {
+			t.Errorf("main branch %q: got %q, want %q", tt.mainBranch, got, tt.want)
+		}
+	}
+}
+
+func TestFooterHidesAutoCreateHint(t *testing.T) {
+	if strings.Contains(makeListModel(threeWorktrees(), 0).footerSection(), "A") {
+		t.Error("footer must not show the automatic-create keybind")
+	}
+}
+
 // --- Cursor wrap tests (issue 6) ---
 
 func TestCursorWrapDown(t *testing.T) {
