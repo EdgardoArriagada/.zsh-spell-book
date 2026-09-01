@@ -53,6 +53,12 @@ func TestTmuxSessionID(t *testing.T) {
 			want:    "PROJ-1-my-label",
 		},
 		{
+			name:    "label bracketed text removed",
+			current: "PROJ-123",
+			label:   "[team] Fix login [urgent]",
+			want:    "PROJ-123-fix-login",
+		},
+		{
 			name:    "truncated no trailing dash",
 			current: "PROJ-123",
 			label:   "abcdefghijklmnopqrstuvwxyzabcde",

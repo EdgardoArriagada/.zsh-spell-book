@@ -3,17 +3,70 @@ package jira
 import (
 	"os/exec"
 	"strings"
+	"unicode"
 )
 
 const maxTmuxIDLen = 38
 
 func (t Ticket) TmuxSessionID() string {
-	kebab := strings.ToLower(strings.ReplaceAll(t.Label, " ", "-"))
-	result := SanitizeTmuxID(t.Current + "-" + kebab)
-	if len(result) > maxTmuxIDLen {
-		result = result[:maxTmuxIDLen]
+	var result [maxTmuxIDLen]byte
+	n := 0
+	prevDash := false
+	writeRune := func(r rune) bool {
+		ok := r == '-' ||
+			(r >= 'a' && r <= 'z') ||
+			(r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9')
+		if !ok {
+			r = '-'
+		}
+		if r == '-' {
+			if prevDash {
+				return false
+			}
+			prevDash = true
+		} else {
+			prevDash = false
+		}
+		result[n] = byte(r)
+		n++
+		return n == len(result)
 	}
-	return strings.TrimRight(result, "-")
+	write := func(s string, lower bool) bool {
+		for _, r := range s {
+			if lower {
+				r = unicode.ToLower(r)
+			}
+			if writeRune(r) {
+				return true
+			}
+		}
+		return false
+	}
+
+	if !write(t.Current, false) && !writeRune('-') {
+		label := t.Label
+		for {
+			start := strings.IndexByte(label, '[')
+			if start < 0 {
+				write(label, true)
+				break
+			}
+			end := strings.IndexByte(label[start:], ']')
+			if end < 0 {
+				write(label, true)
+				break
+			}
+			if write(label[:start], true) {
+				break
+			}
+			label = label[start+end+1:]
+		}
+	}
+	for n > 0 && result[n-1] == '-' {
+		n--
+	}
+	return string(result[:n])
 }
 
 func TmuxSessionPrefixes(currentIDs map[string]bool) []string {
