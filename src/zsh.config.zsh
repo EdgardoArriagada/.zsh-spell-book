@@ -68,6 +68,12 @@ preexec() { printf $ZSB_CURSOR_DEFAULT; } # Print cursor for each new prompt
 function append-last-word { ((++CURSOR)); zle insert-last-word; zle vi-insert; }
 zle -N append-last-word
 
+exit-on-blank-line() {
+    [[ -z ${BUFFER//[[:space:]]/} ]] && exit
+    zle delete-char-or-list
+}
+zle -N exit-on-blank-line
+
 vim-like-delete-word() {
     local WORDCHARS="${WORDCHARS//[\/:.]/}"
 
@@ -88,6 +94,7 @@ bindkey -M viins '^v' backward-kill-word
 bindkey -M viins '^r' history-incremental-pattern-search-backward
 bindkey -M viins '^q' push-line
 bindkey -M viins '^o' clear-screen
+bindkey -M viins '^d' exit-on-blank-line
 
 # Workarouds
 bindkey -M viins '^u' kill-buffer # prevent `Ctrl + u` from not working after entering viins again
