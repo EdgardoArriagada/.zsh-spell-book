@@ -1,7 +1,7 @@
 morning() {
   if (( $ZSB_MACOS )); then
     mw
-    printAndRun 'brew update && brew upgrade'
+    printAndRun 'brew update && brew upgrade -y'
     mf
     return $?
   fi
