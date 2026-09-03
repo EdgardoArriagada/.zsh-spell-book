@@ -10,7 +10,7 @@ co() {
       codex '$thermo-nuclear-code-quality-review'
       ;;
     *)
-      print -u2 'Usage: co [--update-pr-title-and-description | --code-review]'
+      ${zsb}.info 'Usage: co [--update-pr-title-and-description | --code-review]'
       return 1
       ;;
   esac
