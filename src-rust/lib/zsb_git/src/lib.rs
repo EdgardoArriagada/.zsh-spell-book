@@ -1,9 +1,12 @@
 use std::process::Command;
 
-/// Repo name for `cwd`. Prefers the `origin` remote URL; falls back to the
-/// main worktree's directory name for local-only repos.
+/// Repo name for `cwd`: the main worktree's directory name.
+///
+/// Deliberately local-only, not derived from the `origin` URL: local dirs get
+/// renamed (`fury_foo` cloned as `foo`) and callers key off the dir name, e.g.
+/// the `ghpr.<name>` lookup in createPr.zsh.
 pub fn git_repo_name(cwd: &str) -> Option<String> {
-    remote_repo_name(cwd).or_else(|| local_repo_name(cwd))
+    local_repo_name(cwd)
 }
 
 fn git_out(cwd: &str, args: &[&str]) -> Option<String> {
@@ -23,21 +26,11 @@ fn git_out(cwd: &str, args: &[&str]) -> Option<String> {
     Some(s)
 }
 
-fn remote_repo_name(cwd: &str) -> Option<String> {
-    let url = git_out(cwd, &["remote", "get-url", "origin"])?;
-    Some(repo_name_from_url(&url).to_string())
-}
-
 // `git worktree list` works from any subdir and always lists the main worktree
 // first, so this handles both deep cwd's and secondary worktrees.
 fn local_repo_name(cwd: &str) -> Option<String> {
     let out = git_out(cwd, &["worktree", "list", "--porcelain"])?;
     repo_name_from_worktree_list(&out).map(str::to_string)
-}
-
-pub fn repo_name_from_url(url: &str) -> &str {
-    let base = url.rsplit(|c| c == '/' || c == ':').next().unwrap_or(url);
-    base.strip_suffix(".git").unwrap_or(base)
 }
 
 pub fn repo_name_from_worktree_list(out: &str) -> Option<&str> {
@@ -53,26 +46,6 @@ pub fn repo_name_from_worktree_list(out: &str) -> Option<&str> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn https_with_git_suffix() {
-        assert_eq!(repo_name_from_url("https://github.com/user/repo.git"), "repo");
-    }
-
-    #[test]
-    fn https_without_git_suffix() {
-        assert_eq!(repo_name_from_url("https://github.com/user/repo"), "repo");
-    }
-
-    #[test]
-    fn ssh_url() {
-        assert_eq!(repo_name_from_url("git@github.com:user/repo.git"), "repo");
-    }
-
-    #[test]
-    fn ssh_url_no_suffix() {
-        assert_eq!(repo_name_from_url("git@github.com:user/repo"), "repo");
-    }
 
     #[test]
     fn worktree_list_main_repo() {
