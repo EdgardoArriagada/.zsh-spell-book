@@ -4,10 +4,13 @@ co() {
       codex --dangerously-bypass-approvals-and-sandbox
       ;;
     1:--update-pr-title-and-description)
-      codex exec 'update this pr title and description'
+      codex exec 'Update this pr title and description'
       ;;
     1:--code-review)
       codex '$thermo-nuclear-code-quality-review'
+      ;;
+    1:--commit)
+      codex exec 'Create a Git commit from the currently staged files'
       ;;
     *)
       ${zsb}.info 'Usage: co [--update-pr-title-and-description | --code-review]'
@@ -22,6 +25,7 @@ _${zsb}.co() {
   local -a options=(
     '--update-pr-title-and-description:update PR title and description'
     '--code-review:run thermo-nuclear code quality review'
+    '--commit:create a git commit'
   )
   _describe 'option' options
 }
