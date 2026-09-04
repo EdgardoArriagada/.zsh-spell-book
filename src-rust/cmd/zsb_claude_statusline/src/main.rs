@@ -1,7 +1,4 @@
 use std::io::{self, BufWriter, Read, Write};
-use std::process::Command;
-
-use zsb_git::git_repo_name;
 
 use serde::Deserialize;
 
@@ -72,51 +69,10 @@ struct Cost {
 }
 
 #[derive(Deserialize, Default)]
-struct WorktreeInfo {
-    branch: Option<String>,
-}
-
-#[derive(Deserialize, Default)]
 struct StatusInput {
-    cwd: Option<String>,
     model: Option<ModelInfo>,
     context_window: Option<ContextWindow>,
     cost: Option<Cost>,
-    worktree: Option<WorktreeInfo>,
-}
-
-// ── Git helpers ────────────────────────────────────────────────────────────────
-
-/// Single subprocess returning (branch_name, is_dirty).
-/// Replaces the previous git_branch + git_is_dirty two-call pattern.
-fn git_info(cwd: &str) -> (Option<String>, bool) {
-    let Ok(output) = Command::new("git")
-        .args(["-C", cwd, "status", "--porcelain", "--branch"])
-        .output()
-    else {
-        return (None, false);
-    };
-    if !output.status.success() {
-        return (None, false);
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut lines = stdout.lines();
-
-    // First line: "## main...origin/main", "## main", or "## HEAD (no branch)"
-    let branch = lines.next().and_then(|header| {
-        let name = header.strip_prefix("## ")?;
-        let name = name.split("...").next().unwrap_or(name).trim();
-        if name.is_empty() || name.starts_with("HEAD") {
-            None
-        } else {
-            Some(name.to_string())
-        }
-    });
-
-    // Any remaining lines mean the working tree is dirty.
-    let dirty = lines.next().is_some();
-    (branch, dirty)
 }
 
 // ── Formatting helpers ─────────────────────────────────────────────────────────
@@ -210,43 +166,6 @@ fn render_line(segments: &[Segment]) -> String {
     out
 }
 
-// ── Line builders ──────────────────────────────────────────────────────────────
-
-fn build_line1(input: &StatusInput) -> String {
-    let mut segments = Vec::new();
-
-    // Segment 1: project name (dark bg, golden fg)
-    let cwd = input.cwd.as_deref().unwrap_or(".");
-    if let Some(project) = git_repo_name(cwd) {
-        segments.push(Segment {
-            bg_color: DARK,
-            fg_color: GOLDEN,
-            content: format!(" \u{e5fc} {project} "),
-        });
-    }
-
-    // Segment 2: git branch with dirty indicator — single git subprocess.
-    let (git_branch, dirty) = git_info(cwd);
-
-    let branch = input
-        .worktree
-        .as_ref()
-        .and_then(|w| w.branch.as_deref())
-        .map(str::to_string)
-        .or(git_branch);
-
-    if let Some(branch) = branch {
-        let dirty_indicator = if dirty { " \u{00b1}" } else { "" };
-        segments.push(Segment {
-            bg_color: BLUE,
-            fg_color: DARK,
-            content: format!(" \u{e0a0} {branch}{dirty_indicator} "),
-        });
-    }
-
-    render_line(&segments)
-}
-
 fn build_line2(input: &StatusInput) -> String {
     let mut segments = Vec::new();
 
@@ -336,13 +255,9 @@ fn main() {
 
     let input: StatusInput = serde_json::from_str(&raw).unwrap_or_default();
 
-    let line1 = build_line1(&input);
-    let line2 = build_line2(&input);
-
     let stdout = io::stdout();
     let mut out = BufWriter::new(stdout.lock());
-    let _ = writeln!(out, "{line1}");
-    let _ = write!(out, "{line2}");
+    let _ = write!(out, "{}", build_line2(&input));
 }
 
 #[cfg(test)]
