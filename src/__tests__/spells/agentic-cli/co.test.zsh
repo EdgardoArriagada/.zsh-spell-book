@@ -7,8 +7,9 @@ describe "co command" $0; () (
     co
     co --update-pr-title-and-description
     co --code-review
+    co --commit
 
-    [[ "${(j:|:)calls}" == '--dangerously-bypass-approvals-and-sandbox|exec update this pr title and description|$thermo-nuclear-code-quality-review' ]]
+    [[ "${(j:|:)calls}" == '--dangerously-bypass-approvals-and-sandbox|exec Update this pr title and description|$thermo-nuclear-code-quality-review|exec Create a Git commit from the currently staged files' ]]
     expect $?
   }
 
@@ -30,7 +31,7 @@ describe "co command" $0; () (
     local -a completions
     _${zsb}.co
 
-    [[ "${(j:|:)completions}" == '--update-pr-title-and-description:update PR title and description|--code-review:run thermo-nuclear code quality review' ]]
+    [[ "${(j:|:)completions}" == '--update-pr-title-and-description:update PR title and description|--code-review:run thermo-nuclear code quality review|--commit:create a git commit' ]]
     expect $?
   }
 )
