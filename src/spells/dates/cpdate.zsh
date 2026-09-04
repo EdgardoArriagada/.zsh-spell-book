@@ -28,7 +28,7 @@ _${zsb}.cpdate() {
   local -a options=(
     '-f1:YYYY-MM-DD'
     '-f2:DD-MM-YYYY'
-    '-f3:viernes 15 de mayo de 2026'
+    '-f3:viernes 31 de octubre de 2025'
   )
   _describe 'option' options
 }
