@@ -3,7 +3,7 @@ _${zsb}.make() {
   [[ ! -f ./Makefile ]] && return 0
 
   local parsedMakefile="`
-      grep --only-matching '^[a-zA-Z-]*:' Makefile |\
+      rg --only-matching '^[a-zA-Z-]*:' Makefile |\
       sd ':' ''
   `"
 
