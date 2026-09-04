@@ -21,4 +21,11 @@ alias cmdRank="awk '!(\$1==\"\" || match(\$1, /^(-| |\\\)/)) {print \$1}' ~/.zsh
 hisIgnore ee links cmdRank
 
 whoInPort() { printAndRun "sudo lsof -i \":${1}\"" }
-killInPort() { sudo kill -9 $(sudo lsof -t -i ":${1}") }
+killInPort() {
+  local port=${1?:'Usage: killInPort <port>'}
+
+  local pid=$(lsof -t -i ":${1}")
+  [[ -z "$pid" ]] && ${zsb}.cancel "No apps running on port `hl $port`."
+
+  kill -9 "$pid" && ${zsb}.success "App at port `hl $port` killed!"
+}
