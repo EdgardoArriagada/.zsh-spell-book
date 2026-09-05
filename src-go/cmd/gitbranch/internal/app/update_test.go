@@ -114,6 +114,25 @@ func TestPageKeysMoveBranchCursor(t *testing.T) {
 	}
 }
 
+func TestQuitKeysClearBranchSearchAndPreserveSelection(t *testing.T) {
+	for _, key := range []tea.KeyPressMsg{{Text: "q"}, {Code: 'c', Mod: tea.ModCtrl}, {Code: tea.KeyEscape}} {
+		branches := threeBranches()
+		m := makeListModel(branches, 1, 0)
+		m.searchInput = tui.NewSearchInput()
+		m.searchInput.SetValue("f")
+		m.filtered = branches[1:]
+
+		updated, cmd := m.Update(key)
+		m = updated.(model)
+		if cmd != nil || m.searchInput.Value() != "" || len(m.filtered) != len(branches) || m.cursor != 2 {
+			t.Fatalf("%s did not clear search with selection preserved: cmd=%v term=%q len=%d cursor=%d", key.String(), cmd, m.searchInput.Value(), len(m.filtered), m.cursor)
+		}
+		if _, cmd = m.Update(key); cmd == nil {
+			t.Fatalf("second %s should quit", key.String())
+		}
+	}
+}
+
 // --- Delete on current branch shows status ---
 
 func TestDeleteCurrentShowsStatus(t *testing.T) {

@@ -114,6 +114,25 @@ func TestPageKeysMoveWorktreeCursor(t *testing.T) {
 	}
 }
 
+func TestQuitKeysClearWorktreeSearchAndPreserveSelection(t *testing.T) {
+	for _, key := range []tea.KeyPressMsg{{Text: "q"}, {Code: 'c', Mod: tea.ModCtrl}, {Code: tea.KeyEscape}} {
+		wts := threeWorktrees()
+		m := makeListModel(wts, 1)
+		m.searchInput = tui.NewSearchInput()
+		m.searchInput.SetValue("f")
+		m.filtered = wts[1:]
+
+		updated, cmd := m.Update(key)
+		m = updated.(model)
+		if cmd != nil || m.searchInput.Value() != "" || len(m.filtered) != len(wts) || m.cursor != 2 {
+			t.Fatalf("%s did not clear search with selection preserved: cmd=%v term=%q len=%d cursor=%d", key.String(), cmd, m.searchInput.Value(), len(m.filtered), m.cursor)
+		}
+		if _, cmd = m.Update(key); cmd == nil {
+			t.Fatalf("second %s should quit", key.String())
+		}
+	}
+}
+
 // --- Delete on main worktree shows status (issue 3) ---
 
 func TestDeleteMainShowsStatus(t *testing.T) {

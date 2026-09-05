@@ -41,6 +41,9 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	filterActive := m.searchInput.Value() != ""
 	switch km.String() {
 	case "q", "ctrl+c", "esc":
+		if filterActive {
+			return m.clearSearch(), nil
+		}
 		return m, tea.Quit
 	case "/":
 		m.mode = tui.SearchMode
@@ -180,13 +183,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "esc":
-			m.searchInput.Blur()
-			m.searchInput.SetValue("")
-			m.filtered = m.branches
-			m.cursor = 0
-			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
-			m.mode = tui.ListMode
-			return m, nil
+			return m.clearSearch(), nil
 		case "enter":
 			m.searchInput.Blur()
 			m.mode = tui.ListMode
@@ -199,6 +196,26 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.cursor = 0
 	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
+}
+
+func (m model) clearSearch() model {
+	selectedName := ""
+	if m.cursor < len(m.filtered) {
+		selectedName = m.filtered[m.cursor].Name
+	}
+	m.searchInput.Blur()
+	m.searchInput.SetValue("")
+	m.filtered = m.branches
+	m.cursor = 0
+	for i, br := range m.branches {
+		if br.Name == selectedName {
+			m.cursor = i
+			break
+		}
+	}
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+	m.mode = tui.ListMode
+	return m
 }
 
 func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {

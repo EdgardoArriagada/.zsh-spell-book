@@ -33,6 +33,23 @@ func TestPageKeysMoveTicketCursor(t *testing.T) {
 	}
 }
 
+func TestQuitKeysClearTicketSearchAndPreserveSelection(t *testing.T) {
+	for _, key := range []tea.KeyPressMsg{{Text: "q"}, {Code: 'c', Mod: tea.ModCtrl}, {Code: tea.KeyEscape}} {
+		tickets := []jira.Ticket{{Current: "JIRA-1"}, {Current: "JIRA-2"}, {Current: "JIRA-3"}}
+		m := model{tickets: tickets, filtered: tickets[1:], cursor: 1, availRows: 4, searchInput: tui.NewSearchInput()}
+		m.searchInput.SetValue("JIRA")
+
+		updated, cmd := m.Update(key)
+		m = updated.(model)
+		if cmd != nil || m.searchInput.Value() != "" || len(m.filtered) != len(tickets) || m.cursor != 2 {
+			t.Fatalf("%s did not clear search with selection preserved: cmd=%v term=%q len=%d cursor=%d", key.String(), cmd, m.searchInput.Value(), len(m.filtered), m.cursor)
+		}
+		if _, cmd = m.Update(key); cmd == nil {
+			t.Fatalf("second %s should quit", key.String())
+		}
+	}
+}
+
 func TestRenderSectionTitlesOnlyWithoutSearch(t *testing.T) {
 	tickets := []jira.Ticket{
 		{Title: "Personal", Current: "JIRA-1", Label: "First"},

@@ -180,6 +180,9 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	switch km.String() {
 	case "q", "ctrl+c", "esc":
+		if m.searchInput.Value() != "" {
+			return m.clearSearch(), nil
+		}
 		return m, tea.Quit
 	case "/":
 		m.mode = tui.SearchMode
@@ -265,13 +268,7 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "esc":
-			m.searchInput.Blur()
-			m.searchInput.SetValue("")
-			m.filtered = m.worktrees
-			m.cursor = 0
-			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
-			m.mode = tui.ListMode
-			return m, nil
+			return m.clearSearch(), nil
 		case "enter":
 			m.searchInput.Blur()
 			m.mode = tui.ListMode
@@ -284,6 +281,26 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.cursor = 0
 	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
+}
+
+func (m model) clearSearch() model {
+	selectedPath := ""
+	if m.cursor < len(m.filtered) {
+		selectedPath = m.filtered[m.cursor].Path
+	}
+	m.searchInput.Blur()
+	m.searchInput.SetValue("")
+	m.filtered = m.worktrees
+	m.cursor = 0
+	for i, wt := range m.worktrees {
+		if wt.Path == selectedPath {
+			m.cursor = i
+			break
+		}
+	}
+	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+	m.mode = tui.ListMode
+	return m
 }
 
 func (m model) updateAdd(msg tea.Msg) (tea.Model, tea.Cmd) {
