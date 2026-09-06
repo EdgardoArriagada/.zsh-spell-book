@@ -1,12 +1,9 @@
 use std::process::Command;
 
 /// Repo name for `cwd`: the main worktree's directory name.
-///
-/// Deliberately local-only, not derived from the `origin` URL: local dirs get
-/// renamed (`fury_foo` cloned as `foo`) and callers key off the dir name, e.g.
-/// the `ghpr.<name>` lookup in createPr.zsh.
 pub fn git_repo_name(cwd: &str) -> Option<String> {
-    local_repo_name(cwd)
+    let out = git_out(cwd, &["worktree", "list", "--porcelain"])?;
+    repo_name_from_worktree_list(&out).map(str::to_string)
 }
 
 fn git_out(cwd: &str, args: &[&str]) -> Option<String> {
@@ -24,13 +21,6 @@ fn git_out(cwd: &str, args: &[&str]) -> Option<String> {
         return None;
     }
     Some(s)
-}
-
-// `git worktree list` works from any subdir and always lists the main worktree
-// first, so this handles both deep cwd's and secondary worktrees.
-fn local_repo_name(cwd: &str) -> Option<String> {
-    let out = git_out(cwd, &["worktree", "list", "--porcelain"])?;
-    repo_name_from_worktree_list(&out).map(str::to_string)
 }
 
 pub fn repo_name_from_worktree_list(out: &str) -> Option<&str> {
