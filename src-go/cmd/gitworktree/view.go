@@ -106,8 +106,9 @@ func (m model) render() string {
 	}
 	for i, wt := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
+		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || wt.Path == m.searchTarget)
 		cursor := "   "
-		if idx == m.cursor {
+		if isCursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 
@@ -124,11 +125,11 @@ func (m model) render() string {
 
 		var line string
 		switch {
-		case isCurrent && idx == m.cursor:
+		case isCurrent && isCursor:
 			line = tui.HighlightMatches(name, searchTerm, tui.CurrentMark) + branch + tui.CurrentMark.Render("  ●")
 		case isCurrent:
 			line = tui.HighlightMatches(name, searchTerm, tui.DimStyle) + tui.DimStyle.Render(branch) + tui.CurrentMark.Render("  ●")
-		case idx == m.cursor:
+		case isCursor:
 			line = tui.HighlightMatches(name, searchTerm, tui.ActiveStyle) + branch
 		default:
 			line = tui.HighlightMatches(name, searchTerm, tui.DimStyle) + tui.DimStyle.Render(branch)

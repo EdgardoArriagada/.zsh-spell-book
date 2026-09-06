@@ -50,6 +50,53 @@ func TestQuitKeysClearTicketSearchAndPreserveSelection(t *testing.T) {
 	}
 }
 
+func TestSearchKeepsSelectionUntilEnter(t *testing.T) {
+	tickets := []jira.Ticket{
+		{Current: "JIRA-1", Label: "main"},
+		{Current: "JIRA-2", Label: "feature"},
+		{Current: "JIRA-3", Label: "fix"},
+	}
+	filterKeys := []string{"main", "feature", "fix"}
+	press := func(m model, key string) model {
+		updated, _ := m.Update(tea.KeyPressMsg{Text: key})
+		return updated.(model)
+	}
+	newModel := func(cursor int) model {
+		return model{
+			tickets: tickets, filterKeys: filterKeys, filtered: tickets, cursor: cursor,
+			current: -1, width: 80, availRows: 10, searchInput: tui.NewSearchInput(),
+		}
+	}
+
+	m := press(press(newModel(0), "/"), "f")
+	if len(m.filtered) != 2 || strings.Contains(m.render(), "▸") {
+		t.Fatalf("search selected a match: len=%d cursorVisible=%t", len(m.filtered), strings.Contains(m.render(), "▸"))
+	}
+	updated, cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd != nil || m.mode != tui.ListMode || m.cursor != 0 || m.selected != nil {
+		t.Fatalf("first enter selected instead of focusing first match: cmd=%v mode=%v cursor=%d selected=%v", cmd, m.mode, m.cursor, m.selected)
+	}
+	first := m.filtered[0].Current
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected == nil || m.selected.Current != first {
+		t.Fatalf("second enter: cmd=%v selected=%v, want %q", cmd, m.selected, first)
+	}
+
+	m = press(press(newModel(2), "/"), "f")
+	if m.filtered[m.cursor].Current != tickets[2].Current || !strings.Contains(m.render(), "▸") {
+		t.Fatal("search did not preserve a matching selection")
+	}
+
+	m = press(press(newModel(0), "/"), "x")
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected == nil || m.selected.Current != tickets[2].Current {
+		t.Fatalf("single match enter: cmd=%v selected=%v, want %q", cmd, m.selected, tickets[2].Current)
+	}
+}
+
 func TestRenderSectionTitlesOnlyWithoutSearch(t *testing.T) {
 	tickets := []jira.Ticket{
 		{Title: "Personal", Current: "JIRA-1", Label: "First"},

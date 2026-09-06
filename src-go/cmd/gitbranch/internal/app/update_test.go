@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"example.com/workspace/lib/tui"
@@ -130,6 +131,44 @@ func TestQuitKeysClearBranchSearchAndPreserveSelection(t *testing.T) {
 		if _, cmd = m.Update(key); cmd == nil {
 			t.Fatalf("second %s should quit", key.String())
 		}
+	}
+}
+
+func TestSearchKeepsSelectionUntilEnter(t *testing.T) {
+	branches := threeBranches()
+	m := makeListModel(branches, 0, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "f")
+	if len(m.filtered) != 2 || strings.Contains(m.render(), "▸") {
+		t.Fatalf("search selected a match: len=%d cursorVisible=%t", len(m.filtered), strings.Contains(m.render(), "▸"))
+	}
+
+	updated, cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd != nil || m.mode != tui.ListMode || m.cursor != 0 || m.selected != "" {
+		t.Fatalf("first enter selected instead of focusing first match: cmd=%v mode=%v cursor=%d selected=%q", cmd, m.mode, m.cursor, m.selected)
+	}
+	first := m.filtered[0].Name
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected != first {
+		t.Fatalf("second enter: cmd=%v selected=%q, want %q", cmd, m.selected, first)
+	}
+
+	m = makeListModel(branches, 2, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "f")
+	if m.filtered[m.cursor].Name != branches[2].Name || !strings.Contains(m.render(), "▸") {
+		t.Fatal("search did not preserve a matching selection")
+	}
+
+	m = makeListModel(branches, 0, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "x")
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected != branches[2].Name {
+		t.Fatalf("single match enter: cmd=%v selected=%q, want %q", cmd, m.selected, branches[2].Name)
 	}
 }
 

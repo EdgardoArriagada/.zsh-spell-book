@@ -18,6 +18,7 @@ type model struct {
 	mode         tui.Mode
 	input        textarea.Model
 	searchInput  textinput.Model
+	searchTarget string
 	spinner      spinner.Model
 	width        int
 	windowHeight int

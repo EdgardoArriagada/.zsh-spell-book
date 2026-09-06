@@ -133,6 +133,44 @@ func TestQuitKeysClearWorktreeSearchAndPreserveSelection(t *testing.T) {
 	}
 }
 
+func TestSearchKeepsSelectionUntilEnter(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "f")
+	if len(m.filtered) != 2 || strings.Contains(m.render(), "▸") {
+		t.Fatalf("search selected a match: len=%d cursorVisible=%t", len(m.filtered), strings.Contains(m.render(), "▸"))
+	}
+
+	updated, cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd != nil || m.mode != tui.ListMode || m.cursor != 0 || m.selected != "" {
+		t.Fatalf("first enter selected instead of focusing first match: cmd=%v mode=%v cursor=%d selected=%q", cmd, m.mode, m.cursor, m.selected)
+	}
+	first := m.filtered[0].Path
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected != first {
+		t.Fatalf("second enter: cmd=%v selected=%q, want %q", cmd, m.selected, first)
+	}
+
+	m = makeListModel(wts, 2)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "f")
+	if m.filtered[m.cursor].Path != wts[2].Path || !strings.Contains(m.render(), "▸") {
+		t.Fatal("search did not preserve a matching selection")
+	}
+
+	m = makeListModel(wts, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "x")
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
+	if cmd == nil || m.selected != wts[2].Path {
+		t.Fatalf("single match enter: cmd=%v selected=%q, want %q", cmd, m.selected, wts[2].Path)
+	}
+}
+
 // --- Delete on main worktree shows status (issue 3) ---
 
 func TestDeleteMainShowsStatus(t *testing.T) {

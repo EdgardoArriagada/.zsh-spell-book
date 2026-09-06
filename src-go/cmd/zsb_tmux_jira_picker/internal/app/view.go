@@ -81,8 +81,9 @@ func (m model) render() string {
 			s.WriteString(tui.TitleStyle.Render("  " + title))
 			s.WriteByte('\n')
 		}
+		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || t.Current == m.searchTarget)
 		cursor := "   "
-		if idx == m.cursor {
+		if isCursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 		const cursorWidth = 3
@@ -94,11 +95,11 @@ func (m model) render() string {
 
 		var renderedLine string
 		switch {
-		case isCurrent && idx == m.cursor:
+		case isCurrent && isCursor:
 			renderedLine = tui.HighlightMatches(line, searchTerm, tui.CurrentMark) + tui.CurrentMark.Render(" ●")
 		case isCurrent:
 			renderedLine = tui.HighlightMatches(line, searchTerm, tui.DimStyle) + tui.CurrentMark.Render(" ●")
-		case idx == m.cursor:
+		case isCursor:
 			renderedLine = tui.HighlightMatches(line, searchTerm, tui.ActiveStyle)
 		default:
 			renderedLine = tui.HighlightMatches(line, searchTerm, tui.DimStyle)

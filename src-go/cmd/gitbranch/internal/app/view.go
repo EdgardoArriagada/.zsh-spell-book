@@ -118,8 +118,9 @@ func (m model) render() string {
 			s.WriteString(tui.Title("Worktree Branches"))
 			hasDivider = true
 		}
+		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || br.Name == m.searchTarget)
 		cursor := "   "
-		if idx == m.cursor {
+		if isCursor {
 			cursor = " " + tui.CursorStyle.Render("▸ ")
 		}
 
@@ -129,11 +130,11 @@ func (m model) render() string {
 		switch {
 		case br.IsWorktree:
 			line = tui.HighlightMatches(br.Name, searchTerm, tui.WorktreeStyle)
-		case isCurrent && idx == m.cursor:
+		case isCurrent && isCursor:
 			line = tui.HighlightMatches(br.Name, searchTerm, tui.CurrentMark) + tui.CurrentMark.Render("  ●")
 		case isCurrent:
 			line = tui.HighlightMatches(br.Name, searchTerm, tui.DimStyle) + tui.CurrentMark.Render("  ●")
-		case idx == m.cursor:
+		case isCursor:
 			line = tui.HighlightMatches(br.Name, searchTerm, tui.ActiveStyle)
 		default:
 			line = tui.HighlightMatches(br.Name, searchTerm, tui.DimStyle)

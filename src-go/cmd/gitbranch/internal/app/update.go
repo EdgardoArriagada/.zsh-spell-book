@@ -46,6 +46,10 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	case "/":
+		m.searchTarget = ""
+		if m.cursor < len(m.filtered) {
+			m.searchTarget = m.filtered[m.cursor].Name
+		}
 		m.mode = tui.SearchMode
 		m.statusMsg = ""
 		return m, m.searchInput.Focus()
@@ -186,7 +190,13 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.clearSearch(), nil
 		case "enter":
 			m.searchInput.Blur()
+			if len(m.filtered) == 1 {
+				m.selected = m.filtered[0].Name
+				return m, tea.Quit
+			}
+			m.cursor = 0
 			m.mode = tui.ListMode
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 			return m, nil
 		}
 	}
@@ -194,17 +204,27 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = applyBranchFilter(m.branches, m.searchInput.Value())
 	m.cursor = 0
+	for i, br := range m.filtered {
+		if br.Name == m.searchTarget {
+			m.cursor = i
+			break
+		}
+	}
 	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
 }
 
 func (m model) clearSearch() model {
-	selectedName := ""
-	if m.cursor < len(m.filtered) {
+	selectedName := m.searchTarget
+	if m.mode != tui.SearchMode || selectedName == "" {
+		selectedName = ""
+	}
+	if selectedName == "" && m.cursor < len(m.filtered) {
 		selectedName = m.filtered[m.cursor].Name
 	}
 	m.searchInput.Blur()
 	m.searchInput.SetValue("")
+	m.searchTarget = ""
 	m.filtered = m.branches
 	m.cursor = 0
 	for i, br := range m.branches {

@@ -18,6 +18,7 @@ type model struct {
 	cursor       int
 	mode         tui.Mode
 	searchInput  textinput.Model
+	searchTarget string
 	width        int
 	windowHeight int
 	availRows    int // cached tui.AvailableRows result; updated on WindowSizeMsg only

@@ -72,6 +72,10 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m.clampViewport(), nil
 	case "/":
+		m.searchTarget = ""
+		if m.cursor < len(m.filtered) {
+			m.searchTarget = m.filtered[m.cursor].Current
+		}
 		m.mode = tui.SearchMode
 		return m, m.searchInput.Focus()
 	case "ctrl+d":
@@ -208,7 +212,14 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.clearSearch(), nil
 		case "enter":
 			m.searchInput.Blur()
+			if len(m.filtered) == 1 {
+				t := m.filtered[0]
+				m.selected = &t
+				return m, tea.Quit
+			}
+			m.cursor = 0
 			m.mode = tui.ListMode
+			m = m.clampViewport()
 			return m, nil
 		}
 	}
@@ -216,17 +227,27 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = m.filterTickets(m.searchInput.Value())
 	m.cursor = 0
+	for i, ticket := range m.filtered {
+		if ticket.Current == m.searchTarget {
+			m.cursor = i
+			break
+		}
+	}
 	m = m.clampViewport()
 	return m, cmd
 }
 
 func (m model) clearSearch() model {
-	selectedKey := ""
-	if m.cursor < len(m.filtered) {
+	selectedKey := m.searchTarget
+	if m.mode != tui.SearchMode || selectedKey == "" {
+		selectedKey = ""
+	}
+	if selectedKey == "" && m.cursor < len(m.filtered) {
 		selectedKey = m.filtered[m.cursor].Current
 	}
 	m.searchInput.Blur()
 	m.searchInput.SetValue("")
+	m.searchTarget = ""
 	m.filtered = m.tickets
 	m.cursor = 0
 	for i, ticket := range m.tickets {

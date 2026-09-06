@@ -185,6 +185,10 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	case "/":
+		m.searchTarget = ""
+		if m.cursor < len(m.filtered) {
+			m.searchTarget = m.filtered[m.cursor].Path
+		}
 		m.mode = tui.SearchMode
 		m.statusMsg = ""
 		return m, m.searchInput.Focus()
@@ -271,7 +275,13 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.clearSearch(), nil
 		case "enter":
 			m.searchInput.Blur()
+			if len(m.filtered) == 1 {
+				m.selected = m.filtered[0].Path
+				return m, tea.Quit
+			}
+			m.cursor = 0
 			m.mode = tui.ListMode
+			m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 			return m, nil
 		}
 	}
@@ -279,17 +289,27 @@ func (m model) updateSearch(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.searchInput, cmd = m.searchInput.Update(msg)
 	m.filtered = applyWorktreeFilter(m.worktrees, m.searchInput.Value())
 	m.cursor = 0
+	for i, wt := range m.filtered {
+		if wt.Path == m.searchTarget {
+			m.cursor = i
+			break
+		}
+	}
 	m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
 	return m, cmd
 }
 
 func (m model) clearSearch() model {
-	selectedPath := ""
-	if m.cursor < len(m.filtered) {
+	selectedPath := m.searchTarget
+	if m.mode != tui.SearchMode || selectedPath == "" {
+		selectedPath = ""
+	}
+	if selectedPath == "" && m.cursor < len(m.filtered) {
 		selectedPath = m.filtered[m.cursor].Path
 	}
 	m.searchInput.Blur()
 	m.searchInput.SetValue("")
+	m.searchTarget = ""
 	m.filtered = m.worktrees
 	m.cursor = 0
 	for i, wt := range m.worktrees {
