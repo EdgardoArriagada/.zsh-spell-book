@@ -97,6 +97,7 @@ func (m model) render() string {
 
 	var s strings.Builder
 	s.WriteString(tui.Title("Git Worktrees"))
+	searchTerm := tui.ActiveSearchTerm(m.mode, m.searchInput)
 
 	maxVis := m.vp.MaxVisible(len(m.filtered), m.availableRows())
 	end := m.vp.Offset + maxVis
@@ -124,13 +125,13 @@ func (m model) render() string {
 		var line string
 		switch {
 		case isCurrent && idx == m.cursor:
-			line = tui.CurrentMark.Render(name) + branch + tui.CurrentMark.Render("  ●")
+			line = tui.HighlightMatches(name, searchTerm, tui.CurrentMark) + branch + tui.CurrentMark.Render("  ●")
 		case isCurrent:
-			line = tui.DimStyle.Render(name) + tui.DimStyle.Render(branch) + tui.CurrentMark.Render("  ●")
+			line = tui.HighlightMatches(name, searchTerm, tui.DimStyle) + tui.DimStyle.Render(branch) + tui.CurrentMark.Render("  ●")
 		case idx == m.cursor:
-			line = tui.ActiveStyle.Render(name) + branch
+			line = tui.HighlightMatches(name, searchTerm, tui.ActiveStyle) + branch
 		default:
-			line = tui.DimStyle.Render(name) + tui.DimStyle.Render(branch)
+			line = tui.HighlightMatches(name, searchTerm, tui.DimStyle) + tui.DimStyle.Render(branch)
 		}
 
 		s.WriteString(cursor + line + "\n")

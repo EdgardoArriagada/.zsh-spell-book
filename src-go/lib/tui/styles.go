@@ -18,27 +18,29 @@ var (
 	NotifBadge    lipgloss.Style
 	NotifWorking  lipgloss.Style
 	NotifManual   lipgloss.Style
+	MatchStyle    lipgloss.Style
 )
 
 func init() {
 	// lipgloss v2 has no renderer: Style is a plain value and color downsampling
 	// happens at write time. All styles here use fixed truecolor hex; bubbletea
 	// owns the program's output profile.
-	CursorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true) // yellow — warm cursor
-	ActiveStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9"))             // white1 — hovered item
-	CurrentMark   = lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C"))             // green — current marker
-	DimStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#60728A"))             // gray5 — inactive text
-	BranchStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1"))             // blue1 — branch names
-	WorktreeStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A"))             // gray4 — worktree branches (darker)
-	TitleStyle    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#88C0D0"))  // blue2 — title
-	PromptStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B"))             // yellow — input prompt
-	ErrStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A"))             // red — errors
-	WarnStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#D08770"))             // orange — destructive confirm
-	StatusStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#8FBCBB"))             // cyan — info messages
-	KeyStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)  // yellow bold — key hints
-	NotifBadge    = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true)  // red — finished notifications
-	NotifWorking  = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Bold(true)  // blue1 — agents still working
-	NotifManual   = KeyStyle
+	CursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)  // yellow — warm cursor
+	ActiveStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9"))             // white1 — hovered item
+	CurrentMark = lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C"))             // green — current marker
+	DimStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#60728A"))                // gray5 — inactive text
+	BranchStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1"))             // blue1 — branch names
+	WorktreeStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A"))           // gray4 — worktree branches (darker)
+	TitleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#88C0D0"))   // blue2 — title
+	PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B"))             // yellow — input prompt
+	ErrStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A"))                // red — errors
+	WarnStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#D08770"))               // orange — destructive confirm
+	StatusStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#8FBCBB"))             // cyan — info messages
+	KeyStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true)     // yellow bold — key hints
+	NotifBadge = lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true)   // red — finished notifications
+	NotifWorking = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Bold(true) // blue1 — agents still working
+	NotifManual = KeyStyle
+	MatchStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#88C0D0")).Bold(true) // magenta bright — search matches
 }
 
 func Title(text string) string {

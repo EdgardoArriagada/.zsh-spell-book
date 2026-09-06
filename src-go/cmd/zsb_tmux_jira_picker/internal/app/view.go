@@ -60,6 +60,7 @@ func (m model) render() string {
 
 	statusSec := m.statusSection()
 	footerSec := m.footerSection()
+	searchTerm := tui.ActiveSearchTerm(m.mode, m.searchInput)
 
 	var currentTicket string
 	if m.current >= 0 && m.current < len(m.tickets) {
@@ -94,13 +95,13 @@ func (m model) render() string {
 		var renderedLine string
 		switch {
 		case isCurrent && idx == m.cursor:
-			renderedLine = tui.CurrentMark.Render(line) + tui.CurrentMark.Render(" ●")
+			renderedLine = tui.HighlightMatches(line, searchTerm, tui.CurrentMark) + tui.CurrentMark.Render(" ●")
 		case isCurrent:
-			renderedLine = tui.DimStyle.Render(line) + tui.CurrentMark.Render(" ●")
+			renderedLine = tui.HighlightMatches(line, searchTerm, tui.DimStyle) + tui.CurrentMark.Render(" ●")
 		case idx == m.cursor:
-			renderedLine = tui.ActiveStyle.Render(line)
+			renderedLine = tui.HighlightMatches(line, searchTerm, tui.ActiveStyle)
 		default:
-			renderedLine = tui.DimStyle.Render(line)
+			renderedLine = tui.HighlightMatches(line, searchTerm, tui.DimStyle)
 		}
 		c := m.notifCounts[t.SessionID]
 		if c.Working > 0 {

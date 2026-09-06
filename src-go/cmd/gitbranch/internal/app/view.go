@@ -95,6 +95,7 @@ func (m model) render() string {
 		return tui.ErrStyle.Render(fmt.Sprintf("Error: %v", m.err)) + "\n"
 	}
 
+	searchTerm := tui.ActiveSearchTerm(m.mode, m.searchInput)
 	filterActive := m.searchInput.Value() != ""
 
 	var currentName string
@@ -127,15 +128,15 @@ func (m model) render() string {
 		var line string
 		switch {
 		case br.IsWorktree:
-			line = tui.WorktreeStyle.Render(br.Name) + tui.WorktreeStyle.Render()
+			line = tui.HighlightMatches(br.Name, searchTerm, tui.WorktreeStyle)
 		case isCurrent && idx == m.cursor:
-			line = tui.CurrentMark.Render(br.Name) + tui.CurrentMark.Render("  ●")
+			line = tui.HighlightMatches(br.Name, searchTerm, tui.CurrentMark) + tui.CurrentMark.Render("  ●")
 		case isCurrent:
-			line = tui.DimStyle.Render(br.Name) + tui.CurrentMark.Render("  ●")
+			line = tui.HighlightMatches(br.Name, searchTerm, tui.DimStyle) + tui.CurrentMark.Render("  ●")
 		case idx == m.cursor:
-			line = tui.ActiveStyle.Render(br.Name)
+			line = tui.HighlightMatches(br.Name, searchTerm, tui.ActiveStyle)
 		default:
-			line = tui.DimStyle.Render(br.Name)
+			line = tui.HighlightMatches(br.Name, searchTerm, tui.DimStyle)
 		}
 
 		s.WriteString(cursor + line + "\n")
