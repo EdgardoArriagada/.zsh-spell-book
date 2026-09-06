@@ -42,6 +42,11 @@ go-build-all:
 go-test-all:
 	cd src-go && go list -f '{{.Dir}}' -m | xargs -I{} sh -c 'cd "{}" && go test ./...'
 
+go-update-all:
+	cd src-go && go list -f '{{.Dir}}' -m | while IFS= read -r module; do \
+		(cd "$$module" && GOWORK=off go list -m -f '{{if not .Main}}{{.Path}}{{end}}' all | xargs -r env GOWORK=off go get -u) || exit; \
+	done
+
 # Rust targets
 
 define rust-build-dev-fn
@@ -77,6 +82,9 @@ rust-build-all:
 
 rust-test-all:
 	cd src-rust && cargo test --workspace
+
+rust-update-all:
+	cd src-rust && cargo update
 
 .PHONY: agents-sync-skills
 agents-sync-skills:
