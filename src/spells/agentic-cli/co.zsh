@@ -6,15 +6,14 @@ co() {
     1:--update-pr-title-and-description)
       codex exec 'Update this pr title and description'
       ;;
-    1:--code-review)
-      codex '$thermo-nuclear-code-quality-review'
-      ;;
     1:--commit)
       codex exec 'Create a Git commit from the currently staged files'
       ;;
+    *:--code-review)
+      codex "\$thermo-nuclear-code-quality-review ${@:2}"
+      ;;
     *)
-      ${zsb}.info 'Usage: co [--update-pr-title-and-description | --code-review]'
-      return 1
+      codex "$@"
       ;;
   esac
 }
@@ -26,6 +25,8 @@ _${zsb}.co() {
     '--update-pr-title-and-description:update PR title and description'
     '--code-review:run thermo-nuclear code quality review'
     '--commit:create a git commit'
+    'resume:resume a session'
+    'fork:fork a session'
   )
   _describe 'option' options
 }
