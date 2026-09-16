@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 
 const (
 	allowedJiraBaseURL = "https://mercadolibre.atlassian.net"
-	usage              = `Usage: create-jira-ticket "<title>" ["<description>"]`
+	usage              = `Usage: create-jira-ticket [-i <issue-type> | --issue-type=<issue-type>] "<title>" ["<description>"]`
 	controlPointField  = "customfield_25390"
 )
 
@@ -43,6 +44,13 @@ type issueType struct {
 	ID    string
 }
 
+type options struct {
+	title        string
+	description  string
+	issueType    string
+	issueTypeSet bool
+}
+
 type config struct {
 	baseURL      string
 	email        string
@@ -63,15 +71,13 @@ func main() {
 }
 
 func run(args []string, out io.Writer) error {
-	if len(args) < 1 || len(args) > 2 {
-		return errors.New(usage)
+	opts, err := parseArgs(args)
+	if err != nil {
+		return err
 	}
 
-	title := args[0]
-	description := ""
-	if len(args) == 2 {
-		description = args[1]
-	}
+	title := opts.title
+	description := opts.description
 	if title == "" {
 		return errors.New("Title cannot be empty.")
 	}
@@ -86,8 +92,13 @@ func run(args []string, out io.Writer) error {
 		return err
 	}
 
-	// fzf runs before the token fetch so a cancelled pick never touches pass nor the network.
-	selected, err := selectIssueType(cfg.issueTypes)
+	var selected issueType
+	if opts.issueTypeSet {
+		selected, err = issueTypeByLabel(cfg.issueTypes, opts.issueType)
+	} else {
+		// fzf runs before the token fetch so a cancelled pick never touches pass nor the network.
+		selected, err = selectIssueType(cfg.issueTypes)
+	}
 	if err != nil {
 		return err
 	}
@@ -114,6 +125,32 @@ func run(args []string, out io.Writer) error {
 	}
 
 	return nil
+}
+
+func parseArgs(args []string) (options, error) {
+	var opts options
+	flags := flag.NewFlagSet("create-jira-ticket", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	setIssueType := func(value string) error {
+		opts.issueType, opts.issueTypeSet = value, true
+		return nil
+	}
+	flags.Func("i", "", setIssueType)
+	flags.Func("issue-type", "", setIssueType)
+	if err := flags.Parse(args); err != nil {
+		return options{}, errors.New(usage)
+	}
+
+	positional := flags.Args()
+	if len(positional) < 1 || len(positional) > 2 {
+		return options{}, errors.New(usage)
+	}
+
+	opts.title = positional[0]
+	if len(positional) == 2 {
+		opts.description = positional[1]
+	}
+	return opts, nil
 }
 
 func requireEnv(name string) (string, error) {
@@ -236,13 +273,21 @@ func selectIssueType(issueTypes []issueType) (issueType, error) {
 		return issueType{}, errors.New("Issue type selection cancelled.")
 	}
 
-	selected := strings.TrimSpace(string(stdout))
-	for _, t := range issueTypes {
-		if t.Label == selected {
+	return issueTypeByLabel(issueTypes, strings.TrimSpace(string(stdout)))
+}
+
+func issueTypeByLabel(issueTypes []issueType, label string) (issueType, error) {
+	labels := make([]string, len(issueTypes))
+	for i, t := range issueTypes {
+		labels[i] = t.Label
+		if strings.EqualFold(t.Label, label) {
 			return t, nil
 		}
 	}
-	return issueType{}, fmt.Errorf("Unknown issue type: %s", selected)
+	if label == "" {
+		return issueType{}, fmt.Errorf("Issue type cannot be empty. Valid issue types: %s.", strings.Join(labels, ", "))
+	}
+	return issueType{}, fmt.Errorf("Unknown issue type %q. Valid issue types: %s.", label, strings.Join(labels, ", "))
 }
 
 type adfText struct {

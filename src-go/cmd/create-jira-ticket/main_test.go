@@ -456,6 +456,7 @@ func TestRunArgValidation(t *testing.T) {
 	}{
 		{name: "no args", args: []string{}, want: usage},
 		{name: "three args", args: []string{"a", "b", "c"}, want: usage},
+		{name: "missing issue type", args: []string{"-i"}, want: usage},
 		{name: "empty title", args: []string{""}, want: "Title cannot be empty."},
 		{name: "title without control point", args: []string{"fix the thing"}, want: "Title must contain exactly one control point in square brackets."},
 	}
@@ -468,6 +469,42 @@ func TestRunArgValidation(t *testing.T) {
 			}
 			if err.Error() != tt.want {
 				t.Errorf("err = %q, want %q", err.Error(), tt.want)
+			}
+		})
+	}
+}
+
+func TestParseArgsIssueType(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want options
+	}{
+		{
+			name: "short option",
+			args: []string{"-i", "Task", "[Checkout] fix", "desc"},
+			want: options{title: "[Checkout] fix", description: "desc", issueType: "Task", issueTypeSet: true},
+		},
+		{
+			name: "long option with equals",
+			args: []string{"--issue-type=epic", "[Checkout] fix"},
+			want: options{title: "[Checkout] fix", issueType: "epic", issueTypeSet: true},
+		},
+		{
+			name: "no option",
+			args: []string{"[Checkout] fix"},
+			want: options{title: "[Checkout] fix"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseArgs(tt.args)
+			if err != nil {
+				t.Fatalf("parseArgs() returned error %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("parseArgs() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
@@ -561,6 +598,25 @@ func TestSelectIssueType(t *testing.T) {
 	})
 }
 
+func TestIssueTypeByLabel(t *testing.T) {
+	types := []issueType{{Label: "Epic", ID: "10000"}, {Label: "Task", ID: "10101"}}
+
+	got, err := issueTypeByLabel(types, "ePiC")
+	if err != nil {
+		t.Fatalf("issueTypeByLabel() returned error %v", err)
+	}
+	if got != (issueType{Label: "Epic", ID: "10000"}) {
+		t.Errorf("got %+v, want {Epic 10000}", got)
+	}
+
+	for _, input := range []string{"", "Bug"} {
+		_, err := issueTypeByLabel(types, input)
+		if err == nil || !strings.Contains(err.Error(), "Valid issue types: Epic, Task.") {
+			t.Errorf("issueTypeByLabel(%q) error = %v, want valid issue types", input, err)
+		}
+	}
+}
+
 func TestRunEndToEnd(t *testing.T) {
 	var gotBody map[string]any
 
@@ -594,10 +650,10 @@ func TestRunEndToEnd(t *testing.T) {
 	t.Setenv("ZSB_JIRA_LABELS", "foo,bar")
 
 	fakeBin(t, "pass", `echo "s3cret"`)
-	fakeBin(t, "fzf", `echo "Task"`)
+	fakeBin(t, "fzf", `exit 1`)
 
 	var buf bytes.Buffer
-	runErr := run([]string{"[Checkout] fix the thing", "desc"}, &buf)
+	runErr := run([]string{"--issue-type=task", "[Checkout] fix the thing", "desc"}, &buf)
 
 	if runErr != nil {
 		t.Fatalf("run() returned error %v", runErr)
