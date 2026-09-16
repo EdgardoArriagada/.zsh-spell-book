@@ -1,7 +1,7 @@
 co() {
   case "$#:${1-}" in
     0:)
-      codex --dangerously-bypass-approvals-and-sandbox
+      codex --model gpt-5.6-sol --dangerously-bypass-approvals-and-sandbox
       ;;
     1:--update-pr-title-and-description)
       codex exec 'Update this pr title and description'
