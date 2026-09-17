@@ -4,10 +4,10 @@ co() {
       codex --model gpt-5.6-sol --dangerously-bypass-approvals-and-sandbox
       ;;
     1:--update-pr-title-and-description)
-      codex exec 'Update this pr title and description'
+      codex exec "Update this pr title and description. Don't wait for confirmation, just do it"
       ;;
     1:--commit)
-      codex exec 'Create a Git commit from the currently staged files'
+      codex exec --dangerously-bypass-approvals-and-sandbox 'Create a Git commit from the currently staged files'
       ;;
     *:--code-review)
       codex "\$thermo-nuclear-code-quality-review ${@:2}"
