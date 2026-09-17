@@ -11,6 +11,7 @@ import (
 	"example.com/workspace/lib/tui"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/atotto/clipboard"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -32,6 +33,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if ob, ok := msg.(openBrowserMsg); ok {
 		if ob.err != nil {
 			m.statusMsg = "open browser: " + ob.err.Error()
+		}
+		return m, nil
+	}
+	if ys, ok := msg.(yankSessionMsg); ok {
+		if ys.err != nil {
+			m.statusMsg = "yank session: " + ys.err.Error()
 		}
 		return m, nil
 	}
@@ -117,6 +124,8 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 	case "O":
 		return m.handleOpenBrowser()
+	case "Y":
+		return m, m.yankSessionCmd(clipboard.WriteAll)
 	case "alt+j":
 		return m.handleOpenNotes()
 	case "ctrl+g":
@@ -175,8 +184,20 @@ func (m model) handleEditTickets() (tea.Model, tea.Cmd) {
 
 type openBrowserMsg struct{ err error }
 
+type yankSessionMsg struct{ err error }
+
 func openBrowserCmd(url string) tea.Cmd {
 	return func() tea.Msg { return openBrowserMsg{err: open.Url(url)} }
+}
+
+func (m model) yankSessionCmd(writeClipboard func(string) error) tea.Cmd {
+	if len(m.filtered) == 0 {
+		return nil
+	}
+	ticket := m.filtered[m.cursor]
+	return func() tea.Msg {
+		return yankSessionMsg{err: writeClipboard(ticket.TmuxSessionID())}
+	}
 }
 
 func openNotesCmd(editor, notesPath string) *exec.Cmd {

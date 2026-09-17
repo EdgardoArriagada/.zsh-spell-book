@@ -5,12 +5,12 @@ go 1.27.0
 require (
 	charm.land/bubbles/v2 v2.2.1
 	charm.land/bubbletea/v2 v2.0.9
+	github.com/atotto/clipboard v0.1.4
 )
 
 require (
 	charm.land/lipgloss/v2 v2.0.6 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
-	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
 	github.com/bits-and-blooms/bitset v1.25.0 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect

@@ -33,6 +33,27 @@ func TestPageKeysMoveTicketCursor(t *testing.T) {
 	}
 }
 
+func TestYankSessionCmdGeneratesIDForTicketUnderCursor(t *testing.T) {
+	m := model{
+		filtered: []jira.Ticket{
+			{Current: "JIRA-1", Label: "Other ticket"},
+			{Current: "JIRA-2", Label: "Selected ticket"},
+		},
+		cursor: 1,
+	}
+	var copied string
+	msg := m.yankSessionCmd(func(value string) error {
+		copied = value
+		return nil
+	})()
+	if got := msg.(yankSessionMsg).err; got != nil {
+		t.Fatal(got)
+	}
+	if copied != "JIRA-2-selected-ticket" {
+		t.Fatalf("copied %q", copied)
+	}
+}
+
 func TestQuitKeysClearTicketSearchAndPreserveSelection(t *testing.T) {
 	for _, key := range []tea.KeyPressMsg{{Text: "q"}, {Code: 'c', Mod: tea.ModCtrl}, {Code: tea.KeyEscape}} {
 		tickets := []jira.Ticket{{Current: "JIRA-1"}, {Current: "JIRA-2"}, {Current: "JIRA-3"}}
