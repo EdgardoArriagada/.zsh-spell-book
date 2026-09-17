@@ -54,17 +54,19 @@ func createWorktree(mainPath, branch string) error {
 }
 
 func baseBranch(branch string) (string, error) {
-	name := "develop"
+	names := []string{"develop", "master", "main"}
 	if strings.HasPrefix(branch, "hotfix/") || strings.HasPrefix(branch, "fix/") {
-		name = "master"
-		if _, ok := gitlib.RemoteBranchRef(name); !ok {
-			name = "main"
+		names = names[1:]
+	}
+	for _, name := range names {
+		if ref, ok := gitlib.RemoteBranchRef(name); ok {
+			return ref, nil
+		}
+		if gitlib.BranchExists(name) {
+			return name, nil
 		}
 	}
-	if ref, ok := gitlib.RemoteBranchRef(name); ok {
-		return ref, nil
-	}
-	return "", fmt.Errorf("remote branch %q not found", name)
+	return "", fmt.Errorf("base branch not found")
 }
 
 func deleteWorktree(path string) error {

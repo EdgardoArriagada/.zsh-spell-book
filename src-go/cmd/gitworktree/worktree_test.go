@@ -51,6 +51,16 @@ func TestBaseBranch(t *testing.T) {
 			t.Errorf("baseBranch(%q) = %q, %v; want origin/master", branch, got, err)
 		}
 	}
+
+	run("update-ref", "-d", "refs/remotes/origin/develop")
+	run("branch", "develop")
+	if got, err := baseBranch("feature/local"); err != nil || got != "develop" {
+		t.Errorf("baseBranch(feature/local) = %q, %v; want local develop", got, err)
+	}
+	run("branch", "-D", "develop")
+	if got, err := baseBranch("feature/fallback"); err != nil || got != "refs/remotes/origin/master" {
+		t.Errorf("baseBranch(feature/fallback) = %q, %v; want origin/master", got, err)
+	}
 }
 
 func TestCreateWorktreeFetchesRemoteBase(t *testing.T) {
