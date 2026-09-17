@@ -61,12 +61,13 @@ func tmuxWorktreeBranch(mainBranch string) (string, error) {
 	if session == "" {
 		return "", errors.New("tmux session name is empty")
 	}
-	return automaticWorktreeBranch(mainBranch, session), nil
+	developExists := gitlib.BranchExists("develop") || gitlib.RemoteBranchExists("develop")
+	return automaticWorktreeBranch(mainBranch, session, developExists), nil
 }
 
-func automaticWorktreeBranch(mainBranch, session string) string {
+func automaticWorktreeBranch(mainBranch, session string, developExists bool) string {
 	prefix := "feature"
-	if mainBranch == "master" || mainBranch == "main" {
+	if mainBranch == "main" || mainBranch == "master" && developExists {
 		prefix = "hotfix"
 	}
 	return prefix + "/" + session

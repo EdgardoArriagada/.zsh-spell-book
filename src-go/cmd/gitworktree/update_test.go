@@ -40,14 +40,16 @@ func threeWorktrees() []Worktree {
 
 func TestTmuxWorktreeBranchPrefix(t *testing.T) {
 	for _, tt := range []struct {
-		mainBranch string
-		want       string
+		mainBranch    string
+		developExists bool
+		want          string
 	}{
-		{"develop", "feature/session"},
-		{"master", "hotfix/session"},
-		{"main", "hotfix/session"},
+		{"develop", true, "feature/session"},
+		{"master", true, "hotfix/session"},
+		{"master", false, "feature/session"},
+		{"main", false, "hotfix/session"},
 	} {
-		if got := automaticWorktreeBranch(tt.mainBranch, "session"); got != tt.want {
+		if got := automaticWorktreeBranch(tt.mainBranch, "session", tt.developExists); got != tt.want {
 			t.Errorf("main branch %q: got %q, want %q", tt.mainBranch, got, tt.want)
 		}
 	}
