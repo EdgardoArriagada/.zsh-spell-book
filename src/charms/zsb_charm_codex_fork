@@ -6,7 +6,7 @@ local workingDir=${2:?working directory required}
 local codexPid=$(ps -o tpgid= -p "$panePid" | tr -d ' ')
 local sessionId=$(lsof -Fn -p "$codexPid" 2>/dev/null | sed -n 's|^n.*/thread-writer-locks/\(.*\)\.lock$|\1|p' | head -n 1)
 
-if ! printf '%s\n' "$sessionId" | grep -Eq '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$'; then
+if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
   tmux display-message 'No Codex session found in this pane'
   exit 1
 fi
