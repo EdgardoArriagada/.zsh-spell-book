@@ -4,7 +4,7 @@ set -euo pipefail
 local panePid=${1:?pane PID required}
 local workingDir=${2:?working directory required}
 local codexPid=$(ps -o tpgid= -p "$panePid" | tr -d ' ')
-local sessionId=$(lsof -Fn -p "$codexPid" 2>/dev/null | rg -o -m 1 --replace '$1' '^n.*/thread-writer-locks/(.*)\.lock$' || true)
+local sessionId=$(lsof -Fn -p "$codexPid" 2>/dev/null | rg -o -m 1 --replace '$1' '^n.*/thread-writer-locks/(.*)\.lock$')
 
 if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
   tmux display-message 'No Codex session found in this pane'
