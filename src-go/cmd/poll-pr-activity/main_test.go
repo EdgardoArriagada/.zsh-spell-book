@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -14,8 +16,8 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") {
-			t.Errorf("run(%q) output = %q, want usage and help flags", flag, got)
+		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") || !strings.Contains(got, "-t, --tmux") {
+			t.Errorf("run(%q) output = %q, want usage and flags", flag, got)
 		}
 	}
 }
@@ -32,6 +34,34 @@ func TestNewActivity(t *testing.T) {
 	}
 	if got := newActivity(seen, items); len(got) != 0 {
 		t.Fatalf("repeat poll reported %d items, want 0", len(got))
+	}
+}
+
+func TestTmuxFlag(t *testing.T) {
+	t.Setenv("TMUX_PANE", "")
+	for _, args := range [][]string{{"-t"}, {"--tmux"}, {"42", "-t"}} {
+		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "inside a tmux pane") {
+			t.Errorf("run(%q) = %v, want tmux pane error", args, err)
+		}
+	}
+}
+
+func TestTmuxNotification(t *testing.T) {
+	command := filepath.Join(t.TempDir(), "notify")
+	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$NOTIFICATION_ARGS\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	argsFile := filepath.Join(t.TempDir(), "args")
+	t.Setenv("NOTIFICATION_ARGS", argsFile)
+	if err := tmuxNotification(context.Background(), command, "%42"); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(argsFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != "--force-finished\n_\n%42\n" {
+		t.Errorf("notification args = %q", got)
 	}
 }
 

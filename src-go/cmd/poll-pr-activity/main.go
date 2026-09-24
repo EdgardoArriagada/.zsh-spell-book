@@ -19,18 +19,20 @@ import (
 
 const interval = time.Minute
 
-const help = `Usage: poll-pr-activity [PR number|GitHub PR URL]
+const help = `Usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]
 
 Watch a pull request for new comments and reviews every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
 
 Options:
+  -t, --tmux  Notify the current tmux pane when new activity appears
   -h, --help  Show this help
 `
 
 var (
 	prNumber = regexp.MustCompile(`^[1-9][0-9]*$`)
 	prPath   = regexp.MustCompile(`^/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/pull/([1-9][0-9]*)$`)
+	tmuxPane = regexp.MustCompile(`^%[0-9]+$`)
 )
 
 type activity struct {
@@ -56,8 +58,32 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		_, err := fmt.Fprint(out, help)
 		return err
 	}
-	if len(args) > 1 || (len(args) == 1 && !validPR(args[0])) {
-		return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
+	var selection []string
+	tmux := false
+	for _, arg := range args {
+		if arg == "-t" || arg == "--tmux" {
+			if tmux {
+				return errors.New("usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]")
+			}
+			tmux = true
+		} else {
+			selection = append(selection, arg)
+		}
+	}
+	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
+		return errors.New("usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]")
+	}
+	var notify, pane string
+	if tmux {
+		pane = os.Getenv("TMUX_PANE")
+		if !tmuxPane.MatchString(pane) {
+			return errors.New("poll-pr-activity: run -t inside a tmux pane")
+		}
+		var err error
+		notify, err = exec.LookPath("zsb_tmux_agent_notification")
+		if err != nil {
+			return errors.New("poll-pr-activity: zsb_tmux_agent_notification not found")
+		}
 	}
 	gh, err := exec.LookPath("gh")
 	if err != nil {
@@ -67,7 +93,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	if err != nil {
 		return errors.New("poll-pr-activity: cannot resolve gh path")
 	}
-	prURL, endpoint, err := resolvePR(ctx, gh, args)
+	prURL, endpoint, err := resolvePR(ctx, gh, selection)
 	if err != nil {
 		if ctx.Err() != nil {
 			return nil
@@ -91,12 +117,18 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			initialized = true
 			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
-			for _, item := range newActivity(seen, items) {
+			fresh := newActivity(seen, items)
+			for _, item := range fresh {
 				actor := item.User.Login
 				if actor == "" {
 					actor = "someone"
 				}
 				fmt.Fprintf(out, "[%s] %s by %q: %s\n", time.Now().Format("15:04:05"), label(item), actor, prURL)
+			}
+			if tmux && len(fresh) > 0 {
+				if err := tmuxNotification(ctx, notify, pane); err != nil {
+					fmt.Fprintln(os.Stderr, "poll-pr-activity: notification failed")
+				}
 			}
 		}
 		select {
@@ -105,6 +137,10 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func tmuxNotification(ctx context.Context, command, pane string) error {
+	return exec.CommandContext(ctx, command, "--force-finished", "_", pane).Run()
 }
 
 func validPR(value string) bool {
