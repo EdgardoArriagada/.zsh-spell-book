@@ -8,7 +8,7 @@ local sessionId=$(lsof -Fn -p "$codexPid" 2>/dev/null | rg -o -m 1 --replace '$1
 
 if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
   tmux display-message 'No Codex session found in this pane'
-  exit 1
+  exit 0
 fi
 
 tmux new-window -n 'codex ' -c "$workingDir" "codex fork $sessionId"
