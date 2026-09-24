@@ -1,6 +1,24 @@
 package main
 
-import "testing"
+import (
+	"bytes"
+	"context"
+	"strings"
+	"testing"
+)
+
+func TestHelp(t *testing.T) {
+	t.Setenv("PATH", "")
+	for _, flag := range []string{"-h", "--help"} {
+		var out bytes.Buffer
+		if err := run(context.Background(), []string{flag}, &out); err != nil {
+			t.Fatalf("run(%q) = %v", flag, err)
+		}
+		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") {
+			t.Errorf("run(%q) output = %q, want usage and help flags", flag, got)
+		}
+	}
+}
 
 func TestNewActivity(t *testing.T) {
 	seen := make(map[string]bool)

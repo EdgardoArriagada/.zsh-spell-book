@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -17,6 +18,15 @@ import (
 )
 
 const interval = time.Minute
+
+const help = `Usage: poll-pr-activity [PR number|GitHub PR URL]
+
+Watch a pull request for new comments and reviews every minute.
+With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
+
+Options:
+  -h, --help  Show this help
+`
 
 var (
 	prNumber = regexp.MustCompile(`^[1-9][0-9]*$`)
@@ -35,13 +45,17 @@ type activity struct {
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	if err := run(ctx, os.Args[1:]); err != nil {
+	if err := run(ctx, os.Args[1:], os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context, args []string, out io.Writer) error {
+	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
+		_, err := fmt.Fprint(out, help)
+		return err
+	}
 	if len(args) > 1 || (len(args) == 1 && !validPR(args[0])) {
 		return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
 	}
@@ -75,14 +89,14 @@ func run(ctx context.Context, args []string) error {
 		} else if !initialized {
 			newActivity(seen, items)
 			initialized = true
-			fmt.Printf("Watching %s for new PR activity (every minute).\n", prURL)
+			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
 			for _, item := range newActivity(seen, items) {
 				actor := item.User.Login
 				if actor == "" {
 					actor = "someone"
 				}
-				fmt.Printf("[%s] %s by %q: %s\n", time.Now().Format("15:04:05"), label(item), actor, prURL)
+				fmt.Fprintf(out, "[%s] %s by %q: %s\n", time.Now().Format("15:04:05"), label(item), actor, prURL)
 			}
 		}
 		select {
@@ -132,9 +146,6 @@ func resolvePR(ctx context.Context, gh string, selection []string) (string, stri
 func fetchActivity(ctx context.Context, gh, endpoint string) ([]activity, error) {
 	// ponytail: scans full history; add incremental cursors if large PRs hit rate limits.
 	i := strings.LastIndex(endpoint, "/pulls/")
-	if i < 0 {
-		return nil, errors.New("poll-pr-activity: invalid PR endpoint")
-	}
 	sources := []struct {
 		kind, path string
 	}{
