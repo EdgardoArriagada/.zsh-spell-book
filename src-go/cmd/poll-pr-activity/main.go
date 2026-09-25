@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -23,6 +25,8 @@ const help = `Usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]
 
 Watch a pull request for new comments, reviews, and merge readiness every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
+Place poll-pr-activity.conf beside main.go to ignore activity by GitHub username
+(one username per line; blank lines and # comments are allowed).
 
 Options:
   -t, --tmux  Notify the current tmux pane when activity or merge readiness appears
@@ -73,6 +77,14 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
 		return errors.New("usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]")
 	}
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+	ignored, err := loadIgnoredUsers(path)
+	if err != nil {
+		return err
+	}
 	var notify, pane string
 	if tmux {
 		pane = os.Getenv("TMUX_PANE")
@@ -115,11 +127,11 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		} else if !initialized {
-			newActivity(seen, items)
+			newActivity(seen, items, ignored)
 			initialized = true
 			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
-			fresh = newActivity(seen, items)
+			fresh = newActivity(seen, items, ignored)
 			for _, item := range fresh {
 				actor := item.User.Login
 				if actor == "" {
@@ -150,6 +162,42 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func configPath() (string, error) {
+	_, source, _, ok := runtime.Caller(0)
+	if ok && filepath.IsAbs(source) {
+		return filepath.Join(filepath.Dir(source), "poll-pr-activity.conf"), nil
+	}
+	// Release builds use -trimpath; their binary lives in src-go/bin.
+	executable, err := os.Executable()
+	if err != nil {
+		return "", errors.New("poll-pr-activity: cannot locate config")
+	}
+	return filepath.Join(filepath.Dir(executable), "..", "cmd", "poll-pr-activity", "poll-pr-activity.conf"), nil
+}
+
+func loadIgnoredUsers(path string) (map[string]bool, error) {
+	ignored := make(map[string]bool)
+	file, err := os.Open(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return ignored, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("poll-pr-activity: cannot open config: %w", err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		user := strings.TrimSpace(scanner.Text())
+		if user != "" && !strings.HasPrefix(user, "#") {
+			ignored[strings.ToLower(user)] = true
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("poll-pr-activity: cannot read config: %w", err)
+	}
+	return ignored, nil
 }
 
 func fetchMergeReady(ctx context.Context, gh, prURL string) (bool, error) {
@@ -237,10 +285,10 @@ func fetchActivity(ctx context.Context, gh, endpoint string) ([]activity, error)
 	return items, nil
 }
 
-func newActivity(seen map[string]bool, items []activity) []activity {
+func newActivity(seen map[string]bool, items []activity, ignored map[string]bool) []activity {
 	var fresh []activity
 	for _, item := range items {
-		if item.ID == 0 || (item.Kind == "review" && item.State == "PENDING") {
+		if item.ID == 0 || ignored[strings.ToLower(item.User.Login)] || (item.Kind == "review" && item.State == "PENDING") {
 			continue
 		}
 		key := fmt.Sprintf("%s:%d:%s", item.Kind, item.ID, item.State)

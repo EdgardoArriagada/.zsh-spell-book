@@ -26,15 +26,47 @@ func TestHelp(t *testing.T) {
 func TestNewActivity(t *testing.T) {
 	seen := make(map[string]bool)
 	baseline := []activity{{ID: 1, Kind: "comment"}, {ID: 2, Kind: "review", State: "PENDING"}}
-	if got := newActivity(seen, baseline); len(got) != 1 {
+	if got := newActivity(seen, baseline, nil); len(got) != 1 {
 		t.Fatalf("baseline has %d trackable items, want 1", len(got))
 	}
 	items := []activity{{ID: 1, Kind: "comment"}, {ID: 2, Kind: "review", State: "APPROVED"}, {ID: 3, Kind: "review comment"}}
-	if got := newActivity(seen, items); len(got) != 2 || label(got[0]) != "PR approved" || label(got[1]) != "New review comment" {
+	if got := newActivity(seen, items, nil); len(got) != 2 || label(got[0]) != "PR approved" || label(got[1]) != "New review comment" {
 		t.Fatalf("new activity = %+v, want approval and review comment", got)
 	}
-	if got := newActivity(seen, items); len(got) != 0 {
+	if got := newActivity(seen, items, nil); len(got) != 0 {
 		t.Fatalf("repeat poll reported %d items, want 0", len(got))
+	}
+}
+
+func TestIgnoredUsers(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "poll-pr-activity.conf")
+	if err := os.WriteFile(path, []byte("# my account\n\n  MyUser  \nother-user\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	ignored, err := loadIgnoredUsers(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ignored["myuser"] || !ignored["other-user"] || len(ignored) != 2 {
+		t.Fatalf("ignored users = %v", ignored)
+	}
+	items := []activity{{ID: 1, Kind: "comment"}, {ID: 2, Kind: "review"}, {ID: 3, Kind: "review comment"}}
+	items[0].User.Login = "MYUSER"
+	items[1].User.Login = "Other-User"
+	items[2].User.Login = "someone-else"
+	seen := make(map[string]bool)
+	if got := newActivity(seen, items, ignored); len(got) != 1 || got[0].ID != 3 {
+		t.Fatalf("new activity = %+v, want only non-ignored user", got)
+	}
+	if len(seen) != 1 {
+		t.Fatalf("tracked activity = %v, want only non-ignored user", seen)
+	}
+}
+
+func TestMissingIgnoreConfig(t *testing.T) {
+	ignored, err := loadIgnoredUsers(filepath.Join(t.TempDir(), "poll-pr-activity.conf"))
+	if err != nil || len(ignored) != 0 {
+		t.Fatalf("missing config: ignored = %v, err = %v", ignored, err)
 	}
 }
 

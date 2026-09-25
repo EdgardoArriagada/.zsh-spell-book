@@ -4,5 +4,6 @@
 /result.zsh
 /result.zsh.zwc
 /src-go/bin
+/src-go/cmd/poll-pr-activity/poll-pr-activity.conf
 /src-rust/bin
 /src-rust/target
