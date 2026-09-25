@@ -54,3 +54,13 @@ func Hint(key, desc string) string {
 func Sep() string {
 	return DimStyle.Render("  ·  ")
 }
+
+func ShortcutPrefix(position int, cursor bool) string {
+	if cursor {
+		return " " + CursorStyle.Render("▸ ")
+	}
+	if position >= 0 && position < 10 {
+		return " " + DimStyle.Render(string("1234567890"[position])) + " "
+	}
+	return "   "
+}

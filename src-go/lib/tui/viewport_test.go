@@ -20,6 +20,37 @@ func TestPageCursor(t *testing.T) {
 	}
 }
 
+func TestShortcutIndexAndPrefix(t *testing.T) {
+	for _, tc := range []struct {
+		key  string
+		want int
+		ok   bool
+	}{
+		{"1", 4, true}, {"9", 12, true}, {"0", 13, true},
+		{"2", 5, true}, {"x", 0, false}, {"11", 0, false},
+	} {
+		got, ok := tui.ShortcutIndex(tc.key, 4, 14)
+		if ok != tc.ok || ok && got != tc.want {
+			t.Fatalf("key %q: index=%d ok=%t, want %d %t", tc.key, got, ok, tc.want, tc.ok)
+		}
+	}
+	if _, ok := tui.ShortcutIndex("0", 4, 13); ok {
+		t.Fatal("0 should not select an entry outside the visible page")
+	}
+	if got := tui.ShortcutPrefix(0, false); got != " "+tui.DimStyle.Render("1")+" " {
+		t.Fatalf("first prefix = %q", got)
+	}
+	if got := tui.ShortcutPrefix(9, false); got != " "+tui.DimStyle.Render("0")+" " {
+		t.Fatalf("tenth prefix = %q", got)
+	}
+	if got := tui.ShortcutPrefix(10, false); got != "   " {
+		t.Fatalf("eleventh prefix = %q", got)
+	}
+	if got := tui.ShortcutPrefix(0, true); got != " "+tui.CursorStyle.Render("▸ ") {
+		t.Fatalf("cursor prefix = %q", got)
+	}
+}
+
 func TestHighlightMatchesStylesEveryFuzzyRune(t *testing.T) {
 	base := lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9")).Underline(true)
 	highlight := tui.MatchStyle.Inherit(base)

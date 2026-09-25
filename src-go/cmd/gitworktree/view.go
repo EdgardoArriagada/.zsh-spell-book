@@ -107,10 +107,7 @@ func (m model) render() string {
 	for i, wt := range m.filtered[m.vp.Offset:end] {
 		idx := i + m.vp.Offset
 		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || wt.Path == m.searchTarget)
-		cursor := "   "
-		if isCursor {
-			cursor = " " + tui.CursorStyle.Render("▸ ")
-		}
+		cursor := tui.ShortcutPrefix(i, isCursor)
 
 		name := filepath.Base(wt.Path)
 		branch := ""

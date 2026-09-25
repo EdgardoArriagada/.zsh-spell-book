@@ -33,6 +33,26 @@ func TestPageKeysMoveTicketCursor(t *testing.T) {
 	}
 }
 
+func TestNumberSelectsOnlyVisibleTicketRows(t *testing.T) {
+	tickets := make([]jira.Ticket, 6)
+	for i := range tickets {
+		tickets[i] = jira.Ticket{Current: "JIRA-" + string(rune('0'+i)), Title: "X"}
+	}
+	tickets[3].Title = "Y"
+	m := model{tickets: tickets, filtered: tickets, availRows: 6, current: -1, searchInput: tui.NewSearchInput()}
+	m.vp.Offset = 2
+	updated, cmd := m.Update(tea.KeyPressMsg{Text: "3"})
+	m = updated.(model)
+	if cmd != nil || m.selected != nil {
+		t.Fatalf("3 selected hidden ticket: cmd=%v selected=%v", cmd, m.selected)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Text: "2"})
+	m = updated.(model)
+	if cmd == nil || m.selected == nil || m.selected.Current != tickets[3].Current {
+		t.Fatalf("2 selected %v, want %q", m.selected, tickets[3].Current)
+	}
+}
+
 func TestYankSessionCmdGeneratesIDForTicketUnderCursor(t *testing.T) {
 	m := model{
 		filtered: []jira.Ticket{

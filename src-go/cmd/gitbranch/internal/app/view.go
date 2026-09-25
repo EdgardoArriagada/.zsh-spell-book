@@ -119,10 +119,7 @@ func (m model) render() string {
 			hasDivider = true
 		}
 		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || br.Name == m.searchTarget)
-		cursor := "   "
-		if isCursor {
-			cursor = " " + tui.CursorStyle.Render("▸ ")
-		}
+		cursor := tui.ShortcutPrefix(i, isCursor)
 
 		isCurrent := currentName != "" && br.Name == currentName
 

@@ -26,6 +26,19 @@ type Viewport struct {
 	Offset int
 }
 
+// ShortcutIndex maps keys 1-9,0 to the first ten visible entries.
+func ShortcutIndex(key string, start, end int) (int, bool) {
+	if len(key) != 1 || key[0] < '0' || key[0] > '9' {
+		return 0, false
+	}
+	position := int(key[0] - '0')
+	if position == 0 {
+		position = 10
+	}
+	index := start + position - 1
+	return index, index < end
+}
+
 // PageCursor moves cursor one visible page without wrapping.
 func PageCursor(cursor, totalItems, availableRows, direction int) int {
 	if totalItems == 0 {

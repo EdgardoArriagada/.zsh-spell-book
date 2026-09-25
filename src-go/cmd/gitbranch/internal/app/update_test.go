@@ -46,6 +46,23 @@ func manyBranches(n int) []Branch {
 	return branches
 }
 
+func TestNumberSelectsVisibleBranchButBlocksWorktree(t *testing.T) {
+	branches := manyBranches(5)
+	branches[3].IsWorktree = true
+	m := makeListModel(branches, 2, 0)
+	m.vp.Offset = 2
+	updated, cmd := m.Update(tea.KeyPressMsg{Text: "2"})
+	m = updated.(model)
+	if cmd != nil || m.selected != "" || m.statusMsg != "worktree branches are not selectable" {
+		t.Fatalf("worktree shortcut: cmd=%v selected=%q status=%q", cmd, m.selected, m.statusMsg)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Text: "1"})
+	m = updated.(model)
+	if cmd == nil || m.selected != branches[2].Name {
+		t.Fatalf("1 selected %q, want %q", m.selected, branches[2].Name)
+	}
+}
+
 func pressKey(m model, key string) model {
 	// Key.String() returns Text when set, so this stringifies to `key` for the
 	// printable single-char keys the tests use (j/k/d/y/n).

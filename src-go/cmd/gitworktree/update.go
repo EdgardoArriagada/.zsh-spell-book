@@ -223,7 +223,15 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = len(m.filtered) - 1
 		}
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
-	case "enter":
+	case "enter", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
+		if km.String() != "enter" {
+			end := min(len(m.filtered), m.vp.Offset+m.vp.MaxVisible(len(m.filtered), m.availableRows()))
+			index, ok := tui.ShortcutIndex(km.String(), m.vp.Offset, end)
+			if !ok {
+				return m, nil
+			}
+			m.cursor = index
+		}
 		if len(m.filtered) > 0 {
 			m.selected = m.filtered[m.cursor].Path
 		}

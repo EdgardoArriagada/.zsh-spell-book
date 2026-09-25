@@ -38,6 +38,20 @@ func threeWorktrees() []Worktree {
 	}
 }
 
+func TestNumberSelectsVisibleWorktree(t *testing.T) {
+	worktrees := make([]Worktree, 12)
+	for i := range worktrees {
+		worktrees[i].Path = fmt.Sprintf("/repo/wt-%d", i)
+	}
+	m := makeListModel(worktrees, 3)
+	m.vp.Offset = 2
+	updated, cmd := m.Update(tea.KeyPressMsg{Text: "0"})
+	m = updated.(model)
+	if cmd == nil || m.selected != worktrees[11].Path {
+		t.Fatalf("0 selected %q, want %q", m.selected, worktrees[11].Path)
+	}
+}
+
 func TestTmuxWorktreeBranchPrefix(t *testing.T) {
 	for _, tt := range []struct {
 		mainBranch    string
