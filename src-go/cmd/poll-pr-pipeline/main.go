@@ -17,6 +17,16 @@ import (
 
 const interval = 30 * time.Second
 
+const help = `Usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]
+
+Watch pull request checks until they complete. With no argument, watch the PR
+for the current branch. Press Ctrl+C to stop.
+
+Options:
+  -t, --tmux  Notify the current tmux pane while checks run and when they finish
+  -h, --help  Show this help
+`
+
 var (
 	prNumber = regexp.MustCompile(`^[1-9][0-9]*$`)
 	prURL    = regexp.MustCompile(`^/[^/]+/[^/]+/pull/[1-9][0-9]*$`)
@@ -34,35 +44,58 @@ func main() {
 }
 
 func run(args []string) (result error) {
-	pane := os.Getenv("TMUX_PANE")
-	if !regexp.MustCompile(`^%[0-9]+$`).MatchString(pane) {
-		return errors.New("poll-pr-pipeline: run inside a tmux pane")
+	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
+		_, err := fmt.Print(help)
+		return err
 	}
-	if len(args) > 1 || (len(args) == 1 && !validPR(args[0])) {
-		return errors.New("usage: poll-pr-pipeline [PR number|GitHub PR URL]")
+	var selection []string
+	tmux := false
+	for _, arg := range args {
+		if arg == "-t" || arg == "--tmux" {
+			if tmux {
+				return errors.New("usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]")
+			}
+			tmux = true
+		} else {
+			selection = append(selection, arg)
+		}
+	}
+	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
+		return errors.New("usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]")
 	}
 
+	var notify, pane string
+	if tmux {
+		pane = os.Getenv("TMUX_PANE")
+		if !regexp.MustCompile(`^%[0-9]+$`).MatchString(pane) {
+			return errors.New("poll-pr-pipeline: run -t inside a tmux pane")
+		}
+	}
 	gh, err := commandPath("gh")
 	if err != nil {
 		return err
 	}
-	notify, err := commandPath("zsb_tmux_agent_notification")
-	if err != nil {
-		return err
+	if tmux {
+		notify, err = commandPath("zsb_tmux_agent_notification")
+		if err != nil {
+			return err
+		}
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	if err := notification(notify, "--working", pane); err != nil {
-		return err
-	}
-	defer func() {
-		if err := notification(notify, "--force-finished", pane); err != nil && result == nil {
-			result = err
+	if tmux {
+		if err := notification(notify, "--working", pane); err != nil {
+			return err
 		}
-	}()
+		defer func() {
+			if err := notification(notify, "--force-finished", pane); err != nil && result == nil {
+				result = err
+			}
+		}()
+	}
 
 	for {
-		checks, err := fetchChecks(ctx, gh, args)
+		checks, err := fetchChecks(ctx, gh, selection)
 		if err != nil {
 			if ctx.Err() != nil {
 				return errors.New("poll-pr-pipeline: interrupted")
