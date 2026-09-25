@@ -28,6 +28,8 @@ zsb_tmux_agent_notification [--finished|--force-finished|--working|--clear-finis
   override `3` normally.
 - `<pane_id>` identifies the pane (and its session). `<session_name>` is accepted to match
   the tmux hook format string but is **unused** — pass anything (`_`).
+- `--bind-codex <session_id> <pane_id>` binds a Codex session to a pane for hooks run by the
+  shared daemon. Binding the same session elsewhere moves it to the new pane.
 
 Each state also updates the tmux window name: a working glyph (`󰔟`) and/or the finished bell
 (`󰂟`) are appended, recomputed from all panes in the window and stripped on `--clear`.
@@ -45,7 +47,8 @@ Hook the same events that already play a sound. For **Claude Code**, this lives 
 sound entry.
 
 `$TMUX_PANE` is set by tmux in every pane's environment, so it resolves to the pane running
-the agent. Outside tmux it's empty → tmux errors are ignored (no-op).
+the agent when the hook is a child of that agent process. Outside tmux, pane state is a no-op.
+Codex hooks running in a shared daemon do not inherit the client pane's environment; see below.
 
 **Finished** — the agent is done / wants attention (`--finished`, red):
 
@@ -103,6 +106,19 @@ Any agent with lifecycle hooks works the same way: run
 `zsb_tmux_agent_notification --working _ "$TMUX_PANE"` on "turn started" and
 `--finished` on "done / needs input". Only requirements: the command runs inside the tmux
 pane's environment (so `$TMUX_PANE` is set) and the binary is on `PATH`.
+
+### Codex with the shared daemon
+
+Codex hooks supply `session_id` on stdin. The notifier looks for that ID in the tmux pane
+option `@zsb_codex_session` and uses the matching pane. The existing hook commands in
+`~/.codex/config.toml` need no change. Without a binding, the notifier accepts `$TMUX_PANE`
+only when the hook process descends from that pane (as with `codex exec`). An unbound daemon
+hook can still play a finish sound but cannot change pane state.
+
+For a new interactive session, show the chat ID in Codex with `/status`, then press
+tmux prefix + `I` and enter the ID. Rebind after `/new`, `/resume`, or `/fork` inside Codex.
+`codex resume <UUID>` from zsh binds automatically before launch. Binding a session in a new
+pane removes its prior pane binding. This setup uses the default tmux server.
 
 ## Wiring 2 — tmux focus-in hook (clear finished)
 

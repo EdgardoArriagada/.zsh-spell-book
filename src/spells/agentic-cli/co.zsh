@@ -1,3 +1,10 @@
+codex() {
+  if [[ ${1-} == resume && ${2-} =~ '^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$' && -n ${TMUX_PANE-} ]]; then
+    zsb_tmux_agent_notification --bind-codex "$2" "$TMUX_PANE" || print -u2 'codex: tmux session binding failed'
+  fi
+  command codex "$@"
+}
+
 co() {
   case "$#:${1-}" in
     0:)

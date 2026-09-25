@@ -1,8 +1,10 @@
+use std::io::{IsTerminal, Read};
 use std::process::{self, Command, Stdio};
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const NOTIF_VAR: &str = "@zsb_agent_notif";
+const CODEX_SESSION_VAR: &str = "@zsb_codex_session";
 const FINISH_TIMER_VAR: &str = "@zsb_agent_finish_timer";
 const DEBOUNCED_FINISH: &str = "--debounced-finished";
 const FINISH_DELAY: Duration = Duration::from_secs(10);
@@ -30,6 +32,130 @@ fn pane_notif(pane: &str) -> String {
 
 fn pane_id(pane: &str) -> String {
     tmux_output(&["display-message", "-p", "-t", pane, "#{pane_id}"])
+}
+
+fn parse_codex_session_id(raw: &str) -> Result<Option<String>, ()> {
+    if raw.is_empty() {
+        return Ok(None);
+    }
+    let input: serde_json::Value = serde_json::from_str(raw).map_err(|_| ())?;
+    let id = input
+        .get("session_id")
+        .and_then(serde_json::Value::as_str)
+        .ok_or(())?;
+    if !valid_session_id(id) {
+        return Err(());
+    }
+    Ok(Some(id.to_owned()))
+}
+
+fn codex_session_id() -> Result<Option<String>, ()> {
+    if std::io::stdin().is_terminal() {
+        return Ok(None);
+    }
+    let mut raw = String::new();
+    std::io::stdin().read_to_string(&mut raw).map_err(|_| ())?;
+    parse_codex_session_id(&raw)
+}
+
+fn valid_session_id(id: &str) -> bool {
+    !id.is_empty()
+        && id.len() <= 128
+        && id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+}
+
+fn unique_bound_pane(panes: &str, session_id: &str) -> Result<Option<String>, ()> {
+    let mut found = None;
+    for line in panes.lines() {
+        if let Some((pane, id)) = line.split_once('\t') {
+            if id == session_id {
+                if found.is_some() {
+                    return Err(());
+                }
+                found = Some(pane.to_owned());
+            }
+        }
+    }
+    Ok(found)
+}
+
+fn bound_pane(session_id: &str) -> Result<Option<String>, ()> {
+    let panes = tmux_output(&[
+        "list-panes",
+        "-a",
+        "-F",
+        "#{pane_id}\t#{@zsb_codex_session}",
+    ]);
+    unique_bound_pane(&panes, session_id)
+}
+
+fn pane_owns_process(pane: &str) -> bool {
+    let Ok(pane_pid) =
+        tmux_output(&["display-message", "-p", "-t", pane, "#{pane_pid}"]).parse::<u32>()
+    else {
+        return false;
+    };
+    let mut pid = process::id();
+    for _ in 0..32 {
+        if pid == pane_pid {
+            return true;
+        }
+        let parent = Command::new("ps")
+            .args(["-o", "ppid=", "-p", &pid.to_string()])
+            .output()
+            .ok()
+            .and_then(|output| String::from_utf8(output.stdout).ok())
+            .and_then(|output| output.trim().parse::<u32>().ok());
+        match parent {
+            Some(next) if next > 1 && next != pid => pid = next,
+            _ => return false,
+        }
+    }
+    false
+}
+
+fn bind_codex_session(session_id: &str, pane: &str) -> bool {
+    if !valid_session_id(session_id) || pane.is_empty() || pane_id(pane) != pane {
+        return false;
+    }
+    if !Command::new("tmux")
+        .args([
+            "set-option",
+            "-p",
+            "-t",
+            pane,
+            CODEX_SESSION_VAR,
+            session_id,
+        ])
+        .status()
+        .is_ok_and(|status| status.success())
+    {
+        return false;
+    }
+    let panes = tmux_output(&[
+        "list-panes",
+        "-a",
+        "-F",
+        "#{pane_id}\t#{@zsb_codex_session}",
+    ]);
+    for line in panes.lines() {
+        if let Some((other, id)) = line.split_once('\t') {
+            if other != pane && id == session_id {
+                clear_finish_timer(other);
+                if matches!(pane_notif(other).as_str(), FINISHED | WORKING) {
+                    set_pane_state(other, CLEAR);
+                    refresh_window_name(other);
+                }
+                Command::new("tmux")
+                    .args(["set-option", "-pu", "-t", other, CODEX_SESSION_VAR])
+                    .status()
+                    .ok();
+            }
+        }
+    }
+    true
 }
 
 fn finish_timer(pane: &str) -> String {
@@ -246,6 +372,12 @@ fn run(args: &[String]) -> i32 {
     if args.first().map(String::as_str) == Some(DEBOUNCED_FINISH) {
         return run_debounced_finish(args);
     }
+    if args.first().map(String::as_str) == Some("--bind-codex") {
+        return match args {
+            [_, session_id, pane] if bind_codex_session(session_id, pane) => 0,
+            _ => 1,
+        };
+    }
 
     let mut flag = "";
     let mut rest: &[String] = args;
@@ -259,20 +391,38 @@ fn run(args: &[String]) -> i32 {
         return 1;
     }
     let pane = &rest[1];
-    let resolved_pane = pane_id(pane);
-
-    if is_finished(flag) && !resolved_pane.is_empty() {
-        if schedule_finish(&resolved_pane) {
+    let session_id = match codex_session_id() {
+        Ok(id) => id,
+        Err(()) => {
+            play_finish_sound(flag);
             return 0;
         }
-    } else if cancels_finish(flag) && !resolved_pane.is_empty() {
-        clear_finish_timer(&resolved_pane);
+    };
+    let target = if let Some(session_id) = session_id {
+        match bound_pane(&session_id) {
+            Ok(Some(bound)) => Some(bound),
+            Ok(None) if !pane.is_empty() && pane_owns_process(pane) => Some(pane.to_owned()),
+            _ => None,
+        }
+    } else {
+        Some(pane.to_owned())
+    };
+    let Some(pane) = target.filter(|pane| !pane.is_empty() && pane_id(pane) == *pane) else {
+        play_finish_sound(flag);
+        return 0;
+    };
+    if is_finished(flag) {
+        if schedule_finish(&pane) {
+            return 0;
+        }
+    } else if cancels_finish(flag) {
+        clear_finish_timer(&pane);
     }
 
-    if !apply_flag(flag, pane) {
+    if !apply_flag(flag, &pane) {
         return 1;
     }
-    refresh_window_name(pane);
+    refresh_window_name(&pane);
     play_finish_sound(flag);
     0
 }
@@ -337,5 +487,27 @@ mod tests {
         assert!(!cancels_finish("--clear-finished"));
         assert!(cancels_finish("--manual"));
         assert!(cancels_finish("--invalid"));
+    }
+
+    #[test]
+    fn codex_binding_requires_exactly_one_pane() {
+        let panes = "%1\tother\n%2\tsession\n%3\t";
+        assert_eq!(unique_bound_pane(panes, "session"), Ok(Some("%2".into())));
+        assert_eq!(unique_bound_pane(panes, "missing"), Ok(None));
+        assert_eq!(
+            unique_bound_pane("%1\tsession\n%2\tsession", "session"),
+            Err(())
+        );
+    }
+
+    #[test]
+    fn malformed_hook_input_never_uses_the_pane_argument() {
+        assert_eq!(parse_codex_session_id(""), Ok(None));
+        assert_eq!(parse_codex_session_id("{"), Err(()));
+        assert_eq!(parse_codex_session_id("{}"), Err(()));
+        assert_eq!(
+            parse_codex_session_id(r#"{"session_id":"session"}"#),
+            Ok(Some("session".into()))
+        );
     }
 }
