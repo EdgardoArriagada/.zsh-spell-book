@@ -56,7 +56,7 @@ func run(args []string) (result error) {
 		return err
 	}
 	defer func() {
-		if err := notification(notify, "--finished", pane); err != nil && result == nil {
+		if err := notification(notify, "--force-finished", pane); err != nil && result == nil {
 			result = err
 		}
 	}()
