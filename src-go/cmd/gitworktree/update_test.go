@@ -38,7 +38,7 @@ func threeWorktrees() []Worktree {
 	}
 }
 
-func TestNumberSelectsVisibleWorktree(t *testing.T) {
+func TestNumberFocusesVisibleWorktreeUntilEnter(t *testing.T) {
 	worktrees := make([]Worktree, 12)
 	for i := range worktrees {
 		worktrees[i].Path = fmt.Sprintf("/repo/wt-%d", i)
@@ -47,8 +47,13 @@ func TestNumberSelectsVisibleWorktree(t *testing.T) {
 	m.vp.Offset = 2
 	updated, cmd := m.Update(tea.KeyPressMsg{Text: "0"})
 	m = updated.(model)
+	if cmd != nil || m.cursor != 11 || m.selected != "" {
+		t.Fatalf("0: cmd=%v cursor=%d selected=%q", cmd, m.cursor, m.selected)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
 	if cmd == nil || m.selected != worktrees[11].Path {
-		t.Fatalf("0 selected %q, want %q", m.selected, worktrees[11].Path)
+		t.Fatalf("enter selected %q, want %q", m.selected, worktrees[11].Path)
 	}
 }
 

@@ -46,20 +46,30 @@ func manyBranches(n int) []Branch {
 	return branches
 }
 
-func TestNumberSelectsVisibleBranchButBlocksWorktree(t *testing.T) {
+func TestNumberFocusesVisibleBranchButEnterBlocksWorktree(t *testing.T) {
 	branches := manyBranches(5)
 	branches[3].IsWorktree = true
 	m := makeListModel(branches, 2, 0)
 	m.vp.Offset = 2
 	updated, cmd := m.Update(tea.KeyPressMsg{Text: "2"})
 	m = updated.(model)
+	if cmd != nil || m.cursor != 3 || m.selected != "" || m.statusMsg != "" {
+		t.Fatalf("worktree shortcut: cmd=%v cursor=%d selected=%q status=%q", cmd, m.cursor, m.selected, m.statusMsg)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
 	if cmd != nil || m.selected != "" || m.statusMsg != "worktree branches are not selectable" {
-		t.Fatalf("worktree shortcut: cmd=%v selected=%q status=%q", cmd, m.selected, m.statusMsg)
+		t.Fatalf("worktree enter: cmd=%v selected=%q status=%q", cmd, m.selected, m.statusMsg)
 	}
 	updated, cmd = m.Update(tea.KeyPressMsg{Text: "1"})
 	m = updated.(model)
+	if cmd != nil || m.cursor != 2 || m.selected != "" || m.statusMsg != "" {
+		t.Fatalf("1: cmd=%v cursor=%d selected=%q status=%q", cmd, m.cursor, m.selected, m.statusMsg)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
 	if cmd == nil || m.selected != branches[2].Name {
-		t.Fatalf("1 selected %q, want %q", m.selected, branches[2].Name)
+		t.Fatalf("enter selected %q, want %q", m.selected, branches[2].Name)
 	}
 }
 

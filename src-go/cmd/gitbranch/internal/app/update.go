@@ -122,15 +122,16 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
-	case "enter", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
-		if km.String() != "enter" {
-			end := min(len(m.filtered), m.vp.Offset+m.vp.MaxVisible(len(m.filtered), m.availableRows()))
-			index, ok := tui.ShortcutIndex(km.String(), m.vp.Offset, end)
-			if !ok {
-				return m, nil
-			}
-			m.cursor = index
+	case "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
+		end := min(len(m.filtered), m.vp.Offset+m.vp.MaxVisible(len(m.filtered), m.availableRows()))
+		index, ok := tui.ShortcutIndex(km.String(), m.vp.Offset, end)
+		if !ok {
+			return m, nil
 		}
+		m.cursor = index
+		m.statusMsg = ""
+		return m, nil
+	case "enter":
 		if len(m.filtered) > 0 && m.filtered[m.cursor].IsWorktree {
 			m.statusMsg = "worktree branches are not selectable"
 			return m, nil

@@ -33,7 +33,7 @@ func TestPageKeysMoveTicketCursor(t *testing.T) {
 	}
 }
 
-func TestNumberSelectsOnlyVisibleTicketRows(t *testing.T) {
+func TestNumberFocusesOnlyVisibleTicketRowsUntilEnter(t *testing.T) {
 	tickets := make([]jira.Ticket, 6)
 	for i := range tickets {
 		tickets[i] = jira.Ticket{Current: "JIRA-" + string(rune('0'+i)), Title: "X"}
@@ -48,8 +48,13 @@ func TestNumberSelectsOnlyVisibleTicketRows(t *testing.T) {
 	}
 	updated, cmd = m.Update(tea.KeyPressMsg{Text: "2"})
 	m = updated.(model)
+	if cmd != nil || m.cursor != 3 || m.selected != nil {
+		t.Fatalf("2: cmd=%v cursor=%d selected=%v", cmd, m.cursor, m.selected)
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	m = updated.(model)
 	if cmd == nil || m.selected == nil || m.selected.Current != tickets[3].Current {
-		t.Fatalf("2 selected %v, want %q", m.selected, tickets[3].Current)
+		t.Fatalf("enter selected %v, want %q", m.selected, tickets[3].Current)
 	}
 }
 

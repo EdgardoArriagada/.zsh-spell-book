@@ -116,15 +116,15 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = end - 1
 		}
 		return m.clampViewport(), nil
-	case "enter", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
-		if km.String() != "enter" {
-			end, _, _, _ := ticketViewport(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
-			index, ok := tui.ShortcutIndex(km.String(), m.vp.Offset, end)
-			if !ok {
-				return m, nil
-			}
-			m.cursor = index
+	case "1", "2", "3", "4", "5", "6", "7", "8", "9", "0":
+		end, _, _, _ := ticketViewport(m.filtered, m.vp.Offset, m.availRows, m.showTitles())
+		index, ok := tui.ShortcutIndex(km.String(), m.vp.Offset, end)
+		if !ok {
+			return m, nil
 		}
+		m.cursor = index
+		return m, nil
+	case "enter":
 		if len(m.filtered) > 0 {
 			t := m.filtered[m.cursor]
 			m.selected = &t
