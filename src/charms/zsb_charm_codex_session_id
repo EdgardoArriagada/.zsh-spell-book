@@ -2,24 +2,8 @@
 set -euo pipefail
 
 local paneId=${1:?paneId required}
-local width=$(tmux display-message -p -t "$paneId" '#{window_width}')
-local windowSize=$(tmux show-window-options -v -t "$paneId" window-size)
-local capture=
-local sessionId=
-
-if tmux resize-window -t "$paneId" -x 320; then
-  capture=$(tmux capture-pane -pt "$paneId" -J)
-  sessionId=$(print -r -- "$capture" | rg -o --replace '$1' '^[│ ]*Session:[[:space:]]+([0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12})' | tail -n 1 || true)
-  if [[ -z $sessionId ]]; then
-    sessionId=$(print -r -- "$capture" | tail -n 2 | rg -o -m 1 --replace '$1' ' · ([0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}) · ' || true)
-  fi
-  tmux resize-window -t "$paneId" -x "$width"
-  if [[ -n $windowSize ]]; then
-    tmux set-window-option -t "$paneId" window-size "$windowSize"
-  else
-    tmux set-window-option -u -t "$paneId" window-size
-  fi
-fi
+local capture=$(tmux capture-pane -pt "$paneId" -J)
+local sessionId=$(print -r -- "$capture" | tail -n 2 | rg -o -m 1 --replace '$1' '^[[:space:]│]*([0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12})( · |[[:space:]│]*$)' || true)
 
 if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
   tmux display-message 'No Codex session found in this pane'
