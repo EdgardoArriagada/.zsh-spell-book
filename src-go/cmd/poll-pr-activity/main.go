@@ -21,11 +21,11 @@ const interval = time.Minute
 
 const help = `Usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]
 
-Watch a pull request for new comments and reviews every minute.
+Watch a pull request for new comments, reviews, and merge readiness every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
 
 Options:
-  -t, --tmux  Notify the current tmux pane when new activity appears
+  -t, --tmux  Notify the current tmux pane when activity or merge readiness appears
   -h, --help  Show this help
 `
 
@@ -103,10 +103,12 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 
 	seen := make(map[string]bool)
 	initialized := false
+	mergeReady := false
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
 		items, err := fetchActivity(ctx, gh, endpoint)
+		var fresh []activity
 		if ctx.Err() != nil {
 			return nil
 		}
@@ -117,7 +119,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			initialized = true
 			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
-			fresh := newActivity(seen, items)
+			fresh = newActivity(seen, items)
 			for _, item := range fresh {
 				actor := item.User.Login
 				if actor == "" {
@@ -125,10 +127,21 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 				}
 				fmt.Fprintf(out, "[%s] %s by %q: %s\n", time.Now().Format("15:04:05"), label(item), actor, prURL)
 			}
-			if tmux && len(fresh) > 0 {
-				if err := tmuxNotification(ctx, notify, pane); err != nil {
-					fmt.Fprintln(os.Stderr, "poll-pr-activity: notification failed")
-				}
+		}
+		ready, err := fetchMergeReady(ctx, gh, prURL)
+		becameReady := false
+		if err != nil && ctx.Err() == nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else if err == nil {
+			becameReady = ready && !mergeReady
+			if becameReady {
+				fmt.Fprintf(out, "PR ready to merge: %s\n", prURL)
+			}
+			mergeReady = ready
+		}
+		if tmux && (len(fresh) > 0 || becameReady) {
+			if err := tmuxNotification(ctx, notify, pane); err != nil {
+				fmt.Fprintln(os.Stderr, "poll-pr-activity: notification failed")
 			}
 		}
 		select {
@@ -137,6 +150,21 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func fetchMergeReady(ctx context.Context, gh, prURL string) (bool, error) {
+	output, err := exec.CommandContext(ctx, gh, "pr", "view", prURL, "--json", "state,mergeStateStatus").Output()
+	if err != nil {
+		return false, errors.New("poll-pr-activity: could not fetch merge status")
+	}
+	var pr struct {
+		State            string `json:"state"`
+		MergeStateStatus string `json:"mergeStateStatus"`
+	}
+	if err := json.Unmarshal(output, &pr); err != nil {
+		return false, errors.New("poll-pr-activity: invalid merge status response")
+	}
+	return pr.State == "OPEN" && pr.MergeStateStatus == "CLEAN", nil
 }
 
 func tmuxNotification(ctx context.Context, command, pane string) error {

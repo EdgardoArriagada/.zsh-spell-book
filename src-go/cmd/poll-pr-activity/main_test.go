@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestHelp(t *testing.T) {
@@ -79,5 +80,24 @@ func TestValidPR(t *testing.T) {
 		if got := validPR(tc.value); got != tc.want {
 			t.Errorf("validPR(%q) = %t, want %t", tc.value, got, tc.want)
 		}
+	}
+}
+
+func TestRunReportsMergeReady(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	script := "#!/bin/sh\nif [ \"$1\" = api ]; then printf '[[]]\\n'; elif [ \"$3\" = --json ]; then printf '{\"url\":\"https://github.com/owner/repo/pull/42\"}\\n'; else printf '{\"state\":\"OPEN\",\"mergeStateStatus\":\"CLEAN\"}\\n'; fi\n"
+	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	var out bytes.Buffer
+	if err := run(ctx, []string{"https://github.com/owner/repo/pull/42"}, &out); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
+		t.Errorf("watcher output = %q, want merge readiness", out.String())
 	}
 }
