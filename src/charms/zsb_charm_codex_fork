@@ -1,10 +1,21 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-local panePid=${1:?pane PID required}
+local paneId=${1:?paneId required}
 local workingDir=${2:?working directory required}
-local codexPid=$(ps -o tpgid= -p "$panePid" | tr -d ' ')
-local sessionId=$(lsof -Fn -p "$codexPid" 2>/dev/null | rg -o -m 1 --replace '$1' '^n.*/thread-writer-locks/(.*)\.lock$')
+local width=$(tmux display-message -p -t "$paneId" '#{window_width}')
+local windowSize=$(tmux show-window-options -v -t "$paneId" window-size)
+local sessionId=
+
+if tmux resize-window -t "$paneId" -x 320; then
+  sessionId=$(tmux capture-pane -pt "$paneId" -J | tail -n 2 | rg -o -m 1 --replace '$1' ' · ([0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}) · ' || true)
+  tmux resize-window -t "$paneId" -x "$width"
+  if [[ -n $windowSize ]]; then
+    tmux set-window-option -t "$paneId" window-size "$windowSize"
+  else
+    tmux set-window-option -u -t "$paneId" window-size
+  fi
+fi
 
 if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
   tmux display-message 'No Codex session found in this pane'
