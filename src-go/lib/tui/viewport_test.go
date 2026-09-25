@@ -37,17 +37,23 @@ func TestShortcutIndexAndPrefix(t *testing.T) {
 	if _, ok := tui.ShortcutIndex("0", 4, 13); ok {
 		t.Fatal("0 should not select an entry outside the visible page")
 	}
-	if got := tui.ShortcutPrefix(0, false); got != " "+tui.DimStyle.Render("1")+" " {
+	gutter := tui.GutterStyle.Render(" │ ")
+	if got := tui.ShortcutPrefix(0, false); got != " "+tui.GutterStyle.Render("1")+gutter {
 		t.Fatalf("first prefix = %q", got)
 	}
-	if got := tui.ShortcutPrefix(9, false); got != " "+tui.DimStyle.Render("0")+" " {
+	if got := tui.ShortcutPrefix(9, false); got != " "+tui.GutterStyle.Render("0")+gutter {
 		t.Fatalf("tenth prefix = %q", got)
 	}
-	if got := tui.ShortcutPrefix(10, false); got != "   " {
+	if got := tui.ShortcutPrefix(10, false); got != "  "+gutter {
 		t.Fatalf("eleventh prefix = %q", got)
 	}
-	if got := tui.ShortcutPrefix(0, true); got != " "+tui.CursorStyle.Render("▸ ") {
+	if got := tui.ShortcutPrefix(0, true); got != " "+tui.CursorStyle.Render("▸")+gutter {
 		t.Fatalf("cursor prefix = %q", got)
+	}
+	for _, position := range []int{0, 9, 10} {
+		if width := lipgloss.Width(tui.ShortcutPrefix(position, false)); width != 5 {
+			t.Fatalf("prefix %d width = %d, want 5", position, width)
+		}
 	}
 }
 

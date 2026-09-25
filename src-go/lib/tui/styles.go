@@ -7,6 +7,7 @@ var (
 	ActiveStyle   lipgloss.Style
 	CurrentMark   lipgloss.Style
 	DimStyle      lipgloss.Style
+	GutterStyle   lipgloss.Style
 	BranchStyle   lipgloss.Style
 	WorktreeStyle lipgloss.Style
 	TitleStyle    lipgloss.Style
@@ -29,6 +30,7 @@ func init() {
 	ActiveStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9"))             // white1 — hovered item
 	CurrentMark = lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C"))             // green — current marker
 	DimStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#60728A"))                // gray5 — inactive text
+	GutterStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A"))             // gray4 — shortcut gutter
 	BranchStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1"))             // blue1 — branch names
 	WorktreeStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A"))           // gray4 — worktree branches (darker)
 	TitleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#88C0D0"))   // blue2 — title
@@ -56,11 +58,12 @@ func Sep() string {
 }
 
 func ShortcutPrefix(position int, cursor bool) string {
+	gutter := GutterStyle.Render(" │ ")
 	if cursor {
-		return " " + CursorStyle.Render("▸ ")
+		return " " + CursorStyle.Render("▸") + gutter
 	}
 	if position >= 0 && position < 10 {
-		return " " + DimStyle.Render(string("1234567890"[position])) + " "
+		return " " + GutterStyle.Render(string("1234567890"[position])) + gutter
 	}
-	return "   "
+	return "  " + gutter
 }

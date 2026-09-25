@@ -83,7 +83,7 @@ func (m model) render() string {
 		}
 		isCursor := idx == m.cursor && (m.mode != tui.SearchMode || t.Current == m.searchTarget)
 		cursor := tui.ShortcutPrefix(i, isCursor)
-		const cursorWidth = 3
+		const cursorWidth = 5
 		const badgeReserve = 15          // "  ●" (3) + " 999" working + " 999" finished + " 999" manual (~4 each)
 		fixedWidth := len(t.Current) + 2 // ponytail: JIRA IDs are ASCII-only, byte len == rune len
 		label := truncateLabel(t.Label, m.width-cursorWidth-fixedWidth-badgeReserve)
