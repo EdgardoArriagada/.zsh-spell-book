@@ -2,8 +2,7 @@
 set -euo pipefail
 
 local paneId=${1:?paneId required}
-local workingDir=${2:?working directory required}
 local sessionId
 sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
 
-tmux new-window -n 'codex ' -c "$workingDir" "codex fork $sessionId"
+zsb_tmux_agent_notification --bind-codex "$sessionId" "$paneId"

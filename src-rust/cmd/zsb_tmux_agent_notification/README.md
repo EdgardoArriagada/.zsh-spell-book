@@ -116,9 +116,10 @@ only when the hook process descends from that pane (as with `codex exec`). An un
 hook can still play a finish sound but cannot change pane state.
 
 For a new interactive session, show the chat ID in Codex with `/status`, then press
-tmux prefix + `I` and enter the ID. Rebind after `/new`, `/resume`, or `/fork` inside Codex.
+tmux prefix + `I` to capture and bind the ID. Rebind after `/new`, `/resume`, or `/fork` inside Codex.
 `codex resume <UUID>` from zsh binds automatically before launch. Binding a session in a new
-pane removes its prior pane binding. This setup uses the default tmux server.
+pane removes its prior pane binding. TPM install moved to tmux prefix + `M-I`.
+This setup uses the default tmux server.
 
 ## Wiring 2 — tmux focus-in hook (clear finished)
 
