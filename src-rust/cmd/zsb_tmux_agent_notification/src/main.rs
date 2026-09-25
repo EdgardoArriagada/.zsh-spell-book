@@ -234,11 +234,14 @@ fn window_states(win_id: &str) -> (bool, bool, bool, bool) {
 }
 
 // refresh_window_name recomputes the window-name suffixes from the window's pane
-// states: working glyph first, then finished bell. Renames only if changed.
+// states: Codex heartbeat first, then notification glyphs. Renames only if changed.
 fn refresh_window_name(pane: &str) {
     let (finished, working, manual, codex) = window_states(&window_id(pane));
     let cur = window_name(pane);
     let mut want = base_name(&cur).to_owned();
+    if codex {
+        want.push_str(CODEX_SUFFIX);
+    }
     if working {
         want.push_str(WORKING_SUFFIX);
     }
@@ -247,9 +250,6 @@ fn refresh_window_name(pane: &str) {
     }
     if manual {
         want.push_str(MANUAL_SUFFIX);
-    }
-    if codex {
-        want.push_str(CODEX_SUFFIX);
     }
     if want != cur {
         Command::new("tmux")
@@ -476,6 +476,11 @@ mod tests {
             (
                 "all three suffixes",
                 format!("myrepo{WORKING_SUFFIX}{FINISHED_SUFFIX}{MANUAL_SUFFIX}"),
+                "myrepo",
+            ),
+            (
+                "codex before notifications",
+                format!("myrepo{CODEX_SUFFIX}{WORKING_SUFFIX}{FINISHED_SUFFIX}{MANUAL_SUFFIX}"),
                 "myrepo",
             ),
         ];
