@@ -11,6 +11,7 @@ const FINISH_DELAY: Duration = Duration::from_secs(10);
 const FINISHED_SUFFIX: &str = " \u{f009a}"; // bell — agent finished / needs attention
 const WORKING_SUFFIX: &str = " \u{f051f}"; //  hourglass — agent still working
 const MANUAL_SUFFIX: &str = " \u{f0e47}"; //   flag — manually flagged
+const CODEX_SUFFIX: &str = " ";
 
 const CLEAR: &str = "0";
 const FINISHED: &str = "1";
@@ -152,9 +153,11 @@ fn bind_codex_session(session_id: &str, pane: &str) -> bool {
                     .args(["set-option", "-pu", "-t", other, CODEX_SESSION_VAR])
                     .status()
                     .ok();
+                refresh_window_name(other);
             }
         }
     }
+    refresh_window_name(pane);
     true
 }
 
@@ -205,6 +208,8 @@ fn base_name(mut name: &str) -> &str {
             name = s;
         } else if let Some(s) = name.strip_suffix(MANUAL_SUFFIX) {
             name = s;
+        } else if let Some(s) = name.strip_suffix(CODEX_SUFFIX) {
+            name = s;
         } else {
             return name;
         }
@@ -212,24 +217,26 @@ fn base_name(mut name: &str) -> &str {
 }
 
 // window_states reports whether any pane in the window is finished (1), working (2), or manual (3).
-fn window_states(win_id: &str) -> (bool, bool, bool) {
-    let out = tmux_output(&["list-panes", "-t", win_id, "-F", "#{@zsb_agent_notif}"]);
-    let (mut finished, mut working, mut manual) = (false, false, false);
+fn window_states(win_id: &str) -> (bool, bool, bool, bool) {
+    let out = tmux_output(&["list-panes", "-t", win_id, "-F", "#{@zsb_agent_notif}\t#{@zsb_codex_session}"]);
+    let (mut finished, mut working, mut manual, mut codex) = (false, false, false, false);
     for line in out.lines() {
-        match line.trim() {
+        let (state, session) = line.split_once('\t').unwrap_or((line, ""));
+        codex |= !session.is_empty();
+        match state {
             FINISHED => finished = true,
             WORKING => working = true,
             MANUAL => manual = true,
             _ => {}
         }
     }
-    (finished, working, manual)
+    (finished, working, manual, codex)
 }
 
 // refresh_window_name recomputes the window-name suffixes from the window's pane
 // states: working glyph first, then finished bell. Renames only if changed.
 fn refresh_window_name(pane: &str) {
-    let (finished, working, manual) = window_states(&window_id(pane));
+    let (finished, working, manual, codex) = window_states(&window_id(pane));
     let cur = window_name(pane);
     let mut want = base_name(&cur).to_owned();
     if working {
@@ -240,6 +247,9 @@ fn refresh_window_name(pane: &str) {
     }
     if manual {
         want.push_str(MANUAL_SUFFIX);
+    }
+    if codex {
+        want.push_str(CODEX_SUFFIX);
     }
     if want != cur {
         Command::new("tmux")
@@ -447,6 +457,7 @@ mod tests {
             ),
             ("working only", format!("myrepo{WORKING_SUFFIX}"), "myrepo"),
             ("manual only", format!("myrepo{MANUAL_SUFFIX}"), "myrepo"),
+            ("codex only", format!("myrepo{CODEX_SUFFIX}"), "myrepo"),
             (
                 "both working then finished",
                 format!("myrepo{WORKING_SUFFIX}{FINISHED_SUFFIX}"),
