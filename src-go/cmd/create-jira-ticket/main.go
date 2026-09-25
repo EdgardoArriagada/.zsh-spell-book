@@ -20,6 +20,7 @@ import (
 const (
 	allowedJiraBaseURL = "https://mercadolibre.atlassian.net"
 	usage              = `Usage: create-jira-ticket [-i <issue-type> | --issue-type=<issue-type>] "<title>" ["<description>"]`
+	help               = usage + "\n\nArguments:\n  <title>        Include exactly one [control point]\n                 Example: \"[my-github-repo] Fix payment error\"\n  <description>  Optional plain text; each newline becomes a paragraph\n                 Example: $'First paragraph\\nSecond paragraph'\n\nOptions:\n  -i, --issue-type  Issue type (otherwise select interactively)\n  -h, --help        Show this help"
 	controlPointField  = "customfield_25390"
 )
 
@@ -72,6 +73,10 @@ func main() {
 
 func run(args []string, out io.Writer) error {
 	opts, err := parseArgs(args)
+	if errors.Is(err, flag.ErrHelp) {
+		_, err := fmt.Fprintln(out, help)
+		return err
+	}
 	if err != nil {
 		return err
 	}
@@ -138,6 +143,9 @@ func parseArgs(args []string) (options, error) {
 	flags.Func("i", "", setIssueType)
 	flags.Func("issue-type", "", setIssueType)
 	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return options{}, err
+		}
 		return options{}, errors.New(usage)
 	}
 

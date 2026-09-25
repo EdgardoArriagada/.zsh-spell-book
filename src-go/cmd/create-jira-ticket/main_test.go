@@ -474,6 +474,26 @@ func TestRunArgValidation(t *testing.T) {
 	}
 }
 
+func TestRunHelp(t *testing.T) {
+	for _, arg := range []string{"-h", "--help"} {
+		t.Run(arg, func(t *testing.T) {
+			var out bytes.Buffer
+			if err := run([]string{arg}, &out); err != nil {
+				t.Fatal(err)
+			}
+			if got, want := out.String(), help+"\n"; got != want {
+				t.Errorf("output = %q, want %q", got, want)
+			}
+			if !strings.Contains(out.String(), `"[my-github-repo] Fix payment error"`) {
+				t.Errorf("help omits title example: %q", out.String())
+			}
+			if !strings.Contains(out.String(), "each newline becomes a paragraph") || !strings.Contains(out.String(), `$'First paragraph\nSecond paragraph'`) {
+				t.Errorf("help omits description format: %q", out.String())
+			}
+		})
+	}
+}
+
 func TestParseArgsIssueType(t *testing.T) {
 	tests := []struct {
 		name string
