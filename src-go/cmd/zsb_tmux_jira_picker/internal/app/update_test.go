@@ -33,6 +33,44 @@ func TestPageKeysMoveTicketCursor(t *testing.T) {
 	}
 }
 
+func TestNotificationKeysUseFilteredRowsAndWrap(t *testing.T) {
+	tickets := []jira.Ticket{
+		{SessionID: "none"}, {SessionID: "red1"}, {SessionID: "working"},
+		{SessionID: "manual"}, {SessionID: "red2"},
+	}
+	counts := map[string]jira.NotifCounts{
+		"red1": {Finished: 1}, "working": {Working: 1},
+		"manual": {Manual: 1}, "red2": {Finished: 1},
+	}
+	for _, tc := range []struct {
+		name   string
+		rows   []jira.Ticket
+		cursor int
+		key    string
+		want   int
+	}{
+		{"next red", tickets, 1, "n", 4},
+		{"previous red", tickets, 4, "p", 1},
+		{"next red wraps", tickets, 4, "n", 1},
+		{"previous red wraps", tickets, 1, "p", 4},
+		{"next any includes working", tickets, 1, "N", 2},
+		{"next any includes manual", tickets, 2, "N", 3},
+		{"previous any wraps", tickets, 1, "P", 4},
+		{"filtered next red", tickets[2:], 0, "n", 2},
+		{"filtered previous any", tickets[2:], 0, "P", 2},
+		{"no red match", tickets[2:4], 0, "n", 0},
+		{"empty rows", nil, 0, "N", 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			m := model{filtered: tc.rows, cursor: tc.cursor, notifCounts: counts, availRows: 4, searchInput: tui.NewSearchInput()}
+			updated, cmd := m.Update(tea.KeyPressMsg{Text: tc.key})
+			if got := updated.(model).cursor; got != tc.want || cmd != nil {
+				t.Fatalf("%s: cursor = %d, command = %v; want %d, nil", tc.key, got, cmd, tc.want)
+			}
+		})
+	}
+}
+
 func TestNumberFocusesOnlyVisibleTicketRowsUntilEnter(t *testing.T) {
 	tickets := make([]jira.Ticket, 6)
 	for i := range tickets {

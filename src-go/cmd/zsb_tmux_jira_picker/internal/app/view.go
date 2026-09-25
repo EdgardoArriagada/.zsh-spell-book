@@ -34,6 +34,8 @@ func (m model) footerSection() string {
 		manual += c.Manual
 	}
 	return "  " + tui.Hint("j/k", "navigate") + sep +
+		tui.Hint("n/p", "red") + sep +
+		tui.Hint("N/P", "any notification") + sep +
 		tui.Hint("enter", "select") + sep +
 		tui.Hint("/", "search") + sep +
 		tui.Hint("ctrl+g", "edit tickets") + sep +

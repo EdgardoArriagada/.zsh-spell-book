@@ -78,6 +78,13 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor = (m.cursor - 1 + len(m.filtered)) % len(m.filtered)
 		}
 		return m.clampViewport(), nil
+	case "n", "p", "N", "P":
+		step := 1
+		if km.String() == "p" || km.String() == "P" {
+			step = -1
+		}
+		m = m.jumpToNotification(step, km.String() == "n" || km.String() == "p")
+		return m.clampViewport(), nil
 	case "/":
 		m.searchTarget = ""
 		if m.cursor < len(m.filtered) {
@@ -145,6 +152,19 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 	}
 	return m, nil
+}
+
+func (m model) jumpToNotification(step int, redOnly bool) model {
+	index := m.cursor
+	for range m.filtered {
+		index = (index + step + len(m.filtered)) % len(m.filtered)
+		c := m.notifCounts[m.filtered[index].SessionID]
+		if c.Finished > 0 || (!redOnly && (c.Working > 0 || c.Manual > 0)) {
+			m.cursor = index
+			break
+		}
+	}
+	return m
 }
 
 func (m model) handleOpenBrowser() (tea.Model, tea.Cmd) {
