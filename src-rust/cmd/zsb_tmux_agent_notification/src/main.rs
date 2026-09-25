@@ -218,9 +218,14 @@ fn base_name(mut name: &str) -> &str {
 
 // window_states reports whether any pane in the window is finished (1), working (2), or manual (3).
 fn window_states(win_id: &str) -> (bool, bool, bool, bool) {
-    let out = tmux_output(&["list-panes", "-t", win_id, "-F", "#{@zsb_agent_notif}\t#{@zsb_codex_session}"]);
+    let out = tmux_output(&["list-panes", "-t", win_id, "-F", "x#{@zsb_agent_notif}\t#{@zsb_codex_session}"]);
+    parse_window_states(&out)
+}
+
+fn parse_window_states(out: &str) -> (bool, bool, bool, bool) {
     let (mut finished, mut working, mut manual, mut codex) = (false, false, false, false);
     for line in out.lines() {
+        let line = line.strip_prefix('x').unwrap_or("");
         let (state, session) = line.split_once('\t').unwrap_or((line, ""));
         codex |= !session.is_empty();
         match state {
@@ -233,13 +238,12 @@ fn window_states(win_id: &str) -> (bool, bool, bool, bool) {
     (finished, working, manual, codex)
 }
 
-// refresh_window_name recomputes the window-name suffixes from the window's pane
-// states: Codex heartbeat first, then notification glyphs. Renames only if changed.
-fn refresh_window_name(pane: &str) {
-    let (finished, working, manual, codex) = window_states(&window_id(pane));
-    let cur = window_name(pane);
-    let mut want = base_name(&cur).to_owned();
-    if codex {
+fn desired_window_name(
+    cur: &str,
+    (finished, working, manual, codex): (bool, bool, bool, bool),
+) -> String {
+    let mut want = base_name(cur).to_owned();
+    if codex && !finished && !working && !manual {
         want.push_str(CODEX_SUFFIX);
     }
     if working {
@@ -251,6 +255,13 @@ fn refresh_window_name(pane: &str) {
     if manual {
         want.push_str(MANUAL_SUFFIX);
     }
+    want
+}
+
+// refresh_window_name recomputes the window-name suffixes from all panes.
+fn refresh_window_name(pane: &str) {
+    let cur = window_name(pane);
+    let want = desired_window_name(&cur, window_states(&window_id(pane)));
     if want != cur {
         Command::new("tmux")
             .args(["rename-window", "-t", pane, &want])
@@ -487,6 +498,34 @@ mod tests {
         for (name, input, want) in cases {
             assert_eq!(base_name(&input), want, "case: {name}");
         }
+    }
+
+    #[test]
+    fn codex_icon_yields_to_notification_icons() {
+        assert_eq!(
+            desired_window_name("repo", (false, false, false, true)),
+            format!("repo{CODEX_SUFFIX}")
+        );
+        for states in [
+            (true, false, false, true),
+            (false, true, false, true),
+            (false, false, true, true),
+        ] {
+            assert!(!desired_window_name("repo", states).contains(CODEX_SUFFIX));
+        }
+        assert_eq!(
+            desired_window_name(
+                &format!("repo{WORKING_SUFFIX}"),
+                (false, false, false, true)
+            ),
+            format!("repo{CODEX_SUFFIX}")
+        );
+    }
+
+    #[test]
+    fn pane_without_notification_keeps_codex_binding() {
+        assert_eq!(parse_window_states("x\tbound"), (false, false, false, true));
+        assert_eq!(parse_window_states("x2\tbound"), (false, true, false, true));
     }
 
     #[test]

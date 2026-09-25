@@ -29,7 +29,8 @@ zsb_tmux_agent_notification [--finished|--force-finished|--working|--clear-finis
 - `<pane_id>` identifies the pane (and its session). `<session_name>` is accepted to match
   the tmux hook format string but is **unused** — pass anything (`_`).
 - `--bind-codex <session_id> <pane_id>` binds a Codex session to a pane for hooks run by the
-  shared daemon. Binding the same session elsewhere moves it to the new pane.
+  shared daemon. Binding the same session elsewhere moves it to the new pane. The Codex icon
+  appears immediately unless the window has a working, finished, or manual icon.
 
 Each state also updates the tmux window name: a working glyph (`󰔟`) and/or the finished bell
 (`󰂟`) are appended, recomputed from all panes in the window and stripped on `--clear`.
