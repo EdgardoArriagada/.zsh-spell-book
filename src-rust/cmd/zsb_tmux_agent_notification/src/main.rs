@@ -92,15 +92,22 @@ fn bound_pane(session_id: &str) -> Result<Option<String>, ()> {
     unique_bound_pane(&panes, session_id)
 }
 
-fn pane_owns_process(pane: &str) -> bool {
+fn pane_owns_process(pane: &str, allow_tmux_server: bool) -> bool {
     let Ok(pane_pid) =
         tmux_output(&["display-message", "-p", "-t", pane, "#{pane_pid}"]).parse::<u32>()
     else {
         return false;
     };
+    let server_pid = allow_tmux_server
+        .then(|| {
+            tmux_output(&["display-message", "-p", "-t", pane, "#{pid}"])
+                .parse::<u32>()
+                .ok()
+        })
+        .flatten();
     let mut pid = process::id();
     for _ in 0..32 {
-        if pid == pane_pid {
+        if pid == pane_pid || server_pid == Some(pid) {
             return true;
         }
         let parent = Command::new("ps")
@@ -414,22 +421,21 @@ fn run(args: &[String]) -> i32 {
     let pane = &rest[1];
     let session_id = match codex_session_id() {
         Ok(id) => id,
-        Err(()) => {
-            play_finish_sound(flag);
-            return 0;
-        }
+        Err(()) => return 0,
     };
     let target = if let Some(session_id) = session_id {
         match bound_pane(&session_id) {
             Ok(Some(bound)) => Some(bound),
-            Ok(None) if !pane.is_empty() && pane_owns_process(pane) => Some(pane.to_owned()),
+            Ok(None) if !pane.is_empty() && pane_owns_process(pane, false) => Some(pane.to_owned()),
             _ => None,
         }
-    } else {
+    } else if !pane.is_empty() && pane_owns_process(pane, true) {
+        // ID-less hooks from the shared Codex daemon may carry another pane's TMUX_PANE.
         Some(pane.to_owned())
+    } else {
+        None
     };
     let Some(pane) = target.filter(|pane| !pane.is_empty() && pane_id(pane) == *pane) else {
-        play_finish_sound(flag);
         return 0;
     };
     if is_finished(flag) {
@@ -444,7 +450,9 @@ fn run(args: &[String]) -> i32 {
         return 1;
     }
     refresh_window_name(&pane);
-    play_finish_sound(flag);
+    if !is_finished(flag) {
+        play_finish_sound(flag);
+    }
     0
 }
 

@@ -113,8 +113,9 @@ pane's environment (so `$TMUX_PANE` is set) and the binary is on `PATH`.
 Codex hooks supply `session_id` on stdin. The notifier looks for that ID in the tmux pane
 option `@zsb_codex_session` and uses the matching pane. The existing hook commands in
 `~/.codex/config.toml` need no change. Without a binding, the notifier accepts `$TMUX_PANE`
-only when the hook process descends from that pane (as with `codex exec`). An unbound daemon
-hook can still play a finish sound but cannot change pane state.
+only when the hook process descends from that pane (as with `codex exec`). Commands without a
+Codex session ID must descend from the pane or the tmux server (for focus hooks and keybindings).
+Unresolved daemon hooks do nothing.
 
 For a new interactive session, show the chat ID in Codex with `/status`, then press
 tmux prefix + `I` to capture and bind the ID. Rebind after `/new`, `/resume`, or `/fork` inside Codex.
