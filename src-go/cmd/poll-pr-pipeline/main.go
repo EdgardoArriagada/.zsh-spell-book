@@ -107,7 +107,6 @@ func run(args []string) (result error) {
 			}
 			return nil
 		}
-		fmt.Fprintln(os.Stderr, "pipeline pending; checking again in 30s")
 		select {
 		case <-ctx.Done():
 			return errors.New("poll-pr-pipeline: interrupted")
