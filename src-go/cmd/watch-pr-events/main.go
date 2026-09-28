@@ -21,11 +21,11 @@ import (
 
 const interval = time.Minute
 
-const help = `Usage: poll-pr-activity [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [PR number|GitHub PR URL]
 
 Watch a pull request for new comments, reviews, and merge readiness every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
-Place poll-pr-activity.conf beside main.go to ignore activity by GitHub username
+Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
@@ -66,7 +66,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	for _, arg := range args {
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
+				return errors.New("usage: watch-pr-events [PR number|GitHub PR URL]")
 			}
 			tmux = true
 		} else {
@@ -74,7 +74,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
+		return errors.New("usage: watch-pr-events [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
@@ -88,21 +88,21 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	if tmux {
 		pane = os.Getenv("TMUX_PANE")
 		if !tmuxPane.MatchString(pane) {
-			return errors.New("poll-pr-activity: tmux notifications require running inside a tmux pane")
+			return errors.New("watch-pr-events: tmux notifications require running inside a tmux pane")
 		}
 		var err error
 		notify, err = exec.LookPath("zsb_tmux_agent_notification")
 		if err != nil {
-			return errors.New("poll-pr-activity: zsb_tmux_agent_notification not found")
+			return errors.New("watch-pr-events: zsb_tmux_agent_notification not found")
 		}
 	}
 	gh, err := exec.LookPath("gh")
 	if err != nil {
-		return errors.New("poll-pr-activity: gh not found")
+		return errors.New("watch-pr-events: gh not found")
 	}
 	gh, err = filepath.Abs(gh)
 	if err != nil {
-		return errors.New("poll-pr-activity: cannot resolve gh path")
+		return errors.New("watch-pr-events: cannot resolve gh path")
 	}
 	prURL, endpoint, err := resolvePR(ctx, gh, selection)
 	if err != nil {
@@ -152,7 +152,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 		if tmux && (len(fresh) > 0 || becameReady) {
 			if err := tmuxNotification(ctx, notify, pane); err != nil {
-				fmt.Fprintln(os.Stderr, "poll-pr-activity: notification failed")
+				fmt.Fprintln(os.Stderr, "watch-pr-events: notification failed")
 			}
 		}
 		select {
@@ -166,14 +166,14 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 func configPath() (string, error) {
 	_, source, _, ok := runtime.Caller(0)
 	if ok && filepath.IsAbs(source) {
-		return filepath.Join(filepath.Dir(source), "poll-pr-activity.conf"), nil
+		return filepath.Join(filepath.Dir(source), "watch-pr-events.conf"), nil
 	}
 	// Release builds use -trimpath; their binary lives in src-go/bin.
 	executable, err := os.Executable()
 	if err != nil {
-		return "", errors.New("poll-pr-activity: cannot locate config")
+		return "", errors.New("watch-pr-events: cannot locate config")
 	}
-	return filepath.Join(filepath.Dir(executable), "..", "cmd", "poll-pr-activity", "poll-pr-activity.conf"), nil
+	return filepath.Join(filepath.Dir(executable), "..", "cmd", "watch-pr-events", "watch-pr-events.conf"), nil
 }
 
 func loadIgnoredUsers(path string) (map[string]bool, error) {
@@ -183,7 +183,7 @@ func loadIgnoredUsers(path string) (map[string]bool, error) {
 		return ignored, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("poll-pr-activity: cannot open config: %w", err)
+		return nil, fmt.Errorf("watch-pr-events: cannot open config: %w", err)
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -194,7 +194,7 @@ func loadIgnoredUsers(path string) (map[string]bool, error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("poll-pr-activity: cannot read config: %w", err)
+		return nil, fmt.Errorf("watch-pr-events: cannot read config: %w", err)
 	}
 	return ignored, nil
 }
@@ -202,14 +202,14 @@ func loadIgnoredUsers(path string) (map[string]bool, error) {
 func fetchMergeReady(ctx context.Context, gh, prURL string) (bool, error) {
 	output, err := exec.CommandContext(ctx, gh, "pr", "view", prURL, "--json", "state,mergeStateStatus").Output()
 	if err != nil {
-		return false, errors.New("poll-pr-activity: could not fetch merge status")
+		return false, errors.New("watch-pr-events: could not fetch merge status")
 	}
 	var pr struct {
 		State            string `json:"state"`
 		MergeStateStatus string `json:"mergeStateStatus"`
 	}
 	if err := json.Unmarshal(output, &pr); err != nil {
-		return false, errors.New("poll-pr-activity: invalid merge status response")
+		return false, errors.New("watch-pr-events: invalid merge status response")
 	}
 	return pr.State == "OPEN" && pr.MergeStateStatus == "CLEAN", nil
 }
@@ -229,11 +229,11 @@ func validPR(value string) bool {
 func parsePRURL(value string) (string, string, error) {
 	u, err := url.Parse(value)
 	if err != nil || u.Scheme != "https" || u.Host != "github.com" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
-		return "", "", errors.New("poll-pr-activity: unsupported PR URL")
+		return "", "", errors.New("watch-pr-events: unsupported PR URL")
 	}
 	parts := prPath.FindStringSubmatch(u.Path)
 	if parts == nil {
-		return "", "", errors.New("poll-pr-activity: unsupported PR URL")
+		return "", "", errors.New("watch-pr-events: unsupported PR URL")
 	}
 	return u.String(), fmt.Sprintf("repos/%s/%s/pulls/%s", parts[1], parts[2], parts[3]), nil
 }
@@ -243,13 +243,13 @@ func resolvePR(ctx context.Context, gh string, selection []string) (string, stri
 	args = append(args, selection...)
 	output, err := exec.CommandContext(ctx, gh, args...).Output()
 	if err != nil {
-		return "", "", errors.New("poll-pr-activity: cannot find PR (check gh authentication and selection)")
+		return "", "", errors.New("watch-pr-events: cannot find PR (check gh authentication and selection)")
 	}
 	var pr struct {
 		URL string `json:"url"`
 	}
 	if err := json.Unmarshal(output, &pr); err != nil {
-		return "", "", errors.New("poll-pr-activity: invalid gh pr response")
+		return "", "", errors.New("watch-pr-events: invalid gh pr response")
 	}
 	return parsePRURL(pr.URL)
 }
@@ -268,11 +268,11 @@ func fetchActivity(ctx context.Context, gh, endpoint string) ([]activity, error)
 	for _, source := range sources {
 		output, err := exec.CommandContext(ctx, gh, "api", source.path+"?per_page=100", "--paginate", "--slurp").Output()
 		if err != nil {
-			return nil, fmt.Errorf("poll-pr-activity: could not fetch %s activity", source.kind)
+			return nil, fmt.Errorf("watch-pr-events: could not fetch %s activity", source.kind)
 		}
 		var pages [][]activity
 		if err := json.Unmarshal(output, &pages); err != nil {
-			return nil, fmt.Errorf("poll-pr-activity: invalid %s response", source.kind)
+			return nil, fmt.Errorf("watch-pr-events: invalid %s response", source.kind)
 		}
 		for _, page := range pages {
 			for _, item := range page {

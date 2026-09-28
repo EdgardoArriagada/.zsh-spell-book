@@ -17,7 +17,7 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
 			t.Errorf("run(%q) output = %q, want usage and help flag without tmux options", flag, got)
 		}
 	}
@@ -39,7 +39,7 @@ func TestNewActivity(t *testing.T) {
 }
 
 func TestIgnoredUsers(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "poll-pr-activity.conf")
+	path := filepath.Join(t.TempDir(), "watch-pr-events.conf")
 	if err := os.WriteFile(path, []byte("# my account\n\n  MyUser  \nother-user\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func TestIgnoredUsers(t *testing.T) {
 }
 
 func TestMissingIgnoreConfig(t *testing.T) {
-	ignored, err := loadIgnoredUsers(filepath.Join(t.TempDir(), "poll-pr-activity.conf"))
+	ignored, err := loadIgnoredUsers(filepath.Join(t.TempDir(), "watch-pr-events.conf"))
 	if err != nil || len(ignored) != 0 {
 		t.Fatalf("missing config: ignored = %v, err = %v", ignored, err)
 	}

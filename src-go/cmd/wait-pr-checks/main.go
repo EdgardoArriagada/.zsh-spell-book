@@ -17,9 +17,9 @@ import (
 
 const interval = 30 * time.Second
 
-const help = `Usage: poll-pr-pipeline [PR number|GitHub PR URL]
+const help = `Usage: wait-pr-checks [PR number|GitHub PR URL]
 
-Watch pull request checks until they complete. With no argument, watch the PR
+Wait for pull request checks to complete. With no argument, use the PR
 for the current branch. Press Ctrl+C to stop.
 
 Options:
@@ -52,7 +52,7 @@ func run(args []string) (result error) {
 	for _, arg := range args {
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: poll-pr-pipeline [PR number|GitHub PR URL]")
+				return errors.New("usage: wait-pr-checks [PR number|GitHub PR URL]")
 			}
 			tmux = true
 		} else {
@@ -60,14 +60,14 @@ func run(args []string) (result error) {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: poll-pr-pipeline [PR number|GitHub PR URL]")
+		return errors.New("usage: wait-pr-checks [PR number|GitHub PR URL]")
 	}
 
 	var notify, pane string
 	if tmux {
 		pane = os.Getenv("TMUX_PANE")
 		if !regexp.MustCompile(`^%[0-9]+$`).MatchString(pane) {
-			return errors.New("poll-pr-pipeline: tmux notifications require running inside a tmux pane")
+			return errors.New("wait-pr-checks: tmux notifications require running inside a tmux pane")
 		}
 	}
 	gh, err := commandPath("gh")
@@ -97,19 +97,19 @@ func run(args []string) (result error) {
 		checks, err := fetchChecks(ctx, gh, selection)
 		if err != nil {
 			if ctx.Err() != nil {
-				return errors.New("poll-pr-pipeline: interrupted")
+				return errors.New("wait-pr-checks: interrupted")
 			}
-			return errors.New("poll-pr-pipeline: gh pr checks failed")
+			return errors.New("wait-pr-checks: gh pr checks failed")
 		}
 		if done, failed := status(checks); done {
 			if failed {
-				return errors.New("poll-pr-pipeline: checks failed, cancelled, or timed out")
+				return errors.New("wait-pr-checks: checks failed, cancelled, or timed out")
 			}
 			return nil
 		}
 		select {
 		case <-ctx.Done():
-			return errors.New("poll-pr-pipeline: interrupted")
+			return errors.New("wait-pr-checks: interrupted")
 		case <-time.After(interval):
 		}
 	}
@@ -118,18 +118,18 @@ func run(args []string) (result error) {
 func commandPath(name string) (string, error) {
 	path, err := exec.LookPath(name)
 	if err != nil {
-		return "", fmt.Errorf("poll-pr-pipeline: %s not found", name)
+		return "", fmt.Errorf("wait-pr-checks: %s not found", name)
 	}
 	path, err = filepath.Abs(path)
 	if err != nil {
-		return "", errors.New("poll-pr-pipeline: cannot resolve command path")
+		return "", errors.New("wait-pr-checks: cannot resolve command path")
 	}
 	return path, nil
 }
 
 func notification(command, state, pane string) error {
 	if err := exec.Command(command, state, "_", pane).Run(); err != nil {
-		return errors.New("poll-pr-pipeline: notification failed")
+		return errors.New("wait-pr-checks: notification failed")
 	}
 	return nil
 }

@@ -6,8 +6,8 @@ use (
 	./cmd/fetch-jira-ticket
 	./cmd/gitbranch
 	./cmd/gitworktree
-	./cmd/poll-pr-activity
-	./cmd/poll-pr-pipeline
+	./cmd/watch-pr-events
+	./cmd/wait-pr-checks
 	./cmd/tmdiff
 	./cmd/zsb_tmux_jira_picker
 	./lib/args
