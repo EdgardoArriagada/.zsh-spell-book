@@ -192,6 +192,24 @@ func TestSearchKeepsSelectionUntilEnter(t *testing.T) {
 	}
 }
 
+func TestSearchMatchesWorktreeNameAndBranch(t *testing.T) {
+	wts := []Worktree{
+		{Path: "/repo", Branch: "main"},
+		{Path: "/repo_wt/feature", Branch: "feature/bugfix"},
+		{Path: "/repo_wt/release", Branch: "feature/fix"},
+	}
+	m := makeListModel(wts, 0)
+	m.searchInput = tui.NewSearchInput()
+	m = pressKey(pressKey(m, "/"), "b")
+	if len(m.filtered) != 1 || m.filtered[0].Path != wts[1].Path {
+		t.Fatalf("branch search matched %v, want %v", m.filtered, wts[1])
+	}
+	filtered := applyWorktreeFilter(wts, "feature")
+	if len(filtered) != 2 || filtered[0].Path != wts[1].Path || filtered[1].Path != wts[2].Path {
+		t.Fatalf("name and branch search matched %v, want %v then %v", filtered, wts[1], wts[2])
+	}
+}
+
 // --- Delete on main worktree shows status (issue 3) ---
 
 func TestDeleteMainShowsStatus(t *testing.T) {

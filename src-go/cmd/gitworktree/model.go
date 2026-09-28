@@ -32,7 +32,21 @@ type model struct {
 }
 
 func applyWorktreeFilter(wts []Worktree, term string) []Worktree {
-	return tui.ApplyFilter(wts, term, func(wt Worktree) string { return filepath.Base(wt.Path) })
+	names := make([]string, len(wts))
+	branches := make([]string, len(wts))
+	for i, wt := range wts {
+		names[i] = filepath.Base(wt.Path)
+		branches[i] = wt.Branch
+	}
+	filtered := make([]Worktree, 0, len(wts))
+	seen := make([]bool, len(wts))
+	for _, i := range append(tui.FuzzyFilter(term, names), tui.FuzzyFilter(term, branches)...) {
+		if !seen[i] {
+			filtered = append(filtered, wts[i])
+			seen[i] = true
+		}
+	}
+	return filtered
 }
 
 func initialModel() model {

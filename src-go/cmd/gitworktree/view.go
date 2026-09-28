@@ -112,7 +112,7 @@ func (m model) render() string {
 		name := filepath.Base(wt.Path)
 		branch := ""
 		if wt.Branch != "" {
-			branch = " " + tui.BranchStyle.Render(wt.Branch)
+			branch = " " + tui.HighlightMatches(wt.Branch, searchTerm, tui.BranchStyle)
 		}
 		if wt.IsBare {
 			branch += tui.DimStyle.Render(" bare")
