@@ -17,13 +17,12 @@ import (
 
 const interval = 30 * time.Second
 
-const help = `Usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]
+const help = `Usage: poll-pr-pipeline [PR number|GitHub PR URL]
 
 Watch pull request checks until they complete. With no argument, watch the PR
 for the current branch. Press Ctrl+C to stop.
 
 Options:
-  -t, --tmux  Notify the current tmux pane while checks run and when they finish
   -h, --help  Show this help
 `
 
@@ -53,7 +52,7 @@ func run(args []string) (result error) {
 	for _, arg := range args {
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]")
+				return errors.New("usage: poll-pr-pipeline [PR number|GitHub PR URL]")
 			}
 			tmux = true
 		} else {
@@ -61,14 +60,14 @@ func run(args []string) (result error) {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: poll-pr-pipeline [-t|--tmux] [PR number|GitHub PR URL]")
+		return errors.New("usage: poll-pr-pipeline [PR number|GitHub PR URL]")
 	}
 
 	var notify, pane string
 	if tmux {
 		pane = os.Getenv("TMUX_PANE")
 		if !regexp.MustCompile(`^%[0-9]+$`).MatchString(pane) {
-			return errors.New("poll-pr-pipeline: run -t inside a tmux pane")
+			return errors.New("poll-pr-pipeline: tmux notifications require running inside a tmux pane")
 		}
 	}
 	gh, err := commandPath("gh")

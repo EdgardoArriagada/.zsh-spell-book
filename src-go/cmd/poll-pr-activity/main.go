@@ -21,7 +21,7 @@ import (
 
 const interval = time.Minute
 
-const help = `Usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]
+const help = `Usage: poll-pr-activity [PR number|GitHub PR URL]
 
 Watch a pull request for new comments, reviews, and merge readiness every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
@@ -29,7 +29,6 @@ Place poll-pr-activity.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
-  -t, --tmux  Notify the current tmux pane when activity or merge readiness appears
   -h, --help  Show this help
 `
 
@@ -67,7 +66,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	for _, arg := range args {
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]")
+				return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
 			}
 			tmux = true
 		} else {
@@ -75,7 +74,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: poll-pr-activity [-t|--tmux] [PR number|GitHub PR URL]")
+		return errors.New("usage: poll-pr-activity [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
@@ -89,7 +88,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	if tmux {
 		pane = os.Getenv("TMUX_PANE")
 		if !tmuxPane.MatchString(pane) {
-			return errors.New("poll-pr-activity: run -t inside a tmux pane")
+			return errors.New("poll-pr-activity: tmux notifications require running inside a tmux pane")
 		}
 		var err error
 		notify, err = exec.LookPath("zsb_tmux_agent_notification")

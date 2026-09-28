@@ -17,8 +17,8 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") || !strings.Contains(got, "-t, --tmux") {
-			t.Errorf("run(%q) output = %q, want usage and flags", flag, got)
+		if got := out.String(); !strings.Contains(got, "Usage: poll-pr-activity") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
+			t.Errorf("run(%q) output = %q, want usage and help flag without tmux options", flag, got)
 		}
 	}
 }
