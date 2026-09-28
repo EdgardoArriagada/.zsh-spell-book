@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,7 +11,7 @@ import (
 func TestTmuxFlag(t *testing.T) {
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
-	if err := os.WriteFile(gh, []byte("#!/bin/sh\nprintf '[]\\n'\n"), 0700); err != nil {
+	if err := os.WriteFile(gh, []byte("#!/bin/sh\nprintf '[{\"bucket\":\"pass\"}]\\n'\n"), 0700); err != nil {
 		t.Fatal(err)
 	}
 	notify := filepath.Join(dir, "zsb_tmux_agent_notification")
@@ -54,6 +55,7 @@ func TestStatus(t *testing.T) {
 		checks       []check
 		done, failed bool
 	}{
+		{"not started", nil, false, false},
 		{"pending", []check{{Bucket: "pass"}, {Bucket: "pending"}}, false, false},
 		{"success", []check{{Bucket: "pass"}, {Bucket: "skipping"}}, true, false},
 		{"failure", []check{{Bucket: "pass"}, {Bucket: "cancel"}}, true, true},
@@ -65,5 +67,17 @@ func TestStatus(t *testing.T) {
 				t.Fatalf("status() = (%t, %t), want (%t, %t)", done, failed, tc.done, tc.failed)
 			}
 		})
+	}
+}
+
+func TestFetchChecksFailedExit(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	if err := os.WriteFile(gh, []byte("#!/bin/sh\nprintf '[{\"bucket\":\"fail\"}]\\n'\nexit 1\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	checks, err := fetchChecks(context.Background(), gh, []string{"https://github.com/owner/repo/pull/42"})
+	if err != nil || len(checks) != 1 || checks[0].Bucket != "fail" {
+		t.Fatalf("failed checks = %v, %v", checks, err)
 	}
 }

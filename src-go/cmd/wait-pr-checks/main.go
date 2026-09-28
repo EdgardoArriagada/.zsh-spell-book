@@ -140,7 +140,7 @@ func fetchChecks(ctx context.Context, gh string, selection []string) ([]check, e
 	output, err := exec.CommandContext(ctx, gh, args...).Output()
 	if err != nil {
 		var exitErr *exec.ExitError
-		if !errors.As(err, &exitErr) || exitErr.ExitCode() != 8 {
+		if !errors.As(err, &exitErr) || (exitErr.ExitCode() != 1 && exitErr.ExitCode() != 8) {
 			return nil, err
 		}
 	}
@@ -160,6 +160,9 @@ func validPR(value string) bool {
 }
 
 func status(checks []check) (done, failed bool) {
+	if len(checks) == 0 {
+		return false, false
+	}
 	for _, check := range checks {
 		switch check.Bucket {
 		case "pass", "skipping":
