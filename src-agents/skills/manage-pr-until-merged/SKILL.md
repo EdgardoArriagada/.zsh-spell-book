@@ -47,3 +47,7 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 - Do not depend on another `PR ready to merge` line. Fetch current issue comments, reviews, and inline review comments; queue a comment subagent if new feedback from other actors appeared since the last inspection.
 - Require no running or queued mutating subagent, passed checks for the current `headRefOid`, and `gh pr view <PR_URL> --json state,headRefOid,mergeStateStatus` reporting `OPEN`, the same head SHA, and `CLEAN`.
 - Run `gh pr merge <PR_URL> --squash --match-head-commit <SHA>`. If the head or readiness changes, resume watching and checking. Verify state `MERGED` before stopping. Continue monitoring while human review is pending. If GitHub blocks merging for another reason, a subagent cannot resolve a failure, or monitoring stops, report the specific blocker and seek direction. Otherwise continue until merged, with no time limit.
+
+## Poll loop
+
+While the PR is open and no specific blocker stops monitoring, poll the watcher with `write_stdin` using `yield_time_ms: 30000`. A returned session ID means it is still running, even with no output. Fetch current activity, poll checks, process queued subagents, and run the merge gate; then poll again. If the watcher exits, follow Watch step 1. End only after verifying `MERGED` or reporting the specific blocker.
