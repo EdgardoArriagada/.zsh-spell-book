@@ -1,6 +1,8 @@
 codex() {
-  if [[ ${1-} == resume && ${2-} =~ '^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$' && -n ${TMUX_PANE-} ]]; then
+  if [[ ${1-} == resume && ${2-} =~ '^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$' && -n ${TMUX-} && -n ${TMUX_PANE-} ]]; then
     zsb_tmux_agent_notification --bind-codex "$2" "$TMUX_PANE" || print -u2 'codex: tmux session binding failed'
+  elif [[ -n ${TMUX-} && -n ${TMUX_PANE-} && ( ${1-} == '' || ${1-} == resume || ${1-} == fork || ${1-} == -* ) ]]; then
+    zsb_charm_codex_bind "$TMUX_PANE" --wait >/dev/null 2>&1 &!
   fi
   command codex "$@"
 }

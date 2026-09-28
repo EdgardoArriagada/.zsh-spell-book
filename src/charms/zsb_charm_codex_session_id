@@ -6,7 +6,7 @@ local capture=$(tmux capture-pane -pt "$paneId" -J)
 local sessionId=$(print -r -- "$capture" | tail -n 2 | rg -o -m 1 --replace '$1' '^[[:space:]│]*([0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12})( · |[[:space:]│]*$)' || true)
 
 if [[ ! $sessionId =~ '^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$' ]]; then
-  tmux display-message 'No Codex session found in this pane'
+  [[ ${2-} == --quiet ]] || tmux display-message 'No Codex session found in this pane'
   exit 1
 fi
 

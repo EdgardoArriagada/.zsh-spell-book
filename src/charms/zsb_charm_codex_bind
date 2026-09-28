@@ -2,7 +2,17 @@
 set -euo pipefail
 
 local paneId=${1:?paneId required}
-local sessionId
-sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
+local sessionId=''
+if [[ ${2-} == --wait ]]; then
+  for (( i=0; i<100; i++ )); do
+    if [[ $(tmux display-message -pt "$paneId" '#{pane_current_command}') == codex ]]; then
+      sessionId=$(zsb_charm_codex_session_id "$paneId" --quiet) && break
+    fi
+    sleep 0.2
+  done
+  [[ -n $sessionId ]] || exit 0
+else
+  sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
+fi
 
 zsb_tmux_agent_notification --bind-codex "$sessionId" "$paneId"
