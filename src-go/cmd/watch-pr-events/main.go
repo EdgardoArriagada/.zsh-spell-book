@@ -19,11 +19,11 @@ import (
 	"time"
 )
 
-const interval = time.Minute
+const interval = 3 * time.Minute
 
 const help = `Usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]
 
-Watch a pull request for new comments, reviews, and merge readiness every minute.
+Watch a pull request for new comments, reviews, and merge readiness every 3 minutes.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
 Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
@@ -172,7 +172,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		} else if !initialized {
 			newActivity(seen, items, ignored)
 			initialized = true
-			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
+			fmt.Fprintf(out, "Watching %s for new PR activity (every 3 minutes).\n", prURL)
 		} else {
 			fresh := newActivity(seen, items, ignored)
 			var events []string
