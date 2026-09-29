@@ -25,7 +25,7 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 ### Pipeline subagent
 
 - Model: `gpt-6-sol`. Goal: **"solve pr pipeline"** for `<PR_URL>`.
-- Verify the checkout matches the PR head. Inspect failed checks, fix the root cause, verify the fix, stage only its changes, commit, and push. It may use `wait-pr-checks <PR_URL>`. Do not post the chat message for pipeline work.
+- Verify the checkout matches the PR head. Inspect failed checks, fix the root cause, verify the fix, stage only its changes, commit, and push. Do not post the chat message for pipeline work.
 
 ## Chat notifications
 
@@ -36,10 +36,9 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 ## Watch
 
 1. Start a comment subagent at startup to inspect all current feedback. If I queue one or more messages that an event has happened to the <PR_URL>, spawn a new comment subagent.
-2. Read `headRefOid` with `gh pr view <PR_URL> --json headRefOid`, then run `wait-pr-checks <PR_URL>` in a separate persistent command session. Poll until it exits (every 30 seconds). After each push, stop the old check session and start a new one. Count success only if a fresh `headRefOid` matches the one read before the wait.
-3. On failed checks for the current head, inspect them with `gh pr checks <PR_URL>` and start a pipeline subagent, or queue it if another mutating subagent runs.
-4. Before ending a turn, repeat the GitHub activity fetch and process uninspected feedback. If checks are still running, keep waiting for them in this turn. If current checks passed and only human review or merge readiness remains, report the waiting state and end the turn; the external watcher queues the next event. After verifying `MERGED`, tell the user to stop the watcher in their terminal.
+2. Ignore check result messages whose head OID differs from a fresh `gh pr view <PR_URL> --json headRefOid`. On `PR checks failed` for the current head, inspect with `gh pr checks <PR_URL>` and start a pipeline subagent, or queue it if another mutating subagent runs. The watcher detects new heads after pushes; do not restart it.
+3. Before ending a turn, repeat the GitHub activity fetch and process uninspected feedback. The single watcher polls checks and activity every 3 minutes. If checks are running, end the turn only when the watcher can queue this thread; otherwise keep polling its output. If current checks passed and only human review or merge readiness remains, report the waiting state and end the turn. After verifying `MERGED`, stop the watcher started here or tell the user to stop their external watcher.
 
 ## Merge gate
 
-- Every time I send you a `PR ready to merge` message, try to merge it with `gh pr merge <PR_URL> --squash`
+- On each `PR ready to merge` message, verify its head OID still matches `gh pr view <PR_URL> --json headRefOid` and all current checks passed or skipped. Then try `gh pr merge <PR_URL> --squash`. Ignore stale messages.

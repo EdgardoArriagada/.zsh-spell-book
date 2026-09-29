@@ -7,7 +7,6 @@ use (
 	./cmd/gitbranch
 	./cmd/gitworktree
 	./cmd/watch-pr-events
-	./cmd/wait-pr-checks
 	./cmd/tmdiff
 	./cmd/zsb_tmux_jira_picker
 	./lib/args

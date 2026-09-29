@@ -23,14 +23,15 @@ const interval = 3 * time.Minute
 
 const help = `Usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]
 
-Watch a pull request for new comments, reviews, and merge readiness every 3 minutes.
+Watch a pull request for check results and new comments,
+reviews, and merge readiness every 3 minutes.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
 Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
   -t, --tmux         Notify the current tmux pane of PR activity
-  --codex-uuid UUID  Send PR activity and merge readiness to this Codex thread
+  --codex-uuid UUID  Send PR events to this Codex thread
   -h, --help         Show this help
 `
 
@@ -39,6 +40,7 @@ var (
 	prPath   = regexp.MustCompile(`^/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/pull/([1-9][0-9]*)$`)
 	tmuxPane = regexp.MustCompile(`^%[0-9]+$`)
 	codexID  = regexp.MustCompile(`^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$`)
+	headOID  = regexp.MustCompile(`^[0-9a-fA-F]{40}([0-9a-fA-F]{24})?$`)
 )
 
 type activity struct {
@@ -48,6 +50,10 @@ type activity struct {
 		Login string `json:"login"`
 	} `json:"user"`
 	Kind string `json:"-"`
+}
+
+type check struct {
+	Bucket string `json:"bucket"`
 }
 
 type notificationStrategy struct {
@@ -157,10 +163,30 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 
 	seen := make(map[string]bool)
 	initialized := false
-	mergeReady := false
+	mergeReadyHead := ""
+	checkHead, checkStatus := "", ""
+	notifiedCheckHead, notifiedCheckStatus := "", ""
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
+		head, result, err := fetchCheckStatus(ctx, gh, prURL)
+		if ctx.Err() != nil {
+			return nil
+		}
+		if err != nil {
+			checkHead, checkStatus = "", ""
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			checkHead, checkStatus = head, result
+			if result == "pending" {
+				notifiedCheckHead, notifiedCheckStatus = "", ""
+			} else if result != "" && (head != notifiedCheckHead || result != notifiedCheckStatus) {
+				event := fmt.Sprintf("PR checks %s: %s (head %s)", result, prURL, head)
+				if !notifyStrategies(ctx, strategies, event, false) {
+					notifiedCheckHead, notifiedCheckStatus = head, result
+				}
+			}
+		}
 		items, err := fetchActivity(ctx, gh, endpoint)
 		if ctx.Err() != nil {
 			return nil
@@ -170,7 +196,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		} else if !initialized {
 			newActivity(seen, items, ignored)
 			initialized = true
-			fmt.Fprintf(out, "Watching %s for new PR activity (every 3 minutes).\n", prURL)
+			fmt.Fprintf(out, "Watching %s for PR checks and activity (every 3 minutes).\n", prURL)
 		} else {
 			fresh := newActivity(seen, items, ignored)
 			var events []string
@@ -188,17 +214,19 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 				}
 			}
 		}
-		ready, err := fetchMergeReady(ctx, gh, prURL)
-		if err != nil && ctx.Err() == nil {
+		ready, head, err := fetchMergeReady(ctx, gh, prURL)
+		if ctx.Err() != nil {
+			return nil
+		}
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-		} else if err == nil {
-			if ready && !mergeReady {
-				event := fmt.Sprintf("PR ready to merge: %s", prURL)
-				if notifyStrategies(ctx, strategies, event, true) {
-					ready = false
-				}
+		} else if !ready || head != checkHead || checkStatus != "passed" {
+			mergeReadyHead = ""
+		} else if head != mergeReadyHead {
+			event := fmt.Sprintf("PR ready to merge: %s (head %s)", prURL, head)
+			if !notifyStrategies(ctx, strategies, event, true) {
+				mergeReadyHead = head
 			}
-			mergeReady = ready
 		}
 		select {
 		case <-ctx.Done():
@@ -258,19 +286,84 @@ func loadIgnoredUsers(path string) (map[string]bool, error) {
 	return ignored, nil
 }
 
-func fetchMergeReady(ctx context.Context, gh, prURL string) (bool, error) {
-	output, err := exec.CommandContext(ctx, gh, "pr", "view", prURL, "--json", "state,mergeStateStatus").Output()
+func fetchHead(ctx context.Context, gh, prURL string) (string, error) {
+	output, err := exec.CommandContext(ctx, gh, "pr", "view", prURL, "--json", "headRefOid").Output()
 	if err != nil {
-		return false, errors.New("watch-pr-events: could not fetch merge status")
+		return "", errors.New("watch-pr-events: could not fetch PR head")
+	}
+	var pr struct {
+		HeadRefOID string `json:"headRefOid"`
+	}
+	if json.Unmarshal(output, &pr) != nil || !headOID.MatchString(pr.HeadRefOID) {
+		return "", errors.New("watch-pr-events: invalid PR head response")
+	}
+	return pr.HeadRefOID, nil
+}
+
+func fetchCheckStatus(ctx context.Context, gh, prURL string) (string, string, error) {
+	before, err := fetchHead(ctx, gh, prURL)
+	if err != nil {
+		return "", "", err
+	}
+	output, err := exec.CommandContext(ctx, gh, "pr", "checks", "--json", "bucket", prURL).Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if !errors.As(err, &exitErr) || (exitErr.ExitCode() != 1 && exitErr.ExitCode() != 8) {
+			return "", "", errors.New("watch-pr-events: could not fetch PR checks")
+		}
+	}
+	var checks []check
+	if json.Unmarshal(output, &checks) != nil {
+		return "", "", errors.New("watch-pr-events: invalid PR checks response")
+	}
+	result := checksStatus(checks)
+	if result == "pending" {
+		return before, result, nil
+	}
+	after, err := fetchHead(ctx, gh, prURL)
+	if err != nil {
+		return "", "", err
+	}
+	if before != after {
+		return "", "", nil
+	}
+	return before, result, nil
+}
+
+func checksStatus(checks []check) string {
+	if len(checks) == 0 {
+		return "pending"
+	}
+	failed := false
+	for _, check := range checks {
+		switch check.Bucket {
+		case "pass", "skipping":
+		case "fail", "cancel":
+			failed = true
+		default:
+			return "pending"
+		}
+	}
+	if failed {
+		return "failed"
+	}
+	return "passed"
+}
+
+func fetchMergeReady(ctx context.Context, gh, prURL string) (bool, string, error) {
+	output, err := exec.CommandContext(ctx, gh, "pr", "view", prURL, "--json", "state,mergeStateStatus,headRefOid").Output()
+	if err != nil {
+		return false, "", errors.New("watch-pr-events: could not fetch merge status")
 	}
 	var pr struct {
 		State            string `json:"state"`
 		MergeStateStatus string `json:"mergeStateStatus"`
+		HeadRefOID       string `json:"headRefOid"`
 	}
-	if err := json.Unmarshal(output, &pr); err != nil {
-		return false, errors.New("watch-pr-events: invalid merge status response")
+	if json.Unmarshal(output, &pr) != nil || !headOID.MatchString(pr.HeadRefOID) {
+		return false, "", errors.New("watch-pr-events: invalid merge status response")
 	}
-	return pr.State == "OPEN" && pr.MergeStateStatus == "CLEAN", nil
+	return pr.State == "OPEN" && pr.MergeStateStatus == "CLEAN", pr.HeadRefOID, nil
 }
 
 func tmuxNotification(ctx context.Context, command, pane string) error {

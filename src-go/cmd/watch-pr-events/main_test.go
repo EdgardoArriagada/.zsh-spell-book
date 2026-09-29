@@ -11,6 +11,21 @@ import (
 	"time"
 )
 
+const ghReadyScript = `#!/bin/sh
+if [ "$1" = api ]; then
+  printf '[[]]\n'
+elif [ "$2" = checks ]; then
+  printf '[{"bucket":"%s"}]\n' "$CHECK_BUCKET"
+  [ "$CHECK_BUCKET" != fail ]
+elif [ "$4" = url ]; then
+  printf '{"url":"https://github.com/owner/repo/pull/42"}\n'
+elif [ "$5" = headRefOid ]; then
+  printf '{"headRefOid":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}\n'
+else
+  printf '{"state":"OPEN","mergeStateStatus":"CLEAN","headRefOid":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}\n'
+fi
+`
+
 func TestHelp(t *testing.T) {
 	t.Setenv("PATH", "")
 	for _, flag := range []string{"-h", "--help"} {
@@ -152,10 +167,10 @@ func TestValidPR(t *testing.T) {
 func TestRunReportsMergeReady(t *testing.T) {
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
-	script := "#!/bin/sh\nif [ \"$1\" = api ]; then printf '[[]]\\n'; elif [ \"$3\" = --json ]; then printf '{\"url\":\"https://github.com/owner/repo/pull/42\"}\\n'; else printf '{\"state\":\"OPEN\",\"mergeStateStatus\":\"CLEAN\"}\\n'; fi\n"
-	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
 		t.Fatal(err)
 	}
+	t.Setenv("CHECK_BUCKET", "pass")
 	t.Setenv("PATH", dir)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -166,17 +181,20 @@ func TestRunReportsMergeReady(t *testing.T) {
 	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
 		t.Errorf("watcher output = %q, want merge readiness", out.String())
 	}
+	if !strings.Contains(out.String(), "PR checks passed: https://github.com/owner/repo/pull/42 (head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)") {
+		t.Errorf("watcher output = %q, want passed checks", out.String())
+	}
 }
 
 func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
-	script := "#!/bin/sh\nif [ \"$1\" = api ]; then printf '[[]]\\n'; elif [ \"$3\" = --json ]; then printf '{\"url\":\"https://github.com/owner/repo/pull/42\"}\\n'; else printf '{\"state\":\"OPEN\",\"mergeStateStatus\":\"CLEAN\"}\\n'; fi\n"
-	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
 		t.Fatal(err)
 	}
+	t.Setenv("CHECK_BUCKET", "pass")
 	command := filepath.Join(dir, "codex")
-	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$CODEX_ARGS\"\n"), 0700); err != nil {
+	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" >> \"$CODEX_ARGS\"\n"), 0700); err != nil {
 		t.Fatal(err)
 	}
 	argsFile := filepath.Join(dir, "args")
@@ -189,7 +207,7 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	t.Setenv("NOTIFICATION_ARGS", notificationArgs)
 	t.Setenv("TMUX_PANE", "%42")
 	t.Setenv("PATH", dir)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	uuid := "12345678-1234-1234-1234-123456789abc"
 	var out bytes.Buffer
@@ -210,8 +228,62 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "queue\n--thread\n" + uuid + "\n--message\nPR ready to merge: https://github.com/owner/repo/pull/42\n"; string(got) != want {
+	if want := "queue\n--thread\n" + uuid + "\n--message\nPR checks passed: https://github.com/owner/repo/pull/42 (head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)\n" +
+		"queue\n--thread\n" + uuid + "\n--message\nPR ready to merge: https://github.com/owner/repo/pull/42 (head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)\n"; string(got) != want {
 		t.Errorf("codex args = %q, want %q", got, want)
+	}
+}
+
+func TestRunReportsFailedChecksWithoutMergeReady(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("CHECK_BUCKET", "fail")
+	t.Setenv("PATH", dir)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	var out bytes.Buffer
+	if err := run(ctx, []string{"https://github.com/owner/repo/pull/42"}, &out); err != nil {
+		t.Fatal(err)
+	}
+	if got := out.String(); !strings.Contains(got, "PR checks failed: https://github.com/owner/repo/pull/42 (head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)") || strings.Contains(got, "PR ready to merge") {
+		t.Errorf("watcher output = %q, want failed checks without merge readiness", got)
+	}
+}
+
+func TestFetchCheckStatusRejectsChangedHead(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	headFile := filepath.Join(dir, "head-called")
+	script := "#!/bin/sh\nif [ \"$2\" = checks ]; then printf '[{\"bucket\":\"pass\"}]\\n'; elif [ -e \"$HEAD_FILE\" ]; then printf '{\"headRefOid\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}\\n'; else : > \"$HEAD_FILE\"; printf '{\"headRefOid\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}\\n'; fi\n"
+	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("HEAD_FILE", headFile)
+	head, result, err := fetchCheckStatus(context.Background(), gh, "https://github.com/owner/repo/pull/42")
+	if err != nil || head != "" || result != "" {
+		t.Fatalf("changed head status = (%q, %q, %v), want no result", head, result, err)
+	}
+}
+
+func TestChecksStatus(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		checks []check
+		want   string
+	}{
+		{"not started", nil, "pending"},
+		{"pending", []check{{Bucket: "pass"}, {Bucket: "pending"}}, "pending"},
+		{"success", []check{{Bucket: "pass"}, {Bucket: "skipping"}}, "passed"},
+		{"failure", []check{{Bucket: "pass"}, {Bucket: "cancel"}}, "failed"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := checksStatus(tc.checks); got != tc.want {
+				t.Fatalf("checksStatus() = %q, want %q", got, tc.want)
+			}
+		})
 	}
 }
 
