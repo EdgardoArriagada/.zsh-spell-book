@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
+	"unicode"
 
 	gitlib "example.com/workspace/lib/git"
 )
@@ -106,4 +111,91 @@ func currentWorktreeIndex(worktrees []Worktree) int {
 		return -1
 	}
 	return gitlib.FindCurrentWorktree(worktrees, cwd)
+}
+
+func worktreePRStatus(ctx context.Context, wt Worktree) (string, error) {
+	if wt.IsBare || wt.Branch == "" || wt.Branch == "(detached)" {
+		return "no PR (bare or detached worktree)", nil
+	}
+	if err := gitlib.ValidateBranchName(wt.Branch); err != nil {
+		return "", errors.New("invalid worktree branch")
+	}
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	var prs []struct {
+		Number            int
+		State             string
+		IsDraft           bool
+		ReviewDecision    string
+		URL               string
+		StatusCheckRollup []struct {
+			Status, Conclusion, State string
+		}
+	}
+	// Prefer an open PR; otherwise show the latest closed or merged PR.
+	for _, state := range []string{"open", "all"} {
+		cmd := exec.CommandContext(ctx, "gh", "pr", "list", "--head="+wt.Branch, "--state="+state, "--limit=1", "--json=number,state,isDraft,reviewDecision,statusCheckRollup,url")
+		cmd.Dir = wt.Path
+		out, err := cmd.Output()
+		if err != nil {
+			if ctx.Err() != nil {
+				return "", errors.New("PR lookup cancelled or timed out")
+			}
+			if errors.Is(err, exec.ErrNotFound) {
+				return "", errors.New("gh not found; install GitHub CLI")
+			}
+			return "", errors.New("PR lookup failed; check gh authentication and repository access")
+		}
+		if json.Unmarshal(out, &prs) != nil {
+			return "", errors.New("invalid GitHub PR response")
+		}
+		if len(prs) > 0 {
+			break
+		}
+	}
+	if len(prs) == 0 {
+		return "no PR", nil
+	}
+	pr := prs[0]
+	state := strings.ToLower(pr.State)
+	if pr.IsDraft && pr.State == "OPEN" {
+		state = "draft"
+	}
+	review := strings.ToLower(strings.ReplaceAll(pr.ReviewDecision, "_", " "))
+	if review == "" {
+		review = "none"
+	}
+	passed, pending, failed := 0, 0, 0
+	for _, check := range pr.StatusCheckRollup {
+		result := check.State
+		if result == "" {
+			if check.Status != "COMPLETED" {
+				pending++
+				continue
+			}
+			result = check.Conclusion
+		}
+		switch result {
+		case "SUCCESS", "NEUTRAL", "SKIPPED":
+			passed++
+		case "FAILURE", "ERROR", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED", "STARTUP_FAILURE", "STALE":
+			failed++
+		default:
+			pending++
+		}
+	}
+	checks := "none"
+	if len(pr.StatusCheckRollup) > 0 {
+		checks = fmt.Sprintf("%d passed, %d pending, %d failed", passed, pending, failed)
+	}
+	// Strip terminal controls from remote text before rendering it.
+	clean := func(s string) string {
+		return strings.Map(func(r rune) rune {
+			if unicode.IsControl(r) {
+				return -1
+			}
+			return r
+		}, s)
+	}
+	return fmt.Sprintf("#%d %s\nchecks: %s\nreview: %s\n%s", pr.Number, clean(state), checks, clean(review), clean(pr.URL)), nil
 }

@@ -8,6 +8,7 @@ import (
 	gitlib "example.com/workspace/lib/git"
 	"example.com/workspace/lib/tui"
 
+	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
 )
 
@@ -20,6 +21,49 @@ func makeListModel(worktrees []Worktree, cursor int) model {
 		mode:      tui.ListMode,
 		input:     ti,
 		current:   0,
+	}
+}
+
+func TestPRStatusKeys(t *testing.T) {
+	wts := threeWorktrees()
+	m := makeListModel(wts, 0)
+	m.spinner = spinner.New()
+	m.filtered = wts[1:]
+	m.prStatus = map[string]string{wts[0].Path: "no PR", wts[1].Path: "old"}
+	if got := pressKey(m, "p"); got.prPending != 0 {
+		t.Fatal("lowercase p started a lookup")
+	}
+	updated, cmd := m.Update(tea.KeyPressMsg{Text: "P"})
+	m = updated.(model)
+	if cmd == nil || m.prPending != 1 || m.prStatus[wts[0].Path] != "no PR" || m.prStatus[wts[1].Path] != "" || !strings.Contains(m.render(), "checking PRs...") {
+		t.Fatal("P did not start a lookup for the filtered selection")
+	}
+	if _, cmd := m.Update(m.spinner.Tick()); cmd == nil {
+		t.Fatal("PR lookup did not animate the spinner")
+	}
+	if _, cmd := m.Update(tea.KeyPressMsg{Text: "P"}); cmd != nil {
+		t.Fatal("duplicate request while loading")
+	}
+	updated, _ = m.Update(prResultMsg{path: wts[1].Path, status: "#2 open\nchecks: none\nreview: approved\nhttps://github.com/o/r/pull/2"})
+	m = updated.(model)
+	if m.prPending != 0 || m.prCancel != nil || m.mode != tui.ListMode || m.selected != "" || !strings.Contains(m.render(), "https://github.com/o/r/pull/2") {
+		t.Fatal("PR result did not remain in the selector")
+	}
+	updated, cmd = m.Update(tea.KeyPressMsg{Code: 'p', Mod: tea.ModCtrl})
+	m = updated.(model)
+	if cmd == nil || m.prPending != len(wts) || len(m.prStatus) != 0 {
+		t.Fatal("ctrl+p did not include worktrees outside the filter")
+	}
+	for _, wt := range wts {
+		updated, _ = m.Update(prResultMsg{path: wt.Path, status: "no PR"})
+		m = updated.(model)
+	}
+	if m.prPending != 0 || len(m.prStatus) != len(wts) {
+		t.Fatal("all-worktree results were lost")
+	}
+	m.filtered = nil
+	if _, cmd := m.Update(tea.KeyPressMsg{Text: "P"}); cmd != nil {
+		t.Fatal("P started a lookup without a selection")
 	}
 }
 

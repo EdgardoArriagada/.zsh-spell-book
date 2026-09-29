@@ -15,6 +15,9 @@ func main() {
 		os.Exit(1)
 	}
 	mdl := m.(model)
+	if mdl.prCancel != nil {
+		mdl.prCancel()
+	}
 	if mdl.selected != "" {
 		fmt.Print(mdl.selected)
 		os.Exit(0)

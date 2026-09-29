@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"os"
 	"os/exec"
@@ -25,6 +26,21 @@ type deleteResultMsg struct {
 type createResultMsg struct {
 	err    error
 	branch string
+}
+
+type prResultMsg struct {
+	path   string
+	status string
+}
+
+func runPRStatusCmd(ctx context.Context, wt Worktree) tea.Cmd {
+	return func() tea.Msg {
+		status, err := worktreePRStatus(ctx, wt)
+		if err != nil {
+			status = err.Error()
+		}
+		return prResultMsg{path: wt.Path, status: status}
+	}
 }
 
 func runDeleteCmd(path string, force bool, branch string, deletingCurrent bool, fallbackPath string, deleteBranch bool) tea.Cmd {
@@ -82,7 +98,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	if _, ok := msg.(spinner.TickMsg); ok {
-		if m.mode == tui.DeletingMode || m.mode == tui.CreatingMode {
+		if m.mode == tui.DeletingMode || m.mode == tui.CreatingMode || m.prPending > 0 {
 			var cmd tea.Cmd
 			m.spinner, cmd = m.spinner.Update(msg)
 			return m, cmd
@@ -94,6 +110,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	if result, ok := msg.(createResultMsg); ok {
 		return m.handleCreateResult(result)
+	}
+	if result, ok := msg.(prResultMsg); ok {
+		m.prStatus[result.path] = result.status
+		m.prPending--
+		if m.prPending == 0 {
+			m.prCancel()
+			m.prCancel = nil
+		}
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+		return m, nil
 	}
 	switch m.mode {
 	case tui.AddMode:
@@ -237,6 +263,33 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = m.filtered[m.cursor].Path
 		}
 		return m, tea.Quit
+	case "P", "ctrl+p":
+		if m.mode != tui.ListMode || m.prPending > 0 || len(m.filtered) == 0 && km.String() == "P" {
+			return m, nil
+		}
+		targets := m.worktrees
+		if km.String() == "P" {
+			targets = m.filtered[m.cursor : m.cursor+1]
+		}
+		if len(targets) == 0 {
+			return m, nil
+		}
+		ctx, cancel := context.WithCancel(context.Background())
+		m.prCancel = cancel
+		m.prPending = len(targets)
+		if m.prStatus == nil {
+			m.prStatus = make(map[string]string)
+		}
+		cmds := make([]tea.Cmd, 0, len(targets))
+		for _, wt := range targets {
+			delete(m.prStatus, wt.Path)
+			cmds = append(cmds, runPRStatusCmd(ctx, wt))
+		}
+		m.err = nil
+		m.statusMsg = ""
+		m.vp = m.vp.Clamp(m.cursor, len(m.filtered), m.availableRows())
+		// ponytail: sequential lookups; bounded parallelism if large worktree lists are slow.
+		return m, tea.Batch(tea.Sequence(cmds...), m.spinner.Tick)
 	case "a":
 		m.mode = tui.AddMode
 		m.input.SetValue("")

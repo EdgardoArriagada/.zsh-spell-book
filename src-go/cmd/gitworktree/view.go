@@ -46,10 +46,16 @@ func (m model) statusSection() string {
 	case tui.SearchMode:
 		return tui.RenderSearchInput(m.searchInput)
 	default:
+		if m.prPending > 0 {
+			return "\n" + tui.WarnStyle.Render(fmt.Sprintf("  %s checking PRs... (%d remaining)", m.spinner.View(), m.prPending)) + "\n"
+		}
 		if m.statusMsg != "" {
 			return "\n" + tui.StatusStyle.Render("  "+m.statusMsg) + "\n"
 		} else if m.err != nil {
 			return "\n" + tui.ErrStyle.Render(fmt.Sprintf("  %v", m.err)) + "\n"
+		}
+		if status := m.prStatus[target.Path]; status != "" {
+			return "\n" + tui.StatusStyle.Render("  "+strings.ReplaceAll(status, "\n", "\n  ")) + "\n"
 		}
 		return tui.RenderActiveFilterHint(m.searchInput)
 	}
@@ -70,6 +76,8 @@ func (m model) footerSection() string {
 			tui.Hint("a", "add") + sep +
 			tui.Hint("d", "delete") + sep +
 			tui.Hint("D", "delete+branch") + sep +
+			tui.Hint("P", "PR status") + sep +
+			tui.Hint("ctrl+p", "all PRs") + sep +
 			tui.Hint("/", "search") + sep +
 			tui.Hint("esc/q", "quit")
 	}
@@ -132,6 +140,10 @@ func (m model) render() string {
 			line = tui.HighlightMatches(name, searchTerm, tui.DimStyle) + tui.DimStyle.Render(branch)
 		}
 
+		if status := m.prStatus[wt.Path]; status != "" {
+			summary, _, _ := strings.Cut(status, "\n")
+			line += tui.DimStyle.Render("  " + summary)
+		}
 		s.WriteString(cursor + line + "\n")
 	}
 

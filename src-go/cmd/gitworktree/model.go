@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"path/filepath"
 
 	"example.com/workspace/lib/tui"
@@ -29,6 +30,9 @@ type model struct {
 	statusMsg    string // transient info message shown in list mode
 	current      int    // index of current worktree in worktrees, -1 if none
 	deleteBranch bool   // when true, D key was used — also delete the branch after worktree removal
+	prStatus     map[string]string
+	prPending    int
+	prCancel     context.CancelFunc
 }
 
 func applyWorktreeFilter(wts []Worktree, term string) []Worktree {
