@@ -49,6 +49,12 @@ type activity struct {
 	Kind string `json:"-"`
 }
 
+type notificationStrategy struct {
+	notify  func(context.Context, string) error
+	failure string
+	retry   bool
+}
+
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -94,22 +100,29 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	if err != nil {
 		return err
 	}
-	var notify, pane string
+	strategies := []notificationStrategy{{
+		notify: func(_ context.Context, event string) error {
+			_, err := fmt.Fprintln(out, event)
+			return err
+		},
+		failure: "watch-pr-events: console output failed",
+	}}
 	if tmux {
-		pane = os.Getenv("TMUX_PANE")
+		pane := os.Getenv("TMUX_PANE")
 		if !tmuxPane.MatchString(pane) {
 			return errors.New("watch-pr-events: tmux notifications require running inside a tmux pane")
 		}
-		var err error
-		notify, err = exec.LookPath("zsb_tmux_agent_notification")
+		notify, err := exec.LookPath("zsb_tmux_agent_notification")
 		if err != nil {
 			return errors.New("watch-pr-events: zsb_tmux_agent_notification not found")
 		}
+		strategies = append(strategies, notificationStrategy{
+			notify:  func(ctx context.Context, _ string) error { return tmuxNotification(ctx, notify, pane) },
+			failure: "watch-pr-events: notification failed",
+		})
 	}
-	codex := ""
 	if uuid != "" {
-		var err error
-		codex, err = exec.LookPath("codex")
+		codex, err := exec.LookPath("codex")
 		if err != nil {
 			return errors.New("watch-pr-events: codex not found")
 		}
@@ -117,6 +130,11 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		if err != nil {
 			return errors.New("watch-pr-events: cannot resolve codex path")
 		}
+		strategies = append(strategies, notificationStrategy{
+			notify:  func(ctx context.Context, event string) error { return queueCodexEvent(ctx, codex, uuid, event) },
+			failure: "watch-pr-events: codex queue failed; will retry",
+			retry:   true,
+		})
 	}
 	gh, err := exec.LookPath("gh")
 	if err != nil {
@@ -141,7 +159,6 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	defer ticker.Stop()
 	for {
 		items, err := fetchActivity(ctx, gh, endpoint)
-		var fresh []activity
 		if ctx.Err() != nil {
 			return nil
 		}
@@ -152,40 +169,28 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			initialized = true
 			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
-			fresh = newActivity(seen, items, ignored)
-			for _, item := range fresh {
+			for _, item := range newActivity(seen, items, ignored) {
 				actor := item.User.Login
 				if actor == "" {
 					actor = "someone"
 				}
 				event := fmt.Sprintf("[%s] %s by %q: %s", time.Now().Format("15:04:05"), label(item), actor, prURL)
-				fmt.Fprintln(out, event)
-				if codex != "" && queueCodexEvent(ctx, codex, uuid, event) != nil {
-					fmt.Fprintln(os.Stderr, "watch-pr-events: codex queue failed; will retry")
+				if notifyStrategies(ctx, strategies, event) {
 					delete(seen, fmt.Sprintf("%s:%d:%s", item.Kind, item.ID, item.State))
 				}
 			}
 		}
 		ready, err := fetchMergeReady(ctx, gh, prURL)
-		becameReady := false
 		if err != nil && ctx.Err() == nil {
 			fmt.Fprintln(os.Stderr, err)
 		} else if err == nil {
-			becameReady = ready && !mergeReady
-			if becameReady {
+			if ready && !mergeReady {
 				event := fmt.Sprintf("PR ready to merge: %s", prURL)
-				fmt.Fprintln(out, event)
-				if codex != "" && queueCodexEvent(ctx, codex, uuid, event) != nil {
-					fmt.Fprintln(os.Stderr, "watch-pr-events: codex queue failed; will retry")
+				if notifyStrategies(ctx, strategies, event) {
 					ready = false
 				}
 			}
 			mergeReady = ready
-		}
-		if tmux && (len(fresh) > 0 || becameReady) {
-			if err := tmuxNotification(ctx, notify, pane); err != nil {
-				fmt.Fprintln(os.Stderr, "watch-pr-events: notification failed")
-			}
 		}
 		select {
 		case <-ctx.Done():
@@ -193,6 +198,16 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func notifyStrategies(ctx context.Context, strategies []notificationStrategy, event string) (retry bool) {
+	for _, strategy := range strategies {
+		if err := strategy.notify(ctx, event); err != nil {
+			fmt.Fprintln(os.Stderr, strategy.failure)
+			retry = retry || strategy.retry
+		}
+	}
+	return retry
 }
 
 func queueCodexEvent(ctx context.Context, codex, uuid, event string) error {

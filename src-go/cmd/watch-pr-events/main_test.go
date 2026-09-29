@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -167,7 +168,7 @@ func TestRunReportsMergeReady(t *testing.T) {
 	}
 }
 
-func TestRunQueuesMergeReady(t *testing.T) {
+func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
 	script := "#!/bin/sh\nif [ \"$1\" = api ]; then printf '[[]]\\n'; elif [ \"$3\" = --json ]; then printf '{\"url\":\"https://github.com/owner/repo/pull/42\"}\\n'; else printf '{\"state\":\"OPEN\",\"mergeStateStatus\":\"CLEAN\"}\\n'; fi\n"
@@ -180,12 +181,30 @@ func TestRunQueuesMergeReady(t *testing.T) {
 	}
 	argsFile := filepath.Join(dir, "args")
 	t.Setenv("CODEX_ARGS", argsFile)
+	notify := filepath.Join(dir, "zsb_tmux_agent_notification")
+	if err := os.WriteFile(notify, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$NOTIFICATION_ARGS\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	notificationArgs := filepath.Join(dir, "notification-args")
+	t.Setenv("NOTIFICATION_ARGS", notificationArgs)
+	t.Setenv("TMUX_PANE", "%42")
 	t.Setenv("PATH", dir)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	uuid := "12345678-1234-1234-1234-123456789abc"
-	if err := run(ctx, []string{"--codex-uuid", uuid, "https://github.com/owner/repo/pull/42"}, &bytes.Buffer{}); err != nil {
+	var out bytes.Buffer
+	if err := run(ctx, []string{"--tmux", "--codex-uuid", uuid, "https://github.com/owner/repo/pull/42"}, &out); err != nil {
 		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
+		t.Errorf("watcher output = %q, want merge readiness", out.String())
+	}
+	gotNotification, err := os.ReadFile(notificationArgs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(gotNotification) != "--force-finished\n_\n%42\n" {
+		t.Errorf("notification args = %q", gotNotification)
 	}
 	got, err := os.ReadFile(argsFile)
 	if err != nil {
@@ -193,5 +212,16 @@ func TestRunQueuesMergeReady(t *testing.T) {
 	}
 	if want := "queue\n--thread\n" + uuid + "\n--message\nPR ready to merge: https://github.com/owner/repo/pull/42\n"; string(got) != want {
 		t.Errorf("codex args = %q, want %q", got, want)
+	}
+}
+
+func TestNotifyStrategiesContinuesAfterFailure(t *testing.T) {
+	var calls []string
+	strategies := []notificationStrategy{
+		{notify: func(context.Context, string) error { calls = append(calls, "failed"); return errors.New("failed") }, failure: "failed", retry: true},
+		{notify: func(context.Context, string) error { calls = append(calls, "next"); return nil }},
+	}
+	if retry := notifyStrategies(context.Background(), strategies, "event"); !retry || strings.Join(calls, ",") != "failed,next" {
+		t.Errorf("retry = %t, calls = %v", retry, calls)
 	}
 }
