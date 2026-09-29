@@ -17,7 +17,7 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events") || !strings.Contains(got, "--codex-uuid UUID") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
 			t.Errorf("run(%q) output = %q, want usage and help flag without tmux options", flag, got)
 		}
 	}
@@ -98,6 +98,39 @@ func TestTmuxNotification(t *testing.T) {
 	}
 }
 
+func TestCodexUUIDFlag(t *testing.T) {
+	for _, args := range [][]string{{"--codex-uuid"}, {"--codex-uuid", "bad"}, {"--codex-uuid", "12345678-1234-1234-1234-123456789abc", "--codex-uuid", "12345678-1234-1234-1234-123456789abc"}} {
+		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "--codex-uuid requires a UUID") {
+			t.Errorf("run(%q) = %v, want UUID flag error", args, err)
+		}
+	}
+}
+
+func TestQueueCodexEvent(t *testing.T) {
+	command := filepath.Join(t.TempDir(), "codex")
+	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$CODEX_ARGS\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	argsFile := filepath.Join(t.TempDir(), "args")
+	t.Setenv("CODEX_ARGS", argsFile)
+	uuid := "12345678-1234-1234-1234-123456789abc"
+	unexpected := filepath.Join(t.TempDir(), "unexpected")
+	event := `New PR comment by "$(touch ` + unexpected + `)": https://github.com/owner/repo/pull/42`
+	if err := queueCodexEvent(context.Background(), command, uuid, event); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(argsFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "queue\n--thread\n" + uuid + "\n--message\n" + event + "\n"; string(got) != want {
+		t.Errorf("codex args = %q, want %q", got, want)
+	}
+	if _, err := os.Stat(unexpected); !os.IsNotExist(err) {
+		t.Errorf("event text executed as shell syntax: %v", err)
+	}
+}
+
 func TestValidPR(t *testing.T) {
 	for _, tc := range []struct {
 		value string
@@ -131,5 +164,34 @@ func TestRunReportsMergeReady(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
 		t.Errorf("watcher output = %q, want merge readiness", out.String())
+	}
+}
+
+func TestRunQueuesMergeReady(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	script := "#!/bin/sh\nif [ \"$1\" = api ]; then printf '[[]]\\n'; elif [ \"$3\" = --json ]; then printf '{\"url\":\"https://github.com/owner/repo/pull/42\"}\\n'; else printf '{\"state\":\"OPEN\",\"mergeStateStatus\":\"CLEAN\"}\\n'; fi\n"
+	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	command := filepath.Join(dir, "codex")
+	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$CODEX_ARGS\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	argsFile := filepath.Join(dir, "args")
+	t.Setenv("CODEX_ARGS", argsFile)
+	t.Setenv("PATH", dir)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	uuid := "12345678-1234-1234-1234-123456789abc"
+	if err := run(ctx, []string{"--codex-uuid", uuid, "https://github.com/owner/repo/pull/42"}, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(argsFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "queue\n--thread\n" + uuid + "\n--message\nPR ready to merge: https://github.com/owner/repo/pull/42\n"; string(got) != want {
+		t.Errorf("codex args = %q, want %q", got, want)
 	}
 }

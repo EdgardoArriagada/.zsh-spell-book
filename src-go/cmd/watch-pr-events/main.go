@@ -21,7 +21,7 @@ import (
 
 const interval = time.Minute
 
-const help = `Usage: watch-pr-events [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]
 
 Watch a pull request for new comments, reviews, and merge readiness every minute.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
@@ -29,13 +29,15 @@ Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
-  -h, --help  Show this help
+  --codex-uuid UUID  Queue each new event to this Codex thread
+  -h, --help         Show this help
 `
 
 var (
 	prNumber = regexp.MustCompile(`^[1-9][0-9]*$`)
 	prPath   = regexp.MustCompile(`^/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/pull/([1-9][0-9]*)$`)
 	tmuxPane = regexp.MustCompile(`^%[0-9]+$`)
+	codexID  = regexp.MustCompile(`^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$`)
 )
 
 type activity struct {
@@ -63,18 +65,26 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	}
 	var selection []string
 	tmux := false
-	for _, arg := range args {
+	uuid := ""
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: watch-pr-events [PR number|GitHub PR URL]")
+				return errors.New("usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]")
 			}
 			tmux = true
+		} else if arg == "--codex-uuid" {
+			if uuid != "" || i+1 >= len(args) || !codexID.MatchString(args[i+1]) {
+				return errors.New("watch-pr-events: --codex-uuid requires a UUID")
+			}
+			i++
+			uuid = args[i]
 		} else {
 			selection = append(selection, arg)
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: watch-pr-events [PR number|GitHub PR URL]")
+		return errors.New("usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
@@ -94,6 +104,18 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		notify, err = exec.LookPath("zsb_tmux_agent_notification")
 		if err != nil {
 			return errors.New("watch-pr-events: zsb_tmux_agent_notification not found")
+		}
+	}
+	codex := ""
+	if uuid != "" {
+		var err error
+		codex, err = exec.LookPath("codex")
+		if err != nil {
+			return errors.New("watch-pr-events: codex not found")
+		}
+		codex, err = filepath.Abs(codex)
+		if err != nil {
+			return errors.New("watch-pr-events: cannot resolve codex path")
 		}
 	}
 	gh, err := exec.LookPath("gh")
@@ -136,7 +158,12 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 				if actor == "" {
 					actor = "someone"
 				}
-				fmt.Fprintf(out, "[%s] %s by %q: %s\n", time.Now().Format("15:04:05"), label(item), actor, prURL)
+				event := fmt.Sprintf("[%s] %s by %q: %s", time.Now().Format("15:04:05"), label(item), actor, prURL)
+				fmt.Fprintln(out, event)
+				if codex != "" && queueCodexEvent(ctx, codex, uuid, event) != nil {
+					fmt.Fprintln(os.Stderr, "watch-pr-events: codex queue failed; will retry")
+					delete(seen, fmt.Sprintf("%s:%d:%s", item.Kind, item.ID, item.State))
+				}
 			}
 		}
 		ready, err := fetchMergeReady(ctx, gh, prURL)
@@ -146,7 +173,12 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		} else if err == nil {
 			becameReady = ready && !mergeReady
 			if becameReady {
-				fmt.Fprintf(out, "PR ready to merge: %s\n", prURL)
+				event := fmt.Sprintf("PR ready to merge: %s", prURL)
+				fmt.Fprintln(out, event)
+				if codex != "" && queueCodexEvent(ctx, codex, uuid, event) != nil {
+					fmt.Fprintln(os.Stderr, "watch-pr-events: codex queue failed; will retry")
+					ready = false
+				}
 			}
 			mergeReady = ready
 		}
@@ -161,6 +193,10 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func queueCodexEvent(ctx context.Context, codex, uuid, event string) error {
+	return exec.CommandContext(ctx, codex, "queue", "--thread", uuid, "--message", event).Run()
 }
 
 func configPath() (string, error) {

@@ -35,19 +35,11 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 
 ## Watch
 
-1. Start `watch-pr-events <PR_URL>` immediately in a persistent command session. Keep its session ID and poll stdout, stderr, and exit status (`exec_command` then `write_stdin` in Codex); do not detach it with `&`. Keep it running while the PR is open. If it exits, inspect the error and restart it or report the blocker. Treat its output as a prompt to fetch current PR state, not a complete activity log; it baselines existing activity on startup and restart.
-2. Start a comment subagent at startup, including after a stopped agent turn resumes, to inspect all current feedback. Start another for new comments or substantive reviews. Queue later feedback while a mutating subagent runs.
-3. Read `headRefOid` with `gh pr view <PR_URL> --json headRefOid`, then run `wait-pr-checks <PR_URL>` in a separate persistent command session. Poll until it exits. After each push, stop the old check session and start a new one. Count success only if a fresh `headRefOid` matches the one read before the wait.
-4. On failed checks for the current head, inspect them with `gh pr checks <PR_URL>` and start a pipeline subagent, or queue it if another mutating subagent runs.
-5. At least once per minute, poll the watcher session and independently fetch all pages of current issue comments, reviews, and inline review comments from GitHub. Compare their IDs, update times, and review states with the last successful inspection; if there is no prior inspection, treat all feedback as uninspected. Queue a comment subagent for new or changed feedback from other actors even when the watcher is quiet. Then recheck the merge gate. Repeat after watcher output, subagent completion, and check completion.
-6. Before any handoff or final response, repeat the GitHub activity fetch and process uninspected feedback. A quiet watcher or pending human review is a wait state, not a reason to stop. Keep the agent turn active until the PR merges or a specific blocker stops monitoring.
+1. Start a comment subagent at startup to inspect all current feedback. If I queue one or more messages that an event has happened to the <PR_URL>, spawn a new comment subagent.
+2. Read `headRefOid` with `gh pr view <PR_URL> --json headRefOid`, then run `wait-pr-checks <PR_URL>` in a separate persistent command session. Poll until it exits (every 30 seconds). After each push, stop the old check session and start a new one. Count success only if a fresh `headRefOid` matches the one read before the wait.
+3. On failed checks for the current head, inspect them with `gh pr checks <PR_URL>` and start a pipeline subagent, or queue it if another mutating subagent runs.
+4. Before ending a turn, repeat the GitHub activity fetch and process uninspected feedback. If checks are still running, keep waiting for them in this turn. If current checks passed and only human review or merge readiness remains, report the waiting state and end the turn; the external watcher queues the next event. After verifying `MERGED`, tell the user to stop the watcher in their terminal.
 
 ## Merge gate
 
-- Do not depend on another `PR ready to merge` line. Fetch current issue comments, reviews, and inline review comments; queue a comment subagent if new feedback from other actors appeared since the last inspection.
-- Require no running or queued mutating subagent, passed checks for the current `headRefOid`, and `gh pr view <PR_URL> --json state,headRefOid,mergeStateStatus` reporting `OPEN`, the same head SHA, and `CLEAN`.
-- Run `gh pr merge <PR_URL> --squash --match-head-commit <SHA>`. If the head or readiness changes, resume watching and checking. Verify state `MERGED` before stopping. Continue monitoring while human review is pending. If GitHub blocks merging for another reason, a subagent cannot resolve a failure, or monitoring stops, report the specific blocker and seek direction. Otherwise continue until merged, with no time limit.
-
-## Poll loop
-
-While the PR is open and no specific blocker stops monitoring, poll the watcher with `write_stdin` using `yield_time_ms: 30000`. A returned session ID means it is still running, even with no output. Fetch current activity, poll checks, process queued subagents, and run the merge gate; then poll again. If the watcher exits, follow Watch step 1. End only after verifying `MERGED` or reporting the specific blocker.
+- Every time I send you a `PR ready to merge` message, try to merge it with `gh pr merge <PR_URL> --squash`
