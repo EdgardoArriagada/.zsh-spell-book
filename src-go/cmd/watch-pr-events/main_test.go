@@ -18,8 +18,8 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events") || !strings.Contains(got, "--codex-uuid UUID") || !strings.Contains(got, "-h, --help") || strings.Contains(got, "-t") || strings.Contains(got, "--tmux") {
-			t.Errorf("run(%q) output = %q, want usage and help flag without tmux options", flag, got)
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "--codex-uuid UUID") || !strings.Contains(got, "-h, --help") {
+			t.Errorf("run(%q) output = %q, want usage and supported options", flag, got)
 		}
 	}
 }
@@ -129,33 +129,6 @@ func TestQueueCodexEvent(t *testing.T) {
 	}
 	if _, err := os.Stat(unexpected); !os.IsNotExist(err) {
 		t.Errorf("event text executed as shell syntax: %v", err)
-	}
-}
-
-func TestExecCodexActivity(t *testing.T) {
-	command := filepath.Join(t.TempDir(), "codex")
-	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$CODEX_ARGS\"\n"), 0700); err != nil {
-		t.Fatal(err)
-	}
-	argsFile := filepath.Join(t.TempDir(), "args")
-	t.Setenv("CODEX_ARGS", argsFile)
-	uuid := "12345678-1234-1234-1234-123456789abc"
-	unexpected := filepath.Join(t.TempDir(), "unexpected")
-	events := []string{"New PR comment by \"$(touch " + unexpected + ")\"", "PR approved by \"reviewer\""}
-	prURL := "https://github.com/owner/repo/pull/42"
-	activity := strings.Join(events, "\n") + "\nPR: " + prURL
-	if err := execCodexActivity(context.Background(), command, uuid, activity); err != nil {
-		t.Fatal(err)
-	}
-	got, err := os.ReadFile(argsFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want := "exec\nresume\n" + uuid + "\n" + activity + "\n"; string(got) != want {
-		t.Errorf("codex args = %q, want %q", got, want)
-	}
-	if _, err := os.Stat(unexpected); !os.IsNotExist(err) {
-		t.Errorf("activity text executed as shell syntax: %v", err)
 	}
 }
 

@@ -21,7 +21,7 @@ import (
 
 const interval = 3 * time.Minute
 
-const help = `Usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]
 
 Watch a pull request for new comments, reviews, and merge readiness every 3 minutes.
 With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
@@ -29,7 +29,8 @@ Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
-  --codex-uuid UUID  Send PR activity to this Codex thread
+  -t, --tmux         Notify the current tmux pane of PR activity
+  --codex-uuid UUID  Send PR activity and merge readiness to this Codex thread
   -h, --help         Show this help
 `
 
@@ -76,7 +77,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		arg := args[i]
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]")
+				return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]")
 			}
 			tmux = true
 		} else if arg == "--codex-uuid" {
@@ -90,7 +91,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: watch-pr-events [--codex-uuid UUID] [PR number|GitHub PR URL]")
+		return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
@@ -131,11 +132,8 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			return errors.New("watch-pr-events: cannot resolve codex path")
 		}
 		strategies = append(strategies, notificationStrategy{
-			notify: func(ctx context.Context, event string, mergeReady bool) error {
-				if mergeReady {
-					return queueCodexEvent(ctx, codex, uuid, event)
-				}
-				return execCodexActivity(ctx, codex, uuid, event)
+			notify: func(ctx context.Context, event string, _ bool) error {
+				return queueCodexEvent(ctx, codex, uuid, event)
 			},
 			failure: "watch-pr-events: codex notification failed; will retry",
 			retry:   true,
@@ -222,10 +220,6 @@ func notifyStrategies(ctx context.Context, strategies []notificationStrategy, ev
 
 func queueCodexEvent(ctx context.Context, codex, uuid, event string) error {
 	return exec.CommandContext(ctx, codex, "queue", "--thread", uuid, "--message", event).Run()
-}
-
-func execCodexActivity(ctx context.Context, codex, uuid, event string) error {
-	return exec.CommandContext(ctx, codex, "exec", "resume", uuid, event).Run()
 }
 
 func configPath() (string, error) {
