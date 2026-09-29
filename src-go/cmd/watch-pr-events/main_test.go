@@ -132,6 +132,33 @@ func TestQueueCodexEvent(t *testing.T) {
 	}
 }
 
+func TestExecCodexActivity(t *testing.T) {
+	command := filepath.Join(t.TempDir(), "codex")
+	if err := os.WriteFile(command, []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$CODEX_ARGS\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	argsFile := filepath.Join(t.TempDir(), "args")
+	t.Setenv("CODEX_ARGS", argsFile)
+	uuid := "12345678-1234-1234-1234-123456789abc"
+	unexpected := filepath.Join(t.TempDir(), "unexpected")
+	events := []string{"New PR comment by \"$(touch " + unexpected + ")\"", "PR approved by \"reviewer\""}
+	prURL := "https://github.com/owner/repo/pull/42"
+	activity := strings.Join(events, "\n") + "\nPR: " + prURL
+	if err := execCodexActivity(context.Background(), command, uuid, activity); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(argsFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "exec\nresume\n" + uuid + "\n" + activity + "\n"; string(got) != want {
+		t.Errorf("codex args = %q, want %q", got, want)
+	}
+	if _, err := os.Stat(unexpected); !os.IsNotExist(err) {
+		t.Errorf("activity text executed as shell syntax: %v", err)
+	}
+}
+
 func TestValidPR(t *testing.T) {
 	for _, tc := range []struct {
 		value string
@@ -218,10 +245,22 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 func TestNotifyStrategiesContinuesAfterFailure(t *testing.T) {
 	var calls []string
 	strategies := []notificationStrategy{
-		{notify: func(context.Context, string) error { calls = append(calls, "failed"); return errors.New("failed") }, failure: "failed", retry: true},
-		{notify: func(context.Context, string) error { calls = append(calls, "next"); return nil }},
+		{notify: func(_ context.Context, event string, mergeReady bool) error {
+			if event != "comment\nreview\nPR: url" || mergeReady {
+				t.Errorf("first strategy got event %q, mergeReady %t", event, mergeReady)
+			}
+			calls = append(calls, "failed")
+			return errors.New("failed")
+		}, failure: "failed", retry: true},
+		{notify: func(_ context.Context, event string, mergeReady bool) error {
+			if event != "comment\nreview\nPR: url" || mergeReady {
+				t.Errorf("second strategy got event %q, mergeReady %t", event, mergeReady)
+			}
+			calls = append(calls, "next")
+			return nil
+		}},
 	}
-	if retry := notifyStrategies(context.Background(), strategies, "event"); !retry || strings.Join(calls, ",") != "failed,next" {
+	if retry := notifyStrategies(context.Background(), strategies, "comment\nreview\nPR: url", false); !retry || strings.Join(calls, ",") != "failed,next" {
 		t.Errorf("retry = %t, calls = %v", retry, calls)
 	}
 }

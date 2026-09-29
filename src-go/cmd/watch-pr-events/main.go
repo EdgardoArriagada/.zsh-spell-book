@@ -29,7 +29,7 @@ Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
-  --codex-uuid UUID  Queue each new event to this Codex thread
+  --codex-uuid UUID  Send PR activity to this Codex thread
   -h, --help         Show this help
 `
 
@@ -50,7 +50,7 @@ type activity struct {
 }
 
 type notificationStrategy struct {
-	notify  func(context.Context, string) error
+	notify  func(context.Context, string, bool) error
 	failure string
 	retry   bool
 }
@@ -101,7 +101,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		return err
 	}
 	strategies := []notificationStrategy{{
-		notify: func(_ context.Context, event string) error {
+		notify: func(_ context.Context, event string, _ bool) error {
 			_, err := fmt.Fprintln(out, event)
 			return err
 		},
@@ -117,7 +117,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			return errors.New("watch-pr-events: zsb_tmux_agent_notification not found")
 		}
 		strategies = append(strategies, notificationStrategy{
-			notify:  func(ctx context.Context, _ string) error { return tmuxNotification(ctx, notify, pane) },
+			notify:  func(ctx context.Context, _ string, _ bool) error { return tmuxNotification(ctx, notify, pane) },
 			failure: "watch-pr-events: notification failed",
 		})
 	}
@@ -131,8 +131,13 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			return errors.New("watch-pr-events: cannot resolve codex path")
 		}
 		strategies = append(strategies, notificationStrategy{
-			notify:  func(ctx context.Context, event string) error { return queueCodexEvent(ctx, codex, uuid, event) },
-			failure: "watch-pr-events: codex queue failed; will retry",
+			notify: func(ctx context.Context, event string, mergeReady bool) error {
+				if mergeReady {
+					return queueCodexEvent(ctx, codex, uuid, event)
+				}
+				return execCodexActivity(ctx, codex, uuid, event)
+			},
+			failure: "watch-pr-events: codex notification failed; will retry",
 			retry:   true,
 		})
 	}
@@ -169,13 +174,18 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 			initialized = true
 			fmt.Fprintf(out, "Watching %s for new PR activity (every minute).\n", prURL)
 		} else {
-			for _, item := range newActivity(seen, items, ignored) {
+			fresh := newActivity(seen, items, ignored)
+			var events []string
+			for _, item := range fresh {
 				actor := item.User.Login
 				if actor == "" {
 					actor = "someone"
 				}
-				event := fmt.Sprintf("[%s] %s by %q: %s", time.Now().Format("15:04:05"), label(item), actor, prURL)
-				if notifyStrategies(ctx, strategies, event) {
+				event := fmt.Sprintf("[%s] %s by %q", time.Now().Format("15:04:05"), label(item), actor)
+				events = append(events, event)
+			}
+			if len(events) > 0 && notifyStrategies(ctx, strategies, strings.Join(events, "\n")+"\nPR: "+prURL, false) {
+				for _, item := range fresh {
 					delete(seen, fmt.Sprintf("%s:%d:%s", item.Kind, item.ID, item.State))
 				}
 			}
@@ -186,7 +196,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		} else if err == nil {
 			if ready && !mergeReady {
 				event := fmt.Sprintf("PR ready to merge: %s", prURL)
-				if notifyStrategies(ctx, strategies, event) {
+				if notifyStrategies(ctx, strategies, event, true) {
 					ready = false
 				}
 			}
@@ -200,9 +210,9 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	}
 }
 
-func notifyStrategies(ctx context.Context, strategies []notificationStrategy, event string) (retry bool) {
+func notifyStrategies(ctx context.Context, strategies []notificationStrategy, event string, mergeReady bool) (retry bool) {
 	for _, strategy := range strategies {
-		if err := strategy.notify(ctx, event); err != nil {
+		if err := strategy.notify(ctx, event, mergeReady); err != nil {
 			fmt.Fprintln(os.Stderr, strategy.failure)
 			retry = retry || strategy.retry
 		}
@@ -212,6 +222,10 @@ func notifyStrategies(ctx context.Context, strategies []notificationStrategy, ev
 
 func queueCodexEvent(ctx context.Context, codex, uuid, event string) error {
 	return exec.CommandContext(ctx, codex, "queue", "--thread", uuid, "--message", event).Run()
+}
+
+func execCodexActivity(ctx context.Context, codex, uuid, event string) error {
+	return exec.CommandContext(ctx, codex, "exec", "resume", uuid, event).Run()
 }
 
 func configPath() (string, error) {
