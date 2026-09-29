@@ -13,8 +13,9 @@ co() {
       codex --model gpt-6-sol --dangerously-bypass-approvals-and-sandbox
       ;;
     1:--update-pr-title-and-description)
-      codex exec --dangerously-bypass-approvals-and-sandbox "Update this pr title and description.
+      codex exec --model gpt-6-luna --config model_reasoning_effort=max --dangerously-bypass-approvals-and-sandbox "Update this pr title and description.
 - Use gh cli
+- Ignore current title and description
 - Don't wait for confirmation, just do it"
       ;;
     1:--commit)
