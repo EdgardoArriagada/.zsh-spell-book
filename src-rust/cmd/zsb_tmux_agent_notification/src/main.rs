@@ -11,7 +11,7 @@ const FINISH_DELAY: Duration = Duration::from_secs(10);
 const FINISHED_SUFFIX: &str = " \u{f009a}"; // bell — agent finished / needs attention
 const WORKING_SUFFIX: &str = " \u{f051f}"; //  hourglass — agent still working
 const MANUAL_SUFFIX: &str = " \u{f0e47}"; //   flag — manually flagged
-const CODEX_SUFFIX: &str = " ";
+const CODEX_SUFFIX: &str = " ";
 
 const CLEAR: &str = "0";
 const FINISHED: &str = "1";
