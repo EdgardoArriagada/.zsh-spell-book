@@ -4,7 +4,11 @@ codex() {
   elif [[ -n ${TMUX-} && -n ${TMUX_PANE-} && ( ${1-} == '' || ${1-} == resume || ${1-} == fork || ${1-} == -* ) ]]; then
     zsb_charm_codex_bind "$TMUX_PANE" --wait >/dev/null 2>&1 &!
   fi
-  command codex "$@"
+  {
+    command codex "$@"
+  } always {
+    [[ -z ${TMUX_PANE-} ]] || tmux set-option -w -t "$TMUX_PANE" automatic-rename on
+  }
 }
 
 co() {
