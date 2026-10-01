@@ -22,17 +22,26 @@ import (
 const interval = 3 * time.Minute
 
 const help = `Usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]
+       watch-pr-events -h|--help
 
 Watch a pull request for check results and new comments,
-reviews, and merge readiness every 3 minutes.
-With no argument, watch the PR for the current branch. Press Ctrl+C to stop.
-Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
-(one username per line; blank lines and # comments are allowed).
+reviews, and merge readiness immediately and every 3 minutes.
+Existing comments and reviews form the initial baseline; only later activity is reported.
+Merge readiness requires an open PR, CLEAN merge status, and passed checks on the same head.
+With no PR argument, watch the PR for the current branch in the current repository.
+PR numbers select from the current repository. URLs must have the form
+https://github.com/OWNER/REPO/pull/NUMBER, without a query, fragment, or trailing slash.
+Requires authenticated gh. Events always print to the console. Press Ctrl+C to stop.
+Place optional watch-pr-events.conf beside main.go to ignore comments and reviews
+by GitHub username (case-insensitive; one per line; blank lines and # comment lines
+are allowed). Check results and merge readiness are not filtered by username.
 
 Options:
-  -t, --tmux           Notify the current tmux pane of PR activity
-  --codex-thread UUID  Send PR events to this Codex thread
-  -h, --help           Show this help
+  -t, --tmux           Also notify the current tmux pane of all PR events
+                      Requires a tmux pane and zsb_tmux_agent_notification on PATH
+  --codex-thread UUID  Also queue PR events for this Codex thread; retry failed queues
+                      Requires codex on PATH with the queue command
+  -h, --help           Show this help (must be used alone)
 `
 
 var (
