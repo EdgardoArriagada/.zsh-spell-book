@@ -33,7 +33,7 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "--codex-uuid UUID") || !strings.Contains(got, "-h, --help") {
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") {
 			t.Errorf("run(%q) output = %q, want usage and supported options", flag, got)
 		}
 	}
@@ -114,9 +114,9 @@ func TestTmuxNotification(t *testing.T) {
 	}
 }
 
-func TestCodexUUIDFlag(t *testing.T) {
-	for _, args := range [][]string{{"--codex-uuid"}, {"--codex-uuid", "bad"}, {"--codex-uuid", "12345678-1234-1234-1234-123456789abc", "--codex-uuid", "12345678-1234-1234-1234-123456789abc"}} {
-		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "--codex-uuid requires a UUID") {
+func TestCodexThreadFlag(t *testing.T) {
+	for _, args := range [][]string{{"--codex-thread"}, {"--codex-thread", "bad"}, {"--codex-thread", "12345678-1234-1234-1234-123456789abc", "--codex-thread", "12345678-1234-1234-1234-123456789abc"}} {
+		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "--codex-thread requires a UUID") {
 			t.Errorf("run(%q) = %v, want UUID flag error", args, err)
 		}
 	}
@@ -211,7 +211,7 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	defer cancel()
 	uuid := "12345678-1234-1234-1234-123456789abc"
 	var out bytes.Buffer
-	if err := run(ctx, []string{"--tmux", "--codex-uuid", uuid, "https://github.com/owner/repo/pull/42"}, &out); err != nil {
+	if err := run(ctx, []string{"--tmux", "--codex-thread", uuid, "https://github.com/owner/repo/pull/42"}, &out); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {

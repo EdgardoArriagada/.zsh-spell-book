@@ -21,7 +21,7 @@ import (
 
 const interval = 3 * time.Minute
 
-const help = `Usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]
 
 Watch a pull request for check results and new comments,
 reviews, and merge readiness every 3 minutes.
@@ -30,9 +30,9 @@ Place watch-pr-events.conf beside main.go to ignore activity by GitHub username
 (one username per line; blank lines and # comments are allowed).
 
 Options:
-  -t, --tmux         Notify the current tmux pane of PR activity
-  --codex-uuid UUID  Send PR events to this Codex thread
-  -h, --help         Show this help
+  -t, --tmux           Notify the current tmux pane of PR activity
+  --codex-thread UUID  Send PR events to this Codex thread
+  -h, --help           Show this help
 `
 
 var (
@@ -83,12 +83,12 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		arg := args[i]
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]")
+				return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]")
 			}
 			tmux = true
-		} else if arg == "--codex-uuid" {
+		} else if arg == "--codex-thread" {
 			if uuid != "" || i+1 >= len(args) || !codexID.MatchString(args[i+1]) {
-				return errors.New("watch-pr-events: --codex-uuid requires a UUID")
+				return errors.New("watch-pr-events: --codex-thread requires a UUID")
 			}
 			i++
 			uuid = args[i]
@@ -97,7 +97,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-uuid UUID] [PR number|GitHub PR URL]")
+		return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
