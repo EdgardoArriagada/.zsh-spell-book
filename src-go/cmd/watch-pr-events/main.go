@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -21,12 +22,12 @@ import (
 
 const interval = 3 * time.Minute
 
-const help = `Usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]
        watch-pr-events -h|--help
 
 Watch a pull request for check results and new comments,
 reviews, and merge readiness immediately and every 3 minutes.
-Existing comments and reviews form the initial baseline; only later activity is reported.
+Existing comments and reviews form the notification baseline; logs include initial history.
 Merge readiness requires an open PR, CLEAN merge status, and passed checks on the same head.
 With no PR argument, watch the PR for the current branch in the current repository.
 PR numbers select from the current repository. URLs must have the form
@@ -37,6 +38,10 @@ by GitHub username (case-insensitive; one per line; blank lines and # comment li
 are allowed). Check results and merge readiness are not filtered by username.
 
 Options:
+  -l, --logs           Append the PR description and full conversation from all users
+                      to ~/temp/watch-pr-events/OWNER/REPO/NUMBER.log (JSON Lines)
+                      Includes existing history, new messages, and observed edits;
+                      preserves old versions and resumes without duplicating history
   -t, --tmux           Also notify the current tmux pane of all PR events
                       Requires a tmux pane and zsb_tmux_agent_notification on PATH
   --codex-thread UUID  Also queue PR events for this Codex thread; retry failed queues
@@ -58,7 +63,21 @@ type activity struct {
 	User  struct {
 		Login string `json:"login"`
 	} `json:"user"`
-	Kind string `json:"-"`
+	Kind                string `json:"kind,omitempty"`
+	Title               string `json:"title,omitempty"`
+	Body                string `json:"body"`
+	HTMLURL             string `json:"html_url,omitempty"`
+	CreatedAt           string `json:"created_at,omitempty"`
+	UpdatedAt           string `json:"updated_at,omitempty"`
+	SubmittedAt         string `json:"submitted_at,omitempty"`
+	Path                string `json:"path,omitempty"`
+	Line                int    `json:"line,omitempty"`
+	OriginalLine        int    `json:"original_line,omitempty"`
+	StartLine           int    `json:"start_line,omitempty"`
+	Side                string `json:"side,omitempty"`
+	DiffHunk            string `json:"diff_hunk,omitempty"`
+	InReplyToID         int64  `json:"in_reply_to_id,omitempty"`
+	PullRequestReviewID int64  `json:"pull_request_review_id,omitempty"`
 }
 
 type check struct {
@@ -66,9 +85,10 @@ type check struct {
 }
 
 type notificationStrategy struct {
-	notify  func(context.Context, string, bool) error
-	failure string
-	retry   bool
+	notify       func(context.Context, string, bool) error
+	conversation func(context.Context, []activity) error
+	failure      string
+	retry        bool
 }
 
 func main() {
@@ -87,14 +107,20 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 	}
 	var selection []string
 	tmux := false
+	logs := false
 	uuid := ""
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 		if arg == "-t" || arg == "--tmux" {
 			if tmux {
-				return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]")
+				return errors.New("usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]")
 			}
 			tmux = true
+		} else if arg == "-l" || arg == "--logs" {
+			if logs {
+				return errors.New("watch-pr-events: --logs may only be specified once")
+			}
+			logs = true
 		} else if arg == "--codex-thread" {
 			if uuid != "" || i+1 >= len(args) || !codexID.MatchString(args[i+1]) {
 				return errors.New("watch-pr-events: --codex-thread requires a UUID")
@@ -106,7 +132,7 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 	}
 	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [PR number|GitHub PR URL]")
+		return errors.New("usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]")
 	}
 	path, err := configPath()
 	if err != nil {
@@ -169,6 +195,14 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 		return err
 	}
+	if logs {
+		strategy, file, err := logStrategy(gh, endpoint, prURL)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		strategies = append(strategies, strategy)
+	}
 
 	seen := make(map[string]bool)
 	initialized := false
@@ -199,6 +233,13 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		items, err := fetchActivity(ctx, gh, endpoint)
 		if ctx.Err() != nil {
 			return nil
+		}
+		if err == nil {
+			for _, strategy := range strategies {
+				if strategy.conversation != nil && strategy.conversation(ctx, items) != nil {
+					fmt.Fprintln(os.Stderr, strategy.failure)
+				}
+			}
 		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -247,12 +288,123 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 
 func notifyStrategies(ctx context.Context, strategies []notificationStrategy, event string, mergeReady bool) (retry bool) {
 	for _, strategy := range strategies {
+		if strategy.notify == nil {
+			continue
+		}
 		if err := strategy.notify(ctx, event, mergeReady); err != nil {
 			fmt.Fprintln(os.Stderr, strategy.failure)
 			retry = retry || strategy.retry
 		}
 	}
 	return retry
+}
+
+type conversationEntry struct {
+	ObservedAt string   `json:"observed_at"`
+	Change     string   `json:"change"`
+	Activity   activity `json:"activity"`
+}
+
+func logStrategy(gh, endpoint, prURL string) (notificationStrategy, *os.File, error) {
+	failure := errors.New("watch-pr-events: cannot open conversation log")
+	_, endpoint, err := parsePRURL(prURL)
+	if err != nil {
+		return notificationStrategy{}, nil, err
+	}
+	parts := strings.Split(endpoint, "/")
+	if parts[1] == "." || parts[1] == ".." || parts[2] == "." || parts[2] == ".." {
+		return notificationStrategy{}, nil, failure
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return notificationStrategy{}, nil, failure
+	}
+	base := filepath.Join(home, "temp", "watch-pr-events")
+	if err := os.MkdirAll(base, 0700); err != nil {
+		return notificationStrategy{}, nil, failure
+	}
+	root, err := os.OpenRoot(base)
+	if err != nil {
+		return notificationStrategy{}, nil, failure
+	}
+	defer root.Close()
+	dir := filepath.Join(parts[1], parts[2])
+	if err := root.MkdirAll(dir, 0700); err != nil {
+		return notificationStrategy{}, nil, failure
+	}
+	file, err := root.OpenFile(filepath.Join(dir, parts[4]+".log"), os.O_CREATE|os.O_RDWR|os.O_APPEND, 0600)
+	if err != nil {
+		return notificationStrategy{}, nil, failure
+	}
+	if err := file.Chmod(0600); err != nil {
+		file.Close()
+		return notificationStrategy{}, nil, failure
+	}
+	// ponytail: one watcher per PR; add file locking if concurrent writers are needed.
+	latest := make(map[string]activity)
+	key := func(item activity) string { return fmt.Sprintf("%s:%d", item.Kind, item.ID) }
+	decoder := json.NewDecoder(file)
+	for {
+		var entry conversationEntry
+		if err := decoder.Decode(&entry); err != nil {
+			if err == io.EOF {
+				break
+			}
+			file.Close()
+			return notificationStrategy{}, nil, errors.New("watch-pr-events: invalid conversation log; preserve or repair it before retrying")
+		}
+		latest[key(entry.Activity)] = entry.Activity
+	}
+	return notificationStrategy{
+		failure: "watch-pr-events: conversation logging failed; will retry",
+		conversation: func(ctx context.Context, items []activity) error {
+			output, err := exec.CommandContext(ctx, gh, "api", endpoint).Output()
+			if err != nil {
+				return errors.New("could not fetch PR description")
+			}
+			var description activity
+			if err := json.Unmarshal(output, &description); err != nil || description.ID == 0 {
+				return errors.New("invalid PR description")
+			}
+			description.Kind = "description"
+			conversation := append([]activity{description}, items...)
+			sort.SliceStable(conversation, func(i, j int) bool {
+				timestamp := func(item activity) string {
+					if item.CreatedAt != "" {
+						return item.CreatedAt
+					}
+					return item.SubmittedAt
+				}
+				return timestamp(conversation[i]) < timestamp(conversation[j])
+			})
+			for _, item := range conversation {
+				if item.ID == 0 || (item.Kind == "review" && item.State == "PENDING") {
+					continue
+				}
+				previous, exists := latest[key(item)]
+				if item.Kind == "description" {
+					// PR updated_at also changes when comments arrive.
+					previous.UpdatedAt = item.UpdatedAt
+				}
+				if exists && previous == item {
+					continue
+				}
+				change := "new"
+				if exists {
+					change = "edited"
+				}
+				entry := conversationEntry{time.Now().UTC().Format(time.RFC3339Nano), change, item}
+				if err := json.NewEncoder(file).Encode(entry); err != nil {
+					return err
+				}
+				if err := file.Sync(); err != nil {
+					return err
+				}
+				latest[key(item)] = item
+			}
+			return nil
+		},
+	}, file, nil
 }
 
 func queueCodexEvent(ctx context.Context, codex, uuid, event string) error {

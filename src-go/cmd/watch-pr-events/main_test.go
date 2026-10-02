@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -33,7 +34,7 @@ func TestHelp(t *testing.T) {
 		if err := run(context.Background(), []string{flag}, &out); err != nil {
 			t.Fatalf("run(%q) = %v", flag, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") {
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "-l, --logs") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") {
 			t.Errorf("run(%q) output = %q, want usage and supported options", flag, got)
 		}
 	}
@@ -307,5 +308,159 @@ func TestNotifyStrategiesContinuesAfterFailure(t *testing.T) {
 	}
 	if retry := notifyStrategies(context.Background(), strategies, "comment\nreview\nPR: url", false); !retry || strings.Join(calls, ",") != "failed,next" {
 		t.Errorf("retry = %t, calls = %v", retry, calls)
+	}
+}
+
+func TestConversationLog(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	gh := filepath.Join(t.TempDir(), "gh")
+	script := "#!/bin/sh\nif [ \"$2\" = repos/owner/repo/pulls/42 ]; then printf '%s\\n' \"$PR_DATA\"; else printf '%s\\n' \"$COMMENT_DATA\"; fi\n"
+	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PR_DATA", `{"id":42,"title":"PR title","body":"Description","user":{"login":"author"},"created_at":"2026-01-01T00:00:00Z"}`)
+	t.Setenv("COMMENT_DATA", `[[{"id":7,"body":"First line\nSecond line $(touch nope)","user":{"login":"ignored"},"created_at":"2026-01-02T00:00:00Z","path":"main.go","line":12,"in_reply_to_id":3,"pull_request_review_id":9,"diff_hunk":"@@ code"}]]`)
+	ctx := context.Background()
+	endpoint := "repos/owner/repo/pulls/42"
+	items, err := fetchActivity(ctx, gh, endpoint)
+	if err != nil {
+		t.Fatal(err)
+	}
+	strategy, file, err := logStrategy(gh, endpoint, "https://github.com/owner/repo/pull/42")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	if got := newActivity(make(map[string]bool), items, map[string]bool{"ignored": true}); len(got) != 0 {
+		t.Fatal("notification exclusions failed")
+	}
+	if err := strategy.conversation(ctx, items); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(home, "temp", "watch-pr-events", "owner", "repo", "42.log")
+	initial, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := bytes.Count(initial, []byte("\n")); got != 4 {
+		t.Fatalf("initial records = %d, want description and all three activity kinds", got)
+	}
+	var entry conversationEntry
+	decoder := json.NewDecoder(bytes.NewReader(initial))
+	if err := decoder.Decode(&entry); err != nil || entry.Activity.Kind != "description" || entry.Activity.Title != "PR title" {
+		t.Fatalf("description = %+v, error = %v", entry, err)
+	}
+	for range 3 {
+		if err := decoder.Decode(&entry); err != nil || entry.Activity.Body != "First line\nSecond line $(touch nope)" || entry.Activity.InReplyToID != 3 || entry.Activity.Path != "main.go" || entry.Activity.Line != 12 || entry.Activity.DiffHunk != "@@ code" {
+			t.Fatalf("conversation content = %+v, error = %v", entry, err)
+		}
+	}
+	if err := strategy.conversation(ctx, items); err != nil {
+		t.Fatal(err)
+	}
+	unchanged, _ := os.ReadFile(path)
+	if !bytes.Equal(initial, unchanged) {
+		t.Fatal("unchanged poll duplicated history")
+	}
+	t.Setenv("PR_DATA", `{"id":42,"title":"PR title","body":"Description","user":{"login":"author"},"created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-03T00:00:00Z"}`)
+	if err := strategy.conversation(ctx, items); err != nil {
+		t.Fatal(err)
+	}
+	unchanged, _ = os.ReadFile(path)
+	if !bytes.Equal(initial, unchanged) {
+		t.Fatal("PR metadata change duplicated description")
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	strategy, resumed, err := logStrategy(gh, endpoint, "https://github.com/owner/repo/pull/42")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resumed.Close()
+	if err := strategy.conversation(ctx, items); err != nil {
+		t.Fatal(err)
+	}
+	unchanged, _ = os.ReadFile(path)
+	if !bytes.Equal(initial, unchanged) {
+		t.Fatal("restart duplicated history")
+	}
+	items[0].Body = "Edited body"
+	if err := strategy.conversation(ctx, items); err != nil {
+		t.Fatal(err)
+	}
+	edited, _ := os.ReadFile(path)
+	if !bytes.HasPrefix(edited, initial) || bytes.Count(edited, []byte("\n")) != 5 || !bytes.Contains(edited[len(initial):], []byte(`"change":"edited"`)) {
+		t.Fatalf("edit did not preserve and append history: %s", edited)
+	}
+	if err := strategy.conversation(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	afterDeletion, _ := os.ReadFile(path)
+	if !bytes.Equal(edited, afterDeletion) {
+		t.Fatal("deletion changed stored history")
+	}
+	t.Setenv("PR_DATA", `{"id":42,"title":"Edited title","body":"Edited description","user":{"login":"author"},"created_at":"2026-01-01T00:00:00Z"}`)
+	if err := strategy.conversation(ctx, nil); err != nil {
+		t.Fatal(err)
+	}
+	descriptionEdit, _ := os.ReadFile(path)
+	if !bytes.HasPrefix(descriptionEdit, edited) || bytes.Count(descriptionEdit, []byte("\n")) != 6 || !bytes.Contains(descriptionEdit[len(edited):], []byte("Edited description")) {
+		t.Fatal("PR description edit not appended")
+	}
+	info, err := os.Stat(path)
+	if err != nil || info.Mode().Perm() != 0600 {
+		t.Fatalf("log must be private: %v, %v", info, err)
+	}
+}
+
+func TestLogsFlags(t *testing.T) {
+	dir := t.TempDir()
+	gh := filepath.Join(dir, "gh")
+	script := strings.Replace(ghReadyScript, "  printf '[[]]\\n'", "  if [ \"$2\" = repos/owner/repo/pulls/42 ]; then printf '{\"id\":42,\"body\":\"Description\"}\\n'; else printf '[[]]\\n'; fi", 1)
+	if err := os.WriteFile(gh, []byte(script), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	t.Setenv("CHECK_BUCKET", "pass")
+	for _, flag := range []string{"-l", "--logs"} {
+		t.Run(flag, func(t *testing.T) {
+			home := t.TempDir()
+			t.Setenv("HOME", home)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			var out bytes.Buffer
+			if err := run(ctx, []string{flag, "42"}, &out); err != nil {
+				t.Fatal(err)
+			}
+			data, err := os.ReadFile(filepath.Join(home, "temp", "watch-pr-events", "owner", "repo", "42.log"))
+			if err != nil || !bytes.Contains(data, []byte("Description")) || !strings.Contains(out.String(), "PR checks passed:") || !strings.Contains(out.String(), "PR ready to merge:") {
+				t.Fatalf("log = %s, error = %v, console = %s", data, err, out.String())
+			}
+		})
+	}
+	if err := run(context.Background(), []string{"-l", "--logs"}, &bytes.Buffer{}); err == nil {
+		t.Fatal("duplicate logging flags accepted")
+	}
+}
+
+func TestLogRejectsPathEscape(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	for _, url := range []string{"https://github.com/../repo/pull/42", "https://github.com/owner/../pull/42"} {
+		if _, _, err := logStrategy("gh", "unused", url); err == nil {
+			t.Fatalf("accepted path escape: %s", url)
+		}
+	}
+	base := filepath.Join(home, "temp", "watch-pr-events")
+	if err := os.MkdirAll(base, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(t.TempDir(), filepath.Join(base, "owner")); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := logStrategy("gh", "unused", "https://github.com/owner/repo/pull/42"); err == nil {
+		t.Fatal("accepted symlink escape")
 	}
 }
