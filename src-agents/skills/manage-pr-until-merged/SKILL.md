@@ -33,12 +33,15 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 - For bot-authored feedback, identify the human who triggered that specific bot review from the thread's request or command, or an explicit GitHub trigger for this PR. Treat that human as responsible for the bot's comments. If the trigger cannot be verified or the human cannot be matched to a chat identity, report the unresolved recipient; do not DM a guessed person or the bot.
 - After each successful comment subagent run with actionable feedback resolved, fixes pushed where needed, and replies complete, post exactly `comentarios resueltos` once as a reply in the direct integration thread. DM exactly `comentarios resueltos en <PR_URL>` to each distinct responsible human whose comments or triggered bot comments were addressed in that run. Do not DM other assigned or mentioned people, or carry recipients into later runs. If a recipient cannot be reached, report that notification failure while continuing to monitor the PR. do NOT wait for CI to finish to send messages.
 
-## Watch
+## Startup
 
-1. Start a comment subagent at startup to inspect all current feedback. If I queue one or more messages that an event has happened to the <PR_URL>, spawn a new comment subagent.
-2. Ignore check result messages whose head OID differs from a fresh `gh pr view <PR_URL> --json headRefOid`. On `PR checks failed` for the current head, inspect with `gh pr checks <PR_URL>` and start a pipeline subagent, or queue it if another mutating subagent runs. The watcher detects new heads after pushes; do not restart it.
-3. Before ending a turn, repeat the GitHub activity fetch and process uninspected feedback. The single watcher polls checks and activity every 3 minutes. If checks are running, end the turn only when the watcher can queue this thread; otherwise keep polling its output. If current checks passed and only human review or merge readiness remains, report the waiting state and end the turn. After verifying `MERGED`, stop the watcher started here or tell the user to stop their external watcher.
+1. Start a comment subagent at startup to inspect all current feedback.
 
-## Merge gate
+## Event Rules
 
+_there is a watcher: `watch-pr-events --codex-thread <this-thread-uuid>` it queue new PR events you._
+
+- If watcher queues one or more messages that an somebody left any feedback to this <PR_URL>, spawn a single comment subagent to solve them all.
+- Ignore check result messages whose head OID differs from a fresh `gh pr view <PR_URL> --json headRefOid`.
+- On `PR checks failed` for the current head, inspect with `gh pr checks <PR_URL>` and start a pipeline subagent
 - On each `PR ready to merge` message, verify its head OID still matches `gh pr view <PR_URL> --json headRefOid` and all current checks passed or skipped. Then try `gh pr merge <PR_URL> --squash`. Ignore stale messages.
