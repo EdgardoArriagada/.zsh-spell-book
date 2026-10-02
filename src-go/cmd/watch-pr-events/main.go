@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -19,14 +20,14 @@ import (
 
 const interval = 3 * time.Minute
 
-const help = `Usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]
+const help = `Usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [-p|--pull-request PR]
        watch-pr-events -h|--help
 
 Watch a pull request for check results and new comments,
 reviews, and merge readiness immediately and every 3 minutes.
 Existing comments and reviews form the notification baseline; logs include initial history.
 Merge readiness requires an open PR, CLEAN merge status, and passed checks on the same head.
-With no PR argument, watch the PR for the current branch in the current repository.
+With no --pull-request flag, watch the PR for the current branch in the current repository.
 PR numbers select from the current repository. URLs must have the form
 https://github.com/OWNER/REPO/pull/NUMBER, without a query, fragment, or trailing slash.
 Requires authenticated gh. Events always print to the console. Press Ctrl+C to stop.
@@ -35,6 +36,7 @@ by GitHub username (case-insensitive; one per line; blank lines and # comment li
 are allowed). Check results and merge readiness are not filtered by username.
 
 Options:
+  -p, --pull-request PR  Select a PR number or GitHub PR URL
   -l, --logs           Append the PR description and full conversation from all users
                       to ~/temp/watch-pr-events/OWNER/REPO/NUMBER.log (JSON Lines)
                       Includes existing history, new messages, and observed edits;
@@ -43,7 +45,7 @@ Options:
                       Requires a tmux pane and zsb_tmux_agent_notification on PATH
   --codex-thread UUID  Also queue PR events for this Codex thread; retry failed queues
                       Requires codex on PATH with the queue command
-  -h, --help           Show this help (must be used alone)
+  -h, --help           Show this help
 `
 
 var (
@@ -68,38 +70,42 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, out io.Writer) error {
-	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
-		_, err := fmt.Fprint(out, help)
+	var tmux, logs bool
+	var uuid, pullRequest string
+	flags := flag.NewFlagSet("watch-pr-events", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	flags.BoolVar(&tmux, "t", false, "Also notify the current tmux pane")
+	flags.BoolVar(&tmux, "tmux", false, "Also notify the current tmux pane")
+	flags.BoolVar(&logs, "l", false, "Append the PR conversation to a log")
+	flags.BoolVar(&logs, "logs", false, "Append the PR conversation to a log")
+	flags.StringVar(&uuid, "codex-thread", "", "Queue PR events for a Codex thread UUID")
+	flags.StringVar(&pullRequest, "p", "", "PR number or GitHub PR URL")
+	flags.StringVar(&pullRequest, "pull-request", "", "PR number or GitHub PR URL")
+	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			_, err := fmt.Fprint(out, help)
+			return err
+		}
 		return err
 	}
 	var selection []string
-	tmux := false
-	logs := false
-	uuid := ""
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		if arg == "-t" || arg == "--tmux" {
-			if tmux {
-				return errors.New("usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]")
-			}
-			tmux = true
-		} else if arg == "-l" || arg == "--logs" {
-			if logs {
-				return errors.New("watch-pr-events: --logs may only be specified once")
-			}
-			logs = true
-		} else if arg == "--codex-thread" {
-			if uuid != "" || i+1 >= len(args) || !codexID.MatchString(args[i+1]) {
-				return errors.New("watch-pr-events: --codex-thread requires a UUID")
-			}
-			i++
-			uuid = args[i]
-		} else {
-			selection = append(selection, arg)
+	threadSet := false
+	flags.Visit(func(f *flag.Flag) {
+		if f.Name == "p" || f.Name == "pull-request" {
+			selection = []string{pullRequest}
 		}
+		if f.Name == "codex-thread" {
+			threadSet = true
+		}
+	})
+	if flags.NArg() != 0 {
+		return errors.New("watch-pr-events: positional arguments are not supported; use -p or --pull-request")
 	}
-	if len(selection) > 1 || (len(selection) == 1 && !validPR(selection[0])) {
-		return errors.New("usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [PR number|GitHub PR URL]")
+	if len(selection) != 0 && !validPR(pullRequest) {
+		return errors.New("watch-pr-events: --pull-request requires a PR number or GitHub PR URL")
+	}
+	if threadSet && !codexID.MatchString(uuid) {
+		return errors.New("watch-pr-events: --codex-thread requires a UUID")
 	}
 	path, err := configPath()
 	if err != nil {

@@ -29,13 +29,13 @@ fi
 
 func TestHelp(t *testing.T) {
 	t.Setenv("PATH", "")
-	for _, flag := range []string{"-h", "--help"} {
+	for _, args := range [][]string{{"-h"}, {"--help"}, {"-t", "--help"}, {"--pull-request", "bad", "-h"}, {"--help", "--logs"}} {
 		var out bytes.Buffer
-		if err := run(context.Background(), []string{flag}, &out); err != nil {
-			t.Fatalf("run(%q) = %v", flag, err)
+		if err := run(context.Background(), args, &out); err != nil {
+			t.Fatalf("run(%q) = %v", args, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "-l, --logs") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") {
-			t.Errorf("run(%q) output = %q, want usage and supported options", flag, got)
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "-l, --logs") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") || !strings.Contains(got, "-p, --pull-request PR") {
+			t.Errorf("run(%q) output = %q, want usage and supported options", args, got)
 		}
 	}
 }
@@ -89,7 +89,7 @@ func TestMissingIgnoreConfig(t *testing.T) {
 
 func TestTmuxFlag(t *testing.T) {
 	t.Setenv("TMUX_PANE", "")
-	for _, args := range [][]string{{"-t"}, {"--tmux"}, {"42", "-t"}} {
+	for _, args := range [][]string{{"-t"}, {"--tmux"}, {"-p", "42", "-t"}, {"-t", "--tmux"}} {
 		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "inside a tmux pane") {
 			t.Errorf("run(%q) = %v, want tmux pane error", args, err)
 		}
@@ -116,9 +116,60 @@ func TestTmuxNotification(t *testing.T) {
 }
 
 func TestCodexThreadFlag(t *testing.T) {
-	for _, args := range [][]string{{"--codex-thread"}, {"--codex-thread", "bad"}, {"--codex-thread", "12345678-1234-1234-1234-123456789abc", "--codex-thread", "12345678-1234-1234-1234-123456789abc"}} {
+	for _, args := range [][]string{{"--codex-thread", "bad"}, {"--codex-thread="}, {"--codex-thread", "12345678-1234-1234-1234-123456789abc", "--codex-thread", "bad"}} {
 		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "--codex-thread requires a UUID") {
 			t.Errorf("run(%q) = %v, want UUID flag error", args, err)
+		}
+	}
+}
+
+func TestArgumentErrors(t *testing.T) {
+	t.Setenv("PATH", "")
+	for _, args := range [][]string{
+		{"42"}, {"https://github.com/owner/repo/pull/42"},
+		{"-p", "42", "extra"}, {"--unknown"},
+		{"-p"}, {"--pull-request"}, {"--codex-thread"},
+		{"-p="}, {"--pull-request", "bad"}, {"-p", "0"},
+		{"-p=--repo=other/repo"},
+		{"-p", "https://github.com.evil.test/owner/repo/pull/42"},
+		{"-p", "https://github.com/owner/repo/pull/42?token=secret"},
+	} {
+		if err := run(context.Background(), args, &bytes.Buffer{}); err == nil || strings.Contains(err.Error(), "gh not found") {
+			t.Errorf("run(%q) = %v, want argument error before looking up gh", args, err)
+		}
+	}
+	if err := run(context.Background(), []string{"--codex-thread", "bad", "--codex-thread=12345678-1234-1234-1234-123456789abc"}, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "codex not found") {
+		t.Errorf("duplicate thread flags = %v, want final UUID accepted", err)
+	}
+}
+
+func TestPullRequestFlags(t *testing.T) {
+	dir := t.TempDir()
+	argsFile := filepath.Join(dir, "args")
+	if err := os.WriteFile(filepath.Join(dir, "gh"), []byte("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$GH_ARGS\"\nexit 1\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	t.Setenv("GH_ARGS", argsFile)
+	for _, tc := range []struct {
+		args []string
+		want string
+	}{
+		{nil, ""},
+		{[]string{"-p", "42"}, "42\n"},
+		{[]string{"--pull-request", "https://github.com/owner/repo/pull/42"}, "https://github.com/owner/repo/pull/42\n"},
+		{[]string{"--pull-request=42"}, "42\n"},
+		{[]string{"-p=https://github.com/owner/repo/pull/42"}, "https://github.com/owner/repo/pull/42\n"},
+		{[]string{"-p", "bad", "--pull-request", "43"}, "43\n"},
+		{[]string{"--pull-request", "42", "-p", "43"}, "43\n"},
+		{[]string{"-p", "42", "-t", "--tmux=false", "-l", "--logs=false"}, "42\n"},
+	} {
+		if err := run(context.Background(), tc.args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "cannot find PR") {
+			t.Fatalf("run(%q) = %v, want gh failure", tc.args, err)
+		}
+		got, err := os.ReadFile(argsFile)
+		if err != nil || string(got) != "pr\nview\n--json\nurl\n"+tc.want {
+			t.Errorf("run(%q) gh args = %q, error = %v", tc.args, got, err)
 		}
 	}
 }
@@ -176,7 +227,7 @@ func TestRunReportsMergeReady(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	var out bytes.Buffer
-	if err := run(ctx, []string{"https://github.com/owner/repo/pull/42"}, &out); err != nil {
+	if err := run(ctx, []string{"--pull-request", "https://github.com/owner/repo/pull/42"}, &out); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
@@ -212,7 +263,7 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 	defer cancel()
 	uuid := "12345678-1234-1234-1234-123456789abc"
 	var out bytes.Buffer
-	if err := run(ctx, []string{"--tmux", "--codex-thread", uuid, "https://github.com/owner/repo/pull/42"}, &out); err != nil {
+	if err := run(ctx, []string{"--tmux", "--codex-thread", uuid, "-p", "https://github.com/owner/repo/pull/42"}, &out); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(out.String(), "PR ready to merge: https://github.com/owner/repo/pull/42") {
@@ -246,7 +297,7 @@ func TestRunReportsFailedChecksWithoutMergeReady(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	var out bytes.Buffer
-	if err := run(ctx, []string{"https://github.com/owner/repo/pull/42"}, &out); err != nil {
+	if err := run(ctx, []string{"--pull-request", "https://github.com/owner/repo/pull/42"}, &out); err != nil {
 		t.Fatal(err)
 	}
 	if got := out.String(); !strings.Contains(got, "PR checks failed: https://github.com/owner/repo/pull/42 (head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)") || strings.Contains(got, "PR ready to merge") {
@@ -424,14 +475,14 @@ func TestLogsFlags(t *testing.T) {
 	}
 	t.Setenv("PATH", dir)
 	t.Setenv("CHECK_BUCKET", "pass")
-	for _, flag := range []string{"-l", "--logs"} {
-		t.Run(flag, func(t *testing.T) {
+	for _, args := range [][]string{{"-l"}, {"--logs"}, {"-l", "--logs"}} {
+		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			home := t.TempDir()
 			t.Setenv("HOME", home)
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			var out bytes.Buffer
-			if err := run(ctx, []string{flag, "42"}, &out); err != nil {
+			if err := run(ctx, append(args, "-p", "42"), &out); err != nil {
 				t.Fatal(err)
 			}
 			data, err := os.ReadFile(filepath.Join(home, "temp", "watch-pr-events", "owner", "repo", "42.log"))
@@ -439,9 +490,6 @@ func TestLogsFlags(t *testing.T) {
 				t.Fatalf("log = %s, error = %v, console = %s", data, err, out.String())
 			}
 		})
-	}
-	if err := run(context.Background(), []string{"-l", "--logs"}, &bytes.Buffer{}); err == nil {
-		t.Fatal("duplicate logging flags accepted")
 	}
 }
 
