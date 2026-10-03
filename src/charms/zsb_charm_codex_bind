@@ -3,7 +3,11 @@ set -euo pipefail
 
 local paneId=${1:?paneId required}
 local sessionId=''
-if [[ ${2-} == --wait ]]; then
+local -a wait quiet
+shift
+zparseopts -D -F -- -wait=wait -quiet=quiet || exit 2
+(( $# == 0 )) || { print -u2 -r -- "Unexpected argument: $1"; exit 2; }
+if (( $#wait )); then
   for (( i=0; i<100; i++ )); do
     if [[ $(tmux display-message -pt "$paneId" '#{pane_current_command}') == codex ]]; then
       sessionId=$(zsb_charm_codex_session_id "$paneId") && break
@@ -15,6 +19,8 @@ else
   sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
 fi
 
-if zsb_tmux_agent_notification --bind-codex "$sessionId" "$paneId"
-  then tmux display-message 'Codex session bound!'
+if zsb_tmux_agent_notification --bind-codex "$sessionId" "$paneId"; then
+  if (( ! $#quiet )); then
+    tmux display-message 'Codex session bound!'
+  fi
 fi

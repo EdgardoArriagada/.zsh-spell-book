@@ -8,4 +8,4 @@ sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
 
 newPane=$(tmux new-window -P -F '#{pane_id}' -n 'codex ' -c "$workingDir" "codex fork $sessionId")
 [[ $newPane == %<-> ]] || exit 1
-tmux run-shell -b "zsb_charm_codex_bind $newPane --wait"
+tmux run-shell -b "zsb_charm_codex_bind $newPane --wait --quiet"
