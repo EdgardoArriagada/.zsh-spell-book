@@ -4,7 +4,7 @@ set -euo pipefail
 local paneId=${1:?paneId required}
 local workingDir=${2:?working directory required}
 local sessionId newPane
-sessionId=$(zsb_charm_codex_session_id "$paneId") || exit 0
+sessionId=$(zsb_charm_get_codex_session_id "$paneId") || exit 0
 
 newPane=$(tmux new-window -P -F '#{pane_id}' -n 'codex ' -c "$workingDir" "codex fork $sessionId")
 [[ $newPane == %<-> ]] || exit 1

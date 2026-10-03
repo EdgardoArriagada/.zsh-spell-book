@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+local paneId=${1:?paneId required}
+local attempts=${2:-100} sessionId current i
+(( $# <= 2 )) && [[ $attempts =~ '^[1-9][0-9]*$' ]] || exit 2
+
+for (( i=0; i<attempts; i++ )); do
+  current=$(tmux display-message -pt "$paneId" '#{pane_current_command}') || exit 1
+  if [[ $current == codex ]] && sessionId=$(zsb_charm_get_codex_session_id "$paneId"); then
+    print -r -- "$sessionId"
+    exit 0
+  fi
+  sleep 0.2
+done
+
+exit 1

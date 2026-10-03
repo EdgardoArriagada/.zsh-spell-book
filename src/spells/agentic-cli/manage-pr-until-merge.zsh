@@ -32,7 +32,7 @@ Remaining flags go to watch-pr-events; PR and Codex thread are set automatically
     print -u2 -- 'manage-pr-until-merge: chat integration must be an HTTPS URL'
     return 2
   fi
-  for dependency in tmux gh codex watch-pr-events zsb_charm_codex_session_id; do
+  for dependency in tmux gh codex watch-pr-events zsb_charm_find_codex_session_id; do
     if ! whence -p "$dependency" >/dev/null; then
       print -u2 -- "manage-pr-until-merge: $dependency not found"
       return 1
@@ -49,15 +49,11 @@ Remaining flags go to watch-pr-events; PR and Codex thread are set automatically
       pane=$1
       shift
       print -r -- "Waiting for Codex thread..."
-      for (( i=0; i<300; i++ )); do
-        current=$(tmux display-message -pt "$pane" "#{pane_current_command}") || exit 1
-        if [[ $current == codex ]] && thread=$(zsb_charm_codex_session_id "$pane"); then
-          exec watch-pr-events "$@" --codex-thread "$thread"
-        fi
-        sleep 0.2
-      done
-      print -u2 -- "manage-pr-until-merge: timed out waiting for Codex thread"
-      exit 1
+      thread=$(zsb_charm_find_codex_session_id "$pane" 300) || {
+        print -u2 -- "manage-pr-until-merge: timed out waiting for Codex thread"
+        exit 1
+      }
+      exec watch-pr-events "$@" --codex-thread "$thread"
     ' manage-pr-until-merge "$TMUX_PANE" "${watcherArgs[@]}" --pull-request "$prUrl") || return 1
 
   {
