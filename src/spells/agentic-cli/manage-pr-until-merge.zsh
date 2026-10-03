@@ -1,12 +1,11 @@
 manage-pr-until-merge() {
   emulate -L zsh
   local pr='' chat='' prUrl watcherPane dependency
-  local -a selection watcherArgs prArgs chatArgs helpArgs
+  local -a selection prArgs chatArgs helpArgs
   local prPattern='^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/pull/[1-9][0-9]*$'
 
   zparseopts -D -E -M -- p:=prArgs -pull-request:=p \
     c:=chatArgs -chat-integration:=c h=helpArgs -help=h || return 2
-  watcherArgs=( "$@" )
   pr=${${prArgs[-1]-}#=}
   chat=${${chatArgs[-1]-}#=}
   if (( $#helpArgs )); then
@@ -46,16 +45,14 @@ Remaining flags go to watch-pr-events; PR and Codex thread are set automatically
 
   watcherPane=$(tmux split-window -h -d -l '35%' -t "$TMUX_PANE" -c "$PWD" -P -F '#{pane_id}' \
     zsh -f -c '
-      pane=$1
-      shift
       print -r -- "Waiting for Codex thread..."
-      thread=$(zsb_charm_find_codex_session_id "$pane" 1000) || {
+      thread=$(zsb_charm_find_codex_session_id "$1" 1000) || {
         print -u2 -- "manage-pr-until-merge: timed out waiting for Codex thread"
         exit 1
       }
       print -r -- "Thread found!"
-      exec watch-pr-events "$@" --codex-thread "$thread"
-    ' manage-pr-until-merge "$TMUX_PANE" "${watcherArgs[@]}" --pull-request "$prUrl") || return 1
+      exec watch-pr-events "${@:2}" --codex-thread "$thread"
+    ' manage-pr-until-merge "$TMUX_PANE" "$@" --pull-request "$prUrl") || return 1
 
   {
     local prompt="\$manage-pr-until-merged $prUrl"
