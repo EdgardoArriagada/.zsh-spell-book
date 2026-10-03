@@ -2,7 +2,7 @@
 /.env
 /logs
 /result.zsh
-/result.zsh.zwc
+*.zwc
 /src-go/bin
 /src-go/cmd/watch-pr-events/watch-pr-events.conf
 /src-rust/bin

@@ -34,6 +34,10 @@ go-dev:
 zsh-dev:
 	@find . -name "*.zsh" -not -path "./src-go/*" | entr -c ./src-rust/bin/zsb_bundle
 
+.PHONY: charms-compile
+charms-compile:
+	@zsh -f -c 'for charm in src/charms/*(.N); do [[ $$charm == *.zwc ]] && continue; zcompile "$$charm" || exit; done'
+
 go-build-all:
 	for target in $$(ls ./src-go/cmd); do \
 		$(MAKE) TARGET=$$target ACTION='go-build-fn' .go-run; \
