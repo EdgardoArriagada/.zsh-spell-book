@@ -49,10 +49,11 @@ Remaining flags go to watch-pr-events; PR and Codex thread are set automatically
       pane=$1
       shift
       print -r -- "Waiting for Codex thread..."
-      thread=$(zsb_charm_find_codex_session_id "$pane" 300) || {
+      thread=$(zsb_charm_find_codex_session_id "$pane" 1000) || {
         print -u2 -- "manage-pr-until-merge: timed out waiting for Codex thread"
         exit 1
       }
+      print -r -- "Thread found!"
       exec watch-pr-events "$@" --codex-thread "$thread"
     ' manage-pr-until-merge "$TMUX_PANE" "${watcherArgs[@]}" --pull-request "$prUrl") || return 1
 
