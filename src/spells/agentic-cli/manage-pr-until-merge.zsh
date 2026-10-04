@@ -62,3 +62,14 @@ Remaining flags go to watch-pr-events; PR and Codex thread are set automatically
     tmux kill-pane -t "$watcherPane" 2>/dev/null
   }
 }
+
+_${zsb}.manage-pr-until-merge() {
+  _arguments \
+    '(-p --pull-request)'{-p,--pull-request}'[select a PR number or GitHub PR URL]:pull request:' \
+    '(-c --chat-integration)'{-c,--chat-integration}'[set the chat integration HTTPS URL]:HTTPS URL:' \
+    '(-t --tmux)'{-t,--tmux}'[notify the current tmux pane of PR events]' \
+    '(-l --logs)'{-l,--logs}'[log the PR description and conversation]' \
+    '(-h --help)'{-h,--help}'[show help]'
+}
+
+compdef _${zsb}.manage-pr-until-merge manage-pr-until-merge
