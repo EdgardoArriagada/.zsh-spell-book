@@ -37,9 +37,13 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 
 1. Start a comment subagent at startup to inspect all current feedback.
 
-## Event Rules
+## Watcher
 
-_there is a watcher: `watch-pr-events --codex-thread <this-thread-uuid>` it queue new PR events you._
+- There is a watcher running: `watch-pr-events --codex-thread <this-thread-uuid>` it queue new PR events you.
+- Do NOT run the watcher yourself, it is already running.
+- If you has nothing to do left, you can safely stop, the watcher will notify new PR events so you can start working again.
+
+## Event Rules
 
 - If watcher queues one or more messages that an somebody left any feedback to this <PR_URL>, spawn a single comment subagent to solve them all.
 - Ignore check result messages whose head OID differs from a fresh `gh pr view <PR_URL> --json headRefOid`.
