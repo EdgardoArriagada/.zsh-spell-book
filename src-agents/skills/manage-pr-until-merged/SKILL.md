@@ -16,17 +16,12 @@ Invocation: `$manage-pr-until-merged <PR_URL> [CHAT_URL]`
 
 Run only one mutating subagent at a time. Queue later work and start it when the current subagent finishes.
 
-### Comment subagent
+Before spawning a subagent, read its file, use its specified model, and pass its full instructions with the supplied `<PR_URL>` and the authorization and trust boundaries above.
 
-- Model: `gpt-6.1-sol`. Invoke `$solve-pr-comments <PR_URL>` with the supplied URL, skipping that skill's current-branch URL discovery.
-- Verify the checkout matches the PR head. Evaluate outstanding feedback, stage only its changes, commit, and push the PR head branch. Push before replying to threads that needed code changes; the user's authorization overrides the referenced skill's wait-for-user step.
-- Report whether actionable feedback was resolved, required fixes were pushed, and replies are complete. Include the IDs and GitHub authors of only the comments or reviews addressed in this run, including bot-authored feedback. Do not pass `CHAT_URL` to the subagent.
-- Flag if one or more bots left non-actionable feedback only
+** Do not pass `CHAT_URL` to subagents **
 
-### Pipeline subagent
-
-- Model: `gpt-6.1-sol`. Goal: **"solve pr pipeline"** for `<PR_URL>`.
-- Verify the checkout matches the PR head. Inspect failed checks, fix the root cause, verify the fix, stage only its changes, commit, and push. Do not post the chat message for pipeline work.
+- Comment subagent: [agents/comment.md](agents/comment.md).
+- Pipeline subagent: [agents/pipeline.md](agents/pipeline.md).
 
 ## Chat notifications
 
