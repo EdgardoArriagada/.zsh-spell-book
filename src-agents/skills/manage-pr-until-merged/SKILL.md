@@ -21,6 +21,7 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 - Model: `gpt-6.1-sol`. Invoke `$solve-pr-comments <PR_URL>` with the supplied URL, skipping that skill's current-branch URL discovery.
 - Verify the checkout matches the PR head. Evaluate outstanding feedback, stage only its changes, commit, and push the PR head branch. Push before replying to threads that needed code changes; the user's authorization overrides the referenced skill's wait-for-user step.
 - Report whether actionable feedback was resolved, required fixes were pushed, and replies are complete. Include the IDs and GitHub authors of only the comments or reviews addressed in this run, including bot-authored feedback. Do not pass `CHAT_URL` to the subagent.
+- Report if some bot only left comments that has no actionable feedback
 
 ### Pipeline subagent
 
@@ -32,6 +33,7 @@ Run only one mutating subagent at a time. Queue later work and start it when the
 - If `CHAT_URL` exists, read its direct integration thread at startup. Identify responsible people from assignments or mentions there and record their chat identities and verified GitHub identities. Refresh the thread when later feedback needs attribution. A webhook alone cannot read a thread or send DMs; use available chat access for those operations, and report any missing access rather than guessing.
 - For bot-authored feedback, identify the human who triggered that specific bot review from the thread's request or command, or an explicit GitHub trigger for this PR. Treat that human as responsible for the bot's comments. If the trigger cannot be verified or the human cannot be matched to a chat identity, report the unresolved recipient; do not DM a guessed person or the bot.
 - After each successful comment subagent run with actionable feedback resolved, fixes pushed where needed, and replies complete, post exactly `comentarios resueltos` once as a reply in the direct integration thread. DM exactly `comentarios resueltos en <PR_URL>` to each distinct responsible human whose comments or triggered bot comments were addressed in that run. Do not DM other assigned or mentioned people, or carry recipients into later runs. If a recipient cannot be reached, report that notification failure while continuing to monitor the PR. do NOT wait for CI to finish to send messages.
+- If commet subagent says that a bot left only comments with no actionable feedback, DM exatly `el bot no dejó comentarios en <PR_URL>` to each distinct responsible human who triggered these bots
 
 ## Startup
 
