@@ -45,4 +45,4 @@ Before spawning a subagent, read its file, use its specified model, and pass its
 - If watcher queues one or more messages that an somebody left any feedback to this <PR_URL>, spawn a single comment subagent to solve them all.
 - Ignore check result messages whose head OID differs from a fresh `gh pr view <PR_URL> --json headRefOid`.
 - On `PR checks failed` for the current head, inspect with `gh pr checks <PR_URL>` and start a pipeline subagent
-- On each `PR ready to merge` message, verify its head OID still matches `gh pr view <PR_URL> --json headRefOid` and all current checks passed or skipped. Then try `gh pr merge <PR_URL> --squash`. Ignore stale messages.
+- On each `PR ready to merge` message, verify all current checks passed or skipped. Then try `gh pr merge <PR_URL> --squash`.
