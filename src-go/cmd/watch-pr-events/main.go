@@ -20,12 +20,16 @@ import (
 
 const interval = 3 * time.Minute
 
-const help = `Usage: watch-pr-events [-t|--tmux] [-l|--logs] [--codex-thread UUID] [-p|--pull-request PR]
+const help = `Usage: watch-pr-events [-t|--tmux] [--codex-thread UUID] [-p|--pull-request PR]
        watch-pr-events -h|--help
 
 Watch a pull request for check results and new comments,
 reviews, and merge readiness immediately and every 3 minutes.
-Existing comments and reviews form the notification baseline; logs include initial history.
+Existing comments and reviews form the notification baseline.
+Always append the PR description and full conversation from all users to
+~/temp/watch-pr-events/OWNER/REPO/NUMBER.log (JSON Lines).
+Includes existing history, new messages, and observed edits;
+preserves old versions and resumes without duplicating history.
 Merge readiness requires an open PR, CLEAN merge status, and passed checks on the same head.
 With no --pull-request flag, watch the PR for the current branch in the current repository.
 PR numbers select from the current repository. URLs must have the form
@@ -37,10 +41,6 @@ are allowed). Check results and merge readiness are not filtered by username.
 
 Options:
   -p, --pull-request PR  Select a PR number or GitHub PR URL
-  -l, --logs           Append the PR description and full conversation from all users
-                      to ~/temp/watch-pr-events/OWNER/REPO/NUMBER.log (JSON Lines)
-                      Includes existing history, new messages, and observed edits;
-                      preserves old versions and resumes without duplicating history
   -t, --tmux           Also notify the current tmux pane of all PR events
                       Requires a tmux pane and zsb_tmux_agent_notification on PATH
   --codex-thread UUID  Also queue PR events for this Codex thread; retry failed queues
@@ -70,14 +70,12 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, out io.Writer) error {
-	var tmux, logs bool
+	var tmux bool
 	var uuid, pullRequest string
 	flags := flag.NewFlagSet("watch-pr-events", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.BoolVar(&tmux, "t", false, "Also notify the current tmux pane")
 	flags.BoolVar(&tmux, "tmux", false, "Also notify the current tmux pane")
-	flags.BoolVar(&logs, "l", false, "Append the PR conversation to a log")
-	flags.BoolVar(&logs, "logs", false, "Append the PR conversation to a log")
 	flags.StringVar(&uuid, "codex-thread", "", "Queue PR events for a Codex thread UUID")
 	flags.StringVar(&pullRequest, "p", "", "PR number or GitHub PR URL")
 	flags.StringVar(&pullRequest, "pull-request", "", "PR number or GitHub PR URL")
@@ -168,14 +166,12 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		}
 		return err
 	}
-	if logs {
-		strategy, file, err := logStrategy(gh, endpoint, prURL)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		strategies = append(strategies, strategy)
+	strategy, file, err := logStrategy(gh, endpoint, prURL)
+	if err != nil {
+		return err
 	}
+	defer file.Close()
+	strategies = append(strategies, strategy)
 
 	seen := make(map[string]bool)
 	initialized := false

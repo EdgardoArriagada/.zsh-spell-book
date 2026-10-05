@@ -29,12 +29,12 @@ fi
 
 func TestHelp(t *testing.T) {
 	t.Setenv("PATH", "")
-	for _, args := range [][]string{{"-h"}, {"--help"}, {"-t", "--help"}, {"--pull-request", "bad", "-h"}, {"--help", "--logs"}} {
+	for _, args := range [][]string{{"-h"}, {"--help"}, {"-t", "--help"}, {"--pull-request", "bad", "-h"}, {"--help", "--tmux"}} {
 		var out bytes.Buffer
 		if err := run(context.Background(), args, &out); err != nil {
 			t.Fatalf("run(%q) = %v", args, err)
 		}
-		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || !strings.Contains(got, "-l, --logs") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") || !strings.Contains(got, "-p, --pull-request PR") {
+		if got := out.String(); !strings.Contains(got, "Usage: watch-pr-events [-t|--tmux]") || !strings.Contains(got, "-t, --tmux") || strings.Contains(got, "--logs") || !strings.Contains(got, "Always append the PR description") || !strings.Contains(got, "--codex-thread UUID") || !strings.Contains(got, "-h, --help") || !strings.Contains(got, "-p, --pull-request PR") {
 			t.Errorf("run(%q) output = %q, want usage and supported options", args, got)
 		}
 	}
@@ -127,7 +127,7 @@ func TestArgumentErrors(t *testing.T) {
 	t.Setenv("PATH", "")
 	for _, args := range [][]string{
 		{"42"}, {"https://github.com/owner/repo/pull/42"},
-		{"-p", "42", "extra"}, {"--unknown"},
+		{"-p", "42", "extra"}, {"--unknown"}, {"-l"}, {"--logs"},
 		{"-p"}, {"--pull-request"}, {"--codex-thread"},
 		{"-p="}, {"--pull-request", "bad"}, {"-p", "0"},
 		{"-p=--repo=other/repo"},
@@ -162,7 +162,7 @@ func TestPullRequestFlags(t *testing.T) {
 		{[]string{"-p=https://github.com/owner/repo/pull/42"}, "https://github.com/owner/repo/pull/42\n"},
 		{[]string{"-p", "bad", "--pull-request", "43"}, "43\n"},
 		{[]string{"--pull-request", "42", "-p", "43"}, "43\n"},
-		{[]string{"-p", "42", "-t", "--tmux=false", "-l", "--logs=false"}, "42\n"},
+		{[]string{"-p", "42", "-t", "--tmux=false"}, "42\n"},
 	} {
 		if err := run(context.Background(), tc.args, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "cannot find PR") {
 			t.Fatalf("run(%q) = %v, want gh failure", tc.args, err)
@@ -217,6 +217,7 @@ func TestValidPR(t *testing.T) {
 }
 
 func TestRunReportsMergeReady(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
 	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
@@ -239,6 +240,7 @@ func TestRunReportsMergeReady(t *testing.T) {
 }
 
 func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
 	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
@@ -287,6 +289,7 @@ func TestRunDeliversMergeReadyToAllStrategies(t *testing.T) {
 }
 
 func TestRunReportsFailedChecksWithoutMergeReady(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
 	if err := os.WriteFile(gh, []byte(ghReadyScript), 0700); err != nil {
@@ -466,7 +469,7 @@ func TestConversationLog(t *testing.T) {
 	}
 }
 
-func TestLogsFlags(t *testing.T) {
+func TestLogsByDefault(t *testing.T) {
 	dir := t.TempDir()
 	gh := filepath.Join(dir, "gh")
 	script := strings.Replace(ghReadyScript, "  printf '[[]]\\n'", "  if [ \"$2\" = repos/owner/repo/pulls/42 ]; then printf '{\"id\":42,\"body\":\"Description\"}\\n'; else printf '[[]]\\n'; fi", 1)
@@ -475,21 +478,17 @@ func TestLogsFlags(t *testing.T) {
 	}
 	t.Setenv("PATH", dir)
 	t.Setenv("CHECK_BUCKET", "pass")
-	for _, args := range [][]string{{"-l"}, {"--logs"}, {"-l", "--logs"}} {
-		t.Run(strings.Join(args, " "), func(t *testing.T) {
-			home := t.TempDir()
-			t.Setenv("HOME", home)
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			defer cancel()
-			var out bytes.Buffer
-			if err := run(ctx, append(args, "-p", "42"), &out); err != nil {
-				t.Fatal(err)
-			}
-			data, err := os.ReadFile(filepath.Join(home, "temp", "watch-pr-events", "owner", "repo", "42.log"))
-			if err != nil || !bytes.Contains(data, []byte("Description")) || !strings.Contains(out.String(), "PR checks passed:") || !strings.Contains(out.String(), "PR ready to merge:") {
-				t.Fatalf("log = %s, error = %v, console = %s", data, err, out.String())
-			}
-		})
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	var out bytes.Buffer
+	if err := run(ctx, []string{"-p", "42"}, &out); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(home, "temp", "watch-pr-events", "owner", "repo", "42.log"))
+	if err != nil || !bytes.Contains(data, []byte("Description")) || !strings.Contains(out.String(), "PR checks passed:") || !strings.Contains(out.String(), "PR ready to merge:") {
+		t.Fatalf("log = %s, error = %v, console = %s", data, err, out.String())
 	}
 }
 

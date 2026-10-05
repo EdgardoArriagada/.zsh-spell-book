@@ -68,7 +68,6 @@ _${zsb}.manage-pr-until-merge() {
     '(-p --pull-request)'{-p,--pull-request}'[select a PR number or GitHub PR URL]:pull request:' \
     '(-c --chat-integration)'{-c,--chat-integration}'[set the chat integration HTTPS URL]:HTTPS URL:' \
     '(-t --tmux)'{-t,--tmux}'[notify the current tmux pane of PR events]' \
-    '(-l --logs)'{-l,--logs}'[log the PR description and conversation]' \
     '(-h --help)'{-h,--help}'[show help]'
 }
 
