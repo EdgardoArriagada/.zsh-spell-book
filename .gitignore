@@ -7,3 +7,4 @@
 /src-go/cmd/watch-pr-events/watch-pr-events.conf
 /src-rust/bin
 /src-rust/target
+/src-bun/**/node_modules/

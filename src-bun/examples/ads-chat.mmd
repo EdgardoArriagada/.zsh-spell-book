@@ -1,0 +1,7 @@
+flowchart LR
+    U[User] --> F[Frontend: register chat resource]
+    F --> B[Backend: register assistant]
+    B --> T[Tool: read data]
+    T --> A[Data API]
+    B --> S[Existing sessions and streaming]
+    S --> F

@@ -1,0 +1,57 @@
+#!/usr/bin/env bun
+import { writeFile } from "node:fs/promises";
+
+export async function createHtml(source) {
+  if (!source.trim()) throw new Error("Mermaid source is empty.");
+  if (source.length > 50_000) throw new Error("Mermaid source exceeds 50,000 characters.");
+  const escaped = source.replace(/[&<>]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[char]);
+  const library = await Bun.file(new URL(import.meta.resolve("mermaid/dist/mermaid.min.js"))).arrayBuffer();
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mermaid diagram</title>
+  <style>body { margin: 2rem; font-family: sans-serif; } main { overflow: auto; } svg { max-width: none !important; }</style>
+</head>
+<body>
+  <main aria-label="Mermaid diagram"><pre class="mermaid">${escaped}</pre></main>
+  <p id="error" role="alert" hidden></p>
+  <script src="data:text/javascript;base64,${Buffer.from(library).toString("base64")}"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, securityLevel: "strict" });
+    mermaid.run().catch(() => {
+      document.querySelector("main").replaceChildren();
+      const error = document.getElementById("error");
+      error.textContent = "Could not render diagram. Check the Mermaid syntax.";
+      error.hidden = false;
+    });
+  </script>
+</body>
+</html>
+`;
+}
+
+if (import.meta.main) {
+  const args = Bun.argv.slice(2);
+  const usage = "Usage: zsb_mermaid.js [input.mmd|-] [output.html] (default: stdin, diagram.html)";
+  if (args[0] === "--help" || args[0] === "-h") {
+    console.log(usage);
+  } else {
+    try {
+      if (args.length > 2 || ((!args[0] || args[0] === "-") && process.stdin.isTTY)) {
+        throw new Error(usage);
+      }
+      const [input = "-", output = "diagram.html"] = args;
+      const source = await (input === "-" ? Bun.stdin : Bun.file(input)).text();
+      const html = await createHtml(source);
+      await writeFile(output, html, { flag: "wx" });
+      console.log(`Created ${output}`);
+    } catch (error) {
+      const message = error.code === "EEXIST" ? "Output already exists; choose another filename."
+        : error.code ? `File operation failed (${error.code}).` : error.message;
+      console.error(message);
+      process.exitCode = 1;
+    }
+  }
+}

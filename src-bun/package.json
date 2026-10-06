@@ -1,0 +1,8 @@
+{
+  "name": "zsb-bun-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mermaid": "12.0.0"
+  }
+}
