@@ -5,4 +5,4 @@ alias l='lsd -la'
 alias removeSpanishChars='iconv -f utf8 -t ascii//TRANSLIT'
 alias catenv='ls -a | rg env | xargs cat'
 alias batenv='ls -a | rg env | xargs zsb_cat'
-
+alias o='zsb_open'
