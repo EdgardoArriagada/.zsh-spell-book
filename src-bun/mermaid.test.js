@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createHtml } from "./bin/zsb_mermaid.js";
+import { createHtml } from "./bin/mermaidjs";
 
 const dir = await mkdtemp(join(tmpdir(), "zsb-mermaid-"));
-const script = new URL("./bin/zsb_mermaid.js", import.meta.url).pathname;
+const script = new URL("./bin/mermaidjs", import.meta.url).pathname;
 const source = await Bun.file(new URL("./examples/ads-chat.mmd", import.meta.url)).text();
 const run = (args, stdin) => Bun.spawnSync([process.execPath, script, ...args], {
   cwd: dir, stdin: Buffer.from(stdin ?? ""), stdout: "pipe", stderr: "pipe",

@@ -34,7 +34,7 @@ export async function createHtml(source) {
 
 if (import.meta.main) {
   const args = Bun.argv.slice(2);
-  const usage = "Usage: zsb_mermaid.js [input.mmd|-] [output.html] (default: stdin, diagram.html)";
+  const usage = "Usage: mermaidjs [input.mmd|-] [output.html] (default: stdin, diagram.html)";
   if (args[0] === "--help" || args[0] === "-h") {
     console.log(usage);
   } else {

@@ -10,8 +10,8 @@ bun install --frozen-lockfile
 Generate a self-contained HTML diagram from a file or stdin:
 
 ```sh
-bun bin/zsb_mermaid.js examples/ads-chat.mmd ads-chat.html
-cat examples/ads-chat.mmd | bun bin/zsb_mermaid.js - diagram.html
+bun bin/mermaidjs examples/ads-chat.mmd ads-chat.html
+cat examples/ads-chat.mmd | bun bin/mermaidjs - diagram.html
 ```
 
 Open the HTML in a browser. Mermaid parses and renders there; invalid syntax shows an error.
