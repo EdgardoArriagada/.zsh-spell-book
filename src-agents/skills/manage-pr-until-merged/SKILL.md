@@ -1,7 +1,6 @@
 ---
 name: manage-pr-until-merged
 description: Monitor one GitHub pull request, delegate new review comments and failed CI, then squash and merge when checks pass and GitHub allows it. Requires a PR URL; accepts an optional chat integration URL.
-disable-model-invocation: true
 ---
 
 # Manage PR Until Merged
@@ -16,7 +15,7 @@ Invocation: `$manage-pr-until-merged <PR_URL> [CHAT_URL]`
 
 Run only one mutating subagent at a time. Queue later work and start it when the current subagent finishes.
 
-Before spawning a subagent, read its file, use its specified model, and pass its full instructions with the supplied `<PR_URL>` and the authorization and trust boundaries above.
+Before spawning a subagent, read its file. Call `collaboration.spawn_agent` with `agent_type: "worker"`, `model` set to the model specified in that file, `fork_turns: "none"`, and a unique `task_name`. Set `message` to its full instructions with the supplied `<PR_URL>` and the authorization and trust boundaries above, excluding `CHAT_URL` and any chat context.
 
 ** Do not pass `CHAT_URL` to subagents **
 
